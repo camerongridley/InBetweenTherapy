@@ -1,4 +1,6 @@
-package com.cggcoding.models;
+package com.cggcoding.models.tasktypes;
+
+import com.cggcoding.models.Task;
 
 public class CognitiveTask extends Task {
 	private String automaticThought;
