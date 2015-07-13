@@ -54,21 +54,36 @@
 		<!-- Main component for a primary marketing message or call to action -->
 		<div class="jumbotron">
 			<h1>Do It Right!</h1>
-			<p><c:out value="${stringTest }"></c:out></p>
-			<p>This example is a quick exercise to illustrate how the
-				default, static and fixed to top navbar work. It includes the
-				responsive CSS and HTML, so it also adapts to your viewport and
-				device.</p>
-			<p>To see the difference between static and fixed top navbars,
-				just scroll.</p>
-			<p>
-				<a class="btn btn-lg btn-primary" href="../../components/#navbar"
-					role="button">View navbar docs &raquo;</a>
-			</p>
+			<p>Helping you take sex back into your hands.</p>
+
 		</div>
 
 	</div>
 	<!-- /container -->
+
+	<div class="container">
+		<div class="col-md-6">
+			<p>Select a stage of therapy:</p>
+		</div>
+		<div class="col-md-6">
+			<form class="form-inline" action="./LoadData" method="POST">
+				<div class="dropdown">
+					<button id="dLabel" type="button" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false">
+						Choose One: <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="dLabel">
+						<c:forEach var="stage" items="${txStages}">
+							<li id='<c:out value="${stage}"/>'><c:out value="${stage}"/></li>
+						</c:forEach>
+					</ul>
+				</div>
+				
+				<button type="submit" class="btn btn-primary">Load Data</button>
+			</form>
+		</div>
+
+	</div>
 
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
