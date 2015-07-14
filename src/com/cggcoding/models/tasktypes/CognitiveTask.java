@@ -8,8 +8,8 @@ public class CognitiveTask extends Task {
 	private int preSUDS;
 	private int postSUDS;
 	
-	public CognitiveTask (String name, String description){
-		super(name, description);
+	public CognitiveTask (int id, String name, String description){
+		super(id, name, description);
 	}
 	
 	public String getAutomaticThought() {

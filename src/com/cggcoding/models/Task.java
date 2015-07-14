@@ -9,9 +9,15 @@ public abstract class Task implements Completable{
 	private boolean completed;
 	private Date dateCompleted;
 	
-	public Task(String name, String description){
+	public Task(int id, String name, String description){
+		this.id = id;
 		this.name = name;
 		this.description = description;
+		this.completed = false;
+	}
+	
+	public int getId(){
+		return id;
 	}
 	
 	public String getName() {

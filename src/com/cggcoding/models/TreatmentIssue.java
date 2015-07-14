@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TreatmentIssue {
@@ -9,8 +10,10 @@ public class TreatmentIssue {
 	private List<Stage> stages;
 	
 	public TreatmentIssue(String name, String description){
+		this.id = 0; //temp value for id
 		this.name = name;
 		this.description = description;
+		this.stages = new ArrayList<>();
 	}
 
 	public String getName() {

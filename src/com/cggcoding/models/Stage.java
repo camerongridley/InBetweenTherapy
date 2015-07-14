@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Stage implements Completable {
@@ -7,21 +8,25 @@ public class Stage implements Completable {
 	private int id;
 	private String name;
 	private String description;
-	private List<Task> taskList;
+	private List<Task> tasks;
 	private List<Task> extraTasks; //for when user chooses to do more tasks than asked of - won't count toward progress meter but can be saved for review or other analysis (e.g. themes)
 	private boolean completed;
 	
 	public Stage (String name, String description){
+		this.id = 0; //temp value for id
 		this.name = name;
 		this.description = description;
+		this.tasks = new ArrayList<>();
+		this.extraTasks = new ArrayList<>();
+		this.completed = false;
 	}
 	
-	public List<Task> getTaskList() {
-		return taskList;
+	public List<Task> getTasks() {
+		return tasks;
 	}
 
-	public void setTaskList(List<Task> taskList) {
-		this.taskList = taskList;
+	public void setTasks(List<Task> taskList) {
+		this.tasks = taskList;
 	}
 
 	public List<Task> getExtraTasks() {
@@ -45,7 +50,7 @@ public class Stage implements Completable {
 	}
 
 	public void addTask(Task task){//add index specifier?
-		taskList.add(task);
+		tasks.add(task);
 	}
 	
 	public void addExtraTask(Task extraTask){//add index specifier?

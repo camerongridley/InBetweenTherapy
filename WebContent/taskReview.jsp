@@ -1,25 +1,41 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
-    <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-</head>
-<body>
-		<c:forEach items="${taskList}" var="tasks">
-			<c:out value="${tasks.name }" /></br>
-		</c:forEach>
+<c:import url="header.jsp" />
+	
+	
+	
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+	
+			<h1>Treatment Issue: ${txIssue.name }</h1>
+			
+			<c:forEach var="stage" items="${txIssue.stages}" varStatus="stageStatus">
+				<strong>Stage ${stageStatus.index }: <c:out value="${stage.name }" /></strong></br>
+				<c:forEach var="task" items="${stage.tasks }" varStatus="taskStatus">
+				
+					<div class="panel panel-default panel-task">
+					  <div class="panel-heading panel-heading-task">
+					  	<input type="checkbox" id="${task.id }" aria-label="Task: ${task.name }">
+						<a role="button" data-toggle="collapse" href="#collapse${task.id }" aria-expanded="true" aria-controls="collapse${task.id }">
+				          ${task.name }
+				        </a>
+					  </div>
+					  <div id="collapse${task.id }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.id }">
+						  <div class="panel-body panel-body-task">
+						    ${task.description }
+						  </div>
+					  </div>
+					</div>
+					
+				</c:forEach>
+			</c:forEach>
 		
+		</div>
+	</div>
+</div>
 		
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-	<!-- Include all compiled plugins (below), or include individual files as needed -->
-	<script src="js/bootstrap.min.js"></script>
-</body>
-</html>
+<c:import url="footer.jsp" />
