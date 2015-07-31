@@ -9,10 +9,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
+import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.CognitiveTask;
 import com.cggcoding.models.tasktypes.PsychEdTask;
 import com.cggcoding.models.tasktypes.RelaxationTask;
@@ -43,18 +45,27 @@ public class LoadData extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//load a list of of tasks - in place of a db call since the db is not yet implemented
+		//load all data - in place of a db call since the db is not yet implemented
+		HttpSession session = request.getSession();
 		
-		TreatmentIssue txIssue = new TreatmentIssue("ED", "Erectile dysfunction");
+		User user = new User(1, "cgridley@gmail.com", "password");
+		
+		TreatmentIssue txIssue = new TreatmentIssue("ED", "Erectile dysfunction", 1);
+		txIssue.setCurrentStageID(0);
+		
+		user.addTreatmentIssue(txIssue);
 		
 		//create stages
-		Stage psychEd = new Stage("PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.");
-		Stage relax = new Stage("Relaxation", "Learning to relax your body on command is a fundamental building block of overcoming any sexual difficulty");
-		Stage cognitive = new Stage("Cognitive", "Here we help you monitor and respond differently to unhelpful thinking.");
+		Stage psychEd = new Stage(1, "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.");
+		Stage relax = new Stage(2, "Relaxation", "Learning to relax your body on command is a fundamental building block of overcoming any sexual difficulty");
+		Stage cognitive = new Stage(3, "Cognitive", "Here we help you monitor and respond differently to unhelpful thinking.");
 		
 		//create and load tasks for each stage
-		psychEd.addTask(new PsychEdTask(1, "Coping with ED", "Chapter 3 - Developing Realistic Expectations"));
-		psychEd.addTask(new PsychEdTask(2, "New Male Sexuality", "Chapter 2 - Male Sexual Myths"));
+		psychEd.addTask(new PsychEdTask(0, "Coping with ED", "Chapter 3 - Developing Realistic Expectations"));
+		Task completedTask = new PsychEdTask(1, "New Male Sexuality", "Chapter 2 - Male Sexual Myths");
+		//completedTask.markComplete();
+		psychEd.addTask(completedTask);
+		
 		
 		relax.addTask(new RelaxationTask(3, "Body Scan 1", "Do 1 body scan meditation.", 30));
 		relax.addTask(new RelaxationTask(4, "Body Scan 2", "Do 1 body scan meditation.", 30));
@@ -78,10 +89,16 @@ public class LoadData extends HttpServlet {
 		txIssue.addStage(psychEd, 0);
 		txIssue.addStage(relax, 1);
 		txIssue.addStage(cognitive, 2);
+	
 		
+		//now only put relevant data into session
+		TreatmentIssue activeTx = user.getActiveTreatmentIssue();
+		Stage currentStage = activeTx.getCurrentStage();
 		
-		request.setAttribute("txIssue", txIssue);
-		//request.setAttribute("stages", txIssue.getStages());
+		session.setAttribute("txIssue", activeTx);
+		session.setAttribute("stages", txIssue.getStages());
+		session.setAttribute("currentStage", currentStage);
+		
 		
 		request.getRequestDispatcher("taskReview.jsp").forward(request, response);
 	}

@@ -11,14 +11,18 @@ public class Stage implements Completable {
 	private List<Task> tasks;
 	private List<Task> extraTasks; //for when user chooses to do more tasks than asked of - won't count toward progress meter but can be saved for review or other analysis (e.g. themes)
 	private boolean completed;
+	private int numberOfTasksCompleted;
+	private double percentComplete;
 	
-	public Stage (String name, String description){
-		this.id = 0; //temp value for id
+	public Stage (int id, String name, String description){
+		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.tasks = new ArrayList<>();
 		this.extraTasks = new ArrayList<>();
 		this.completed = false;
+		this.numberOfTasksCompleted = 0;
+		this.percentComplete = 0;
 	}
 	
 	public List<Task> getTasks() {
@@ -72,17 +76,32 @@ public class Stage implements Completable {
 		completed = false;
 	}
 	
+	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
 	public void updateTasks(){
-		//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
+		
 	}
 	
+	//once a task is completed this is called to update the progress meter and associated metrics
 	public void updateProgress(){
-		//once a task is completed this is called to update the progress meter and associated metrics
+		numberOfTasksCompleted = 0;
+		
+		for(Task task : tasks){
+			if(task.isCompleted()){
+				numberOfTasksCompleted++;
+			}
+		}
+		
+		percentComplete = ((double)numberOfTasksCompleted/(double)tasks.size());
+		
+		if(getPercentComplete()==100){
+			this.markComplete();
+		}
+		
 	}
 	
 	//returns a double digit number representing percentage of stage completion
-	public int getProgress(){
-		return 0;
+	public int getPercentComplete(){
+		return (int)(percentComplete * 100);
 	}
 	
 }

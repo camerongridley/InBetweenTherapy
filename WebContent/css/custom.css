@@ -3,6 +3,11 @@ body {
   padding-bottom: 30px;
 }
 
+.jumbotron {
+	padding: 30px;
+    margin-bottom: 15px;
+}
+
 .theme-dropdown .dropdown-menu {
   position: static;
   display: block;
@@ -28,3 +33,17 @@ body {
 .panel-body-task {
 	padding: 10px;
 }
+
+.task-completed {
+	text-decoration: line-through;
+}
+
+.progress-stage-inactive {
+	color: black;
+	background-color: #eee;
+}
+
+.progress-bar-separator {
+	background-color: black;
+}
+

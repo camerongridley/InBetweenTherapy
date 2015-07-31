@@ -1,13 +1,14 @@
 package com.cggcoding.models;
 
-import java.util.Date;
+import java.time.LocalDate;
+
 
 public abstract class Task implements Completable{
 	private int id;
 	private String name;
 	private String description;
 	private boolean completed;
-	private Date dateCompleted;
+	private LocalDate dateCompleted;
 	
 	public Task(int id, String name, String description){
 		this.id = id;
@@ -28,11 +29,11 @@ public abstract class Task implements Completable{
 		return description;
 	}
 	
-	public void setDateCompleted(Date date){
+	public void setDateCompleted(LocalDate date){
 		dateCompleted = date;
 	}
 	
-	public Date getDateCompleted(){
+	public LocalDate getDateCompleted(){
 		return dateCompleted;
 	}
 
@@ -43,14 +44,13 @@ public abstract class Task implements Completable{
 	
 	@Override
 	public void markComplete() {
-		// TODO Auto-generated method stub
-		
+		completed = true;
+		dateCompleted = LocalDate.now();
 	}
 
 	@Override
 	public void markIncomplete() {
-		// TODO Auto-generated method stub
-		
+		completed = false;
 	}
 
 	
