@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User {
-	private int id;
+	private int userID;
 	private String email;
 	private String encryptedPassword;
 	private int activeTreatmentIssueId;
 	private List<TreatmentIssue> txIssues;
 	
-	public User (int id, String email, String password){
-		this.id = id;
+	public User (int userID, String email, String password){
+		this.userID = userID;
 		this.email = email;
 		this.encryptedPassword = password;
 		this.txIssues = new ArrayList<>();

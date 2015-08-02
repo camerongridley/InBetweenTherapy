@@ -11,29 +11,32 @@
 	<h1>Treatment Issue: ${txIssue.name }</h1>
 	<div class="row">
 		<div class="col-md-12">
-			<div class="progress">
-			<c:set var="separatorWidth" value=".2"></c:set>
-			<c:forEach var="stage" items="${txIssue.stages }" varStatus="stageStatus">
-				<c:if test="${stage.stageID == currentStage.stageID }">
-					<div class="progress-bar progress-bar-primary" style="width: ${(100-(txIssue.numberOfStages-1)*separatorWidth)/txIssue.numberOfStages}%">
-						<c:if test="${stage.completed }">*</c:if>
-						${stage.name }
-					</div>
-				</c:if>
-				<c:if test="${stage.stageID != currentStage.stageID }">
-					<div class="progress-bar progress-bar-info progress-stage-inactive" style="width: ${(100-(txIssue.numberOfStages-1)*separatorWidth)/txIssue.numberOfStages}%">
-						<c:if test="${stage.completed }">*</c:if>
-						${stage.name }
-					</div>
-				</c:if>
-
-				<c:if test="${!stageStatus.last }">
-					<div class="progress-bar progress-bar-separator" style="width: ${separatorWidth}%"></div>
-				</c:if>
-			</c:forEach>
-			  
-			</div>
 			
+				<div class="progress">
+				<c:set var="separatorWidth" value=".2"></c:set>
+				<c:forEach var="stage" items="${txIssue.stages }" varStatus="stageStatus">
+					<c:if test="${stage.stageID == currentStage.stageID }">
+						<div class="progress-bar progress-bar-primary" style="width: ${(100-(txIssue.numberOfStages-1)*separatorWidth)/txIssue.numberOfStages}%">
+							<c:if test="${stage.completed }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
+							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
+							<c:if test="${stage.completed }"></a></form></c:if>
+						</div>
+					</c:if>
+					<c:if test="${stage.stageID != currentStage.stageID }">
+						<div class="progress-bar progress-bar-info progress-stage-inactive" style="width: ${(100-(txIssue.numberOfStages-1)*separatorWidth)/txIssue.numberOfStages}%">
+							<c:if test="${stage.completed }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
+							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
+							<c:if test="${stage.completed }"></a></form></c:if>
+						</div>
+					</c:if>
+	
+					<c:if test="${!stageStatus.last }">
+						<div class="progress-bar progress-bar-separator" style="width: ${separatorWidth}%"></div>
+					</c:if>
+				</c:forEach>
+				  
+				</div>
+
 		</div>
 	</div>
 	

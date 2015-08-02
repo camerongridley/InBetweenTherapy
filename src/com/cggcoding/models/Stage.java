@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Stage implements Completable {
 
-	private int id;
+	private int stageID;
 	private String name;
 	private String description;
 	private List<Task> tasks;
@@ -14,8 +14,8 @@ public class Stage implements Completable {
 	private int numberOfTasksCompleted;
 	private double percentComplete;
 	
-	public Stage (int id, String name, String description){
-		this.id = id;
+	public Stage (int stageID, String name, String description){
+		this.stageID = stageID;
 		this.name = name;
 		this.description = description;
 		this.tasks = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Stage implements Completable {
 	}
 
 	public int getStageID() {
-		return id;
+		return stageID;
 	}
 
 	public String getName() {
