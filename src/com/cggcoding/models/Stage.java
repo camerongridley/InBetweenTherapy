@@ -78,6 +78,7 @@ public class Stage implements Completable {
 	
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
 	public void updateTasks(){
+
 		
 	}
 	
@@ -103,5 +104,8 @@ public class Stage implements Completable {
 	public int getPercentComplete(){
 		return (int)(percentComplete * 100);
 	}
-	
+
+	public int getNumberOfTasksCompleted() { return numberOfTasksCompleted; }
+
+	public int getTotalNumberOfTasks() { return tasks.size(); }
 }

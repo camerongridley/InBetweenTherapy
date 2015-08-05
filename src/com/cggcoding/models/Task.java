@@ -4,21 +4,22 @@ import java.time.LocalDate;
 
 
 public abstract class Task implements Completable{
-	private int id;
+	private int taskID;
 	private String name;
 	private String description;
+	private int order;
 	private boolean completed;
 	private LocalDate dateCompleted;
 	
-	public Task(int id, String name, String description){
-		this.id = id;
+	public Task(int taskID, String name, String description){
+		this.taskID = taskID;
 		this.name = name;
 		this.description = description;
 		this.completed = false;
 	}
 	
-	public int getId(){
-		return id;
+	public int getTaskID(){
+		return taskID;
 	}
 	
 	public String getName() {
@@ -28,7 +29,11 @@ public abstract class Task implements Completable{
 	public String getDescription() {
 		return description;
 	}
-	
+
+	public int getOrder() {	return order; }
+
+	public void setOrder(int order) {	this.order = order;	}
+
 	public void setDateCompleted(LocalDate date){
 		dateCompleted = date;
 	}
@@ -51,6 +56,10 @@ public abstract class Task implements Completable{
 	@Override
 	public void markIncomplete() {
 		completed = false;
+	}
+	
+	public String getTaskTypeName(){
+		return this.getClass().getSimpleName();
 	}
 
 	

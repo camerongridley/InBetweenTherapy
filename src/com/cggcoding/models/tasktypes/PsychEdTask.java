@@ -6,8 +6,8 @@ public class PsychEdTask extends Task {
 	
 	//title of book or website...
 	//specifier states chapter, page numbers, site section...
-	public PsychEdTask(int id, String title, String specifier) {
-		super(id, title, specifier);
+	public PsychEdTask(int taskID, String title, String specifier) {
+		super(taskID, title, specifier);
 	}
 
 }

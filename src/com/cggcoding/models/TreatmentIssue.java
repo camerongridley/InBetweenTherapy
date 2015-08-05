@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TreatmentIssue {
-	private int id;
+	private int txIssueID;
 	private String name;
 	private String description;
 	private List<Stage> stages;
 	private int currentStageID;
+	private int activeViewStageID;
 	private int userID;
 	
 	public TreatmentIssue(String name, String description, int userID){
-		this.id = 0; //temp value for id
+		this.txIssueID = 0; //temp value for id
 		this.name = name;
 		this.description = description;
 		this.userID = userID;
@@ -55,10 +56,14 @@ public class TreatmentIssue {
 		return currentStageID;
 	}
 
-	public void setCurrentStageID(int currentStage) {
-		this.currentStageID = currentStage;
+	public void setCurrentStageID(int currentStageID) {
+		this.currentStageID = currentStageID;
 	}
-	
+
+	public int activeViewStageID() {	return activeViewStageID; }
+
+	public void activeViewStageID(int activeStageViewID) {	this.activeViewStageID = activeViewStageID;	}
+
 	public Stage getCurrentStage(){
 		return stages.get(currentStageID);
 	}

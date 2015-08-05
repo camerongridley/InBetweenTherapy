@@ -70,21 +70,28 @@ public class LoadData extends HttpServlet {
 		relax.addTask(new RelaxationTask(3, "Body Scan 1", "Do 1 body scan meditation.", 30));
 		relax.addTask(new RelaxationTask(4, "Body Scan 2", "Do 1 body scan meditation.", 30));
 		relax.addTask(new RelaxationTask(5, "Mindful Meditation 1", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
-		relax.addTask(new RelaxationTask(6, "Mindful Meditation 2", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
-		relax.addTask(new RelaxationTask(7, "Mindful Meditation 3", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
-		relax.addTask(new RelaxationTask(8, "Mindful Meditation 4", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
-		relax.addTask(new RelaxationTask(9, "Mindful Meditation 5", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
+		//relax.addTask(new RelaxationTask(6, "Mindful Meditation 2", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
+		//relax.addTask(new RelaxationTask(7, "Mindful Meditation 3", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
+		//relax.addTask(new RelaxationTask(8, "Mindful Meditation 4", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
+		//relax.addTask(new RelaxationTask(9, "Mindful Meditation 5", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
 		
-		cognitive.addTask(new CognitiveTask(10, "Replace Negative Cognitions 1", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+		
+		CognitiveTask cog1 = new CognitiveTask(10, "Replace Negative Coalitions 1", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
 				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realiztic and balanced replacement though. "
-				+ "Click here for further details."));
-		cognitive.addTask(new CognitiveTask(11, "Replace Negative Cognitions 2", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
-				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realiztic and balanced replacement though. "
-				+ "Click here for further details."));
-		cognitive.addTask(new CognitiveTask(12, "Replace Negative Cognitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+				+ "Click here for further details.");
+		cog1.setAutomaticThought("Everything I do fails.");
+		cog1.setAlternativeThought("Sometimes I struggle, but other times I succeed.");
+		cognitive.addTask(cog1);
+		cognitive.addTask(new CognitiveTask(11, "Replace Negative Coalitions 2", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
 				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
 				+ "Click here for further details."));
-		
+		cognitive.addTask(new CognitiveTask(12, "Replace Negative Coalitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
+				+ "Click here for further details."));
+
+		//psychEd.markComplete();
+		//relax.markComplete();
+
 		//load stages into issue
 		txIssue.addStage(psychEd, 0);
 		txIssue.addStage(relax, 1);

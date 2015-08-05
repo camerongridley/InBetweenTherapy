@@ -62,10 +62,7 @@
 	
 	<div class="row">
 		<div class="col-md-12">
-	
-			
-			
-			
+
 			<form action="./UpdateTaskCompletion" method="post" class="form-inline">
 			
 			<strong>Stage: <c:out value="${currentStage.name }" /> - ${currentStage.percentComplete }% Complete</strong>
@@ -74,34 +71,75 @@
 			    <strong>${currentStage.percentComplete }%</strong>
 			  </div>
 			</div>
+				<!---------------------------------------------------------
+				 INCOMPLETE PRIMARY TASKS
+				 ---------------------------------------------------------->
 				<c:forEach var="task" items="${currentStage.tasks }" varStatus="taskStatus">
 					<c:if test="${task.completed == false }">
 						<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 						  <div class="panel-heading panel-heading-task">
-						  	<input type="checkbox" id="${task.id }" value="${task.id }" name="taskChkBx[]" aria-label="Task: ${task.name }">
-							<a role="button" data-toggle="collapse" href="#collapse${task.id }" aria-expanded="true" aria-controls="collapse${task.id }">
-					          ${task.name }
+						  	<input type="checkbox" id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]" aria-label="Task: ${task.name }">
+							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
+					          ${task.name } - Task Type: ${task.taskTypeName }
 					        </a>
 						  </div>
-						  <div id="collapse${task.id }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.id }">
-							  <div class="panel-body panel-body-task">
-							    ${task.description }
-							  </div>
-						  </div>
+							<!---------------------------------------------------------
+							 PsychEd Tasks
+							 ---------------------------------------------------------->
+							  <c:if test="${task.taskTypeName == 'PsychEdTask' }">
+								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
+									  <div class="panel-body panel-body-task">
+										${task.description }
+									  </div>
+								  </div>
+							  </c:if>
+							<!---------------------------------------------------------
+							 Relaxation Tasks
+							 ---------------------------------------------------------->
+							  <c:if test="${task.taskTypeName == 'RelaxationTask' }">
+								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
+									  <div class="panel-body panel-body-task">
+										${task.description }
+									  </div>
+									  <div class="panel-body panel-body-task">
+										Duration: ${task.durationInMinutes }
+									  </div>
+								  </div>
+							  </c:if>
+							<!---------------------------------------------------------
+							 Cognitive Tasks
+							 ---------------------------------------------------------->
+							  <c:if test="${task.taskTypeName == 'CognitiveTask' }">
+								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
+									  <div class="panel-body panel-body-task">
+										${task.description }
+									  </div>
+									  <div class="panel-body panel-body-task">
+										<input type="text" class="form-control" placeholder="Enter your automatic thought." name="automaticThought${task.taskID }" value="${task.automaticThought }">
+									  </div>
+									  <div class="panel-body panel-body-task">
+										 <input type="text" class="form-control" placeholder="Enter your balanced or alternative thought." name="alternativeThought${task.taskID }" value="${task.alternativeThought }">
+									  </div>
+								  </div>
+							  </c:if>
 						</div>
 					</c:if>
 				</c:forEach>
-				
+
+
+				<!---------------------------------------------------------
+				 COMPLETED PRIMARY TASKS
+				 ---------------------------------------------------------->
 				<c:forEach var="task" items="${currentStage.tasks }" varStatus="taskStatus">
 					<c:if test="${task.completed == true }">
 						<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 						  <div class="panel-heading panel-heading-task">
-						  	<input type="checkbox" id="${task.id }" aria-label="Task: ${task.name }" value="${task.id }" name="taskChkBx[]" checked>
-							<a role="button" data-toggle="collapse" href="#collapse${task.id }" aria-expanded="true" aria-controls="collapse${task.id }">
+						  	<input type="checkbox" id="${task.taskID }" aria-label="Task: ${task.name }" value="${task.taskID }" name="taskChkBx[]" checked>
+							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 					          <span class="task-completed">${task.name }</span> - Completed ${task.dateCompleted }
 					        </a>
 						  </div>
-						  <div id="collapse${task.id }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.id }">
+						  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 							  <div class="panel-body panel-body-task">
 							    ${task.description }
 							  </div>
@@ -111,8 +149,11 @@
 				</c:forEach>
 				
 				<hr>
-				
-				<strong>Extra Tasks</strong>
+
+				<!---------------------------------------------------------
+				  INCOMPLETE EXTRA TASKS
+				 ---------------------------------------------------------->
+				<strong>Extra Tasks (Placeholder text - Functionality not yet implemented)</strong>
 				<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 				  <div class="panel-heading panel-heading-task">
 				  	<input type="checkbox" id="0" aria-label="Task: Temp Extra Task" value="0" name="taskChkBx[]">
@@ -126,7 +167,10 @@
 					  </div>
 				  </div>
 				</div>
-				
+
+				<!---------------------------------------------------------
+				 COMPLETED EXTRA TASKS
+				 ---------------------------------------------------------->
 			  
 				<button type="submit" class="btn btn-primary">Save</button>
 				
