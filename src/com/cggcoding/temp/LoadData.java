@@ -105,7 +105,7 @@ public class LoadData extends HttpServlet {
 		session.setAttribute("txIssue", activeTx);
 		session.setAttribute("stages", txIssue.getStages());
 		session.setAttribute("currentStage", currentStage);
-		
+
 		
 		request.getRequestDispatcher("taskReview.jsp").forward(request, response);
 	}

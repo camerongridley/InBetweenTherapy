@@ -74,7 +74,9 @@ public class UpdateTaskCompletion extends HttpServlet {
 			}
 		}
 
-		//THIS IS BUSINESS LOGIC!!!!  Move it
+		/*THIS IS BUSINESS LOGIC!!!!  Move it - basically build a new list of tasks that contains all the updated info from CHECKED inputs.
+		If an item has been unchechecked, all we do is markIncomplete. At this time there is no functionality to update other fields of an item that was completed and then been unchecheck/marked incomplete.
+		The user will have to update those fields in another request for now*/
 		//now iterate through all stage tasks and if has matching id to completedTasksInt List then mark complete, else mark incomplete
 		for(Task currentTask : allStageTasks){
 			int currentTaskID = currentTask.getTaskID();
