@@ -80,7 +80,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		}
 
 
-		/*Now iterate through all the tasks, building a HashMap to pass back to the service layer for updating there.
+		/*Now iterate through all the tasks, building a HashMap containing all the new information to pass back to the service layer for updating there.
 		 If same id is in the list of updated tasks, update accordingly with new data.  All other tasks get marked as incomplete.*/
 		Map<Integer, Task> newInfoTaskMap = new HashMap<>();
 		for(Task currentTask : allStageTasks){
@@ -99,6 +99,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 	//Wire up the objects and then pass them to the service layer
 	private Task updateTaskEntry(HttpServletRequest request, Task task, List idsOfCompletedTasks){
 		Task updatedTask = null;
+
 		switch (task.getTaskTypeName()) {
 			case "CognitiveTask":
 				System.out.println("Updating Cognitive Task");
@@ -108,25 +109,23 @@ public class UpdateTaskCompletion extends HttpServlet {
 				String altThought = (String) request.getParameter("alternativeThought" + cogTask.getTaskID());
 				cogTask.setAlternativeThought(altThought);
 
-				determineIfTaskCompleted(cogTask, idsOfCompletedTasks);
-
 				updatedTask = cogTask;
 				break;
 			case "RelaxationTask":
 				System.out.println("Updating Relaxation Task.");
 				RelaxationTask relaxTask = new RelaxationTask(task.getTaskID());
-				determineIfTaskCompleted(relaxTask, idsOfCompletedTasks);
 
 				updatedTask =  relaxTask;
 				break;
 			case "PsychEdTask":
 				System.out.println("Updating PsychEdTask");
 				PsychEdTask psychEdTask = new PsychEdTask(task.getTaskID());
-				determineIfTaskCompleted(psychEdTask, idsOfCompletedTasks);
 
 				updatedTask = psychEdTask;
 				break;
 		}
+
+		determineIfTaskCompleted(updatedTask, idsOfCompletedTasks);
 
 		return updatedTask;
 	}

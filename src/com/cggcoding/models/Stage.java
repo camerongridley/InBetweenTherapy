@@ -93,8 +93,11 @@ public class Stage implements Completable {
 
 	private Task updateTaskData(Task persistentTask, Task taskWithNewInfo){
 
-		Task updatedTask = null;
+		//update universal properties
+		persistentTask.setCompleted(taskWithNewInfo.isCompleted());
+		persistentTask.setDateCompleted(taskWithNewInfo.getDateCompleted());
 
+		//update case-specific properties
 		switch (persistentTask.getTaskTypeName()) {
 			case "CognitiveTask" :
 				CognitiveTask cogTask = (CognitiveTask)persistentTask;
@@ -102,31 +105,14 @@ public class Stage implements Completable {
 
 				cogTask.setAlternativeThought(newData.getAlternativeThought());
 				cogTask.setAutomaticThought(newData.getAutomaticThought());
-				cogTask.setCompleted(newData.isCompleted());
 
-				updatedTask = cogTask;
 				//updateCogTask DB call goes here
 
 				break;
-			case "RelaxationTask" :
-				RelaxationTask relaxTask = (RelaxationTask)persistentTask;
-				relaxTask.setCompleted(taskWithNewInfo.isCompleted());
 
-				updatedTask = relaxTask;
-				//updateRelaxationTask DB call goes here
-
-				break;
-			case "PsychEdTask" :
-				PsychEdTask edTask = (PsychEdTask)persistentTask;
-				edTask.setCompleted(taskWithNewInfo.isCompleted());
-
-				updatedTask = edTask;
-				//updatePsychEdTask DB call goes here
-
-				break;
 		}
 
-		return updatedTask;
+		return persistentTask;
 	}
 
 
