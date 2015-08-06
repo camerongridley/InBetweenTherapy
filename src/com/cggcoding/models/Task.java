@@ -10,7 +10,11 @@ public abstract class Task implements Completable{
 	private int order;
 	private boolean completed;
 	private LocalDate dateCompleted;
-	
+
+	public Task(int taskID) {
+		this.taskID = taskID;
+	}
+
 	public Task(int taskID, String name, String description){
 		this.taskID = taskID;
 		this.name = name;
@@ -40,6 +44,10 @@ public abstract class Task implements Completable{
 	
 	public LocalDate getDateCompleted(){
 		return dateCompleted;
+	}
+
+	public void setCompleted(boolean status){
+		this.completed = status;
 	}
 
 	@Override

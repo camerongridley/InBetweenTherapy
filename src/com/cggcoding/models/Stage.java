@@ -1,7 +1,10 @@
 package com.cggcoding.models;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.cggcoding.models.tasktypes.CognitiveTask;
+import com.cggcoding.models.tasktypes.PsychEdTask;
+import com.cggcoding.models.tasktypes.RelaxationTask;
+
+import java.util.*;
 
 public class Stage implements Completable {
 
@@ -77,10 +80,51 @@ public class Stage implements Completable {
 	}
 	
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
-	public void updateTasks(){
+	public Stage updateTaskList(Map<Integer, Task> updatedTasks, List idsOfCompletedTasks){
+		//iterate through task map to update with info from updatedTasks list
+		for(Task persistentTask : this.tasks){
+			Task taskWithNewInfo = updatedTasks.get(persistentTask.getTaskID());
+			updateTaskData(persistentTask, taskWithNewInfo);
 
-		
+		}
+
+		updateProgress();
+		return this;
 	}
+
+	private Task updateTaskData(Task persistentTask, Task taskWithNewInfo){
+
+		Task updatedTask = null;
+
+		switch (persistentTask.getTaskTypeName()) {
+			case "CognitiveTask" :
+				CognitiveTask cogTask = (CognitiveTask)persistentTask;
+				CognitiveTask newData = (CognitiveTask)taskWithNewInfo;
+
+				cogTask.setAlternativeThought(newData.getAlternativeThought());
+				cogTask.setAutomaticThought(newData.getAutomaticThought());
+				cogTask.setCompleted(newData.isCompleted());
+
+				updatedTask = cogTask;
+				break;
+			case "RelaxationTask" :
+				RelaxationTask relaxTask = (RelaxationTask)persistentTask;
+				relaxTask.setCompleted(taskWithNewInfo.isCompleted());
+
+				updatedTask = relaxTask;
+				break;
+			case "PsychEdTask" :
+				PsychEdTask edTask = (PsychEdTask)persistentTask;
+				edTask.setCompleted(taskWithNewInfo.isCompleted());
+
+				updatedTask = edTask;
+				break;
+		}
+
+		return updatedTask;
+	}
+
+
 	
 	//once a task is completed this is called to update the progress meter and associated metrics
 	public void updateProgress(){
@@ -92,7 +136,7 @@ public class Stage implements Completable {
 			}
 		}
 		
-		percentComplete = ((double)numberOfTasksCompleted/(double)tasks.size());
+		percentComplete = ((double)getNumberOfTasksCompleted()/(double)getTotalNumberOfTasks());
 		
 		if(getPercentComplete()==100){
 			this.markComplete();
@@ -108,4 +152,6 @@ public class Stage implements Completable {
 	public int getNumberOfTasksCompleted() { return numberOfTasksCompleted; }
 
 	public int getTotalNumberOfTasks() { return tasks.size(); }
+
+
 }

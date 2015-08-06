@@ -143,6 +143,12 @@
 							  <div class="panel-body panel-body-task">
 							    ${task.description }
 							  </div>
+							  <div class="panel-body panel-body-task">
+								  <input type="text" class="form-control" placeholder="Enter your automatic thought." name="automaticThought${task.taskID }" value="${task.automaticThought }">
+							  </div>
+							  <div class="panel-body panel-body-task">
+								  <input type="text" class="form-control" placeholder="Enter your balanced or alternative thought." name="alternativeThought${task.taskID }" value="${task.alternativeThought }">
+							  </div>
 						  </div>
 						</div>
 					</c:if>
