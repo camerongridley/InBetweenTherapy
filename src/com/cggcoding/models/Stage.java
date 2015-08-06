@@ -80,12 +80,11 @@ public class Stage implements Completable {
 	}
 	
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
-	public Stage updateTaskList(Map<Integer, Task> updatedTasks, List idsOfCompletedTasks){
+	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap, List idsOfCompletedTasks){
 		//iterate through task map to update with info from updatedTasks list
 		for(Task persistentTask : this.tasks){
-			Task taskWithNewInfo = updatedTasks.get(persistentTask.getTaskID());
+			Task taskWithNewInfo = updatedTasksMap.get(persistentTask.getTaskID());
 			updateTaskData(persistentTask, taskWithNewInfo);
-
 		}
 
 		updateProgress();
@@ -106,18 +105,24 @@ public class Stage implements Completable {
 				cogTask.setCompleted(newData.isCompleted());
 
 				updatedTask = cogTask;
+				//updateCogTask DB call goes here
+
 				break;
 			case "RelaxationTask" :
 				RelaxationTask relaxTask = (RelaxationTask)persistentTask;
 				relaxTask.setCompleted(taskWithNewInfo.isCompleted());
 
 				updatedTask = relaxTask;
+				//updateRelaxationTask DB call goes here
+
 				break;
 			case "PsychEdTask" :
 				PsychEdTask edTask = (PsychEdTask)persistentTask;
 				edTask.setCompleted(taskWithNewInfo.isCompleted());
 
 				updatedTask = edTask;
+				//updatePsychEdTask DB call goes here
+
 				break;
 		}
 
