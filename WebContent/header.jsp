@@ -72,7 +72,9 @@
       <div class="jumbotron">
         <h1>Do It Right!</h1>
         <p>Helping you take sex back into your own hands.</p>
+       <!--
         <p>
           <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">Get started &raquo;</a>
         </p>
+       -->
       </div>

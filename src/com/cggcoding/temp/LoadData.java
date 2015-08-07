@@ -58,7 +58,8 @@ public class LoadData extends HttpServlet {
 		Stage psychEd = new Stage(0, "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.");
 		Stage relax = new Stage(1, "Relaxation", "Learning to relax your body on command is a fundamental building block of overcoming any sexual difficulty");
 		Stage cognitive = new Stage(2, "Cognitive", "Here we help you monitor and respond differently to unhelpful thinking.");
-		
+		Stage relational = new Stage(3, "Relational", "Including your partner.");
+
 		//create and load tasks for each stage
 		psychEd.addTask(new PsychEdTask(0, "Coping with ED", "Chapter 3 - Developing Realistic Expectations"));
 		Task completedTask = new PsychEdTask(1, "New Male Sexuality", "Chapter 2 - Male Sexual Myths");
@@ -88,6 +89,13 @@ public class LoadData extends HttpServlet {
 				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
 				+ "Click here for further details."));
 
+		relational.addTask(new CognitiveTask(13, "Replace Negative Coalitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
+				+ "Click here for further details."));
+		relational.addTask(new CognitiveTask(14, "Replace Negative Coalitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
+				+ "Click here for further details."));
+
 		//psychEd.markComplete();
 		//relax.markComplete();
 
@@ -95,6 +103,7 @@ public class LoadData extends HttpServlet {
 		txIssue.addStage(psychEd, 0);
 		txIssue.addStage(relax, 1);
 		txIssue.addStage(cognitive, 2);
+		txIssue.addStage(relational, 3);
 
 		
 		//now only put relevant data into session

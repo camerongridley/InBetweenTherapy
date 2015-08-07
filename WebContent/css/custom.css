@@ -39,9 +39,25 @@ body {
 	text-decoration: line-through;
 }
 
-.progress-stage-inactive {
+.progress-stage-enabled-active {
 	color: black;
-	background-color: #eee;
+    border-bottom: 1px;
+    border-right: 1px;
+    border-color: darkgray;
+}
+
+.progress-stage-enabled-inactive {
+    color: black;
+    background-color: lightblue;
+}
+
+.progress-stage-enabled-active a {
+    color: white;
+}
+
+.progress-stage-disabled {
+    color: gray;
+    background-color: lightgray;
 }
 
 .progress-bar-separator {
