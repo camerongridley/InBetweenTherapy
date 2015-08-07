@@ -11,6 +11,7 @@ public class TreatmentIssue {
 	private int currentStageID;
 	private int activeViewStageID;
 	private int userID;
+	private boolean inProgress;
 	
 	public TreatmentIssue(String name, String description, int userID){
 		this.txIssueID = 0; //temp value for id
@@ -86,12 +87,10 @@ public class TreatmentIssue {
 			if(currentStageID < getNumberOfStages()-1){
 				currentStageID++;
 				activeViewStageID = currentStageID;
-
 			}
 		}
-		Stage nextStage = stages.get(activeViewStageID);
 		
-		return nextStage;
+		return stages.get(activeViewStageID);
 	}
 
 }
