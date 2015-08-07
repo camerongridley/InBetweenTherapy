@@ -40,10 +40,15 @@ body {
 }
 
 .progress-stage-enabled-active {
-	color: black;
-    border-bottom: 1px;
-    border-right: 1px;
-    border-color: darkgray;
+    color: black;
+    font-weight: bold;
+    /* To add 3D effect
+    border-style: solid;
+    border-top: 0px;
+    border-left: 0px;
+    border-bottom-color: darkgray;
+    border-right-color: gray
+    */
 }
 
 .progress-stage-enabled-inactive {

@@ -7,7 +7,6 @@ public abstract class Task implements Completable{
 	private int taskID;
 	private String name;
 	private String description;
-	private int order;
 	private boolean completed;
 	private LocalDate dateCompleted;
 
@@ -33,10 +32,6 @@ public abstract class Task implements Completable{
 	public String getDescription() {
 		return description;
 	}
-
-	public int getOrder() {	return order; }
-
-	public void setOrder(int order) {	this.order = order;	}
 
 	public void setDateCompleted(LocalDate date){
 		dateCompleted = date;
