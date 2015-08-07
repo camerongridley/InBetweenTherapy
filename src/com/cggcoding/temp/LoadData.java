@@ -48,7 +48,7 @@ public class LoadData extends HttpServlet {
 		
 		User user = new User(1, "cgridley@gmail.com", "password");
 		
-		TreatmentPlan txPlan = new TreatmentPlan("ED", "Erectile dysfunction", 1);
+		TreatmentPlan txPlan = new TreatmentPlan(0, "ED", "Erectile dysfunction");
 		
 		user.addTreatmentPlan(txPlan);
 		

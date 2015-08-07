@@ -10,14 +10,12 @@ public class TreatmentPlan {
 	private List<Stage> stages;
 	private int currentStageID;
 	private int activeViewStageID;
-	private int userID;
 	private boolean inProgress;
 	
-	public TreatmentPlan(String name, String description, int userID){
-		this.txPlanID = 0; //temp value for id
+	public TreatmentPlan(int txPlanID, String name, String description){
+		this.txPlanID = txPlanID;
 		this.name = name;
 		this.description = description;
-		this.userID = userID;
 		this.stages = new ArrayList<>();
 		this.currentStageID = 0;
 		this.activeViewStageID = 0;
@@ -37,10 +35,6 @@ public class TreatmentPlan {
 	
 	public List<Stage> getStages(){
 		return stages;
-	}
-	
-	public int getUserId(int userID){
-		return userID;
 	}
 	
 	public void addStage(Stage newStage, int sequenceNumber){
