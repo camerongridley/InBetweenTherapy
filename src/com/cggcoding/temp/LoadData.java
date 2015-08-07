@@ -51,14 +51,13 @@ public class LoadData extends HttpServlet {
 		User user = new User(1, "cgridley@gmail.com", "password");
 		
 		TreatmentIssue txIssue = new TreatmentIssue("ED", "Erectile dysfunction", 1);
-		txIssue.setCurrentStageID(0);
 		
 		user.addTreatmentIssue(txIssue);
 		
 		//create stages
-		Stage psychEd = new Stage(1, "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.");
-		Stage relax = new Stage(2, "Relaxation", "Learning to relax your body on command is a fundamental building block of overcoming any sexual difficulty");
-		Stage cognitive = new Stage(3, "Cognitive", "Here we help you monitor and respond differently to unhelpful thinking.");
+		Stage psychEd = new Stage(0, "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.");
+		Stage relax = new Stage(1, "Relaxation", "Learning to relax your body on command is a fundamental building block of overcoming any sexual difficulty");
+		Stage cognitive = new Stage(2, "Cognitive", "Here we help you monitor and respond differently to unhelpful thinking.");
 		
 		//create and load tasks for each stage
 		psychEd.addTask(new PsychEdTask(0, "Coping with ED", "Chapter 3 - Developing Realistic Expectations"));
@@ -96,15 +95,15 @@ public class LoadData extends HttpServlet {
 		txIssue.addStage(psychEd, 0);
 		txIssue.addStage(relax, 1);
 		txIssue.addStage(cognitive, 2);
-	
+
 		
 		//now only put relevant data into session
 		TreatmentIssue activeTx = user.getActiveTreatmentIssue();
-		Stage currentStage = activeTx.getCurrentStage();
+		//Stage currentStage = activeTx.getCurrentStage();
 		
 		session.setAttribute("txIssue", activeTx);
 		session.setAttribute("stages", txIssue.getStages());
-		session.setAttribute("currentStage", currentStage);
+		//session.setAttribute("currentStage", currentStage);
 
 		
 		request.getRequestDispatcher("taskReview.jsp").forward(request, response);

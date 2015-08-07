@@ -18,6 +18,8 @@ public class TreatmentIssue {
 		this.description = description;
 		this.userID = userID;
 		this.stages = new ArrayList<>();
+		this.currentStageID = 0;
+		this.activeViewStageID = 0;
 	}
 
 	public String getName() {
@@ -60,12 +62,18 @@ public class TreatmentIssue {
 		this.currentStageID = currentStageID;
 	}
 
-	public int activeViewStageID() {	return activeViewStageID; }
+	public int getActiveViewStageID() {	return activeViewStageID; }
 
-	public void activeViewStageID(int activeStageViewID) {	this.activeViewStageID = activeViewStageID;	}
+	public void setActiveViewStageID(int activeViewStageID) {
+		this.activeViewStageID = activeViewStageID;
+	}
 
 	public Stage getCurrentStage(){
 		return stages.get(currentStageID);
+	}
+
+	public Stage getActiveViewStage() {
+		return stages.get(activeViewStageID);
 	}
 	
 	public int getNumberOfStages(){
@@ -73,12 +81,15 @@ public class TreatmentIssue {
 	}
 	
 	public Stage nextStage(){
-		Stage nextStage = stages.get(currentStageID);
-		
-		if(currentStageID < getNumberOfStages()-1){
-			currentStageID++;
-			nextStage = stages.get(currentStageID);
+
+		if(activeViewStageID == currentStageID){
+			if(currentStageID < getNumberOfStages()-1){
+				currentStageID++;
+				activeViewStageID = currentStageID;
+
+			}
 		}
+		Stage nextStage = stages.get(activeViewStageID);
 		
 		return nextStage;
 	}

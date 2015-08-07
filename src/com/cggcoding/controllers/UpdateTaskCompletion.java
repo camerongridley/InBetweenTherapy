@@ -43,26 +43,27 @@ public class UpdateTaskCompletion extends HttpServlet {
 		
 		TreatmentIssue txIssue = (TreatmentIssue)request.getSession().getAttribute("txIssue");
 		
-		Stage currentStage = updateTaskCompletionState(request);
+		Stage currentStage = updateTaskCompletionState(request, txIssue);
 		
 		if(currentStage.isCompleted()){
+
 			currentStage = txIssue.nextStage();
 		}
 		
-		session.setAttribute("currentStage", currentStage);
+		//session.setAttribute("currentStage", currentStage);
 
 		request.getRequestDispatcher("taskReview.jsp").forward(request, response);
 		
 	}
 	
-	private Stage updateTaskCompletionState(HttpServletRequest request){
+	private Stage updateTaskCompletionState(HttpServletRequest request, TreatmentIssue txIssue){
 		HttpSession session = request.getSession();
 		
 		//get all of the checkbox values
-		Stage currentStage = (Stage)session.getAttribute("currentStage");
+		Stage activeViewStage = txIssue.getActiveViewStage();
 		String[] completedTasksString = request.getParameterValues("taskChkBx[]");
 
-		List<Task> allStageTasks = (ArrayList)currentStage.getTasks();
+		List<Task> allStageTasks = (ArrayList)activeViewStage.getTasks();
 
 		List<Integer> completedTaskIDsConvertedToInt = new ArrayList<>();
 
@@ -91,7 +92,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 			newInfoTaskMap.put(updatedTask.getTaskID(), updatedTask);
 		}
 
-		Stage updatedStage = currentStage.updateTaskList(newInfoTaskMap, completedTaskIDsConvertedToInt);
+		Stage updatedStage = activeViewStage.updateTaskList(newInfoTaskMap, completedTaskIDsConvertedToInt);
 		
 		return updatedStage;
 	}

@@ -15,18 +15,18 @@
 				<div class="progress">
 				<c:set var="separatorWidth" value=".2"></c:set>
 				<c:forEach var="stage" items="${txIssue.stages }" varStatus="stageStatus">
-					<c:if test="${stage.stageID == currentStage.stageID }">
+					<c:if test="${stage.stageID == txIssue.activeViewStageID }">
 						<div class="progress-bar progress-bar-primary" style="width: ${(100-(txIssue.numberOfStages-1)*separatorWidth)/txIssue.numberOfStages}%">
-							<c:if test="${stage.completed }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
+							<c:if test="${stage.stageID <= txIssue.currentStageID }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
 							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
-							<c:if test="${stage.completed }"></a></form></c:if>
+							<c:if test="${stage.stageID <= txIssue.currentStageID  }"></a></form></c:if>
 						</div>
 					</c:if>
-					<c:if test="${stage.stageID != currentStage.stageID }">
+					<c:if test="${stage.stageID != txIssue.activeViewStageID }">
 						<div class="progress-bar progress-bar-info progress-stage-inactive" style="width: ${(100-(txIssue.numberOfStages-1)*separatorWidth)/txIssue.numberOfStages}%">
-							<c:if test="${stage.completed }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
+							<c:if test="${stage.stageID <= txIssue.currentStageID  }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
 							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
-							<c:if test="${stage.completed }"></a></form></c:if>
+							<c:if test="${stage.stageID <= txIssue.currentStageID  }"></a></form></c:if>
 						</div>
 					</c:if>
 	
@@ -65,16 +65,16 @@
 
 			<form action="./UpdateTaskCompletion" method="post" class="form-inline">
 			
-			<strong>Stage: <c:out value="${currentStage.name }" /> - ${currentStage.percentComplete }% Complete</strong>
+			<strong>Stage: <c:out value="${txIssue.activeViewStage.name }" /> - ${txIssue.activeViewStage.percentComplete }% Complete</strong>
 			<div class="progress">
-			  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${currentStage.percentComplete }%;">
-			    <strong>${currentStage.percentComplete }%</strong>
+			  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${txIssue.activeViewStage.percentComplete }%;">
+			    <strong>${txIssue.activeViewStage.percentComplete }%</strong>
 			  </div>
 			</div>
 				<!---------------------------------------------------------
 				 INCOMPLETE PRIMARY TASKS
 				 ---------------------------------------------------------->
-				<c:forEach var="task" items="${currentStage.tasks }" varStatus="taskStatus">
+				<c:forEach var="task" items="${txIssue.activeViewStage.tasks }" varStatus="taskStatus">
 					<c:if test="${task.completed == false }">
 						<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 						  <div class="panel-heading panel-heading-task">
@@ -130,7 +130,7 @@
 				<!---------------------------------------------------------
 				 COMPLETED PRIMARY TASKS
 				 ---------------------------------------------------------->
-				<c:forEach var="task" items="${currentStage.tasks }" varStatus="taskStatus">
+				<c:forEach var="task" items="${txIssue.activeViewStage.tasks }" varStatus="taskStatus">
 					<c:if test="${task.completed == true }">
 						<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 						  <div class="panel-heading panel-heading-task">
