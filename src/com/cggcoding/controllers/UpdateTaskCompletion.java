@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
-import com.cggcoding.models.TreatmentIssue;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.tasktypes.CognitiveTask;
 import com.cggcoding.models.tasktypes.PsychEdTask;
 import com.cggcoding.models.tasktypes.RelaxationTask;
@@ -41,13 +41,13 @@ public class UpdateTaskCompletion extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		
-		TreatmentIssue txIssue = (TreatmentIssue)request.getSession().getAttribute("txIssue");
+		TreatmentPlan txPlan = (TreatmentPlan)request.getSession().getAttribute("txPlan");
 		
-		Stage currentStage = updateTaskCompletionState(request, txIssue);
+		Stage currentStage = updateTaskCompletionState(request, txPlan);
 		
 		if(currentStage.isCompleted()){
 
-			currentStage = txIssue.nextStage();
+			currentStage = txPlan.nextStage();
 		}
 		
 		//session.setAttribute("currentStage", currentStage);
@@ -56,11 +56,11 @@ public class UpdateTaskCompletion extends HttpServlet {
 		
 	}
 	
-	private Stage updateTaskCompletionState(HttpServletRequest request, TreatmentIssue txIssue){
+	private Stage updateTaskCompletionState(HttpServletRequest request, TreatmentPlan txPlan){
 		HttpSession session = request.getSession();
 		
 		//get all of the checkbox values
-		Stage activeViewStage = txIssue.getActiveViewStage();
+		Stage activeViewStage = txPlan.getActiveViewStage();
 		String[] completedTasksString = request.getParameterValues("taskChkBx[]");
 
 		List<Task> allStageTasks = (ArrayList)activeViewStage.getTasks();

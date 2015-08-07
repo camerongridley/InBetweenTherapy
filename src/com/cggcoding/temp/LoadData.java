@@ -1,8 +1,6 @@
 package com.cggcoding.temp;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,7 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
-import com.cggcoding.models.TreatmentIssue;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.CognitiveTask;
 import com.cggcoding.models.tasktypes.PsychEdTask;
@@ -50,9 +48,9 @@ public class LoadData extends HttpServlet {
 		
 		User user = new User(1, "cgridley@gmail.com", "password");
 		
-		TreatmentIssue txIssue = new TreatmentIssue("ED", "Erectile dysfunction", 1);
+		TreatmentPlan txPlan = new TreatmentPlan("ED", "Erectile dysfunction", 1);
 		
-		user.addTreatmentIssue(txIssue);
+		user.addTreatmentPlan(txPlan);
 		
 		//create stages
 		Stage psychEd = new Stage(0, "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.");
@@ -99,19 +97,19 @@ public class LoadData extends HttpServlet {
 		//psychEd.markComplete();
 		//relax.markComplete();
 
-		//load stages into issue
-		txIssue.addStage(psychEd, 0);
-		txIssue.addStage(relax, 1);
-		txIssue.addStage(cognitive, 2);
-		txIssue.addStage(relational, 3);
+		//load stages into plan
+		txPlan.addStage(psychEd, 0);
+		txPlan.addStage(relax, 1);
+		txPlan.addStage(cognitive, 2);
+		txPlan.addStage(relational, 3);
 
 		
 		//now only put relevant data into session
-		TreatmentIssue activeTx = user.getActiveTreatmentIssue();
+		TreatmentPlan activeTx = user.getActiveTreatmentPlan();
 		//Stage currentStage = activeTx.getCurrentStage();
 		
-		session.setAttribute("txIssue", activeTx);
-		session.setAttribute("stages", txIssue.getStages());
+		session.setAttribute("txPlan", activeTx);
+		session.setAttribute("stages", txPlan.getStages());
 		//session.setAttribute("currentStage", currentStage);
 
 		

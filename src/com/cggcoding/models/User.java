@@ -7,41 +7,41 @@ public class User {
 	private int userID;
 	private String email;
 	private String encryptedPassword;
-	private int activeTreatmentIssueId;
-	private List<TreatmentIssue> txIssues;
+	private int activeTreatmentPlanId;
+	private List<TreatmentPlan> txPlans;
 	
 	public User (int userID, String email, String password){
 		this.userID = userID;
 		this.email = email;
 		this.encryptedPassword = password;
-		this.txIssues = new ArrayList<>();
+		this.txPlans = new ArrayList<>();
 	}
 	
-	public void setTreatmentIssueList (List<TreatmentIssue> txIssues){
-		this.txIssues = txIssues;
+	public void setTreatmentPlanList(List<TreatmentPlan> txPlans){
+		this.txPlans = txPlans;
 	}
 	
-	public List<TreatmentIssue> getTreatmentIssueList(){
-		return txIssues;
+	public List<TreatmentPlan> getTreatmentPlanList(){
+		return txPlans;
 	}
 	
-	public void addTreatmentIssue(TreatmentIssue txIssue){
-		this.txIssues.add(txIssue);
+	public void addTreatmentPlan(TreatmentPlan txPlan){
+		this.txPlans.add(txPlan);
 	}
 	
-	public TreatmentIssue getTreatmentIssue(int txIssueId){
-		return txIssues.get(txIssueId);
+	public TreatmentPlan getTreatmentPlan(int txPlanID){
+		return txPlans.get(txPlanID);
 	}
 	
-	public void setActiveTreatmentIssueId (int stageId){
-		this.activeTreatmentIssueId = stageId;
+	public void setActiveTreatmentPlanId(int stageId){
+		this.activeTreatmentPlanId = stageId;
 	}
 	
-	public int getActiveTreatmentIssueId(){
-		return activeTreatmentIssueId;
+	public int getActiveTreatmentPlanId(){
+		return activeTreatmentPlanId;
 	}
 	
-	public TreatmentIssue getActiveTreatmentIssue(){
-		return txIssues.get(activeTreatmentIssueId);
+	public TreatmentPlan getActiveTreatmentPlan(){
+		return txPlans.get(activeTreatmentPlanId);
 	}
 }

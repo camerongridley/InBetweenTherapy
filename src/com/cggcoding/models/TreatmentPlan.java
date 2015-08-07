@@ -3,8 +3,8 @@ package com.cggcoding.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TreatmentIssue {
-	private int txIssueID;
+public class TreatmentPlan {
+	private int txPlanID;
 	private String name;
 	private String description;
 	private List<Stage> stages;
@@ -13,8 +13,8 @@ public class TreatmentIssue {
 	private int userID;
 	private boolean inProgress;
 	
-	public TreatmentIssue(String name, String description, int userID){
-		this.txIssueID = 0; //temp value for id
+	public TreatmentPlan(String name, String description, int userID){
+		this.txPlanID = 0; //temp value for id
 		this.name = name;
 		this.description = description;
 		this.userID = userID;

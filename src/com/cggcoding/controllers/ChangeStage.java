@@ -1,6 +1,6 @@
 package com.cggcoding.controllers;
 
-import com.cggcoding.models.TreatmentIssue;
+import com.cggcoding.models.TreatmentPlan;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -32,11 +32,11 @@ public class ChangeStage extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-		TreatmentIssue txIssue =  (TreatmentIssue)session.getAttribute("txIssue");
+		TreatmentPlan txPlan =  (TreatmentPlan)session.getAttribute("txPlan");
         int newViewID = Integer.parseInt(request.getParameter("stageID"));
-        txIssue.setActiveViewStageID(newViewID);
+        txPlan.setActiveViewStageID(newViewID);
 
-        session.setAttribute("txIssue", txIssue);
+        session.setAttribute("txPlan", txPlan);
 
         request.getRequestDispatcher("taskReview.jsp").forward(request,response);
 
