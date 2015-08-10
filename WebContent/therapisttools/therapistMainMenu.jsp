@@ -17,30 +17,30 @@
     <h1>Therapist Main Menu</h1>
   </div>
   <p>
-    <form class="form-inline" action="../LoadData" method="POST">
+    <form class="form-inline" action="./LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary">Create Treatment Plan</button></div>
-      <input type=hidden name="userType" value="client">
+      <input type=hidden name="userType" value="therapist">
     </form>
   </p>
 
   <p>
-    <form class="form-inline" action="../LoadData" method="POST">
+    <form class="form-inline" action="./LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary">Edit Treatment Plans</button></div>
-      <input type=hidden name="userType" value="client">
+      <input type=hidden name="userType" value="therapist">
     </form>
   </p>
 
   <p>
-    <form class="form-inline" action="../LoadData" method="POST">
+    <form class="form-inline" action="./LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary">Assign Plan to Client</button></div>
-      <input type=hidden name="userType" value="client">
+      <input type=hidden name="userType" value="therapist">
     </form>
   </p>
 
   <p>
-    <form class="form-inline" action="../LoadData" method="POST">
+    <form class="form-inline" action="./LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary">View Client Progress</button></div>
-      <input type=hidden name="userType" value="client">
+      <input type=hidden name="userType" value="therapist">
     </form>
   </p>
 

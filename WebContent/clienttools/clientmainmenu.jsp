@@ -12,7 +12,7 @@
 
 <c:import url="../header.jsp" />
 
-< class="container">
+<div class="container">
     <div class="page-header">
         <h1>Main Menu</h1>
     </div>
