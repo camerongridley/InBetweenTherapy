@@ -5,6 +5,8 @@ import java.util.List;
 
 public class TreatmentPlan {
 	private int txPlanID;
+	private int userClientID; //could collapse these into one userID since there are other ways to track relationship between client and therapist
+	private int userTherapistID;
 	private String name;
 	private String description;
 	private List<Stage> stages;
@@ -19,6 +21,10 @@ public class TreatmentPlan {
 		this.stages = new ArrayList<>();
 		this.currentStageID = 0;
 		this.activeViewStageID = 0;
+	}
+
+	public int getTreatmentPlanID(){
+		return txPlanID;
 	}
 
 	public String getName() {

@@ -9,6 +9,7 @@ import java.util.*;
 public class Stage implements Completable {
 
 	private int stageID;
+	private int treatmentPlanID;
 	private String name;
 	private String description;
 	private List<Task> tasks;

@@ -7,12 +7,44 @@
 		
 <div class="container">
 	<div class="row">
-		<div class="col-md-12">
-			<form class="form-inline" action="./LoadData" method="POST">
-				<div style="margin-bottom:20px;">To get started testing, load the test data by clicking below.</div>
-				<div><button type="submit" class="btn btn-primary">Load Data</button></div>
+		<div class="col-md-2">
+			Login as a client:
+		</div>
+		<div class="col-md-10">
+			<form class="form-inline" action="./LogIn" method="POST">
+				<div><button type="submit" class="btn btn-primary">Log in</button></div>
+				<input type=hidden name="userType" value="client">
+				<input type=hidden name="userName" value="Bob">
 			</form>
-		</div>		
+		</div>
+		<%--<div class="col-md-10">
+			<form class="form-inline" action="./LoadData" method="POST">
+				<div><button type="submit" class="btn btn-primary">Load Data</button></div>
+				<input type=hidden name="userType" value="client">
+				<input type=hidden name="userID" value="1">
+			</form>
+		</div>--%>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-md-2">
+			Login as a therapist:
+		</div>
+		<div class="col-md-10">
+			<form class="form-inline" action="./LogIn" method="POST">
+				<div><button type="submit" class="btn btn-primary">Log in</button></div>
+				<input type=hidden name="userType" value="therapist">
+				<input type=hidden name="userName" value="Cameron">
+			</form>
+		</div>
+		<%--<div class="col-md-10">
+			<form class="form-inline" action="./LoadData" method="POST">
+				<div><button type="submit" class="btn btn-primary">Go To Main Menu</button></div>
+				<input type=hidden name="userType" value="therapist">
+				<input type=hidden name="userID" value="1">
+
+			</form>
+		</div>--%>
 	</div>	
 </div>
 
