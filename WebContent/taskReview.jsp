@@ -19,9 +19,9 @@
 					<!-- for stage that is currently being viewed (enabled-active)-->
 					<c:if test="${stage.stageID == txPlan.activeViewStageID }">
 						<div class="progress-bar progress-bar-primary progress-stage-enabled-active" style="width: ${(100-(txPlan.numberOfStages-1)*separatorWidth)/txPlan.numberOfStages}%">
-							<c:if test="${stage.stageID <= txPlan.currentStageID }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
+							<c:if test="${stage.stageID <= txPlan.currentStageID }"><form action="./ChangeStage" method="POST"></c:if>
 							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
-							<c:if test="${stage.stageID <= txPlan.currentStageID  }"></a></form></c:if>
+							<c:if test="${stage.stageID <= txPlan.currentStageID  }"></form></c:if>
 						</div>
 					</c:if>
 					<!-- for stage that is accessible but NOT the active view (enabled-inactive)-->

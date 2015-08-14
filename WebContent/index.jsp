@@ -14,7 +14,7 @@
 			<form class="form-inline" action="./LogIn" method="POST">
 				<div><button type="submit" class="btn btn-primary">Log in</button></div>
 				<input type=hidden name="userType" value="client">
-				<input type=hidden name="userName" value="Bob">
+				<input type=hidden name="email" value="bob@aol.com">
 			</form>
 		</div>
 		<%--<div class="col-md-10">
@@ -34,7 +34,7 @@
 			<form class="form-inline" action="./LogIn" method="POST">
 				<div><button type="submit" class="btn btn-primary">Log in</button></div>
 				<input type=hidden name="userType" value="therapist">
-				<input type=hidden name="userName" value="Cameron">
+				<input type=hidden name="email" value="cgridley@gmail.com">
 			</form>
 		</div>
 		<%--<div class="col-md-10">

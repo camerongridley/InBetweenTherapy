@@ -7,6 +7,7 @@ public class TreatmentPlan {
 	private int txPlanID;
 	private int userClientID; //could collapse these into one userID since there are other ways to track relationship between client and therapist
 	private int userTherapistID;
+	private int txIssueID;
 	private String name;
 	private String description;
 	private List<Stage> stages;
@@ -14,10 +15,20 @@ public class TreatmentPlan {
 	private int activeViewStageID;
 	private boolean inProgress;
 	
-	public TreatmentPlan(int txPlanID, String name, String description){
+	public TreatmentPlan(int txPlanID, String name, String description, int txIssueID){
 		this.txPlanID = txPlanID;
 		this.name = name;
 		this.description = description;
+		this.txIssueID = txIssueID;
+		this.stages = new ArrayList<>();
+		this.currentStageID = 0;
+		this.activeViewStageID = 0;
+	}
+
+	public TreatmentPlan(String name, String description, int txIssueID){
+		this.name = name;
+		this.description = description;
+		this.txIssueID = txIssueID;
 		this.stages = new ArrayList<>();
 		this.currentStageID = 0;
 		this.activeViewStageID = 0;
@@ -33,6 +44,10 @@ public class TreatmentPlan {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public int getTxIssueID() {
+		return txIssueID;
 	}
 
 	public void setStages(List<Stage> stages){

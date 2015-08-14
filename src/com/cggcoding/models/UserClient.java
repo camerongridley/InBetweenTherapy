@@ -3,16 +3,14 @@ package com.cggcoding.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserClient {
+public class UserClient extends User{
 	private int userID;
 	private String email;
-	private String encryptedPassword;
 	private int activeTreatmentPlanId;
 	private List<TreatmentPlan> txPlans;
 	
 	public UserClient(int userID, String email){
-		this.userID = userID;
-		this.email = email;
+		super(userID, email);
 		this.txPlans = new ArrayList<>();
 	}
 	

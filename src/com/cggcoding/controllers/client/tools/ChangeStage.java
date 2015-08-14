@@ -1,4 +1,4 @@
-package com.cggcoding.controllers;
+package com.cggcoding.controllers.client.tools;
 
 import com.cggcoding.models.TreatmentPlan;
 

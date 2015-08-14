@@ -12,5 +12,11 @@ public class TreatmentIssue {
         this.treatmentIssueName = treatmentIssueName;
     }
 
-    
+    public int getTreatmentIssueID() {
+        return treatmentIssueID;
+    }
+
+    public String getTreatmentIssueName() {
+        return treatmentIssueName;
+    }
 }

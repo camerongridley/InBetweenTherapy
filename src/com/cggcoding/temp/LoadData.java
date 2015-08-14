@@ -44,9 +44,8 @@ public class LoadData extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//load all data - in place of a db call since the db is not yet implemented
 		HttpSession session = request.getSession();
-
-		String userType = request.getParameter("userType");
-		//int userID = Integer.parseInt(request.getParameter("userID"));
+		String chosenAction = request.getParameter("chosenAction");
+		User user = (User)session.getAttribute("user");
 
 		TreatmentPlan activeTx = null;
 
@@ -55,25 +54,80 @@ public class LoadData extends HttpServlet {
 		//session.setAttribute("currentStage", currentStage);
 		String forwardTo = "index.jsp";
 
-		if(userType.equals("client")){
-			UserClient userClient = (UserClient)session.getAttribute("userClient");
+		if(user.hasRole("client")){
+			UserClient userClient = (UserClient)session.getAttribute("user");
 			//load all txPlans of the user.  If one is marked as inProgress put it is session and go straight to taskReview.jsp
 			//if none are inProgress then offer 1-2 lists of choices: the default templates and if applicable, any from associated therapist
 			activeTx = buildClientData(userClient);
 			userClient.addTreatmentPlan(activeTx);
 			userClient.setActiveTreatmentPlanId(activeTx.getTreatmentPlanID());
-			forwardTo = "taskReview.jsp";
-		} else if(userType.equals("therapist")){
-			UserTherapist userTherapist = (UserTherapist)session.getAttribute("userTherapist");
+			switch (chosenAction) {
+				case "continue":
+					forwardTo = "taskReview.jsp";
+					break;
+				case "newplan":
+					forwardTo = "index.jsp";
+				default:
+					forwardTo = "index.jsp";
+			}
+
+		} else if(user.hasRole("therapist")){
+			UserTherapist userTherapist = (UserTherapist)session.getAttribute("user");
 			//put the default plan templates in session
 			session.setAttribute("txPlanTemplates", getTxPlanTemplateList());
 			//put the therapists owned txPlans in session - or just load them into the UserTherapist object
 			activeTx = buildTherapistData(userTherapist);
-			forwardTo = "therapisttools/therapistMainMenu.jsp";
+
+			switch (chosenAction) {
+				case "createplan":
+
+					request.setAttribute("defaultTxIssues", getDefaultTxIssueList());
+					request.setAttribute("customTxIssues", getCustomTxIssueList());
+					request.setAttribute("defaultTaskTypes", getDefaultTasksTypes());
+
+
+					forwardTo = "therapisttools/createtxplan-name.jsp";
+					break;
+				default:
+					forwardTo = "index.jsp";
+			}
 		}
 
 		session.setAttribute("txPlan", activeTx);
 		request.getRequestDispatcher(forwardTo).forward(request, response);
+
+	}
+
+	private List<TreatmentIssue> getDefaultTxIssueList(){
+		List<TreatmentIssue> txIssues = new ArrayList<>();
+		txIssues.add(new TreatmentIssue(0, "ED"));
+		txIssues.add(new TreatmentIssue(1, "PE"));
+		txIssues.add(new TreatmentIssue(2, "Low Desire"));
+		txIssues.add(new TreatmentIssue(3, "Difficulty with Orgasm"));
+
+		return txIssues;
+	}
+
+	private List<TreatmentIssue> getCustomTxIssueList(){
+		List<TreatmentIssue> txIssues = new ArrayList<>();
+		txIssues.add(new TreatmentIssue(0, "Phobia of water."));
+		txIssues.add(new TreatmentIssue(1, "Anxiety with physical touch."));
+		txIssues.add(new TreatmentIssue(2, "Commitment fear."));
+
+
+		return txIssues;
+	}
+
+	private List<String> getDefaultTasksTypes(){
+		List<String> allTaskTypes = new ArrayList<>();
+
+		allTaskTypes.add("Generic");
+		allTaskTypes.add("Psychoeducation");
+		allTaskTypes.add("Relaxation");
+		allTaskTypes.add("Cognitive");
+		allTaskTypes.add("Relational");
+
+		return allTaskTypes;
 
 	}
 
@@ -102,7 +156,7 @@ public class LoadData extends HttpServlet {
 	}
 
 	private TreatmentPlan buildDefaultEDPlan(){
-		TreatmentPlan txPlan = new TreatmentPlan(0, "ED", "Erectile dysfunction");
+		TreatmentPlan txPlan = new TreatmentPlan(0, "ED", "Erectile dysfunction", 0);
 
 		//create stages
 		Stage psychEd = new Stage(0, "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.");

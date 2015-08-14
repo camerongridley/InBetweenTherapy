@@ -8,16 +8,15 @@ import java.util.Map;
 /**
  * Created by cgrid_000 on 8/8/2015.
  */
-public class UserTherapist {
+public class UserTherapist extends User{
     private int userID;
     private String userName;
     private String email;
     private List<TreatmentPlan> therapistTxPlans;
     private Map<Integer, UserClient> clientMap;
 
-    public UserTherapist(int userID, String userName){
-        this.userID = userID;
-        this.userName = userName;
+    public UserTherapist(int userID, String email){
+        super(userID, email);
         this.therapistTxPlans = new ArrayList<>();
         this.clientMap = new HashMap<>();
     }

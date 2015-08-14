@@ -40,7 +40,7 @@ body {
 }
 
 .progress-stage-enabled-active {
-    color: black;
+    color: white;
     font-weight: bold;
     /* To add 3D effect
     border-style: solid;

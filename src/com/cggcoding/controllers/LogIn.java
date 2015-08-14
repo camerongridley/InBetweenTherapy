@@ -1,5 +1,6 @@
 package com.cggcoding.controllers;
 
+import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
 
@@ -27,22 +28,24 @@ public class LogIn extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userType = request.getParameter("userType");
-        String userName = request.getParameter("userName");
+        String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        System.out.println("Inside Login Servlet");
+        //use the above to get authenticate the user and get create a User object - for now we create mock ones
         if(userType.equals("client")){
             System.out.println("logging in as client");
-            //go to database with userName and password and get basic user info
-            UserClient client = new UserClient(1, userName);
-            request.getSession().setAttribute("userClient", client);
+
+            User client = new UserClient(1, email);
+            client.addRole("client");
+            request.getSession().setAttribute("user", client);
             request.getRequestDispatcher("clienttools/clientmainmenu.jsp").forward(request,response);
 
         } else if (userType.equals("therapist")){
             System.out.println("logging in as therapist");
-            //go to database with userName and password and get basic user info
-            UserTherapist therapist = new UserTherapist(1, userName);
-            request.getSession().setAttribute("userTherapist", therapist);
+
+            User therapist = new UserTherapist(2, email);
+            therapist.addRole("therapist");
+            request.getSession().setAttribute("user", therapist);
             request.getRequestDispatcher("therapisttools/therapistMainMenu.jsp").forward(request, response);
 
         }
@@ -50,6 +53,6 @@ public class LogIn extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("test");
+
     }
 }

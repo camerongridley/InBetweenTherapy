@@ -3,45 +3,36 @@ package com.cggcoding.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+public abstract class User {
 	private int userID;
 	private String email;
-	private String encryptedPassword;
-	private int activeTreatmentPlanId;
-	private List<TreatmentPlan> txPlans;
+	private List<String> roles;
 	
-	public User (int userID, String email, String password){
+	public User (int userID, String email){
 		this.userID = userID;
 		this.email = email;
-		this.encryptedPassword = password;
-		this.txPlans = new ArrayList<>();
+		roles = new ArrayList<>();
 	}
-	
-	public void setTreatmentPlanList(List<TreatmentPlan> txPlans){
-		this.txPlans = txPlans;
+
+	public List<String> getRoles(){
+		return roles;
 	}
-	
-	public List<TreatmentPlan> getTreatmentPlanList(){
-		return txPlans;
+
+	public boolean hasRole(String roleName){
+
+		for(String name : roles){
+			if (name.equals(roleName)){
+				return true;
+			}
+		}
+		return false;
 	}
-	
-	public void addTreatmentPlan(TreatmentPlan txPlan){
-		this.txPlans.add(txPlan);
+
+	public void addRole(String roleName){
+		roles.add(roleName);
 	}
-	
-	public TreatmentPlan getTreatmentPlan(int txPlanID){
-		return txPlans.get(txPlanID);
-	}
-	
-	public void setActiveTreatmentPlanId(int stageId){
-		this.activeTreatmentPlanId = stageId;
-	}
-	
-	public int getActiveTreatmentPlanId(){
-		return activeTreatmentPlanId;
-	}
-	
-	public TreatmentPlan getActiveTreatmentPlan(){
-		return txPlans.get(activeTreatmentPlanId);
+
+	public String getEmail() {
+		return email;
 	}
 }
