@@ -23,7 +23,7 @@
 						<div class="progress-bar progress-bar-primary progress-stage-enabled-active" style="width: ${(100-(txPlan.numberOfStages-1)*separatorWidth)/txPlan.numberOfStages}%">
 							<c:if test="${stage.stageID <= txPlan.currentStageID }"><form action="./ChangeStage" method="POST"></c:if>
 							${stage.name }
-								<a type="button" data-toggle="modal" data-target="#stageInfoModal">
+								<a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal">
 									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 								</a>
 								<input type="hidden" name="stageID" value=${stage.stageID } />
