@@ -16,15 +16,50 @@
 				<c:set var="separatorWidth" value=".2"></c:set>
 					<!-- depending on the accessibility of the stage, set the proper css class -->
 				<c:forEach var="stage" items="${txPlan.stages }" varStatus="stageStatus">
-					<!-- for stage that is currently being viewed (enabled-active)-->
+					<!---------------------------------------------------------
+					For stage that is currently being viewed (enabled-active)
+					---------------------------------------------------------->
 					<c:if test="${stage.stageID == txPlan.activeViewStageID }">
 						<div class="progress-bar progress-bar-primary progress-stage-enabled-active" style="width: ${(100-(txPlan.numberOfStages-1)*separatorWidth)/txPlan.numberOfStages}%">
 							<c:if test="${stage.stageID <= txPlan.currentStageID }"><form action="./ChangeStage" method="POST"></c:if>
-							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
+							${stage.name }
+								<a type="button" data-toggle="modal" data-target="#stageInfoModal">
+									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</a>
+								<input type="hidden" name="stageID" value=${stage.stageID } />
 							<c:if test="${stage.stageID <= txPlan.currentStageID  }"></form></c:if>
 						</div>
+						<!-- Modal popup for information about stage currently being viewed -->
+						<div class="modal fade" id="stageInfoModal" tabindex="-1" role="dialog" aria-labelledby="stageInfoModalLabel">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+										<h4 class="modal-title" id="stageInfoModalLabel">${stage.name} Overview and Goals</h4>
+									</div>
+									<div class="modal-body">
+										<p>${stage.description}</p>
+										<div class="well well-sm">
+											Goals:
+											<c:forEach items="${stage.goals}" var="goal">
+												<ul>
+													<li>
+														${goal}
+													</li>
+												</ul>
+											</c:forEach>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+									</div>
+								</div>
+							</div>
+						</div>
 					</c:if>
-					<!-- for stage that is accessible but NOT the active view (enabled-inactive)-->
+					<!---------------------------------------------------------------------
+					For stage that is accessible but NOT the active view (enabled-inactive)
+					---------------------------------------------------------------------->
 					<c:if test="${stage.stageID != txPlan.activeViewStageID && stage.stageID <= txPlan.currentStageID}">
 						<div class="progress-bar progress-bar-info progress-stage-enabled-inactive" style="width: ${(100-(txPlan.numberOfStages-1)*separatorWidth)/txPlan.numberOfStages}%">
 							<c:if test="${stage.stageID <= txPlan.currentStageID  }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
@@ -32,7 +67,9 @@
 							<c:if test="${stage.stageID <= txPlan.currentStageID  }"></a></form></c:if>
 						</div>
 					</c:if>
-					<!-- for stage that is inaccssible at this time (disabled)-->
+					<!----------------------------------------------------
+					For stage that is inaccssible at this time (disabled)
+					----------------------------------------------------->
 					<c:if test="${stage.stageID != txPlan.activeViewStageID && stage.stageID > txPlan.currentStageID}">
 						<div class="progress-bar progress-bar-info progress-stage-disabled" style="width: ${(100-(txPlan.numberOfStages-1)*separatorWidth)/txPlan.numberOfStages}%">
 								${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />

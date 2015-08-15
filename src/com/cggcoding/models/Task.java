@@ -9,6 +9,8 @@ public abstract class Task implements Completable{
 	private String description;
 	private boolean completed;
 	private LocalDate dateCompleted;
+	private int repetitions;
+	private int repetitionsCompleted;
 
 	public Task(int taskID) {
 		this.taskID = taskID;
@@ -18,7 +20,17 @@ public abstract class Task implements Completable{
 		this.taskID = taskID;
 		this.name = name;
 		this.description = description;
+		this.repetitions = 1;
+		this.repetitionsCompleted = 0;
+	}
+
+	public Task(int taskID, String name, String description, int repetitions){
+		this.taskID = taskID;
+		this.name = name;
+		this.description = description;
 		this.completed = false;
+		this.repetitions = repetitions;
+		this.repetitionsCompleted = 0;
 	}
 	
 	public int getTaskID(){

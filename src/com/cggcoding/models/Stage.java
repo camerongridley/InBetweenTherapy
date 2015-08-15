@@ -17,6 +17,7 @@ public class Stage implements Completable {
 	private boolean completed;
 	private int numberOfTasksCompleted;
 	private double percentComplete;
+	private List<String> goals;
 	
 	public Stage (int stageID, String name, String description){
 		this.stageID = stageID;
@@ -27,6 +28,7 @@ public class Stage implements Completable {
 		this.completed = false;
 		this.numberOfTasksCompleted = 0;
 		this.percentComplete = 0;
+		this.goals = new ArrayList<>();
 	}
 	
 	public List<Task> getTasks() {
@@ -79,7 +81,15 @@ public class Stage implements Completable {
 	public void markIncomplete() {
 		completed = false;
 	}
-	
+
+	public List<String> getGoals() {
+		return goals;
+	}
+
+	public void setGoals(List<String> goals) {
+		this.goals = goals;
+	}
+
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
 	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap, List idsOfCompletedTasks){
 		//iterate through task map to update with info from updatedTasks list

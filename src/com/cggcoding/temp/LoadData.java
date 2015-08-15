@@ -2,6 +2,7 @@ package com.cggcoding.temp;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -160,9 +161,16 @@ public class LoadData extends HttpServlet {
 
 		//create stages
 		Stage psychEd = new Stage(0, "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.");
+		psychEd.setGoals(new ArrayList<>(Arrays.asList("Have a better understanding of the human sexual response.", "Learned about common myths of male sexuality.")));
+
 		Stage relax = new Stage(1, "Relaxation", "Learning to relax your body on command is a fundamental building block of overcoming any sexual difficulty");
+		relax.setGoals(new ArrayList<>(Arrays.asList("Notice the physiological sensations that indicated I am feeling stress or tension.", "Be able to begin relaxation on cue.", "To mindfully meditate for 15 minutes.")));
+
 		Stage cognitive = new Stage(2, "Cognitive", "Here we help you monitor and respond differently to unhelpful thinking.");
+		cognitive.setGoals(new ArrayList<>(Arrays.asList("Be able to identify irrational thoughts and form a balanced and realistic replacement thought.", "Breathe and feel my body shift out of negative thinking and release/relax.")));
+
 		Stage relational = new Stage(3, "Relational", "Including your partner.");
+		relational.setGoals(new ArrayList<>(Arrays.asList("Have conversation x with my partner.", "Done sensate focus to the point of comfort.")));
 
 		//create and load tasks for each stage
 		psychEd.addTask(new PsychEdTask(0, "Coping with ED", "Chapter 3 - Developing Realistic Expectations"));
