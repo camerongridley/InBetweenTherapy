@@ -7,9 +7,12 @@ public class CognitiveTask extends Task {
 	private String alternativeThought;
 	private int preSUDS;
 	private int postSUDS;
-	
-	public CognitiveTask (int id, String name, String description){
-		super(id, name, description);
+
+	public CognitiveTask (int taskID){
+		super(taskID);
+	}
+	public CognitiveTask (int taskID, String name, String description){
+		super(taskID, name, description);
 	}
 	
 	public String getAutomaticThought() {

@@ -1,4 +1,6 @@
-package com.cggcoding.controllers;
+package com.cggcoding.controllers.client.tools;
+
+import com.cggcoding.models.TreatmentPlan;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -6,35 +8,38 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class MasterController
+ * Servlet implementation class ChangeStage
  */
-@WebServlet("/MasterController")
-public class MasterController extends HttpServlet {
+@WebServlet("/ChangeStage")
+public class ChangeStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public MasterController() {
+    public ChangeStage() {
         super();
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		System.out.println("Master Controller");
-	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+        HttpSession session = request.getSession();
+
+		TreatmentPlan txPlan =  (TreatmentPlan)session.getAttribute("txPlan");
+        int newViewID = Integer.parseInt(request.getParameter("stageID"));
+        txPlan.setActiveViewStageID(newViewID);
+
+        session.setAttribute("txPlan", txPlan);
+
+        request.getRequestDispatcher("taskReview.jsp").forward(request,response);
+
 	}
 
 }

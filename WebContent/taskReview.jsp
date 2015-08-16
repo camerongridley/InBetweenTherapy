@@ -8,28 +8,73 @@
 	
 	
 <div class="container">
-	<h1>Treatment Issue: ${txIssue.name }</h1>
+	<h1>Treatment Issue: ${txPlan.name }</h1>
 	<div class="row">
 		<div class="col-md-12">
 			
 				<div class="progress">
 				<c:set var="separatorWidth" value=".2"></c:set>
-				<c:forEach var="stage" items="${txIssue.stages }" varStatus="stageStatus">
-					<c:if test="${stage.stageID == currentStage.stageID }">
-						<div class="progress-bar progress-bar-primary" style="width: ${(100-(txIssue.numberOfStages-1)*separatorWidth)/txIssue.numberOfStages}%">
-							<c:if test="${stage.completed }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
-							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
-							<c:if test="${stage.completed }"></a></form></c:if>
+					<!-- depending on the accessibility of the stage, set the proper css class -->
+				<c:forEach var="stage" items="${txPlan.stages }" varStatus="stageStatus">
+					<!---------------------------------------------------------
+					For stage that is currently being viewed (enabled-active)
+					---------------------------------------------------------->
+					<c:if test="${stage.stageID == txPlan.activeViewStageID }">
+						<div class="progress-bar progress-bar-primary progress-stage-enabled-active" style="width: ${(100-(txPlan.numberOfStages-1)*separatorWidth)/txPlan.numberOfStages}%">
+							<c:if test="${stage.stageID <= txPlan.currentStageID }"><form action="./ChangeStage" method="POST"></c:if>
+							${stage.name }
+								<a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal">
+									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+								</a>
+								<input type="hidden" name="stageID" value=${stage.stageID } />
+							<c:if test="${stage.stageID <= txPlan.currentStageID  }"></form></c:if>
+						</div>
+						<!-- Modal popup for information about stage currently being viewed -->
+						<div class="modal fade" id="stageInfoModal" tabindex="-1" role="dialog" aria-labelledby="stageInfoModalLabel">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+										<h4 class="modal-title" id="stageInfoModalLabel">${stage.name} Overview and Goals</h4>
+									</div>
+									<div class="modal-body">
+										<p>${stage.description}</p>
+										<div class="well well-sm">
+											Goals:
+											<c:forEach items="${stage.goals}" var="goal">
+												<ul>
+													<li>
+														${goal}
+													</li>
+												</ul>
+											</c:forEach>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+									</div>
+								</div>
+							</div>
 						</div>
 					</c:if>
-					<c:if test="${stage.stageID != currentStage.stageID }">
-						<div class="progress-bar progress-bar-info progress-stage-inactive" style="width: ${(100-(txIssue.numberOfStages-1)*separatorWidth)/txIssue.numberOfStages}%">
-							<c:if test="${stage.completed }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
+					<!---------------------------------------------------------------------
+					For stage that is accessible but NOT the active view (enabled-inactive)
+					---------------------------------------------------------------------->
+					<c:if test="${stage.stageID != txPlan.activeViewStageID && stage.stageID <= txPlan.currentStageID}">
+						<div class="progress-bar progress-bar-info progress-stage-enabled-inactive" style="width: ${(100-(txPlan.numberOfStages-1)*separatorWidth)/txPlan.numberOfStages}%">
+							<c:if test="${stage.stageID <= txPlan.currentStageID  }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
 							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
-							<c:if test="${stage.completed }"></a></form></c:if>
+							<c:if test="${stage.stageID <= txPlan.currentStageID  }"></a></form></c:if>
 						</div>
 					</c:if>
-	
+					<!----------------------------------------------------
+					For stage that is inaccssible at this time (disabled)
+					----------------------------------------------------->
+					<c:if test="${stage.stageID != txPlan.activeViewStageID && stage.stageID > txPlan.currentStageID}">
+						<div class="progress-bar progress-bar-info progress-stage-disabled" style="width: ${(100-(txPlan.numberOfStages-1)*separatorWidth)/txPlan.numberOfStages}%">
+								${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
+						</div>
+					</c:if>
 					<c:if test="${!stageStatus.last }">
 						<div class="progress-bar progress-bar-separator" style="width: ${separatorWidth}%"></div>
 					</c:if>
@@ -62,57 +107,106 @@
 	
 	<div class="row">
 		<div class="col-md-12">
-	
-			
-			
-			
+
 			<form action="./UpdateTaskCompletion" method="post" class="form-inline">
 			
-			<strong>Stage: <c:out value="${currentStage.name }" /> - ${currentStage.percentComplete }% Complete</strong>
+			<strong>Stage: <c:out value="${txPlan.activeViewStage.name }" /> - ${txPlan.activeViewStage.percentComplete }% Complete</strong>
 			<div class="progress">
-			  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${currentStage.percentComplete }%;">
-			    <strong>${currentStage.percentComplete }%</strong>
+			  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${txPlan.activeViewStage.percentComplete }%;">
+			    <strong>${txPlan.activeViewStage.percentComplete }%</strong>
 			  </div>
 			</div>
-				<c:forEach var="task" items="${currentStage.tasks }" varStatus="taskStatus">
+				<!---------------------------------------------------------
+				 INCOMPLETE PRIMARY TASKS
+				 ---------------------------------------------------------->
+				<c:forEach var="task" items="${txPlan.activeViewStage.tasks }" varStatus="taskStatus">
 					<c:if test="${task.completed == false }">
 						<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 						  <div class="panel-heading panel-heading-task">
-						  	<input type="checkbox" id="${task.id }" value="${task.id }" name="taskChkBx[]" aria-label="Task: ${task.name }">
-							<a role="button" data-toggle="collapse" href="#collapse${task.id }" aria-expanded="true" aria-controls="collapse${task.id }">
-					          ${task.name }
+						  	<input type="checkbox" id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]" aria-label="Task: ${task.name }">
+							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
+					          ${task.name } - Task Type: ${task.taskTypeName }
 					        </a>
 						  </div>
-						  <div id="collapse${task.id }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.id }">
-							  <div class="panel-body panel-body-task">
-							    ${task.description }
-							  </div>
-						  </div>
+							<!---------------------------------------------------------
+							 PsychEd Tasks
+							 ---------------------------------------------------------->
+							  <c:if test="${task.taskTypeName == 'PsychEdTask' }">
+								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
+									  <div class="panel-body panel-body-task">
+										${task.description }
+									  </div>
+								  </div>
+							  </c:if>
+							<!---------------------------------------------------------
+							 Relaxation Tasks
+							 ---------------------------------------------------------->
+							  <c:if test="${task.taskTypeName == 'RelaxationTask' }">
+								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
+									  <div class="panel-body panel-body-task">
+										${task.description }
+									  </div>
+									  <div class="panel-body panel-body-task">
+										Duration: ${task.durationInMinutes }
+									  </div>
+								  </div>
+							  </c:if>
+							<!---------------------------------------------------------
+							 Cognitive Tasks
+							 ---------------------------------------------------------->
+							  <c:if test="${task.taskTypeName == 'CognitiveTask' }">
+								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
+									  <div class="panel-body panel-body-task">
+										${task.description }
+									  </div>
+									  <div class="panel-body panel-body-task">
+										<input type="text" class="form-control" placeholder="Enter your automatic thought." name="automaticThought${task.taskID }" value="${task.automaticThought }">
+									  </div>
+									  <div class="panel-body panel-body-task">
+										 <input type="text" class="form-control" placeholder="Enter your balanced or alternative thought." name="alternativeThought${task.taskID }" value="${task.alternativeThought }">
+									  </div>
+								  </div>
+							  </c:if>
 						</div>
 					</c:if>
 				</c:forEach>
-				
-				<c:forEach var="task" items="${currentStage.tasks }" varStatus="taskStatus">
+
+
+				<!---------------------------------------------------------
+				 COMPLETED PRIMARY TASKS
+				 ---------------------------------------------------------->
+				<c:forEach var="task" items="${txPlan.activeViewStage.tasks }" varStatus="taskStatus">
 					<c:if test="${task.completed == true }">
 						<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 						  <div class="panel-heading panel-heading-task">
-						  	<input type="checkbox" id="${task.id }" aria-label="Task: ${task.name }" value="${task.id }" name="taskChkBx[]" checked>
-							<a role="button" data-toggle="collapse" href="#collapse${task.id }" aria-expanded="true" aria-controls="collapse${task.id }">
+						  	<input type="checkbox" id="${task.taskID }" aria-label="Task: ${task.name }" value="${task.taskID }" name="taskChkBx[]" checked>
+							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 					          <span class="task-completed">${task.name }</span> - Completed ${task.dateCompleted }
 					        </a>
 						  </div>
-						  <div id="collapse${task.id }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.id }">
+						  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 							  <div class="panel-body panel-body-task">
 							    ${task.description }
 							  </div>
+							  <c:if test="${task.taskTypeName == 'CognitiveTask'}">
+								  <div class="panel-body panel-body-task">
+									  <input type="text" class="form-control" placeholder="Enter your automatic thought." name="automaticThought${task.taskID }" value="${task.automaticThought }">
+								  </div>
+								  <div class="panel-body panel-body-task">
+									  <input type="text" class="form-control" placeholder="Enter your balanced or alternative thought." name="alternativeThought${task.taskID }" value="${task.alternativeThought }">
+								  </div>
+							  </c:if>
 						  </div>
 						</div>
 					</c:if>
 				</c:forEach>
 				
 				<hr>
-				
-				<strong>Extra Tasks</strong>
+
+				<!---------------------------------------------------------
+				  INCOMPLETE EXTRA TASKS
+				 ---------------------------------------------------------->
+				<strong>Extra Tasks (Placeholder text - Functionality not yet implemented)</strong>
 				<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 				  <div class="panel-heading panel-heading-task">
 				  	<input type="checkbox" id="0" aria-label="Task: Temp Extra Task" value="0" name="taskChkBx[]">
@@ -126,7 +220,10 @@
 					  </div>
 				  </div>
 				</div>
-				
+
+				<!---------------------------------------------------------
+				 COMPLETED EXTRA TASKS
+				 ---------------------------------------------------------->
 			  
 				<button type="submit" class="btn btn-primary">Save</button>
 				

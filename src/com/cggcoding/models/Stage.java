@@ -1,11 +1,15 @@
 package com.cggcoding.models;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.cggcoding.models.tasktypes.CognitiveTask;
+import com.cggcoding.models.tasktypes.PsychEdTask;
+import com.cggcoding.models.tasktypes.RelaxationTask;
+
+import java.util.*;
 
 public class Stage implements Completable {
 
 	private int stageID;
+	private int treatmentPlanID;
 	private String name;
 	private String description;
 	private List<Task> tasks;
@@ -13,6 +17,7 @@ public class Stage implements Completable {
 	private boolean completed;
 	private int numberOfTasksCompleted;
 	private double percentComplete;
+	private List<String> goals;
 	
 	public Stage (int stageID, String name, String description){
 		this.stageID = stageID;
@@ -23,6 +28,7 @@ public class Stage implements Completable {
 		this.completed = false;
 		this.numberOfTasksCompleted = 0;
 		this.percentComplete = 0;
+		this.goals = new ArrayList<>();
 	}
 	
 	public List<Task> getTasks() {
@@ -75,11 +81,52 @@ public class Stage implements Completable {
 	public void markIncomplete() {
 		completed = false;
 	}
-	
-	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
-	public void updateTasks(){
-		
+
+	public List<String> getGoals() {
+		return goals;
 	}
+
+	public void setGoals(List<String> goals) {
+		this.goals = goals;
+	}
+
+	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
+	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap, List idsOfCompletedTasks){
+		//iterate through task map to update with info from updatedTasks list
+		for(Task persistentTask : this.tasks){
+			Task taskWithNewInfo = updatedTasksMap.get(persistentTask.getTaskID());
+			updateTaskData(persistentTask, taskWithNewInfo);
+		}
+
+		updateProgress();
+		return this;
+	}
+
+	private Task updateTaskData(Task persistentTask, Task taskWithNewInfo){
+
+		//update universal properties
+		persistentTask.setCompleted(taskWithNewInfo.isCompleted());
+		persistentTask.setDateCompleted(taskWithNewInfo.getDateCompleted());
+
+		//update case-specific properties
+		switch (persistentTask.getTaskTypeName()) {
+			case "CognitiveTask" :
+				CognitiveTask cogTask = (CognitiveTask)persistentTask;
+				CognitiveTask newData = (CognitiveTask)taskWithNewInfo;
+
+				cogTask.setAlternativeThought(newData.getAlternativeThought());
+				cogTask.setAutomaticThought(newData.getAutomaticThought());
+
+				//updateCogTask DB call goes here
+
+				break;
+
+		}
+
+		return persistentTask;
+	}
+
+
 	
 	//once a task is completed this is called to update the progress meter and associated metrics
 	public void updateProgress(){
@@ -91,7 +138,7 @@ public class Stage implements Completable {
 			}
 		}
 		
-		percentComplete = ((double)numberOfTasksCompleted/(double)tasks.size());
+		percentComplete = ((double)getNumberOfTasksCompleted()/(double)getTotalNumberOfTasks());
 		
 		if(getPercentComplete()==100){
 			this.markComplete();
@@ -103,5 +150,10 @@ public class Stage implements Completable {
 	public int getPercentComplete(){
 		return (int)(percentComplete * 100);
 	}
-	
+
+	public int getNumberOfTasksCompleted() { return numberOfTasksCompleted; }
+
+	public int getTotalNumberOfTasks() { return tasks.size(); }
+
+
 }

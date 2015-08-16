@@ -1,7 +1,6 @@
 package com.cggcoding.controllers;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -9,29 +8,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class tester
+ * Servlet implementation class MasterController
  */
-@WebServlet("/go")
+@WebServlet("/tester")
 public class tester extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public tester() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public tester() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String stringTest = "Remembering Java web stuff!";
-		
-		request.setAttribute("stringTest", stringTest);
-		
-		request.getRequestDispatcher("index.jsp").forward(request, response);
+		// TODO Auto-generated method stub
+		System.out.println("tester Controller");
 	}
 
 	/**

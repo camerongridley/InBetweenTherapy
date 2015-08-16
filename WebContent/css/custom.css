@@ -34,16 +34,48 @@ body {
 	padding: 10px;
 }
 
+
 .task-completed {
 	text-decoration: line-through;
 }
 
-.progress-stage-inactive {
-	color: black;
-	background-color: #eee;
+.progress-stage-enabled-active {
+    color: white;
+    font-weight: bold;
+    /* To add 3D effect
+    border-style: solid;
+    border-top: 0px;
+    border-left: 0px;
+    border-bottom-color: darkgray;
+    border-right-color: gray
+    */
+}
+
+.progress-stage-enabled-inactive {
+    color: black;
+    background-color: lightblue;
+}
+
+.progress-stage-enabled-active a {
+    color: white;
+}
+
+.progress-stage-disabled {
+    color: gray;
+    background-color: lightgray;
 }
 
 .progress-bar-separator {
 	background-color: black;
+}
+
+
+@media (min-width: 768px){
+    .form-inline .form-control {
+        display: inline-block;
+        width: 100%;
+        vertical-align: middle;
+    }
+
 }
 

@@ -3,45 +3,36 @@ package com.cggcoding.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+public abstract class User {
 	private int userID;
 	private String email;
-	private String encryptedPassword;
-	private int activeTreatmentIssueId;
-	private List<TreatmentIssue> txIssues;
+	private List<String> roles;
 	
-	public User (int userID, String email, String password){
+	public User (int userID, String email){
 		this.userID = userID;
 		this.email = email;
-		this.encryptedPassword = password;
-		this.txIssues = new ArrayList<>();
+		roles = new ArrayList<>();
 	}
-	
-	public void setTreatmentIssueList (List<TreatmentIssue> txIssues){
-		this.txIssues = txIssues;
+
+	public List<String> getRoles(){
+		return roles;
 	}
-	
-	public List<TreatmentIssue> getTreatmentIssueList(){
-		return txIssues;
+
+	public boolean hasRole(String roleName){
+
+		for(String name : roles){
+			if (name.equals(roleName)){
+				return true;
+			}
+		}
+		return false;
 	}
-	
-	public void addTreatmentIssue(TreatmentIssue txIssue){
-		this.txIssues.add(txIssue);
+
+	public void addRole(String roleName){
+		roles.add(roleName);
 	}
-	
-	public TreatmentIssue getTreatmentIssue(int txIssueId){
-		return txIssues.get(txIssueId);
-	}
-	
-	public void setActiveTreatmentIssueId (int stageId){
-		this.activeTreatmentIssueId = stageId;
-	}
-	
-	public int getActiveTreatmentIssueId(){
-		return activeTreatmentIssueId;
-	}
-	
-	public TreatmentIssue getActiveTreatmentIssue(){
-		return txIssues.get(activeTreatmentIssueId);
+
+	public String getEmail() {
+		return email;
 	}
 }
