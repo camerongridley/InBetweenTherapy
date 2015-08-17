@@ -32,7 +32,6 @@ public class UpdateTaskCompletion extends HttpServlet {
      */
     public UpdateTaskCompletion() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**

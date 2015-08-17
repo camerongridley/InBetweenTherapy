@@ -66,12 +66,20 @@ public class Stage implements Completable {
 	public void addExtraTask(Task extraTask){//add index specifier?
 		extraTasks.add(extraTask);
 	}
-	
+
+	public List<String> getGoals() {
+		return goals;
+	}
+
+	public void setGoals(List<String> goals) {
+		this.goals = goals;
+	}
+
 	@Override
 	public boolean isCompleted(){
 		return completed;
 	}
-	
+
 	@Override
 	public void markComplete() {
 		completed = true;
@@ -82,13 +90,15 @@ public class Stage implements Completable {
 		completed = false;
 	}
 
-	public List<String> getGoals() {
-		return goals;
+	//returns a double digit number representing percentage of stage completion
+	@Override
+	public int getPercentComplete(){
+		return (int)(percentComplete * 100);
 	}
 
-	public void setGoals(List<String> goals) {
-		this.goals = goals;
-	}
+	public int getNumberOfTasksCompleted() { return numberOfTasksCompleted; }
+
+	public int getTotalNumberOfTasks() { return tasks.size(); }
 
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
 	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap, List idsOfCompletedTasks){
@@ -126,8 +136,7 @@ public class Stage implements Completable {
 		return persistentTask;
 	}
 
-
-	
+	// TODO - should progress update be called by the controller or handled all on the service side?
 	//once a task is completed this is called to update the progress meter and associated metrics
 	public void updateProgress(){
 		numberOfTasksCompleted = 0;
@@ -146,14 +155,7 @@ public class Stage implements Completable {
 		
 	}
 	
-	//returns a double digit number representing percentage of stage completion
-	public int getPercentComplete(){
-		return (int)(percentComplete * 100);
-	}
 
-	public int getNumberOfTasksCompleted() { return numberOfTasksCompleted; }
-
-	public int getTotalNumberOfTasks() { return tasks.size(); }
 
 
 }

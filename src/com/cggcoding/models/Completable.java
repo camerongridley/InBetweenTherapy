@@ -7,4 +7,6 @@ public interface Completable {
 	void markIncomplete();
 	
 	boolean isCompleted();
+
+	int getPercentComplete();
 }

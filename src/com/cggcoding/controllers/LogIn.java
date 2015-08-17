@@ -23,7 +23,7 @@ public class LogIn extends HttpServlet {
      */
     public LogIn() {
         super();
-        // TODO Auto-generated constructor stub
+
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

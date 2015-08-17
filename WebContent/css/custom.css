@@ -69,6 +69,11 @@ body {
 	background-color: black;
 }
 
+.task-repetition {
+    color: orangered;
+    font-weight: bold;
+}
+
 
 @media (min-width: 768px){
     .form-inline .form-control {

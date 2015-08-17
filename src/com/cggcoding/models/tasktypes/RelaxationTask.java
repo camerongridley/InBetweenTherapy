@@ -10,8 +10,8 @@ public class RelaxationTask extends Task {
 		super(taskID);
 	}
 
-	public RelaxationTask(int taskID, String name, String description, int duration) {
-		super(taskID, name, description);
+	public RelaxationTask(int taskID, String name, String description, int repetitions, int duration) {
+		super(taskID, name, description, repetitions);
 		durationInMinutes = duration;
 	}
 	

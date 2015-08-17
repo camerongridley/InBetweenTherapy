@@ -18,14 +18,13 @@ public class TaskList implements HttpSessionListener {
      * Default constructor. 
      */
     public TaskList() {
-        // TODO Auto-generated constructor stub
+
     }
 
 	/**
      * @see HttpSessionListener#sessionCreated(HttpSessionEvent)
      */
-    public void sessionCreated(HttpSessionEvent sessionEvent)  { 
-         // TODO Auto-generated method stub
+    public void sessionCreated(HttpSessionEvent sessionEvent)  {
     	List<String> txStages = new ArrayList<String>();
     	
     	txStages.add("Education");
@@ -41,7 +40,7 @@ public class TaskList implements HttpSessionListener {
      * @see HttpSessionListener#sessionDestroyed(HttpSessionEvent)
      */
     public void sessionDestroyed(HttpSessionEvent arg0)  { 
-         // TODO Auto-generated method stub
+
     }
 	
 }
