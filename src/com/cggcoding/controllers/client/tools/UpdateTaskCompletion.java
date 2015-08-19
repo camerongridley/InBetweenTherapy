@@ -41,10 +41,10 @@ public class UpdateTaskCompletion extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		User user = (User)request.getSession().getAttribute("user");
 
-		int txPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
+		int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
 
-		TreatmentPlan txPlan = user.getTreatmentPlan(txPlanID);
-		Stage activeStage = txPlan.getActiveViewStage();
+		TreatmentPlan treatmentPlan = user.getTreatmentPlan(treatmentPlanID);
+		Stage activeStage = treatmentPlan.getActiveViewStage();
 
 		//get all Task ids from hidden field
 		List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
@@ -55,15 +55,15 @@ public class UpdateTaskCompletion extends HttpServlet {
 		//build maps containing new data to pass back to service layer for updating
 		Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(checkedTaskIDs, allTaskIDs, request);
 
-		//Stage currentStage = updateTaskCompletionState(request, txPlan);
+		//Stage currentStage = updateTaskCompletionState(request, treatmentPlan);
 		Stage updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
 
 		//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
 		if(updatedStage.isCompleted()){
-			updatedStage = txPlan.nextStage();
+			updatedStage = treatmentPlan.nextStage();
 		}
 		
-		request.setAttribute("txPlan", txPlan);
+		request.setAttribute("treatmentPlan", treatmentPlan);
 		request.setAttribute("currentStage", updatedStage);
 
 		request.getRequestDispatcher("taskReview.jsp").forward(request, response);

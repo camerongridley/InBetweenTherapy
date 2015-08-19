@@ -11,8 +11,8 @@ public class UserClient extends User{
 	}
 
 	
-	public void setActiveTreatmentPlanId(int txPlanID){
-		this.activeTreatmentPlanId = txPlanID;
+	public void setActiveTreatmentPlanId(int treatmentPlanID){
+		this.activeTreatmentPlanId = treatmentPlanID;
 	}
 	
 	public int getActiveTreatmentPlanId(){

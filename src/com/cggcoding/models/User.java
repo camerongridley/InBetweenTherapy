@@ -7,13 +7,13 @@ public abstract class User {
 	private int userID;
 	private String email;
 	private List<String> roles;
-	private List<TreatmentPlan> txPlans;
+	private List<TreatmentPlan> treatmentPlanList;
 	
 	public User (int userID, String email){
 		this.userID = userID;
 		this.email = email;
 		roles = new ArrayList<>();
-		this.txPlans = new ArrayList<>();
+		this.treatmentPlanList = new ArrayList<>();
 	}
 
 	public List<String> getRoles(){
@@ -38,19 +38,19 @@ public abstract class User {
 		return email;
 	}
 
-	public void setTreatmentPlanList(List<TreatmentPlan> txPlans){
-		this.txPlans = txPlans;
+	public void setTreatmentPlanList(List<TreatmentPlan> treatmentPlanList){
+		this.treatmentPlanList = treatmentPlanList;
 	}
 
 	public List<TreatmentPlan> getTreatmentPlanList(){
-		return txPlans;
+		return treatmentPlanList;
 	}
 
-	public void addTreatmentPlan(TreatmentPlan txPlan){
-		this.txPlans.add(txPlan);
+	public void addTreatmentPlan(TreatmentPlan treatmentPlan){
+		this.treatmentPlanList.add(treatmentPlan);
 	}
 
-	public TreatmentPlan getTreatmentPlan(int txPlanID){
-		return txPlans.get(txPlanID);
+	public TreatmentPlan getTreatmentPlan(int treatmentPlanID){
+		return treatmentPlanList.get(treatmentPlanID);
 	}
 }

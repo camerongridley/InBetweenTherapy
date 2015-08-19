@@ -50,13 +50,13 @@ public class LoadData extends HttpServlet {
 		TreatmentPlan activeTx = null;
 
 
-		//session.setAttribute("stages", txPlan.getStages());
+		//session.setAttribute("stages", treatmentPlan.getStages());
 		//session.setAttribute("currentStage", currentStage);
 		String forwardTo = "index.jsp";
 
 		if(user.hasRole("client")){
 			UserClient userClient = (UserClient)session.getAttribute("user");
-			//load all txPlans of the user.  If one is marked as inProgress put it is session and go straight to taskReview.jsp
+			//load all treatmentPlans of the user.  If one is marked as inProgress put it is session and go straight to taskReview.jsp
 			//if none are inProgress then offer 1-2 lists of choices: the default templates and if applicable, any from associated therapist
 			activeTx = buildClientData(userClient);
 			userClient.addTreatmentPlan(activeTx);
@@ -74,8 +74,8 @@ public class LoadData extends HttpServlet {
 		} else if(user.hasRole("therapist")){
 			UserTherapist userTherapist = (UserTherapist)session.getAttribute("user");
 			//put the default plan templates in session
-			session.setAttribute("txPlanTemplates", getTxPlanTemplateList());
-			//put the therapists owned txPlans in session - or just load them into the UserTherapist object
+			session.setAttribute("treatmentPlanTemplates", getTxPlanTemplateList());
+			//put the therapists owned treatmentPlans in session - or just load them into the UserTherapist object
 			activeTx = buildTherapistData(userTherapist);
 
 			switch (chosenAction) {
@@ -93,8 +93,8 @@ public class LoadData extends HttpServlet {
 			}
 		}
 
-		//session.setAttribute("txPlan", activeTx);
-		request.setAttribute("txPlan", activeTx);
+		//session.setAttribute("treatmentPlan", activeTx);
+		request.setAttribute("treatmentPlan", activeTx);
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 
 	}
@@ -149,15 +149,15 @@ public class LoadData extends HttpServlet {
 	}
 
 	private List<TreatmentPlan> getTxPlanTemplateList(){
-		List<TreatmentPlan> txPlanTemplateList = new ArrayList<>();
+		List<TreatmentPlan> treatmentPlanTemplateList = new ArrayList<>();
 
-		txPlanTemplateList.add(buildDefaultEDPlan());
+		treatmentPlanTemplateList.add(buildDefaultEDPlan());
 
-		return txPlanTemplateList;
+		return treatmentPlanTemplateList;
 	}
 
 	private TreatmentPlan buildDefaultEDPlan(){
-		TreatmentPlan txPlan = new TreatmentPlan(0, "ED", "Erectile dysfunction", 0);
+		TreatmentPlan treatmentPlan = new TreatmentPlan(0, "ED", "Erectile dysfunction", 0);
 
 		//create stages
 		Stage psychEd = new Stage(0, "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.");
@@ -213,11 +213,11 @@ public class LoadData extends HttpServlet {
 		//relax.markComplete();
 
 		//load stages into plan
-		txPlan.addStage(psychEd, 0);
-		txPlan.addStage(relax, 1);
-		txPlan.addStage(cognitive, 2);
-		txPlan.addStage(relational, 3);
+		treatmentPlan.addStage(psychEd, 0);
+		treatmentPlan.addStage(relax, 1);
+		treatmentPlan.addStage(cognitive, 2);
+		treatmentPlan.addStage(relational, 3);
 
-		return txPlan;
+		return treatmentPlan;
 	}
 }

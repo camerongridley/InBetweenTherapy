@@ -18,7 +18,7 @@
         <h2>Name the plan and identify what issue it is treating</h2>
     </div>
     <form class="form-horizontal" action="/CreateTreatmentPlan" method="POST">
-        <input type="hidden" name="txPlanCreationStep" value="planNameAndIssue" />
+        <input type="hidden" name="treatmentPlanCreationStep" value="planNameAndIssue" />
         <div class="form-group">
             <label for="planName" class="col-sm-2 control-label">Plan Name</label>
             <div class="col-sm-10">

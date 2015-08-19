@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TreatmentPlan {
-	private int txPlanID;
+	private int treatmentPlanID;
 	private int userClientID; //could collapse these into one userID since there are other ways to track relationship between client and therapist
 	private int userTherapistID;
 	private int txIssueID;
@@ -15,8 +15,8 @@ public class TreatmentPlan {
 	private int activeViewStageID;
 	private boolean inProgress;
 	
-	public TreatmentPlan(int txPlanID, String name, String description, int txIssueID){
-		this.txPlanID = txPlanID;
+	public TreatmentPlan(int treatmentPlanID, String name, String description, int txIssueID){
+		this.treatmentPlanID = treatmentPlanID;
 		this.name = name;
 		this.description = description;
 		this.txIssueID = txIssueID;
@@ -35,7 +35,7 @@ public class TreatmentPlan {
 	}
 
 	public int getTreatmentPlanID(){
-		return txPlanID;
+		return treatmentPlanID;
 	}
 
 	public String getName() {

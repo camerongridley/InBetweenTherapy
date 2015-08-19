@@ -31,7 +31,7 @@
             </div>
 
 
-            <input type="hidden" name="txPlanCreationStep" value="planNameAndIssue"/>
+            <input type="hidden" name="treatmentPlanCreationStep" value="planNameAndIssue"/>
             <button type="submit" class="btn btn-primary">Next Step >></button>
 
         </div>

@@ -20,7 +20,7 @@ import javax.servlet.http.HttpSession;
 public class CreateTreatmentPlan extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String forwardTo = "index.jsp";
-        String creationStep = request.getParameter("txPlanCreationStep");
+        String creationStep = request.getParameter("treatmentPlanCreationStep");
 
         switch (creationStep){
             case "planNameAndIssue":

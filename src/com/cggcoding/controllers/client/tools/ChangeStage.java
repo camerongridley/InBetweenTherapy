@@ -32,14 +32,14 @@ public class ChangeStage extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User)request.getSession().getAttribute("user");
 
-        int txPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
+        int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
 
-        TreatmentPlan treatmentPlan = user.getTreatmentPlan(txPlanID);
+        TreatmentPlan treatmentPlan = user.getTreatmentPlan(treatmentPlanID);
 
         int newViewID = Integer.parseInt(request.getParameter("stageID"));
         treatmentPlan.setActiveViewStageID(newViewID);
 
-        request.setAttribute("txPlan", treatmentPlan);
+        request.setAttribute("treatmentPlan", treatmentPlan);
 
         request.getRequestDispatcher("taskReview.jsp").forward(request,response);
 
