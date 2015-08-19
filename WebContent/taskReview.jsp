@@ -123,6 +123,8 @@
 					<c:if test="${task.completed == false }">
 						<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 						  <div class="panel-heading panel-heading-task">
+						  	<input type="hidden" name="allTaskIDs" value="${task.taskID}"/>
+							  <input type="hidden" name="taskTypeName${task.taskID}" value="${task.taskTypeName}"/>
 						  	<input type="checkbox" id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]" aria-label="Task: ${task.name }">
 							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 					          ${task.name } - Task Type: ${task.taskTypeName }
@@ -180,6 +182,8 @@
 					<c:if test="${task.completed == true }">
 						<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 						  <div class="panel-heading panel-heading-task">
+						  	<input type="hidden" name="allTaskIDs" value="${task.taskID}"/>
+						  	<input type="hidden" name="taskTypeName${task.taskID}" value="${task.taskTypeName}"/>
 						  	<input type="checkbox" id="${task.taskID }" aria-label="Task: ${task.name }" value="${task.taskID }" name="taskChkBx[]" checked>
 							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 					          <span class="task-completed">${task.name }</span> - Completed ${task.dateCompleted }

@@ -47,6 +47,28 @@ public class Stage implements Completable {
 		this.extraTasks = extraTasks;
 	}
 
+	public Task getTaskByID(int taskID){
+		Task returnMe = null;
+		for(Task task : tasks){
+			if(task.getTaskID() == taskID){
+				returnMe = task;
+			}
+		}
+
+		return returnMe;
+	}
+
+	public String getTaskTypeNameByID(int taskID){
+		Task returnMe = null;
+		for(Task task : tasks){
+			if(task.getTaskID() == taskID){
+				returnMe = task;
+			}
+		}
+
+		return returnMe.getTaskTypeName();
+	}
+
 	public int getStageID() {
 		return stageID;
 	}
@@ -101,7 +123,7 @@ public class Stage implements Completable {
 	public int getTotalNumberOfTasks() { return tasks.size(); }
 
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
-	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap, List idsOfCompletedTasks){
+	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap){
 		//iterate through task map to update with info from updatedTasks list
 		for(Task persistentTask : this.tasks){
 			Task taskWithNewInfo = updatedTasksMap.get(persistentTask.getTaskID());

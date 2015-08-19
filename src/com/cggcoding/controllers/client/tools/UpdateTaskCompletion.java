@@ -38,40 +38,92 @@ public class UpdateTaskCompletion extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession();
-		
-		TreatmentPlan txPlan = (TreatmentPlan)request.getSession().getAttribute("txPlan");
-		
-		Stage currentStage = updateTaskCompletionState(request, txPlan);
-		
-		if(currentStage.isCompleted()){
 
-			currentStage = txPlan.nextStage();
+		TreatmentPlan txPlan = (TreatmentPlan)request.getSession().getAttribute("txPlan");
+		Stage activeStage = txPlan.getActiveViewStage();
+
+		//get all Task ids from hidden field
+		List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
+
+		//get checked values from the request and convery to List<Integer>
+		List<Integer> checkedTaskIDs = convertStringArrayToInt(request.getParameterValues("taskChkBx[]"));
+
+		//build maps containing new data to pass back to service layer for updating
+		Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(checkedTaskIDs, allTaskIDs, request);
+
+		//Stage currentStage = updateTaskCompletionState(request, txPlan);
+		Stage updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
+
+		//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
+		if(updatedStage.isCompleted()){
+			updatedStage = txPlan.nextStage();
 		}
 		
-		//session.setAttribute("currentStage", currentStage);
+		request.setAttribute("currentStage", updatedStage);
 
 		request.getRequestDispatcher("taskReview.jsp").forward(request, response);
 		
 	}
-	
-	private Stage updateTaskCompletionState(HttpServletRequest request, TreatmentPlan txPlan){
-		HttpSession session = request.getSession();
-		
-		//get all of the checkbox values
-		Stage activeViewStage = txPlan.getActiveViewStage();
-		String[] completedTasksString = request.getParameterValues("taskChkBx[]");
 
-		List<Task> allStageTasks = (ArrayList)activeViewStage.getTasks();
+	/*Iterates through all tasks in the stage and updates modifieable fields with data retreived from the request
+	* Marks these data holder tasks as completed if checked and incomplete if not in the list of checked tasks.
+	* Then the service layer can use this temporary task's isCompleted to determine determine logic for updating completion and progress states in the persistant task.
+	* */
+	private Map<Integer, Task> buildNewInfoOnlyTaskMap(List<Integer> checkedTaskIDs, List<Integer> allTasksIDs, HttpServletRequest request){
 
-		List<Integer> completedTaskIDsConvertedToInt = new ArrayList<>();
+		Map<Integer, Task> newInfoTaskMap = new HashMap<>();
 
-		/* since I can't get values for unchecked checkboxes from the request I have to do a workaround to properly update if the user unchecks a task
-		First, get checked values from the request and convert to a List<Integer>.*/
-		if(completedTasksString != null){
-			for(int i = 0; i < completedTasksString.length; i++){
+		//loop through all tasks in stage
+		//first have to cast to correct task type to know what fields can be updated (some fields like description, id, name, etc. will never change)
+		//then wire up all the data with the corresponding fields
+		for(int currentTaskID : allTasksIDs){
+			Task updatedTask = null;
+			String taskTypeName = request.getParameter("taskTypeName"+currentTaskID);
+
+			switch (taskTypeName) {
+				case "CognitiveTask":
+					System.out.println("Updating Cognitive Task");
+					CognitiveTask cogTask = new CognitiveTask(currentTaskID);
+					String autoThought = (String)request.getParameter("automaticThought" + cogTask.getTaskID());
+					cogTask.setAutomaticThought(autoThought);
+					String altThought = (String) request.getParameter("alternativeThought" + cogTask.getTaskID());
+					cogTask.setAlternativeThought(altThought);
+
+					updatedTask = cogTask;
+					break;
+				case "RelaxationTask":
+					System.out.println("Updating Relaxation Task.");
+					RelaxationTask relaxTask = new RelaxationTask(currentTaskID);
+
+					updatedTask =  relaxTask;
+					break;
+				case "PsychEdTask":
+					System.out.println("Updating PsychEdTask");
+					PsychEdTask psychEdTask = new PsychEdTask(currentTaskID);
+
+					updatedTask = psychEdTask;
+					break;
+			}
+
+			//if a taskID is in the checkedTaskIDs list, then mark completed in the data holder task - all others are therefore unchecked and are marked incomplete
+			if(checkedTaskIDs.contains(updatedTask.getTaskID())){
+				updatedTask.markComplete();
+			} else {
+				updatedTask.markIncomplete();
+			}
+
+			newInfoTaskMap.put(updatedTask.getTaskID(), updatedTask);
+		}
+
+		return newInfoTaskMap;
+	}
+
+	private List<Integer> convertStringArrayToInt(String[] taskIDsStrings){
+		List<Integer> taskIDsConvertedToInts = new ArrayList<>();
+		if(taskIDsStrings != null){
+			for(int i = 0; i < taskIDsStrings.length; i++){
 				try{
-					completedTaskIDsConvertedToInt.add(Integer.parseInt(completedTasksString[i]));
+					taskIDsConvertedToInts.add(Integer.parseInt(taskIDsStrings[i]));
 				} catch (NumberFormatException ex){
 					System.out.println("Illegal value for a task checkbox.  Detected a non-integer value.");
 					ex.printStackTrace();
@@ -79,66 +131,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 			}
 		}
 
-
-		/*Now iterate through all the tasks, building a HashMap containing all the new information to pass back to the service layer for updating there.
-		 If same id is in the list of updated tasks, update accordingly with new data.  All other tasks get marked as incomplete.*/
-		Map<Integer, Task> newInfoTaskMap = new HashMap<>();
-		for(Task currentTask : allStageTasks){
-			Task updatedTask = updateTaskEntry(request, currentTask, completedTaskIDsConvertedToInt);
-
-
-
-			newInfoTaskMap.put(updatedTask.getTaskID(), updatedTask);
-		}
-
-		Stage updatedStage = activeViewStage.updateTaskList(newInfoTaskMap, completedTaskIDsConvertedToInt);
-		
-		return updatedStage;
+		return taskIDsConvertedToInts;
 	}
-
-	//Wire up the objects and then pass them to the service layer
-	private Task updateTaskEntry(HttpServletRequest request, Task task, List idsOfCompletedTasks){
-		Task updatedTask = null;
-
-		switch (task.getTaskTypeName()) {
-			case "CognitiveTask":
-				System.out.println("Updating Cognitive Task");
-				CognitiveTask cogTask = new CognitiveTask(task.getTaskID());
-				String autoThought = (String)request.getParameter("automaticThought" + cogTask.getTaskID());
-				cogTask.setAutomaticThought(autoThought);
-				String altThought = (String) request.getParameter("alternativeThought" + cogTask.getTaskID());
-				cogTask.setAlternativeThought(altThought);
-
-				updatedTask = cogTask;
-				break;
-			case "RelaxationTask":
-				System.out.println("Updating Relaxation Task.");
-				RelaxationTask relaxTask = new RelaxationTask(task.getTaskID());
-
-				updatedTask =  relaxTask;
-				break;
-			case "PsychEdTask":
-				System.out.println("Updating PsychEdTask");
-				PsychEdTask psychEdTask = new PsychEdTask(task.getTaskID());
-
-				updatedTask = psychEdTask;
-				break;
-		}
-
-		determineIfTaskCompleted(updatedTask, idsOfCompletedTasks);
-
-		return updatedTask;
-	}
-
-	private Task determineIfTaskCompleted(Task task, List idsOfCompletedTasks){
-		if(idsOfCompletedTasks.contains(task.getTaskID())){
-			task.markComplete();
-		} else {
-			task.markIncomplete();
-		}
-
-		return task;
-	}
-
 
 }
