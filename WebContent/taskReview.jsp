@@ -119,8 +119,7 @@
 				<!---------------------------------------------------------
 				 INCOMPLETE PRIMARY TASKS
 				 ---------------------------------------------------------->
-				<c:forEach var="task" items="${treatmentPlan.activeViewStage.tasks }" varStatus="taskStatus">
-					<c:if test="${task.completed == false }">
+				<c:forEach var="task" items="${treatmentPlan.activeViewStage.incompleteTasks }" varStatus="taskStatus">
 						<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 						  <div class="panel-heading panel-heading-task">
 						  	<input type="hidden" name="allTaskIDs" value="${task.taskID}"/>
@@ -171,15 +170,13 @@
 								  </div>
 							  </c:if>
 						</div>
-					</c:if>
 				</c:forEach>
 
 
 				<!---------------------------------------------------------
 				 COMPLETED PRIMARY TASKS
 				 ---------------------------------------------------------->
-				<c:forEach var="task" items="${treatmentPlan.activeViewStage.tasks }" varStatus="taskStatus">
-					<c:if test="${task.completed == true }">
+				<c:forEach var="task" items="${treatmentPlan.activeViewStage.completedTasks }" varStatus="taskStatus">
 						<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 						  <div class="panel-heading panel-heading-task">
 						  	<input type="hidden" name="allTaskIDs" value="${task.taskID}"/>
@@ -203,7 +200,6 @@
 							  </c:if>
 						  </div>
 						</div>
-					</c:if>
 				</c:forEach>
 				
 				<hr>

@@ -93,7 +93,6 @@ public class LoadData extends HttpServlet {
 			}
 		}
 
-		//session.setAttribute("treatmentPlan", activeTx);
 		request.setAttribute("treatmentPlan", activeTx);
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 

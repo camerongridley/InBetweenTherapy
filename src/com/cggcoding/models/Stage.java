@@ -162,7 +162,7 @@ public class Stage implements Completable {
 	//once a task is completed this is called to update the progress meter and associated metrics
 	public void updateProgress(){
 		numberOfTasksCompleted = 0;
-		
+		https://support.steampowered.com/kb_article.php?ref=6966-IADH-1503&l=English
 		for(Task task : tasks){
 			if(task.isCompleted()){
 				numberOfTasksCompleted++;
@@ -177,7 +177,26 @@ public class Stage implements Completable {
 		
 	}
 	
+	public List<Task> getIncompleteTasks(){
+		List<Task> incompleteTasks = new ArrayList<>();
 
+		for(Task task : tasks){
+			if(!task.isCompleted()){
+				incompleteTasks.add(task);
+			}
+		}
+		return incompleteTasks;
+	}
 
+	public List<Task> getCompletedTasks(){
+		List<Task> completeTasks = new ArrayList<>();
+
+		for(Task task : tasks){
+			if(task.isCompleted()){
+				completeTasks.add(task);
+			}
+		}
+		return completeTasks;
+	}
 
 }
