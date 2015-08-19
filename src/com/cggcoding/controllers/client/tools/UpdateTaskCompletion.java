@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
+import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.CognitiveTask;
 import com.cggcoding.models.tasktypes.PsychEdTask;
 import com.cggcoding.models.tasktypes.RelaxationTask;
@@ -38,8 +39,11 @@ public class UpdateTaskCompletion extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		User user = (User)request.getSession().getAttribute("user");
 
-		TreatmentPlan txPlan = (TreatmentPlan)request.getSession().getAttribute("txPlan");
+		int txPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
+
+		TreatmentPlan txPlan = user.getTreatmentPlan(txPlanID);
 		Stage activeStage = txPlan.getActiveViewStage();
 
 		//get all Task ids from hidden field
@@ -59,6 +63,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 			updatedStage = txPlan.nextStage();
 		}
 		
+		request.setAttribute("txPlan", txPlan);
 		request.setAttribute("currentStage", updatedStage);
 
 		request.getRequestDispatcher("taskReview.jsp").forward(request, response);

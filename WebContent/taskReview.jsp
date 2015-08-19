@@ -26,7 +26,7 @@
 								<a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal">
 									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 								</a>
-								<input type="hidden" name="stageID" value=${stage.stageID } />
+								<input type="hidden" name="stageID" value=${stage.stageID } /><input type="hidden" name="treatmentPlanID" value="${txPlan.treatmentPlanID}" />
 							<c:if test="${stage.stageID <= txPlan.currentStageID  }"></form></c:if>
 						</div>
 						<!-- Modal popup for information about stage currently being viewed -->
@@ -63,7 +63,7 @@
 					<c:if test="${stage.stageID != txPlan.activeViewStageID && stage.stageID <= txPlan.currentStageID}">
 						<div class="progress-bar progress-bar-info progress-stage-enabled-inactive" style="width: ${(100-(txPlan.numberOfStages-1)*separatorWidth)/txPlan.numberOfStages}%">
 							<c:if test="${stage.stageID <= txPlan.currentStageID  }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
-							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
+							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } /><input type="hidden" name="treatmentPlanID" value="${txPlan.treatmentPlanID}" />
 							<c:if test="${stage.stageID <= txPlan.currentStageID  }"></a></form></c:if>
 						</div>
 					</c:if>
@@ -109,7 +109,7 @@
 		<div class="col-md-12">
 
 			<form action="./UpdateTaskCompletion" method="post" class="form-inline">
-			
+			<input type="hidden" name="treatmentPlanID" value="${txPlan.treatmentPlanID}" />
 			<strong>Stage: <c:out value="${txPlan.activeViewStage.name }" /> - ${txPlan.activeViewStage.percentComplete }% Complete</strong>
 			<div class="progress">
 			  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${txPlan.activeViewStage.percentComplete }%;">
@@ -237,6 +237,6 @@
 		
 		</div>
 	</div>
-</div>
+</div><!-- end container -->
 		
 <c:import url="footer.jsp" />
