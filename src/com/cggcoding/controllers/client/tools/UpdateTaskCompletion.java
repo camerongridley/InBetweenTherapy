@@ -11,7 +11,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
@@ -46,16 +45,16 @@ public class UpdateTaskCompletion extends HttpServlet {
 		TreatmentPlan treatmentPlan = user.getTreatmentPlan(treatmentPlanID);
 		Stage activeStage = treatmentPlan.getActiveViewStage();
 
-		//get all Task ids from hidden field
-		List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
-
 		//get checked values from the request and convery to List<Integer>
 		List<Integer> checkedTaskIDs = convertStringArrayToInt(request.getParameterValues("taskChkBx[]"));
+
+		//get all Task ids from hidden field so we can get at unchecked values
+		List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
 
 		//build maps containing new data to pass back to service layer for updating
 		Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(checkedTaskIDs, allTaskIDs, request);
 
-		//Stage currentStage = updateTaskCompletionState(request, treatmentPlan);
+		//call to service layer to save and process the new task data and return an updated Stage
 		Stage updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
 
 		//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
@@ -70,7 +69,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		
 	}
 
-	/*Iterates through all tasks in the stage and updates modifieable fields with data retreived from the request
+	/*Iterates through all tasks in the stage and updates modifiable fields with data retreived from the request
 	* Marks these data holder tasks as completed if checked and incomplete if not in the list of checked tasks.
 	* Then the service layer can use this temporary task's isCompleted to determine determine logic for updating completion and progress states in the persistant task.
 	* */
@@ -79,7 +78,8 @@ public class UpdateTaskCompletion extends HttpServlet {
 		Map<Integer, Task> newInfoTaskMap = new HashMap<>();
 
 		//loop through all tasks in stage
-		//first have to cast to correct task type to know what fields can be updated (some fields like description, id, name, etc. will never change)
+		//first have to cast to correct task type to know what fields can be updated (some fields like description, id, name, etc.
+		//will never change so don't need to bother with them here)
 		//then wire up all the data with the corresponding fields
 		for(int currentTaskID : allTasksIDs){
 			Task updatedTask = null;
