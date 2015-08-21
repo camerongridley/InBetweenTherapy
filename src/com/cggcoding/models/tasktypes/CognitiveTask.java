@@ -1,8 +1,9 @@
 package com.cggcoding.models.tasktypes;
 
 import com.cggcoding.models.Task;
+import com.cggcoding.models.Updateable;
 
-public class CognitiveTask extends Task {
+public class CognitiveTask extends Task implements Updateable{
 	private String automaticThought;
 	private String alternativeThought;
 	private int preSUDS;
@@ -41,5 +42,22 @@ public class CognitiveTask extends Task {
 	}
 
 
-	
+	@Override
+	public boolean updateData(Task taskWithNewData) {
+		//update universal properties
+		this.setCompleted(taskWithNewData.isCompleted());
+		this.setDateCompleted(taskWithNewData.getDateCompleted());
+
+
+		//CognitiveTask cogTask = (CognitiveTask)persistentTask;
+		CognitiveTask newData = (CognitiveTask)taskWithNewData;
+
+		this.setAlternativeThought(newData.getAlternativeThought());
+		this.setAutomaticThought(newData.getAutomaticThought());
+
+		//updateCogTask DB call goes here
+
+		return true;//TODO returns true if DB update was success
+	}
+
 }

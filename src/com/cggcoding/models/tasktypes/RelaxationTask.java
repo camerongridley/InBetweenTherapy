@@ -1,8 +1,9 @@
 package com.cggcoding.models.tasktypes;
 
 import com.cggcoding.models.Task;
+import com.cggcoding.models.Updateable;
 
-public class RelaxationTask extends Task {
+public class RelaxationTask extends Task implements Updateable{
 	
 	private int durationInMinutes;
 
@@ -18,5 +19,15 @@ public class RelaxationTask extends Task {
 	public int getDurationInMinutes(){
 		return this.durationInMinutes;
 	}
-	
+
+	@Override
+	public boolean updateData(Task taskWithNewData) {
+		//update universal properties
+		this.setCompleted(taskWithNewData.isCompleted());
+		this.setDateCompleted(taskWithNewData.getDateCompleted());
+
+		//updateCogTask DB call goes here
+
+		return true;//TODO returns true if DB update was success
+	}
 }

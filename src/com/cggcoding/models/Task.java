@@ -3,7 +3,7 @@ package com.cggcoding.models;
 import java.time.LocalDate;
 
 
-public abstract class Task implements Completable{
+public abstract class Task implements Completable, Updateable{
 	private int taskID;
 	private String name;
 	private String description;
@@ -119,6 +119,9 @@ public abstract class Task implements Completable{
 		return this.getClass().getSimpleName();
 	}
 
-	
-	
+	//in place so can be overridden by concrete classes
+	@Override
+	public boolean updateData(Task taskWithNewData) {
+		return false;
+	}
 }

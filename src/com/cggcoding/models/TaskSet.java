@@ -1,10 +1,13 @@
 package com.cggcoding.models;
 
+import java.util.List;
+
 /**
  * Created by cgrid_000 on 8/19/2015.
  */
 public class TaskSet {
     private int taskSetID;
+    private List<Task> taskList;
     private int repetitions;
     private int repetitionsCompleted;
 

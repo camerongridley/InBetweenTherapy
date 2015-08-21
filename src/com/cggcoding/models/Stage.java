@@ -127,14 +127,15 @@ public class Stage implements Completable {
 		//iterate through task map to update with info from updatedTasks list
 		for(Task persistentTask : this.tasks){
 			Task taskWithNewInfo = updatedTasksMap.get(persistentTask.getTaskID());
-			updateTaskData(persistentTask, taskWithNewInfo);
+			persistentTask.updateData(taskWithNewInfo);
+			//updateTaskData(persistentTask, taskWithNewInfo);
 		}
 
 		updateProgress();
 		return this;
 	}
-
-	private Task updateTaskData(Task persistentTask, Task taskWithNewInfo){
+	//TODO move this method to Task? so would be persistantTask.updateData(taskWithNewInfo) then would need an interface for Tasks with updateData() - each taskType would have it's own. Then maybe I don't need to do a switch statement, it would just know!?!?
+	/*private Task updateTaskData(Task persistentTask, Task taskWithNewInfo){
 
 		//update universal properties
 		persistentTask.setCompleted(taskWithNewInfo.isCompleted());
@@ -156,13 +157,12 @@ public class Stage implements Completable {
 		}
 
 		return persistentTask;
-	}
+	}*/
 
 	// TODO - should progress update be called by the controller or handled all on the service side?
 	//once a task is completed this is called to update the progress meter and associated metrics
 	public void updateProgress(){
 		numberOfTasksCompleted = 0;
-		https://support.steampowered.com/kb_article.php?ref=6966-IADH-1503&l=English
 		for(Task task : tasks){
 			if(task.isCompleted()){
 				numberOfTasksCompleted++;

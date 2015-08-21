@@ -1,8 +1,9 @@
 package com.cggcoding.models.tasktypes;
 
 import com.cggcoding.models.Task;
+import com.cggcoding.models.Updateable;
 
-public class PsychEdTask extends Task {
+public class PsychEdTask extends Task implements Updateable{
 
 	public PsychEdTask (int taskID) {
 		super(taskID);
@@ -14,4 +15,14 @@ public class PsychEdTask extends Task {
 		super(taskID, title, specifier, repetitions);
 	}
 
+	@Override
+	public boolean updateData(Task taskWithNewData) {
+		//update universal properties
+		this.setCompleted(taskWithNewData.isCompleted());
+		this.setDateCompleted(taskWithNewData.getDateCompleted());
+
+		//updateCogTask DB call goes here
+
+		return true;//TODO returns true if DB update was success
+	}
 }
