@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import com.cggcoding.factories.TaskFactory;
 import com.cggcoding.models.tasktypes.CognitiveTask;
 import com.cggcoding.models.tasktypes.PsychEdTask;
 import com.cggcoding.models.tasktypes.RelaxationTask;
@@ -13,9 +14,9 @@ public class Stage implements Completable {
 	private String name;
 	private String description;
 	private List<Task> tasks;
+	private Map<Integer, TaskSet> taskSetMap;
 	private List<Task> extraTasks; //for when user chooses to do more tasks than asked of - won't count toward progress meter but can be saved for review or other analysis (e.g. themes)
 	private boolean completed;
-	private int numberOfTasksCompleted;
 	private double percentComplete;
 	private List<String> goals;
 	
@@ -24,9 +25,9 @@ public class Stage implements Completable {
 		this.name = name;
 		this.description = description;
 		this.tasks = new ArrayList<>();
+		this.taskSetMap = new HashMap<>();
 		this.extraTasks = new ArrayList<>();
 		this.completed = false;
-		this.numberOfTasksCompleted = 0;
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
 	}
@@ -118,9 +119,20 @@ public class Stage implements Completable {
 		return (int)(percentComplete * 100);
 	}
 
-	public int getNumberOfTasksCompleted() { return numberOfTasksCompleted; }
+	public int getNumberOfTasksCompleted() {
+		int numberOfTasksCompleted = 0;
+		for(Task task : tasks){
+			if(task.isCompleted()){
+				numberOfTasksCompleted++;
+			}
+		}
 
-	public int getTotalNumberOfTasks() { return tasks.size(); }
+		return numberOfTasksCompleted;
+	}
+
+	public int getTotalNumberOfTasks() {
+		return tasks.size();
+	}
 
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
 	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap){
@@ -134,6 +146,7 @@ public class Stage implements Completable {
 		updateProgress();
 		return this;
 	}
+
 	//TODO move this method to Task? so would be persistantTask.updateData(taskWithNewInfo) then would need an interface for Tasks with updateData() - each taskType would have it's own. Then maybe I don't need to do a switch statement, it would just know!?!?
 	/*private Task updateTaskData(Task persistentTask, Task taskWithNewInfo){
 
@@ -162,12 +175,6 @@ public class Stage implements Completable {
 	// TODO - should progress update be called by the controller or handled all on the service side?
 	//once a task is completed this is called to update the progress meter and associated metrics
 	public void updateProgress(){
-		numberOfTasksCompleted = 0;
-		for(Task task : tasks){
-			if(task.isCompleted()){
-				numberOfTasksCompleted++;
-			}
-		}
 		
 		percentComplete = ((double)getNumberOfTasksCompleted()/(double)getTotalNumberOfTasks());
 		
@@ -199,4 +206,20 @@ public class Stage implements Completable {
 		return completeTasks;
 	}
 
+	//TODO can I use Wildcards here to handle that I want to create Tasks without having to check which subclass type it is - I just want to create duplicates save for the id - or the Factory, Factory Method or Abstract Factory design patterns?
+	//creates the new TaskSet and then makes the corresponding number of repetitions of the task and adds then to the Stage's tasks List
+	public void addTaskSet(Task taskWithNoID, int repetitions){
+		//factory method creates the TaskSet
+		TaskSet taskSet = TaskSet.newInstance(this.stageID, repetitions);
+		taskSetMap.put(taskSet.getTaskSetID(), taskSet);
+
+		//set the taskSetID in the task
+		taskWithNoID.setTaskSetID(taskSet.getTaskSetID());
+
+		//now make the number of repetitions desired and add to the Stage's list of tasks
+		TaskFactory taskFactory = new TaskFactory();
+
+		tasks.addAll(taskFactory.copy(taskWithNoID, repetitions));
+
+	}
 }

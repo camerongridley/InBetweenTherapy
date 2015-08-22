@@ -5,7 +5,7 @@ import java.util.List;
 
 public class TreatmentPlan {
 	private int treatmentPlanID;
-	private int userClientID; //could collapse these into one userID since there are other ways to track relationship between client and therapist
+	private int userClientID; //TODO -  collapse these into one userID since there are other ways to track relationship between client and therapist?
 	private int userTherapistID;
 	private int txIssueID;
 	private String name;

@@ -128,7 +128,7 @@
 							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 					          ${task.name } - Task Type: ${task.taskTypeName }
 					        </a>
-							  <c:if test="${task.repetitions > 1}"><span class="task-repetition"> (${task.repetitionsCompleted} of ${task.repetitions} completed)</span></c:if><!-- TODO get task-repetition class to display -->
+							  <!-- TODO task set/repetition info goes here -->
 						  </div>
 							<!---------------------------------------------------------
 							 PsychEd Tasks

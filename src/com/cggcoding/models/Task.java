@@ -5,42 +5,61 @@ import java.time.LocalDate;
 
 public abstract class Task implements Completable, Updateable{
 	private int taskID;
+	private int taskSetID;
 	private String name;
 	private String description;
 	private boolean completed;
 	private LocalDate dateCompleted;
-	private int repetitions;
-	private int repetitionsCompleted;
+	private int order;
 
 	public Task(int taskID) {
 		this.taskID = taskID;
+		this.taskSetID = -1;
 		this.name = "";
 		this.description = "";
 		this.completed = false;
-		this.repetitions = 1;
-		this.repetitionsCompleted = 0;
+	}
+
+	public Task(String name, String description){
+		this.taskID = -1;
+		this.taskSetID = -1;
+		this.name = name;
+		this.description = description;
+		this.completed = false;
 	}
 
 	public Task(int taskID, String name, String description){
 		this.taskID = taskID;
+		this.taskSetID = -1;
 		this.name = name;
 		this.description = description;
 		this.completed = false;
-		this.repetitions = 1;
-		this.repetitionsCompleted = 0;
 	}
 
-	public Task(int taskID, String name, String description, int repetitions){
+	//constructor if task is going to be in a set
+	public Task(int taskID, int taskSetID, String name, String description){
 		this.taskID = taskID;
+		this.taskSetID = taskSetID;
 		this.name = name;
 		this.description = description;
 		this.completed = false;
-		this.repetitions = repetitions;
-		this.repetitionsCompleted = 0;
 	}
-	
+
+
 	public int getTaskID(){
 		return taskID;
+	}
+
+	public void setTaskID(int taskID){
+		this.taskID = taskID;
+	}
+
+	public int getTaskSetID(){
+		return taskSetID;
+	}
+
+	public void setTaskSetID(int taskSetID){
+		this.taskSetID = taskSetID;
 	}
 	
 	public String getName() {
@@ -63,21 +82,6 @@ public abstract class Task implements Completable, Updateable{
 		this.completed = status;
 	}
 
-	public int getRepetitions() {
-		return repetitions;
-	}
-
-	public void setRepetitions(int repetitions) {
-		this.repetitions = repetitions;
-	}
-
-	public int getRepetitionsCompleted() {
-		return repetitionsCompleted;
-	}
-
-	public void completedRepetition(){
-		repetitionsCompleted++;
-	}
 
 	//a task is completed when all of the repetitions are performed
 	@Override
@@ -98,22 +102,14 @@ public abstract class Task implements Completable, Updateable{
 
 	@Override
 	public int getPercentComplete() {
-		return (int)(((double)repetitionsCompleted/(double)repetitions) * 100);
-	}
-
-	//This is called each time one or more repetitions of a task is performed.  A task is not complete until all the repetitions are performed
-	public void performed(int timesPerformed){
-		repetitions += timesPerformed;
-	}
-
-	//This is for tasks with multiple repetitions. Returns true if one but not all of the repetitions have been performed.
-	public boolean inProgress(){
-		if(repetitionsCompleted > 0 && repetitionsCompleted < repetitions){
-			return true;
+		if (isCompleted()) {
+			return 100;
 		} else {
-			return false;
+			return 0;
 		}
+		//return (int)(((double)repetitionsCompleted/(double)repetitions) * 100);
 	}
+
 
 	public String getTaskTypeName(){
 		return this.getClass().getSimpleName();
