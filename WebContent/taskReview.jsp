@@ -19,15 +19,15 @@
 					<!---------------------------------------------------------
 					For stage that is currently being viewed (enabled-active)
 					---------------------------------------------------------->
-					<c:if test="${stage.stageID == treatmentPlan.activeViewStageID }">
+					<c:if test="${stage.index == treatmentPlan.activeViewStageIndex }">
 						<div class="progress-bar progress-bar-primary progress-stage-enabled-active" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
-							<c:if test="${stage.stageID <= treatmentPlan.currentStageID }"><form action="./ChangeStage" method="POST"></c:if>
+							<c:if test="${stage.index <= treatmentPlan.currentStageIndex }"><form action="./ChangeStage" method="POST"></c:if>
 							${stage.name }
 								<a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal">
 									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 								</a>
-								<input type="hidden" name="stageID" value=${stage.stageID } /><input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-							<c:if test="${stage.stageID <= treatmentPlan.currentStageID  }"></form></c:if>
+								<input type="hidden" name="stageIndex" value=${stage.index } /><input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
+							<c:if test="${stage.index <= treatmentPlan.currentStageIndex  }"></form></c:if>
 						</div>
 						<!-- Modal popup for information about stage currently being viewed -->
 						<div class="modal fade" id="stageInfoModal" tabindex="-1" role="dialog" aria-labelledby="stageInfoModalLabel">
@@ -60,19 +60,19 @@
 					<!---------------------------------------------------------------------
 					For stage that is accessible but NOT the active view (enabled-inactive)
 					---------------------------------------------------------------------->
-					<c:if test="${stage.stageID != treatmentPlan.activeViewStageID && stage.stageID <= treatmentPlan.currentStageID}">
+					<c:if test="${stage.index != treatmentPlan.activeViewStageIndex && stage.index <= treatmentPlan.currentStageIndex}">
 						<div class="progress-bar progress-bar-info progress-stage-enabled-inactive" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
-							<c:if test="${stage.stageID <= treatmentPlan.currentStageID  }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
-							${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } /><input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-							<c:if test="${stage.stageID <= treatmentPlan.currentStageID  }"></a></form></c:if>
+							<c:if test="${stage.index <= treatmentPlan.currentStageIndex  }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
+							${stage.name }<input type="hidden" name="stageIndex" value=${stage.index } /><input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
+							<c:if test="${stage.index <= treatmentPlan.currentStageIndex  }"></a></form></c:if>
 						</div>
 					</c:if>
 					<!----------------------------------------------------
 					For stage that is inaccssible at this time (disabled)
 					----------------------------------------------------->
-					<c:if test="${stage.stageID != treatmentPlan.activeViewStageID && stage.stageID > treatmentPlan.currentStageID}">
+					<c:if test="${stage.index != treatmentPlan.activeViewStageIndex && stage.index > treatmentPlan.currentStageIndex}">
 						<div class="progress-bar progress-bar-info progress-stage-disabled" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
-								${stage.name }<input type="hidden" name="stageID" value=${stage.stageID } />
+								${stage.name }<input type="hidden" name="stageIndex" value=${stage.index } />
 						</div>
 					</c:if>
 					<c:if test="${!stageStatus.last }">

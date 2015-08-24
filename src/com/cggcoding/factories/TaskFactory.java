@@ -62,9 +62,9 @@ public class TaskFactory {
 
         //save copies to db and get the ids generated
         //TODO change this to actual db call which should not include a loop here
-        Random random = new Random(100000);
+        Random random = new Random();
         for(Task copy : taskCopies){
-            copy.setTaskID(Math.abs(random.nextInt()));
+            copy.setTaskID(Math.abs(random.nextInt(100000)));
         }
 
         return taskCopies;

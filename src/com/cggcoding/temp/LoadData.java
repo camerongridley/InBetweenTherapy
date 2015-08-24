@@ -59,6 +59,10 @@ public class LoadData extends HttpServlet {
 			//load all treatmentPlans of the user.  If one is marked as inProgress put it is session and go straight to taskReview.jsp
 			//if none are inProgress then offer 1-2 lists of choices: the default templates and if applicable, any from associated therapist
 			activeTx = buildClientData(userClient);
+			
+			//when actually getting data from database will need to set a few variables after the treatment plan is fully loaded - revise the following
+			activeTx.initialize();
+			
 			userClient.addTreatmentPlan(activeTx);
 			userClient.setActiveTreatmentPlanId(activeTx.getTreatmentPlanID());
 			switch (chosenAction) {
@@ -217,9 +221,6 @@ public class LoadData extends HttpServlet {
 		treatmentPlan.addStage(relaxStage);
 		treatmentPlan.addStage(cognitiveStage);
 		treatmentPlan.addStage(relationalStage);
-
-		//when actually getting data from database will need to set a few variables after the treatment plan is fully loaded - revise the following
-		//treatmentPlan.initialize();
 
 		return treatmentPlan;
 	}

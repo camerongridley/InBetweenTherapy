@@ -11,8 +11,8 @@ public class TreatmentPlan {
 	private String name;
 	private String description;
 	private List<Stage> stages;
-	private int currentStageID;
-	private int activeViewStageID;
+	private int currentStageIndex;
+	private int activeViewStageIndex;
 	private boolean inProgress;
 	
 	public TreatmentPlan(int treatmentPlanID, String name, String description, int txIssueID){
@@ -21,8 +21,8 @@ public class TreatmentPlan {
 		this.description = description;
 		this.txIssueID = txIssueID;
 		this.stages = new ArrayList<>();
-		this.currentStageID = 0;
-		this.activeViewStageID = 0;
+		this.currentStageIndex = 0;
+		this.activeViewStageIndex = 0;
 	}
 
 	public TreatmentPlan(String name, String description, int txIssueID){
@@ -30,14 +30,16 @@ public class TreatmentPlan {
 		this.description = description;
 		this.txIssueID = txIssueID;
 		this.stages = new ArrayList<>();
-		this.currentStageID = 0;
-		this.activeViewStageID = 0;
+		this.currentStageIndex = 0;
+		this.activeViewStageIndex = 0;
 	}
 
-	//TODO update with proper logic once app is connected to database - set these variables based on the stage that is in progress
+	//TODO update with proper logic once app is connected to database
+	//- set these variables based on the stage that is in progress
+	//- done either dynamically by looping through all the plan's stages and checking inProgress status or by saving currentStage in database
 	public void initialize(){
-		currentStageID = stages.get(0).getStageID();
-		activeViewStageID = currentStageID;
+		//currentStageIndex = stages.get(0).getStageID();
+		//activeViewStageIndex = currentStageIndex;
 	}
 
 	public int getTreatmentPlanID(){
@@ -65,7 +67,7 @@ public class TreatmentPlan {
 	}
 	
 	public void addStage(Stage newStage){
-		stages.add(newStage.getOrder(), newStage);
+		stages.add(newStage.getIndex(), newStage);
 	}
 	
 	public void updateStages(){
@@ -76,26 +78,26 @@ public class TreatmentPlan {
 		return stages.get(stageID);
 	}
 
-	public int getCurrentStageID() {
-		return currentStageID;
+	public int getCurrentStageIndex() {
+		return currentStageIndex;
 	}
 
-	public void setCurrentStageID(int currentStageID) {
-		this.currentStageID = currentStageID;
+	public void setCurrentStageIndex(int currentStageIndex) {
+		this.currentStageIndex = currentStageIndex;
 	}
 
-	public int getActiveViewStageID() {	return activeViewStageID; }
+	public int getActiveViewStageIndex() {	return activeViewStageIndex; }
 
-	public void setActiveViewStageID(int activeViewStageID) {
-		this.activeViewStageID = activeViewStageID;
+	public void setActiveViewStageIndex(int activeViewStageIndex) {
+		this.activeViewStageIndex = activeViewStageIndex;
 	}
 
 	public Stage getCurrentStage(){
-		return stages.get(currentStageID);
+		return stages.get(currentStageIndex);
 	}
 
 	public Stage getActiveViewStage() {
-		return stages.get(activeViewStageID);
+		return stages.get(activeViewStageIndex);
 	}
 	
 	public int getNumberOfStages(){
@@ -104,21 +106,21 @@ public class TreatmentPlan {
 	
 	public Stage nextStage(){
 
-		if(activeViewStageID == currentStageID){
-			if(currentStageID < getNumberOfStages()-1){
-				currentStageID++;
-				activeViewStageID = currentStageID;
+		if(activeViewStageIndex == currentStageIndex){
+			if(currentStageIndex < getNumberOfStages()-1){
+				currentStageIndex++;
+				activeViewStageIndex = currentStageIndex;
 			}
 		}
 		
-		return stages.get(activeViewStageID);
+		return stages.get(activeViewStageIndex);
 	}
 
 	public int getStageOrder(int stageID){
 		int stageOrder = 0;
 		for(Stage stage : stages){
 			if(stage.getStageID() == stageID){
-				stageOrder = stage.getOrder();
+				stageOrder = stage.getIndex();
 				return stageOrder;
 			}
 		}
@@ -126,11 +128,11 @@ public class TreatmentPlan {
 	}
 
 	public int getCurrentStageOrder(){
-		return getStageOrder(currentStageID);
+		return getStageOrder(currentStageIndex);
 	}
 
 	public int getActiveViewStageOrder(){
-		return getStageOrder(activeViewStageID);
+		return getStageOrder(activeViewStageIndex);
 	}
 
 }
