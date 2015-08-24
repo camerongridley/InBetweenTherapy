@@ -115,11 +115,12 @@ public class Stage implements Completable {
 		this.index = order;
 	}
 
-	public void addTask(Task task){//add index specifier?
+	//Tasks will be displayed in the order in which they are in the List
+	public void addTask(Task task){
 		tasks.add(task);
 	}
 	
-	public void addExtraTask(Task extraTask){//add index specifier?
+	public void addExtraTask(Task extraTask){
 		extraTasks.add(extraTask);
 	}
 
@@ -252,7 +253,7 @@ public class Stage implements Completable {
 		//now make the number of repetitions desired and add to the Stage's list of tasks
 		TaskFactory taskFactory = new TaskFactory();
 
-		tasks.addAll(taskFactory.copy(taskWithNoID, repetitions));
+		tasks.addAll(taskFactory.makeCopies(taskWithNoID, repetitions));
 
 	}
 }

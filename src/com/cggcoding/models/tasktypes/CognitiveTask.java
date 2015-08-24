@@ -26,6 +26,14 @@ public class CognitiveTask extends Task implements Updateable{
 	public CognitiveTask (int taskID, int taskSetID, String name, String description){
 		super(taskID, taskSetID, name, description);
 	}
+	
+	public CognitiveTask (int taskID, int taskSetID, String name, String description, String automaticThought, String alternativeThought, int preSUDS, int postSUDS){
+		super(taskID, taskSetID, name, description);
+		this.automaticThought = automaticThought;
+		this.alternativeThought = alternativeThought;
+		this.preSUDS = preSUDS;
+		this.postSUDS = postSUDS;
+	}
 
 	//static factory method
 	/*public static CognitiveTask newInstance(int taskSetID, String name, String description){

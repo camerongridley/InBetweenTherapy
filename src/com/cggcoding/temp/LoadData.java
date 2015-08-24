@@ -176,6 +176,7 @@ public class LoadData extends HttpServlet {
 		relationalStage.setGoals(new ArrayList<>(Arrays.asList("Have conversation x with my partner.", "Done sensate focus to the point of comfort.")));
 
 		//create and load tasks for each stage
+		//TODO have Task creation go through a factory or factory method
 		psychEdStage.addTask(new PsychEdTask(0, "Coping with ED", "Chapter 3 - Developing Realistic Expectations"));
 		Task completedTask = new PsychEdTask(1, "New Male Sexuality", "Chapter 2 - Male Sexual Myths");
 		completedTask.markComplete();
