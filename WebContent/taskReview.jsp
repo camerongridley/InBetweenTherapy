@@ -55,7 +55,7 @@
 									</div>
 								</div>
 							</div>
-						</div>
+						</div><!-- End modal -->
 					</c:if>
 					<!---------------------------------------------------------------------
 					For stage that is accessible but NOT the active view (enabled-inactive)

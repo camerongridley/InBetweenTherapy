@@ -14,7 +14,7 @@ import java.util.Random;
  */
 public class TaskFactory {
 
-    public Task newInstance(String taskType){
+    public static Task newInstance(String taskType){
         if(taskType == null){
             return null;
         }
@@ -35,7 +35,7 @@ public class TaskFactory {
         return null;
     }
 
-    public List<Task> copy(Task task, int numberOfCopies){
+    public static List<Task> copy(Task task, int numberOfCopies){
         if(task == null){
             return null;
         }
@@ -47,12 +47,15 @@ public class TaskFactory {
                 case "CognitiveTask":
                     CognitiveTask cogTask = (CognitiveTask)task;
                     taskCopies.add(new CognitiveTask(cogTask.getTaskID(), cogTask.getTaskSetID(), cogTask.getName(), cogTask.getDescription()));
+                    break;
                 case "PsychEdTask":
                     PsychEdTask psychEdTask = (PsychEdTask)task;
                     taskCopies.add(new PsychEdTask(psychEdTask.getTaskID(), psychEdTask.getTaskSetID(), psychEdTask.getName(), psychEdTask.getDescription()));
+                    break;
                 case "RelaxationTask":
                     RelaxationTask relaxTask = (RelaxationTask)task;
                     taskCopies.add(new RelaxationTask(relaxTask.getTaskID(), relaxTask.getTaskSetID(), relaxTask.getName(), relaxTask.getDescription(), relaxTask.getDurationInMinutes()));
+                    break;
 
             }
         }

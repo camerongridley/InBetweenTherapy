@@ -159,16 +159,16 @@ public class LoadData extends HttpServlet {
 		TreatmentPlan treatmentPlan = new TreatmentPlan(0, "ED", "Erectile dysfunction", 0);
 
 		//create stages
-		Stage psychEdStage = new Stage(0, "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.");
+		Stage psychEdStage = Stage.getInstanceAndCreateID("PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.", 0);
 		psychEdStage.setGoals(new ArrayList<>(Arrays.asList("Have a better understanding of the human sexual response.", "Learned about common myths of male sexuality.")));
 
-		Stage relaxStage = new Stage(1, "Relaxation", "Learning to relax your body on command is a fundamental building block of overcoming any sexual difficulty");
+		Stage relaxStage = Stage.getInstanceAndCreateID("Relaxation", "Learning to relax your body on command is a fundamental building block of overcoming any sexual difficulty", 1);
 		relaxStage.setGoals(new ArrayList<>(Arrays.asList("Notice the physiological sensations that indicated I am feeling stress or tension.", "Be able to begin relaxation on cue.", "To mindfully meditate for 15 minutes.")));
 
-		Stage cognitiveStage = new Stage(2, "Cognitive", "Here we help you monitor and respond differently to unhelpful thinking.");
+		Stage cognitiveStage = Stage.getInstanceAndCreateID("Cognitive", "Here we help you monitor and respond differently to unhelpful thinking.", 2);
 		cognitiveStage.setGoals(new ArrayList<>(Arrays.asList("Be able to identify irrational thoughts and form a balanced and realistic replacement thought.", "Breathe and feel my body shift out of negative thinking and release/relax.")));
 
-		Stage relationalStage = new Stage(3, "Relational", "Including your partner.");
+		Stage relationalStage = Stage.getInstanceAndCreateID("Relational", "Including your partner.", 3);
 		relationalStage.setGoals(new ArrayList<>(Arrays.asList("Have conversation x with my partner.", "Done sensate focus to the point of comfort.")));
 
 		//create and load tasks for each stage
@@ -188,15 +188,16 @@ public class LoadData extends HttpServlet {
 		//relax.addTask(new RelaxationTask(9, "Mindful Meditation 5", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
 
 
-		CognitiveTask cog1 = new CognitiveTask(10, "Replace Negative Coalitions 1", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
-				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realiztic and balanced replacement though. "
+		CognitiveTask cog1 = new CognitiveTask(10, "Replace Negative Cognition 1", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
 				+ "Click here for further details.");
 		cog1.setAutomaticThought("Everything I do fails.");
 		cog1.setAlternativeThought("Sometimes I struggle, but other times I succeed.");
 		cognitiveStage.addTask(cog1);
-		cognitiveStage.addTask(new CognitiveTask(11, "Replace Negative Coalitions 2", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+		CognitiveTask cog2 = new CognitiveTask("Replace Negative Cognition 2", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
 				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
-				+ "Click here for further details."));
+				+ "Click here for further details.");
+		cognitiveStage.addTaskSet(cog2,3);
 		cognitiveStage.addTask(new CognitiveTask(12, "Replace Negative Coalitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
 				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
 				+ "Click here for further details."));
@@ -212,10 +213,13 @@ public class LoadData extends HttpServlet {
 		//relax.markComplete();
 
 		//load stages into plan
-		treatmentPlan.addStage(psychEdStage, 0);
-		treatmentPlan.addStage(relaxStage, 1);
-		treatmentPlan.addStage(cognitiveStage, 2);
-		treatmentPlan.addStage(relationalStage, 3);
+		treatmentPlan.addStage(psychEdStage);
+		treatmentPlan.addStage(relaxStage);
+		treatmentPlan.addStage(cognitiveStage);
+		treatmentPlan.addStage(relationalStage);
+
+		//when actually getting data from database will need to set a few variables after the treatment plan is fully loaded - revise the following
+		//treatmentPlan.initialize();
 
 		return treatmentPlan;
 	}

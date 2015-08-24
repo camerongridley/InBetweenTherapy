@@ -34,6 +34,12 @@ public class TreatmentPlan {
 		this.activeViewStageID = 0;
 	}
 
+	//TODO update with proper logic once app is connected to database - set these variables based on the stage that is in progress
+	public void initialize(){
+		currentStageID = stages.get(0).getStageID();
+		activeViewStageID = currentStageID;
+	}
+
 	public int getTreatmentPlanID(){
 		return treatmentPlanID;
 	}
@@ -58,8 +64,8 @@ public class TreatmentPlan {
 		return stages;
 	}
 	
-	public void addStage(Stage newStage, int sequenceNumber){
-		stages.add(sequenceNumber, newStage);
+	public void addStage(Stage newStage){
+		stages.add(newStage.getOrder(), newStage);
 	}
 	
 	public void updateStages(){
@@ -106,6 +112,25 @@ public class TreatmentPlan {
 		}
 		
 		return stages.get(activeViewStageID);
+	}
+
+	public int getStageOrder(int stageID){
+		int stageOrder = 0;
+		for(Stage stage : stages){
+			if(stage.getStageID() == stageID){
+				stageOrder = stage.getOrder();
+				return stageOrder;
+			}
+		}
+		return stageOrder;
+	}
+
+	public int getCurrentStageOrder(){
+		return getStageOrder(currentStageID);
+	}
+
+	public int getActiveViewStageOrder(){
+		return getStageOrder(activeViewStageID);
 	}
 
 }
