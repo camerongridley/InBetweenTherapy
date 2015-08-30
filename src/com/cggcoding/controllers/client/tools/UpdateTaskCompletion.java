@@ -85,6 +85,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 			Task updatedTask = null;
 			String taskTypeName = request.getParameter("taskTypeName"+currentTaskID);
 
+			//TODO Do I use a static factory method here or just stick with contructors?
 			switch (taskTypeName) {
 				case "CognitiveTask":
 					System.out.println("Updating Cognitive Task");
