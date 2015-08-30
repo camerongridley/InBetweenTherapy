@@ -15,6 +15,7 @@
 				<div><button type="submit" class="btn btn-primary">Log in</button></div>
 				<input type=hidden name="userType" value="client">
 				<input type=hidden name="email" value="bob@aol.com">
+				<input type=hidden name="password" value="password">
 			</form>
 		</div>
 		<%--<div class="col-md-10">

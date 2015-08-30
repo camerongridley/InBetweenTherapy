@@ -3,8 +3,10 @@ package com.cggcoding.controllers;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.utils.database.MySQLActionHandler;
 
 import java.io.IOException;
+import java.sql.ResultSet;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,6 +32,10 @@ public class LogIn extends HttpServlet {
         String userType = request.getParameter("userType");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+
+        MySQLActionHandler mySQLActionHandler = new MySQLActionHandler();
+
+        ResultSet userInfoRS = mySQLActionHandler.validateUser(email, password);
 
         //use the above to get authenticate the user and get create a User object - for now we create mock ones
         if(userType.equals("client")){
