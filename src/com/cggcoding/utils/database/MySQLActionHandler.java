@@ -70,21 +70,50 @@ public class MySQLActionHandler {
         }
     }
 
-    public ResultSet validateUser(String email, String password){
-        openConnection();
+    public boolean validateUser(String email, String password){
         ResultSet userInfo = null;
+        int userExists = 0;
         try {
-            //PreparedStatement ps = cn.prepareStatement("SELECT COUNT(*) FROM users WHERE email=? AND password=?");
-            PreparedStatement ps = cn.prepareStatement("SELECT * FROM user WHERE email=? AND password=?");
+            PreparedStatement ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE email=? AND password=?");
             ps.setString(1, email);
             ps.setString(2, password);
 
             userInfo = ps.executeQuery();
 
-            //TODO - delete the line below
+
             while (userInfo.next()){
-                System.out.println("rs has something");
-                System.out.println("user id: " + userInfo.getInt("user_id") + " - user email: " + userInfo.getString("email"));
+                userExists = userInfo.getInt("COUNT(*)");
+            }
+
+        } catch (SQLException e) {
+            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
+            e.printStackTrace();
+        }
+
+
+        if(userExists == 1){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public String getUserRole(String email, String password){
+        openConnection();
+        ResultSet userInfo = null;
+        String userRole = "";
+        try {
+            PreparedStatement ps = cn.prepareStatement("SELECT user_role.role FROM user_role INNER JOIN (USER) ON user_role.user_role_id = USER.user_user_role_id_fk WHERE (((USER.email)=?) AND ((USER.password)=?))");
+            ps.setString(1, email);
+            ps.setString(2, password);
+
+            userInfo = ps.executeQuery();
+
+
+            while (userInfo.next()){
+                userRole = userInfo.getString("role");
+                System.out.println("DB - getting user role");
+                //System.out.println("user id: " + userInfo.getInt("user_id") + " - user email: " + userInfo.getString("email"));
             }
 
         } catch (SQLException e) {
@@ -94,15 +123,14 @@ public class MySQLActionHandler {
 
         closeConnection();
 
-        return userInfo;
+        return userRole;
     }
 
-    public ResultSet getUserInfo(String username, String password){
-
+    public ResultSet getUserInfo(String email, String password){
         ResultSet userInfo = null;
         try {
-            PreparedStatement ps = cn.prepareStatement("SELECT userID, firstName, userName, lastName, email FROM users WHERE username=? AND password=?");
-            ps.setString(1, username);
+            PreparedStatement ps = cn.prepareStatement("SELECT user.user_id, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?) AND ((user.password)=?))");
+            ps.setString(1, email);
             ps.setString(2, password);
 
             userInfo = ps.executeQuery();

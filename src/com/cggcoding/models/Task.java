@@ -6,6 +6,7 @@ import java.time.LocalDate;
 public abstract class Task implements Completable, Updateable{
 	private int taskID;
 	private int taskSetID;
+	private int stageID;
 	private String name;
 	private String description;
 	private boolean completed;

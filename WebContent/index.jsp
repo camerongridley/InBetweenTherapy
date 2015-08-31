@@ -13,7 +13,6 @@
 		<div class="col-md-10">
 			<form class="form-inline" action="./LogIn" method="POST">
 				<div><button type="submit" class="btn btn-primary">Log in</button></div>
-				<input type=hidden name="userType" value="client">
 				<input type=hidden name="email" value="bob@aol.com">
 				<input type=hidden name="password" value="password">
 			</form>
@@ -34,8 +33,9 @@
 		<div class="col-md-10">
 			<form class="form-inline" action="./LogIn" method="POST">
 				<div><button type="submit" class="btn btn-primary">Log in</button></div>
-				<input type=hidden name="userType" value="therapist">
-				<input type=hidden name="email" value="cgridley@gmail.com">
+				<input type=hidden name="email" value="camerongridley@gmail.com">
+				<input type=hidden name="password" value="password">
+
 			</form>
 		</div>
 		<%--<div class="col-md-10">
@@ -46,7 +46,29 @@
 
 			</form>
 		</div>--%>
-	</div>	
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-md-2">
+			Login as an admin:
+		</div>
+		<div class="col-md-10">
+			<form class="form-inline" action="./LogIn" method="POST">
+				<div><button type="submit" class="btn btn-primary">Log in</button></div>
+				<input type=hidden name="email" value="cgridley@gmail.com">
+				<input type=hidden name="password" value="admin">
+
+			</form>
+		</div>
+		<%--<div class="col-md-10">
+			<form class="form-inline" action="./LoadData" method="POST">
+				<div><button type="submit" class="btn btn-primary">Go To Main Menu</button></div>
+				<input type=hidden name="userType" value="therapist">
+				<input type=hidden name="userID" value="1">
+
+			</form>
+		</div>--%>
+	</div>
 </div>
 
 

@@ -1,13 +1,12 @@
 package com.cggcoding.models;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserClient extends User{
 	private int activeTreatmentPlanId;
 	
 	public UserClient(int userID, String email){
 		super(userID, email);
+		activeTreatmentPlanId = -1;
 	}
 
 	
@@ -22,4 +21,6 @@ public class UserClient extends User{
 	public TreatmentPlan getActiveTreatmentPlan(){
 		return super.getTreatmentPlan(activeTreatmentPlanId);
 	}
+
+
 }
