@@ -98,34 +98,6 @@ public class MySQLActionHandler {
         }
     }
 
-    public String getUserRole(String email, String password){
-        openConnection();
-        ResultSet userInfo = null;
-        String userRole = "";
-        try {
-            PreparedStatement ps = cn.prepareStatement("SELECT user_role.role FROM user_role INNER JOIN (USER) ON user_role.user_role_id = USER.user_user_role_id_fk WHERE (((USER.email)=?) AND ((USER.password)=?))");
-            ps.setString(1, email);
-            ps.setString(2, password);
-
-            userInfo = ps.executeQuery();
-
-
-            while (userInfo.next()){
-                userRole = userInfo.getString("role");
-                System.out.println("DB - getting user role");
-                //System.out.println("user id: " + userInfo.getInt("user_id") + " - user email: " + userInfo.getString("email"));
-            }
-
-        } catch (SQLException e) {
-            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
-            e.printStackTrace();
-        }
-
-        closeConnection();
-
-        return userRole;
-    }
-
     public ResultSet getUserInfo(String email, String password){
         ResultSet userInfo = null;
         try {

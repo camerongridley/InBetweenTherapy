@@ -42,8 +42,9 @@ public class LogIn extends HttpServlet {
         //use the above to get authenticate the user and get create a User object
         if(userExists){
 
-            ResultSet userInfoRS = mySQLActionHandler.getUserInfo(email, password);
+            ResultSet userInfoRS = null;
             try {
+                userInfoRS = mySQLActionHandler.getUserInfo(email, password);
                 while (userInfoRS.next()){
                     userRole = userInfoRS.getString("role");
 
@@ -70,19 +71,29 @@ public class LogIn extends HttpServlet {
 
                     }
                 }
+
+
+
             } catch (SQLException e) {
-                mySQLActionHandler.closeConnection();
+
                 e.printStackTrace();
+            } finally {
+                try {
+                    userInfoRS.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                mySQLActionHandler.closeConnection();
             }
 
-            mySQLActionHandler.closeConnection();
+
 
         } else {
             System.out.println("Error Logging in.  Try a different email or password.");
-            request.getRequestDispatcher("error.jsp").forward(request,response);
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
-
+        mySQLActionHandler.closeConnection();
     }
 
 
