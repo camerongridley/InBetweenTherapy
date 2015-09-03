@@ -1,6 +1,7 @@
 package com.cggcoding.controllers;
 
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.database.MySQLActionHandler;
@@ -68,6 +69,16 @@ public class LogIn extends HttpServlet {
 
                         request.getSession().setAttribute("user", therapist);
                         request.getRequestDispatcher("therapisttools/therapistMainMenu.jsp").forward(request, response);
+
+                    } else if (userRole.equals("admin")){
+                    	System.out.println("logging in as admin");
+                    	int userID = userInfoRS.getInt("user_id");
+
+                        UserAdmin admin = new UserAdmin(userID, email);
+                        admin.addRole(userInfoRS.getString("role"));
+
+                        request.getSession().setAttribute("user", admin);
+                        request.getRequestDispatcher("admintools/adminMainMenu.jsp").forward(request, response);
 
                     }
                 }

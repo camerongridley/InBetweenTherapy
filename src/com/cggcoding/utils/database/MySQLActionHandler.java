@@ -1,6 +1,7 @@
 package com.cggcoding.utils.database;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * Created by cgrid_000 on 8/26/2015.
@@ -73,6 +74,7 @@ public class MySQLActionHandler {
     public boolean validateUser(String email, String password){
         ResultSet userInfo = null;
         int userExists = 0;
+        
         try {
             PreparedStatement ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE email=? AND password=?");
             ps.setString(1, email);
@@ -88,7 +90,9 @@ public class MySQLActionHandler {
         } catch (SQLException e) {
             //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
             e.printStackTrace();
-        }
+        } finally {
+			
+		}
 
 
         if(userExists == 1){
@@ -114,5 +118,12 @@ public class MySQLActionHandler {
 
         return userInfo;
     }
+
+	public ArrayList<String> getDefaultTreatmentIssues() {
+		ResultSet treatmentIssues = null;
+		
+		
+		return null;
+	}
 
 }
