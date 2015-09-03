@@ -53,4 +53,9 @@ public abstract class User {
 	public TreatmentPlan getTreatmentPlan(int treatmentPlanID){
 		return treatmentPlanList.get(treatmentPlanID);
 	}
+	
+	@Override
+	public String toString(){
+		return "User id:" + email + ", User email: " + email;
+	}
 }

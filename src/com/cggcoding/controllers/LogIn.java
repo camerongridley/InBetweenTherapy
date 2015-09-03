@@ -7,6 +7,7 @@ import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
@@ -15,6 +16,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.tomcat.jdbc.pool.DataSource;
 
 /**
  * Servlet implementation class MasterController
@@ -32,19 +35,39 @@ public class LogIn extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String userRole = "";
-        MySQLActionHandler mySQLActionHandler = new MySQLActionHandler();
+        DataSource datasource = (DataSource)request.getServletContext().getAttribute("datasource");
+        MySQLActionHandler mySQLActionHandler = new MySQLActionHandler(datasource);
 
-        mySQLActionHandler.openConnection();
+    	
+    	//DELETE
+    	mySQLActionHandler.testPool();
+    	//END DELETE
+    	
         boolean userExists = mySQLActionHandler.validateUser(email, password);
 
         //use the above to get authenticate the user and get create a User object
         if(userExists){
-
+        	User user = mySQLActionHandler.getUserInfo(email, password);
+        	request.getSession().setAttribute("user", user);
+        	
+        	if(user.hasRole("admin")){
+                request.getRequestDispatcher("admintools/adminMainMenu.jsp").forward(request, response);
+        	} else if(user.hasRole("therapist")){
+                request.getRequestDispatcher("therapisttools/therapistMainMenu.jsp").forward(request, response);
+        	}if(user.hasRole("client")){
+                request.getRequestDispatcher("clienttools/clientmainmenu.jsp").forward(request,response);
+        	}
+        	
+/*        	
             ResultSet userInfoRS = null;
             try {
+            	
+            	
+
                 userInfoRS = mySQLActionHandler.getUserInfo(email, password);
                 while (userInfoRS.next()){
                     userRole = userInfoRS.getString("role");
@@ -96,7 +119,7 @@ public class LogIn extends HttpServlet {
                 }
                 mySQLActionHandler.closeConnection();
             }
-
+*/
 
 
         } else {
@@ -104,7 +127,6 @@ public class LogIn extends HttpServlet {
             request.getRequestDispatcher("error.jsp").forward(request, response);
         }
 
-        mySQLActionHandler.closeConnection();
     }
 
 

@@ -3,25 +3,37 @@ package com.cggcoding.utils.database;
 import java.sql.*;
 import java.util.ArrayList;
 
+import org.apache.commons.dbutils.DbUtils;
+import org.apache.tomcat.jdbc.pool.DataSource;
+
+import com.cggcoding.models.User;
+import com.cggcoding.models.UserAdmin;
+import com.cggcoding.models.UserClient;
+import com.cggcoding.models.UserTherapist;
+
 /**
  * Created by cgrid_000 on 8/26/2015.
  */
 public class MySQLActionHandler {
-    Connection cn;
+	private String message;
+	DataSource datasource;
+    /*TODO - removed old database connection code if I stick with new pool method
+     * Connection cn;
     private String baseDbURL = "jdbc:mysql://localhost/";
     private String catalog = "cggcodin_doitright";
     private String userID = "admin";
     private String password = "admin";
     private String fullConnectionURL;
+    */
     //private HttpServletRequest request;
     // private WebMessageHandler messageHandler = new WebMessageHandler();
-    private String message;
+    
 
-    public MySQLActionHandler(){
-        this.cn = null;
-        //this.request = request;
+    public MySQLActionHandler(DataSource datasource){
+    	this.datasource = datasource;
+        //this.cn = null;
         this.message = "";
-        fullConnectionURL = baseDbURL + catalog + "?user=" + userID + "&password=" + password;
+        //fullConnectionURL = baseDbURL + catalog + "?user=" + userID + "&password=" + password;
     }
 
     public String getMessage() {
@@ -36,6 +48,7 @@ public class MySQLActionHandler {
         this.message = "";
     }
 
+    /*
     public Connection openConnection(){
 
         try {
@@ -62,7 +75,51 @@ public class MySQLActionHandler {
         return cn;
 
     }
+    */
+    
+    public Connection getConnection(){
+    	Connection conn = null;
+    	try {
+    		conn = datasource.getConnection();
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+    	
+    	return conn;
+    }
+    
+    public void testPool(){
+    	Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet userInfo = null;
+        
+        try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT user.user_id, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?) AND ((user.password)=?))");
+            ps.setString(1, "cgridley@gmail.com");
+            ps.setString(2, "admin");
 
+            userInfo = ps.executeQuery();
+
+        } catch (SQLException e) {
+            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
+            e.printStackTrace();
+        }
+        
+        try {
+			while (userInfo.next()){
+				System.out.println("user id: " + userInfo.getInt("user_id"));
+				System.out.println("user email: " + userInfo.getString("email"));
+				System.out.println("user role: " + userInfo.getString("role"));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
+    /*
     public void closeConnection(){
         try {
             cn.close();
@@ -70,13 +127,17 @@ public class MySQLActionHandler {
             e.printStackTrace();
         }
     }
+    */
 
     public boolean validateUser(String email, String password){
+    	Connection cn = null;
+    	PreparedStatement ps = null;
         ResultSet userInfo = null;
         int userExists = 0;
         
         try {
-            PreparedStatement ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE email=? AND password=?");
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE email=? AND password=?");
             ps.setString(1, email);
             ps.setString(2, password);
 
@@ -91,6 +152,9 @@ public class MySQLActionHandler {
             //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
             e.printStackTrace();
         } finally {
+			DbUtils.closeQuietly(userInfo);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
 			
 		}
 
@@ -102,21 +166,52 @@ public class MySQLActionHandler {
         }
     }
 
-    public ResultSet getUserInfo(String email, String password){
+    public User getUserInfo(String email, String password){
+    	Connection cn = null;
+    	PreparedStatement ps = null;
         ResultSet userInfo = null;
+        User user = null;
+        
         try {
-            PreparedStatement ps = cn.prepareStatement("SELECT user.user_id, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?) AND ((user.password)=?))");
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT user.user_id, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?) AND ((user.password)=?))");
             ps.setString(1, email);
             ps.setString(2, password);
 
             userInfo = ps.executeQuery();
+            
+            //TODO - replace the use of downcasting? - e.g. UserClient.setActiveTreatmentPlanID
+            // see http://programmers.stackexchange.com/questions/258655/ood-java-inheritance-and-access-to-child-methods-via-casting 
+            while (userInfo.next()){
+            	switch (userInfo.getString("role")){
+            		case "admin":
+            			user = new UserAdmin(userInfo.getInt("user_id"), userInfo.getString("email"));
+            			user.addRole("admin");
+            			break;
+            		case "therapist":
+            			user = new UserTherapist(userInfo.getInt("user_id"), userInfo.getString("email"));
+            			user.addRole("therapist");
+            			break;
+            		case "client":
+            			user = new UserClient(userInfo.getInt("user_id"), userInfo.getString("email"));
+            			user.addRole("client");
+            			((UserClient)user).setActiveTreatmentPlanId(userInfo.getInt("active_treatment_plan_id"));
+            			break;
+            	}
+            }
+            
+            return user;
 
         } catch (SQLException e) {
             //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
             e.printStackTrace();
+        } finally {
+        	DbUtils.closeQuietly(userInfo);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
         }
 
-        return userInfo;
+        return user;
     }
 
 	public ArrayList<String> getDefaultTreatmentIssues() {

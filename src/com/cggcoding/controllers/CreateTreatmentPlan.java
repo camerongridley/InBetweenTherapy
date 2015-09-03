@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.tomcat.jdbc.pool.DataSource;
+
 /**
  * Created by cgrid_000 on 8/12/2015.
  * 
@@ -26,6 +28,7 @@ import javax.servlet.http.HttpSession;
 public class CreateTreatmentPlan extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	HttpSession session = request.getSession();
+    	DataSource datasource = (DataSource)request.getServletContext().getAttribute("datasource");
     	User user = (User)session.getAttribute("user");
     	String forwardTo = "index.jsp";
     	String creationStep = request.getParameter("treatmentPlanCreationStep");
@@ -51,7 +54,7 @@ public class CreateTreatmentPlan extends HttpServlet {
 			
 		} else if(user.hasRole("admin")){
 			UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
-			MySQLActionHandler dbActionHandler = new MySQLActionHandler();
+			MySQLActionHandler dbActionHandler = new MySQLActionHandler(datasource);
 			
 			
 			
