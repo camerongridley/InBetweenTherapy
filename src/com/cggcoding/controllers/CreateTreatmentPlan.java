@@ -1,5 +1,6 @@
 package com.cggcoding.controllers;
 
+import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
@@ -59,9 +60,11 @@ public class CreateTreatmentPlan extends HttpServlet {
 			
 			
 			switch (creationStep){
-			case "begining":
+			case "beginning":
 				//get treatment issues associated with admin role
-				ArrayList<String> treatmentIssues = dbActionHandler.getDefaultTreatmentIssues();
+				ArrayList<TreatmentIssue> treatmentIssues = dbActionHandler.getDefaultTreatmentIssues();
+				request.setAttribute("defaultTreatmentIssues", treatmentIssues);
+				forwardTo = "/createplan/createtxplan-name.jsp";
 				break;
             case "planNameAndIssue":
                 String planName = request.getParameter("planName");

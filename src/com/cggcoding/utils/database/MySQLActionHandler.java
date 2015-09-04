@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.tomcat.jdbc.pool.DataSource;
 
+import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
@@ -31,8 +32,8 @@ public class MySQLActionHandler {
 
     public MySQLActionHandler(DataSource datasource){
     	this.datasource = datasource;
+    	this.message = "";
         //this.cn = null;
-        this.message = "";
         //fullConnectionURL = baseDbURL + catalog + "?user=" + userID + "&password=" + password;
     }
 
@@ -200,7 +201,6 @@ public class MySQLActionHandler {
             	}
             }
             
-            return user;
 
         } catch (SQLException e) {
             //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
@@ -213,12 +213,45 @@ public class MySQLActionHandler {
 
         return user;
     }
+    
+    public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID){
+    	Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        ArrayList<TreatmentIssue> issues = new ArrayList();
+        
+        try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT treatment_issue.issue, treatment_issue.treatment_issue_id, user.user_id "
+            		+ "FROM (user) INNER JOIN (treatment_issue INNER JOIN treatment_plan ON treatment_issue.treatment_issue_id = treatment_plan.treatment_plan_treatment_issue_id_fk) "
+            		+ "ON user.user_id = treatment_plan.treatment_plan_user_id_fk WHERE (((user.user_id)=?))");
+            ps.setInt(1, userID);
 
-	public ArrayList<String> getDefaultTreatmentIssues() {
-		ResultSet treatmentIssues = null;
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	TreatmentIssue issue = new TreatmentIssue(rs.getInt("treatment_issue_id"), rs.getString("issue"));
+            	issues.add(issue);
+            }
+
+        } catch (SQLException e) {
+            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
+            e.printStackTrace();
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return issues;
+    }
+
+	public ArrayList<TreatmentIssue> getDefaultTreatmentIssues() {
+		//TODO - probably shouldn't have a hardcoded value here for the admin user id and should instead lookup all the users with admin role and get their ids and run for each
+		ArrayList<TreatmentIssue> issues = getTreatmentIssuesList(1);
 		
-		
-		return null;
+		return issues;
 	}
 
 }

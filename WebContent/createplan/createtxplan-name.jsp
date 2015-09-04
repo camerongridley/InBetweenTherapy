@@ -38,25 +38,29 @@
             <div class="form-group">
                 <label for="defaultTxIssue" class="col-sm-2 control-label">Default Tx Issues</label>
                 <div class="col-sm-10">
-                    <select class="form-control" id="defaultTxIssue" name="defaultTxIssue">
+                    <select class="form-control" id="defaultTreatmentIssue" name="defaultTxIssue">
                         <option  value="">Select a default treatment issue.</option>
-                        <c:forEach items="${defaultTxIssues}" var="defaultIssue">
+                        <c:forEach items="${defaultTreatmentIssues}" var="defaultIssue">
                             <option value="${defaultIssue.treatmentIssueID}">${defaultIssue.treatmentIssueName}</option>
                         </c:forEach>
                     </select>
                 </div>
             </div>
+            
+            <c:if test="${customTreatmentIssues != null }">
             <div class="form-group">
                 <label for="existingCustomTxIssue" class="col-sm-2 control-label">Existing Custom Tx Issues</label>
                 <div class="col-sm-10">
                     <select class="form-control" id="existingCustomTxIssue" name="existingCustomTxIssue">
                         <option value="">Or select an issue you've previously created.</option>
-                        <c:forEach items="${customTxIssues}" var="customIssue">
+                        <c:forEach items="${customTreatmentIssues}" var="customIssue">
                             <option value="${customIssue.treatmentIssueID}">${customIssue.treatmentIssueName}</option>
                         </c:forEach>
                     </select>
                 </div>
             </div>
+            </c:if>
+            
             <div class="form-group">
                 <label for="newCustomTxIssue" class="col-sm-2 control-label">New Custom Tx Issue</label>
                 <div class="col-sm-10">

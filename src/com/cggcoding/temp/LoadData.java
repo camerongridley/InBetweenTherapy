@@ -85,8 +85,8 @@ public class LoadData extends HttpServlet {
 			switch (chosenAction) {
 				case "createplan":
 
-					request.setAttribute("defaultTxIssues", getDefaultTxIssueList());
-					request.setAttribute("customTxIssues", getCustomTxIssueList());
+					request.setAttribute("defaultTreatmentIssues", getDefaultTxIssueList());
+					request.setAttribute("customTreatmentIssues", getCustomTxIssueList());
 					request.setAttribute("defaultTaskTypes", getDefaultTasksTypes());
 
 
