@@ -17,18 +17,28 @@
         <h1>Create a Treatment Plan</h1>
         <h2>Name the plan and identify what issue it is treating</h2>
     </div>
+    
+    <c:if test="${errorMessage != null}">
+		<div class="alert alert-danger alert-dismissible" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong>Error!</strong> ${errorMessage}
+		</div>
+    </c:if>
+    
+    
+    
     <form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
         <input type="hidden" name="treatmentPlanCreationStep" value="planNameAndIssue" />
         <div class="form-group">
             <label for="planName" class="col-sm-2 control-label">Plan Name</label>
             <div class="col-sm-10">
-                <input type="planName" class="form-control" id="planName" name="planName" placeholder="Enter a treatment plan name here.">
+                <input type="planName" class="form-control" id="planName" name="planName" value="${planName }" placeholder="Enter a treatment plan name here.">
             </div>
         </div>
         <div class="form-group">
             <label for="planDescription" class="col-sm-2 control-label">Plan Description</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="planDescription" name="planDescription" placeholder="Describe the treatment plan.">
+                <input type="text" class="form-control" id="planDescription" name="planDescription" value="${planDescription }" placeholder="Describe the treatment plan.">
             </div>
         </div>
         <div class="well well-sm">
@@ -36,12 +46,12 @@
                 <h4>Select <strong>one</strong> of the following options for designating the issue this plan will treat.</h4>
             </div>
             <div class="form-group">
-                <label for="defaultTxIssue" class="col-sm-2 control-label">Default Tx Issues</label>
+                <label for="defaultTreatmentIssue" class="col-sm-2 control-label">Default Tx Issues</label>
                 <div class="col-sm-10">
-                    <select class="form-control" id="defaultTreatmentIssue" name="defaultTxIssue">
+                    <select class="form-control" id="defaultTreatmentIssue" name="defaultTreatmentIssue">
                         <option  value="">Select a default treatment issue.</option>
                         <c:forEach items="${defaultTreatmentIssues}" var="defaultIssue">
-                            <option value="${defaultIssue.treatmentIssueID}">${defaultIssue.treatmentIssueName}</option>
+                            <option value="${defaultIssue.treatmentIssueID}" <c:if test="${defaultIssue.treatmentIssueID == defaultTreatmentIssue}">selected</c:if>>${defaultIssue.treatmentIssueName}</option>
                         </c:forEach>
                     </select>
                 </div>
@@ -64,7 +74,7 @@
             <div class="form-group">
                 <label for="newCustomTreatmentIssue" class="col-sm-2 control-label">New Custom Tx Issue</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="newCustomTreatmentIssue" name="newCustomTreatmentIssue" placeholder="Or enter a new treatment issue.">
+                    <input type="text" class="form-control" id="newCustomTreatmentIssue" name="newCustomTreatmentIssue" value="${newCustomTreatmentIssue }" placeholder="Or enter a new treatment issue.">
                 </div>
             </div>
         </div>

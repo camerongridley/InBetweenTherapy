@@ -1,9 +1,12 @@
 package com.cggcoding.utils.messaging;
 
+import java.util.List;
+
 public class MessageHandler {
 	private String errorMessage;
 	private String successMessage;
 	private String infoMessage;
+	private List<String> errorMessageList;
 	
 	public MessageHandler(){
 		this.errorMessage = "";

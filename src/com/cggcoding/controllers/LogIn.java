@@ -41,11 +41,6 @@ public class LogIn extends HttpServlet {
         String userRole = "";
         DataSource datasource = (DataSource)request.getServletContext().getAttribute("datasource");
         MySQLActionHandler mySQLActionHandler = new MySQLActionHandler(datasource);
-
-    	
-    	//DELETE
-    	mySQLActionHandler.testPool();
-    	//END DELETE
     	
         boolean userExists = mySQLActionHandler.validateUser(email, password);
 
