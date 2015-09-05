@@ -17,7 +17,7 @@
         <h1>Create a Treatment Plan</h1>
         <h2>Name the plan and identify what issue it is treating</h2>
     </div>
-    <form class="form-horizontal" action="/CreateTreatmentPlan" method="POST">
+    <form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
         <input type="hidden" name="treatmentPlanCreationStep" value="planNameAndIssue" />
         <div class="form-group">
             <label for="planName" class="col-sm-2 control-label">Plan Name</label>
@@ -49,9 +49,9 @@
             
             <c:if test="${customTreatmentIssues != null }">
             <div class="form-group">
-                <label for="existingCustomTxIssue" class="col-sm-2 control-label">Existing Custom Tx Issues</label>
+                <label for="existingCustomTreatmentIssue" class="col-sm-2 control-label">Existing Custom Tx Issues</label>
                 <div class="col-sm-10">
-                    <select class="form-control" id="existingCustomTxIssue" name="existingCustomTxIssue">
+                    <select class="form-control" id="existingCustomTreatmentIssue" name="existingCustomTreatmentIssue">
                         <option value="">Or select an issue you've previously created.</option>
                         <c:forEach items="${customTreatmentIssues}" var="customIssue">
                             <option value="${customIssue.treatmentIssueID}">${customIssue.treatmentIssueName}</option>
@@ -62,9 +62,9 @@
             </c:if>
             
             <div class="form-group">
-                <label for="newCustomTxIssue" class="col-sm-2 control-label">New Custom Tx Issue</label>
+                <label for="newCustomTreatmentIssue" class="col-sm-2 control-label">New Custom Tx Issue</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="newCustomTxIssue" name="newCustomTxIssue" placeholder="Or enter a new treatment issue.">
+                    <input type="text" class="form-control" id="newCustomTreatmentIssue" name="newCustomTreatmentIssue" placeholder="Or enter a new treatment issue.">
                 </div>
             </div>
         </div>

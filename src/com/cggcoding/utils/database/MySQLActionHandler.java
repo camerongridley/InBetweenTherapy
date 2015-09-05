@@ -7,6 +7,7 @@ import org.apache.commons.dbutils.DbUtils;
 import org.apache.tomcat.jdbc.pool.DataSource;
 
 import com.cggcoding.models.TreatmentIssue;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
@@ -115,7 +116,6 @@ public class MySQLActionHandler {
 				System.out.println("user role: " + userInfo.getString("role"));
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     }
@@ -130,6 +130,10 @@ public class MySQLActionHandler {
     }
     */
 
+    /**************************************************
+     *************** Login Methods ********************
+     **************************************************/
+     
     public boolean validateUser(String email, String password){
     	Connection cn = null;
     	PreparedStatement ps = null;
@@ -214,18 +218,23 @@ public class MySQLActionHandler {
         return user;
     }
     
+    
+    /**************************************************
+     ******** Create Treatment Plan Methods ***********
+     **************************************************/
+    
     public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID){
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
         
-        ArrayList<TreatmentIssue> issues = new ArrayList();
+        ArrayList<TreatmentIssue> issues = new ArrayList<>();
         
         try {
         	cn = getConnection();
-            ps = cn.prepareStatement("SELECT treatment_issue.issue, treatment_issue.treatment_issue_id, user.user_id "
-            		+ "FROM (user) INNER JOIN (treatment_issue INNER JOIN treatment_plan ON treatment_issue.treatment_issue_id = treatment_plan.treatment_plan_treatment_issue_id_fk) "
-            		+ "ON user.user_id = treatment_plan.treatment_plan_user_id_fk WHERE (((user.user_id)=?))");
+            ps = cn.prepareStatement("SELECT treatment_issue.treatment_issue_id, treatment_issue.issue, user.user_id "
+            		+ "FROM (user) INNER JOIN treatment_issue ON user.user_id = treatment_issue.treatment_issue_user_id_fk "
+            		+ "WHERE (((user.user_id)=?))");
             ps.setInt(1, userID);
 
             rs = ps.executeQuery();
@@ -253,5 +262,128 @@ public class MySQLActionHandler {
 		
 		return issues;
 	}
+	
+	public TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan){		
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+        	cn = getConnection();
+        	String sql = "INSERT INTO `cggcodin_doitright`.`treatment_plan` (`treatment_plan_user_id_fk`, `treatment_plan_treatment_issue_id_fk`, `title`, `description`, `current_stage_index`, `active_view_stage_index`, `in_progress`) "
+            		+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setInt(1, treatmentPlan.getUserID());
+            ps.setInt(2, treatmentPlan.getTreatmentIssueID());
+            ps.setString(3, treatmentPlan.getName());
+            ps.setString(4, treatmentPlan.getDescription());
+            ps.setInt(5, treatmentPlan.getCurrentStageIndex());
+            ps.setInt(6, treatmentPlan.getActiveViewStageIndex());
+            ps.setBoolean(7, treatmentPlan.isInProgress());
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	treatmentPlan.setTreatmentPlanID(generatedKeys.getInt(1));;
+            }
+
+        } catch (SQLException e) {
+            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
+            e.printStackTrace();
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return treatmentPlan;
+	}
+	
+	
+	public TreatmentIssue createTreatmentIssue(TreatmentIssue treatmentIssue){
+		Connection cn = null;
+    	PreparedStatement ps = null;
+    	ResultSet rs = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+        	cn = getConnection();
+        	//first check to see if the userID and issue name combo already exists
+        	boolean comboExists = validateNewIssueName(treatmentIssue.getTreatmentIssueName(), treatmentIssue.getUserID());
+        	
+        	if(!comboExists){
+        		String sql = "INSERT INTO `cggcodin_doitright`.`treatment_issue` (`issue`, `treatment_issue_user_id_fk`) "
+                		+ "VALUES (?, ?)";
+            	
+                ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                
+                ps.setString(1, treatmentIssue.getTreatmentIssueName());
+                ps.setInt(2, treatmentIssue.getUserID());
+
+                int success = ps.executeUpdate();
+                
+                generatedKeys = ps.getGeneratedKeys();
+       
+                while (generatedKeys.next()){
+                	treatmentIssue.setTreatmentIssueID(generatedKeys.getInt(1));
+                }
+        	} else {
+        		//TODO alert user the combo exists
+        		System.out.println("That treatment issue name already exists for this user.");
+        	}
+        	
+
+        } catch (SQLException e) {
+            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
+            e.printStackTrace();
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return treatmentIssue;
+	}
+	
+	public boolean validateNewIssueName(String issueName, int userID){
+    	Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet issueCount = null;
+        int comboExists = 0;
+        
+        try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_issue WHERE (((treatment_issue.issue)=?) AND ((treatment_issue.treatment_issue_user_id_fk)=?))");
+            ps.setString(1, issueName);
+            ps.setInt(2, userID);
+
+            issueCount = ps.executeQuery();
+
+
+            while (issueCount.next()){
+                comboExists = issueCount.getInt("COUNT(*)");
+            }
+
+        } catch (SQLException e) {
+            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
+            e.printStackTrace();
+        } finally {
+			DbUtils.closeQuietly(issueCount);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+			
+		}
+
+
+        if(comboExists == 1){
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }

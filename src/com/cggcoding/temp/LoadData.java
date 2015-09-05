@@ -78,7 +78,7 @@ public class LoadData extends HttpServlet {
 		} else if(user.hasRole("therapist")){
 			UserTherapist userTherapist = (UserTherapist)session.getAttribute("user");
 			//put the default plan templates in session
-			session.setAttribute("treatmentPlanTemplates", getTxPlanTemplateList());
+			session.setAttribute("treatmentPlanTemplates", getTxPlanTemplateList(userTherapist));
 			//put the therapists owned treatmentPlans in session - or just load them into the UserTherapist object
 			activeTx = buildTherapistData(userTherapist);
 
@@ -136,12 +136,12 @@ public class LoadData extends HttpServlet {
 	}
 
 	private TreatmentPlan buildTherapistData(UserTherapist userTherapist){
-		return buildDefaultEDPlan();  //TEMP FOR NOW!!!!
+		return buildDefaultEDPlan(userTherapist);  //TEMP FOR NOW!!!!
 	}
 
 	private TreatmentPlan buildClientData(UserClient userClient){
 
-		TreatmentPlan tempTxPlanForTesting = buildDefaultEDPlan();
+		TreatmentPlan tempTxPlanForTesting = buildDefaultEDPlan(userClient);
 		userClient.addTreatmentPlan(tempTxPlanForTesting);
 		userClient.setActiveTreatmentPlanId(tempTxPlanForTesting.getTreatmentPlanID());
 		//now only put relevant data into session
@@ -151,16 +151,16 @@ public class LoadData extends HttpServlet {
 		return activeTx;
 	}
 
-	private List<TreatmentPlan> getTxPlanTemplateList(){
+	private List<TreatmentPlan> getTxPlanTemplateList(User user){
 		List<TreatmentPlan> treatmentPlanTemplateList = new ArrayList<>();
 
-		treatmentPlanTemplateList.add(buildDefaultEDPlan());
+		treatmentPlanTemplateList.add(buildDefaultEDPlan(user));
 
 		return treatmentPlanTemplateList;
 	}
 
-	private TreatmentPlan buildDefaultEDPlan(){
-		TreatmentPlan treatmentPlan = new TreatmentPlan(0, "ED", "Erectile dysfunction", 0);
+	private TreatmentPlan buildDefaultEDPlan(User user){
+		TreatmentPlan treatmentPlan = new TreatmentPlan(0,user.getUserID(), "ED", "Erectile dysfunction", 0);
 
 		//create stages
 		Stage psychEdStage = Stage.getInstanceAndCreateID("PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.", 0);

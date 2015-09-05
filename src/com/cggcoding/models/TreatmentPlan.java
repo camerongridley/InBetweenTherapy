@@ -5,9 +5,10 @@ import java.util.List;
 
 public class TreatmentPlan {
 	private int treatmentPlanID;
+	private int userID;
 	private int userClientID; //TODO -  collapse these into one userID since there are other ways to track relationship between client and therapist?
 	private int userTherapistID;
-	private int txIssueID;
+	private int treatmentIssueID;
 	private String name;
 	private String description;
 	private List<Stage> stages;
@@ -15,20 +16,22 @@ public class TreatmentPlan {
 	private int activeViewStageIndex;
 	private boolean inProgress;
 	
-	public TreatmentPlan(int treatmentPlanID, String name, String description, int txIssueID){
+	public TreatmentPlan(int treatmentPlanID, int userID, String name, String description, int txIssueID){
 		this.treatmentPlanID = treatmentPlanID;
 		this.name = name;
 		this.description = description;
-		this.txIssueID = txIssueID;
+		this.treatmentIssueID = txIssueID;
+		this.userID = userID;
 		this.stages = new ArrayList<>();
 		this.currentStageIndex = 0;
 		this.activeViewStageIndex = 0;
 	}
 
-	public TreatmentPlan(String name, String description, int txIssueID){
+	public TreatmentPlan(String name, int userID, String description, int txIssueID){
 		this.name = name;
+		this.userID = userID;
 		this.description = description;
-		this.txIssueID = txIssueID;
+		this.treatmentIssueID = txIssueID;
 		this.stages = new ArrayList<>();
 		this.currentStageIndex = 0;
 		this.activeViewStageIndex = 0;
@@ -42,10 +45,18 @@ public class TreatmentPlan {
 		//activeViewStageIndex = currentStageIndex;
 	}
 
+	public void setTreatmentPlanID(int planID){
+		this.treatmentPlanID = planID;
+	}
+	
 	public int getTreatmentPlanID(){
 		return treatmentPlanID;
 	}
-
+	
+	public int getUserID(){
+		return userID;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -54,8 +65,8 @@ public class TreatmentPlan {
 		return description;
 	}
 
-	public int getTxIssueID() {
-		return txIssueID;
+	public int getTreatmentIssueID() {
+		return treatmentIssueID;
 	}
 
 	public void setStages(List<Stage> stages){
@@ -100,6 +111,14 @@ public class TreatmentPlan {
 		return stages.get(activeViewStageIndex);
 	}
 	
+	public boolean isInProgress() {
+		return inProgress;
+	}
+
+	public void setInProgress(boolean inProgress) {
+		this.inProgress = inProgress;
+	}
+
 	public int getNumberOfStages(){
 		return stages.size();
 	}

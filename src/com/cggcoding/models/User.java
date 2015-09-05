@@ -16,6 +16,10 @@ public abstract class User {
 		this.treatmentPlanList = new ArrayList<>();
 	}
 
+	public int getUserID(){
+		return userID;
+	}
+	
 	public List<String> getRoles(){
 		return roles;
 	}
