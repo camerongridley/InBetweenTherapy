@@ -7,42 +7,38 @@ public abstract class Task implements Completable, Updateable{
 	private int taskID;
 	private int taskSetID;
 	private int stageID;
+	private int userID;
 	private String name;
-	private String description;
+	private String instructions;
 	private boolean completed;
 	private LocalDate dateCompleted;
-	private int order;
+	private int index;
+	private boolean isTemplate;
 
 	public Task(int taskID) {
 		this.taskID = taskID;
 		this.taskSetID = -1;
 		this.name = "";
-		this.description = "";
+		this.instructions = "";
 		this.completed = false;
 	}
 
-	public Task(String name, String description){
-		this.taskID = -1;
-		this.taskSetID = -1;
-		this.name = name;
-		this.description = description;
-		this.completed = false;
-	}
-
-	public Task(int taskID, String name, String description){
+	public Task(int taskID, int userID, String name, String instructions){
 		this.taskID = taskID;
+		this.userID = userID;
 		this.taskSetID = -1;
 		this.name = name;
-		this.description = description;
+		this.instructions = instructions;
 		this.completed = false;
 	}
 
 	//constructor if task is going to be in a set
-	public Task(int taskID, int taskSetID, String name, String description){
+	public Task(int taskID, int userID, int taskSetID, String name, String instructions){
 		this.taskID = taskID;
+		this.userID = userID;
 		this.taskSetID = taskSetID;
 		this.name = name;
-		this.description = description;
+		this.instructions = instructions;
 		this.completed = false;
 	}
 
@@ -54,6 +50,14 @@ public abstract class Task implements Completable, Updateable{
 	public void setTaskID(int taskID){
 		this.taskID = taskID;
 	}
+	
+	public int getUserID() {
+		return userID;
+	}
+
+	public void setUserID(int userID) {
+		this.userID = userID;
+	}
 
 	public int getTaskSetID(){
 		return taskSetID;
@@ -63,12 +67,20 @@ public abstract class Task implements Completable, Updateable{
 		this.taskSetID = taskSetID;
 	}
 	
+	public int getStageID() {
+		return stageID;
+	}
+
+	public void setStageID(int stageID) {
+		this.stageID = stageID;
+	}
+
 	public String getName() {
 		return name;
 	}
 
 	public String getDescription() {
-		return description;
+		return instructions;
 	}
 
 	public void setDateCompleted(LocalDate date){
@@ -77,6 +89,22 @@ public abstract class Task implements Completable, Updateable{
 	
 	public LocalDate getDateCompleted(){
 		return dateCompleted;
+	}
+	
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public boolean isTemplate() {
+		return isTemplate;
+	}
+
+	public void setTemplate(boolean isTemplate) {
+		this.isTemplate = isTemplate;
 	}
 
 	public void setCompleted(boolean status){

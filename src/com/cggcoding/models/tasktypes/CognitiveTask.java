@@ -15,20 +15,16 @@ public class CognitiveTask extends Task implements Updateable{
 		super(taskID);
 	}
 
-	public CognitiveTask (String name, String description){
-		super(name, description);
+	public CognitiveTask (int taskID, int userID, String name, String instructions){
+		super(taskID, userID, name, instructions);
 	}
 
-	public CognitiveTask (int taskID, String name, String description){
-		super(taskID, name, description);
-	}
-
-	public CognitiveTask (int taskID, int taskSetID, String name, String description){
-		super(taskID, taskSetID, name, description);
+	public CognitiveTask (int taskID, int userID, int taskSetID, String name, String instructions){
+		super(taskID, userID, taskSetID, name, instructions);
 	}
 	
-	public CognitiveTask (int taskID, int taskSetID, String name, String description, String automaticThought, String alternativeThought, int preSUDS, int postSUDS){
-		super(taskID, taskSetID, name, description);
+	public CognitiveTask (int taskID, int userID, int taskSetID, String name, String instructions, String automaticThought, String alternativeThought, int preSUDS, int postSUDS){
+		super(taskID, userID, taskSetID, name, instructions);
 		this.automaticThought = automaticThought;
 		this.alternativeThought = alternativeThought;
 		this.preSUDS = preSUDS;

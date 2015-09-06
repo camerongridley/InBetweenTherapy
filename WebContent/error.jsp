@@ -12,7 +12,7 @@
 
 <c:import url="header.jsp" />
 
-<div class="container">
+
   <div class="row">
     <div class="col-md-12">
       <h1>An error has occurred!</h1>
@@ -23,7 +23,6 @@
       Error Code: ${pageContext.errorData.statusCode} : ${pageContext.errorData.servletName}
     </div>
   </div>
-</div>
 
 
 <c:import url="footer.jsp" />

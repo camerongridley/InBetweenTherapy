@@ -12,7 +12,6 @@
 
 <c:import url="../header.jsp" />
 
-<div class="container">
   <div class="page-header">
     <h1>Therapist Main Menu</h1>
   </div>
@@ -44,7 +43,6 @@
     </form>
   </p>
 
-</div>
 
 
 <c:import url="../footer.jsp" />

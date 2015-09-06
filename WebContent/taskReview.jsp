@@ -6,8 +6,6 @@
 <c:import url="header.jsp" />
 	
 	
-	
-<div class="container">
 	<h1>Treatment Issue: ${treatmentPlan.name }</h1>
 	<div class="row">
 		<div class="col-md-12">
@@ -233,6 +231,5 @@
 		
 		</div>
 	</div>
-</div><!-- end container -->
 		
 <c:import url="footer.jsp" />

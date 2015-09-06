@@ -12,7 +12,6 @@
 
 <c:import url="../header.jsp"/>
 
-<div class="container">
     <div class="page-header">
         <h1>Create a Treatment Plan</h1>
 
@@ -37,9 +36,6 @@
         </div>
     </form>
     </p>
-
-
-</div>
 
 
 <c:import url="../footer.jsp"/>

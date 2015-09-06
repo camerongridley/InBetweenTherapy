@@ -7,31 +7,88 @@
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 
 <c:import url="../header.jsp" />
 
-<div class="container">
-  <div class="page-header">
-    <h1>Admin Main Menu</h1>
-  </div>
-  <p>
-    <form class="form-inline" action="./CreateTreatmentPlan" method="POST">
-      <div><button type="submit" class="btn btn-primary">Create Treatment Plan Template</button></div>
-      <input type=hidden name="treatmentPlanCreationStep" value="beginning">
-    </form>
-  </p>
+	<div class="page-header">
+		<h1>Admin Main Menu</h1>
+	</div>
+	<div class="row">
+		<div class="col-md-6">
+			<div class="well well-sm">
+				<p>
+				<form class="form-inline" action="./CreateTreatmentPlan"
+					method="POST">
+					<div>
+						<button type="submit" class="btn btn-primary">Create
+							Treatment Plan Template</button>
+					</div>
+					<input type=hidden name="treatmentPlanCreationStep"
+						value="beginning">
+				</form>
+				</p>
 
-  <p>
-    <form class="form-inline" action="./EditTreatmentPlan" method="POST">
-      <div><button type="submit" class="btn btn-primary">Edit Treatment Plan Template</button></div>
-      <input type=hidden name="chosenAction" value="editplan">
-    </form>
-  </p>
+				<p>
+				<form class="form-inline" action="./EditTreatmentPlan" method="POST">
+					<div>
+						<button type="submit" class="btn btn-primary" disabled="disabled">Edit
+							Treatment Plan Template</button>
+					</div>
+					<input type=hidden name="chosenAction" value="editplan">
+				</form>
+				</p>
+			</div>
 
+			<div class="well well-sm">
+				<p>
+				<form class="form-inline" action="./CreateStageTemplate"
+					method="POST">
+					<div>
+						<button type="submit" class="btn btn-primary">Create
+							Stage Template</button>
+					</div>
+					<input type=hidden name="chosenAction" value="editplan">
+				</form>
+				</p>
+				<p>
+				<form class="form-inline" action="./CreateStageTemplate"
+					method="POST">
+					<div>
+						<button type="submit" class="btn btn-primary" disabled="disabled">Edit Stage
+							Template</button>
+					</div>
+					<input type=hidden name="chosenAction" value="editplan">
+				</form>
+				</p>
+			</div>
 
-</div>
+			<div class="well well-sm">
+				<p>
+				<form class="form-inline" action="./CreateTaskTemplate"
+					method="POST">
+					<div>
+						<button type="submit" class="btn btn-primary" disabled="disabled">Create Task
+							Template</button>
+					</div>
+					<input type=hidden name="chosenAction" value="editplan">
+				</form>
+				</p>
+				<p>
+				<form class="form-inline" action="./CreateTaskTemplate"
+					method="POST">
+					<div>
+						<button type="submit" class="btn btn-primary" disabled="disabled">Edit Task
+							Template</button>
+					</div>
+					<input type=hidden name="chosenAction" value="editplan">
+				</form>
+				</p>
+			</div>
+		</div>
+	</div>
+
 
 
 <c:import url="../footer.jsp" />

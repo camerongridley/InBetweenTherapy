@@ -12,20 +12,12 @@
 
 <c:import url="../header.jsp" />
 
-<div class="container">
     <div class="page-header">
         <h1>Create a Treatment Plan</h1>
         <h2>Name the plan and identify what issue it is treating</h2>
     </div>
     
-    <!-- ERROR MESSAGE DISPLAY  -->
-    <c:if test="${errorMessage != null}">
-		<div class="alert alert-danger alert-dismissible" role="alert">
-		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		  <strong>Error!</strong> ${errorMessage}
-		</div>
-    </c:if>
-    <!-- END ERROR MESSAGE DISPLAY -->
+	<c:import url="../messagemodal.jsp"/>
     
     <form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
         <input type="hidden" name="treatmentPlanCreationStep" value="planNameAndIssue" />
@@ -85,10 +77,6 @@
         </div>
     </form>
 
-
-
-
-</div>
 
 
 <c:import url="../footer.jsp" />

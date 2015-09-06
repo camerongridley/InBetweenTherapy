@@ -5,15 +5,10 @@
 
 <c:import url="header.jsp" />
 		
-<div class="container">
-	<!-- ERROR MESSAGE DISPLAY  -->
-    <c:if test="${errorMessage != null}">
-		<div class="alert alert-danger alert-dismissible" role="alert">
-		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		  <strong>Error!</strong> ${errorMessage}
-		</div>
-    </c:if>
-    <!-- END ERROR MESSAGE DISPLAY -->
+
+
+	<c:import url="messagemodal.jsp"/>
+	
 	<div class="row">
 		<div class="col-md-2">
 			Login as a client:
@@ -25,13 +20,6 @@
 				<input type=hidden name="password" value="password">
 			</form>
 		</div>
-		<%--<div class="col-md-10">
-			<form class="form-inline" action="./LoadData" method="POST">
-				<div><button type="submit" class="btn btn-primary">Load Data</button></div>
-				<input type=hidden name="userType" value="client">
-				<input type=hidden name="userID" value="1">
-			</form>
-		</div>--%>
 	</div>
 	<hr>
 	<div class="row">
@@ -46,14 +34,6 @@
 
 			</form>
 		</div>
-		<%--<div class="col-md-10">
-			<form class="form-inline" action="./LoadData" method="POST">
-				<div><button type="submit" class="btn btn-primary">Go To Main Menu</button></div>
-				<input type=hidden name="userType" value="therapist">
-				<input type=hidden name="userID" value="1">
-
-			</form>
-		</div>--%>
 	</div>
 	<hr>
 	<div class="row">
@@ -68,16 +48,8 @@
 
 			</form>
 		</div>
-		<%--<div class="col-md-10">
-			<form class="form-inline" action="./LoadData" method="POST">
-				<div><button type="submit" class="btn btn-primary">Go To Main Menu</button></div>
-				<input type=hidden name="userType" value="therapist">
-				<input type=hidden name="userID" value="1">
-
-			</form>
-		</div>--%>
 	</div>
-</div>
+
 
 
 <c:import url="footer.jsp" />
