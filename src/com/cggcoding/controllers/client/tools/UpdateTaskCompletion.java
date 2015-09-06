@@ -65,7 +65,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		request.setAttribute("treatmentPlan", treatmentPlan);
 		request.setAttribute("currentStage", updatedStage);
 
-		request.getRequestDispatcher("taskReview.jsp").forward(request, response);
+		request.getRequestDispatcher("/jsp/taskReview.jsp").forward(request, response);
 		
 	}
 
@@ -131,6 +131,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 				try{
 					taskIDsConvertedToInts.add(Integer.parseInt(taskIDsStrings[i]));
 				} catch (NumberFormatException ex){
+					//TODO handle this exception differently?
 					System.out.println("Illegal value for a task checkbox.  Detected a non-integer value.");
 					ex.printStackTrace();
 				}

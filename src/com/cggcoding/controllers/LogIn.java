@@ -55,11 +55,11 @@ public class LogIn extends HttpServlet {
 					request.getSession().setAttribute("user", user);
 					
 					if(user.hasRole("admin")){
-				        request.getRequestDispatcher("admintools/adminMainMenu.jsp").forward(request, response);
+				        request.getRequestDispatcher("/jsp/admintools/adminMainMenu.jsp").forward(request, response);
 					} else if(user.hasRole("therapist")){
-				        request.getRequestDispatcher("therapisttools/therapistMainMenu.jsp").forward(request, response);
+				        request.getRequestDispatcher("/jsp/therapisttools/therapistMainMenu.jsp").forward(request, response);
 					}if(user.hasRole("client")){
-				        request.getRequestDispatcher("clienttools/clientmainmenu.jsp").forward(request,response);
+				        request.getRequestDispatcher("/jsp/clienttools/clientmainmenu.jsp").forward(request,response);
 					}
 					
 				} else {
@@ -69,7 +69,7 @@ public class LogIn extends HttpServlet {
 				e.printStackTrace();
 				request.setAttribute("errorMessage", e.getMessage());
 				//response.sendRedirect("index.jsp");
-			    request.getRequestDispatcher("index.jsp").forward(request, response);
+			    request.getRequestDispatcher("/index.jsp").forward(request, response);
 			}
 
     }

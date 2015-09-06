@@ -3,11 +3,11 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="header.jsp" />
+<c:import url="/jsp/header.jsp" />
 		
 
 
-	<c:import url="messagemodal.jsp"/>
+	<c:import url="/jsp/messagemodal.jsp"/>
 	
 	<div class="row">
 		<div class="col-md-2">
@@ -52,4 +52,4 @@
 
 
 
-<c:import url="footer.jsp" />
+<c:import url="/jsp/footer.jsp" />

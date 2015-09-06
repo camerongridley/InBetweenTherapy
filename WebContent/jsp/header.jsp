@@ -46,7 +46,7 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="./index.jsp">Home</a></li>
-            <li><a href="./taskReview.jsp">Record Exercise</a></li>
+            <li><a href="./jsp/taskReview.jsp">Record Exercise</a></li>
             <li><a href="./#contact">Contact</a></li>
             <li class="dropdown">
               <a href="/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>

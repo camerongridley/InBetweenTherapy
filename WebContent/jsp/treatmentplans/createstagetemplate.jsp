@@ -1,10 +1,4 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: cgrid_000
-  Date: 8/7/2015
-  Time: 2:48 PM
-  To change this template use File | Settings | File Templates.
---%>
+
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
@@ -13,34 +7,36 @@
 <c:import url="../header.jsp" />
 
     <div class="page-header">
-        <h1>Create a Treatment Plan</h1>
-        <h2>Name the plan and identify what issue it is treating</h2>
+        <h1>Heading</h1>
+        <h2>Subheading</h2>
     </div>
     
 	<c:import url="../messagemodal.jsp"/>
-    
-    <form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
-        <input type="hidden" name="treatmentPlanCreationStep" value="planNameAndIssue" />
+
+	<form class="form-horizontal" action="./CreateStageTemplate" method="POST">
         <div class="form-group">
-            <label for="planName" class="col-sm-2 control-label">Plan Name</label>
+            <label for="stageName" class="col-sm-2 control-label">Stage Name</label>
             <div class="col-sm-10">
-                <input type="planName" class="form-control" id="planName" name="planName" value="${planName }" placeholder="Enter a treatment plan name here.">
+                <input type="text" class="form-control" id="stageName" name="stageName" value="${stageName }" placeholder="Enter a stage name here.">
             </div>
         </div>
         <div class="form-group">
-            <label for="planDescription" class="col-sm-2 control-label">Plan Description</label>
+            <label for="stageDescription" class="col-sm-2 control-label">Stage Description</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="planDescription" name="planDescription" value="${planDescription }" placeholder="Describe the treatment plan.">
+                <input type="text" class="form-control" id="stageDescription" name="stageDescription" value="${stageDescription }" placeholder="Describe the stage.">
             </div>
         </div>
+        
         <div class="well well-sm">
             <div class="form-group col-md-12">
-                <h4>Select <strong>one</strong> of the following options for designating the issue this plan will treat.</h4>
+                <h4>Define the goals for the stage</h4>
             </div>
+            
+            <!-- TODO change this to list all the stage goals currently associated with this stage
             <div class="form-group">
-                <label for="defaultTreatmentIssue" class="col-sm-2 control-label">Default Tx Issues</label>
+                <label for="stageGoalsList" class="col-sm-2 control-label">Default Tx Issues</label>
                 <div class="col-sm-10">
-                    <select class="form-control" id="defaultTreatmentIssue" name="defaultTreatmentIssue">
+                    <select class="form-control" id="stageGoalsList" name="stageGoalsList">
                         <option  value="">Select a default treatment issue.</option>
                         <c:forEach items="${defaultTreatmentIssues}" var="defaultIssue">
                             <option value="${defaultIssue.treatmentIssueID}" <c:if test="${defaultIssue.treatmentIssueID == defaultTreatmentIssue}">selected</c:if>>${defaultIssue.treatmentIssueName}</option>
@@ -48,8 +44,14 @@
                     </select>
                 </div>
             </div>
-            
-            <c:if test="${customTreatmentIssues != null }">
+            -->
+        </div>
+        
+        <div class="well well-sm">
+        <div class="form-group col-md-12">
+                <h4>Select the tasks for the stage</h4>
+            </div>
+            <!-- TODO change this to list all the tasks associated with this stage
             <div class="form-group">
                 <label for="existingCustomTreatmentIssue" class="col-sm-2 control-label">Existing Custom Tx Issues</label>
                 <div class="col-sm-10">
@@ -61,22 +63,17 @@
                     </select>
                 </div>
             </div>
-            </c:if>
+             -->
             
-            <div class="form-group">
-                <label for="newCustomTreatmentIssue" class="col-sm-2 control-label">New Custom Tx Issue</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="newCustomTreatmentIssue" name="newCustomTreatmentIssue" value="${newCustomTreatmentIssue }" placeholder="Or enter a new treatment issue.">
-                </div>
-            </div>
-        </div>
+		</div>
+        
+        
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Next Step >></button>
+                <button type="submit" class="btn btn-default">Save Template</button>
             </div>
         </div>
     </form>
-
 
 
 <c:import url="../footer.jsp" />

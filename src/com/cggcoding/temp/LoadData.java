@@ -67,7 +67,7 @@ public class LoadData extends HttpServlet {
 			userClient.setActiveTreatmentPlanId(activeTx.getTreatmentPlanID());
 			switch (chosenAction) {
 				case "continue":
-					forwardTo = "taskReview.jsp";
+					forwardTo = "jsp/taskReview.jsp";
 					break;
 				case "newplan":
 					forwardTo = "index.jsp";
@@ -90,7 +90,7 @@ public class LoadData extends HttpServlet {
 					request.setAttribute("defaultTaskTypes", getDefaultTasksTypes());
 
 
-					forwardTo = "createplan/createtxplan-name.jsp";
+					forwardTo = "jsp/createplan/createtxplan-name.jsp";
 					break;
 				default:
 					forwardTo = "index.jsp";
@@ -177,37 +177,37 @@ public class LoadData extends HttpServlet {
 
 		//create and load tasks for each stage
 		//TODO have Task creation go through a factory or factory method
-		psychEdStage.addTask(new PsychEdTask(user.getUserID(), 0, "Coping with ED", "Chapter 3 - Developing Realistic Expectations"));
-		Task completedTask = new PsychEdTask(user.getUserID(), 1, "New Male Sexuality", "Chapter 2 - Male Sexual Myths");
+		psychEdStage.addTask(new PsychEdTask(0, user.getUserID(), "Coping with ED", "Chapter 3 - Developing Realistic Expectations"));
+		Task completedTask = new PsychEdTask(1, user.getUserID(), "New Male Sexuality", "Chapter 2 - Male Sexual Myths");
 		completedTask.markComplete();
 		psychEdStage.addTask(completedTask);
 		psychEdStage.updateProgress();
 
 		RelaxationTask relaxationTask1 = new RelaxationTask(user.getUserID(), 3, "Body Scan", "Do 1 body scan meditation.", 30);
 		relaxStage.addTaskSet(relaxationTask1, 4);
-		relaxStage.addTask(new RelaxationTask(user.getUserID(), 4, "Mindful Mean", "Eat a meal mindfully", 30));
-		relaxStage.addTask(new RelaxationTask(user.getUserID(), 5, "Mindful Meditation 1", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
+		relaxStage.addTask(new RelaxationTask(4, user.getUserID(), "Mindful Mean", "Eat a meal mindfully", 30));
+		relaxStage.addTask(new RelaxationTask(5, user.getUserID(), "Mindful Meditation 1", "Do a breath awareness or breath and body awareness mindful meditation.", 10));
 
 
 
-		CognitiveTask cog1 = new CognitiveTask(user.getUserID(), 10, "Replace Negative Cognition 1", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+		CognitiveTask cog1 = new CognitiveTask(10, user.getUserID(), "Replace Negative Cognition 1", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
 				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
 				+ "Click here for further details.");
 		cog1.setAutomaticThought("Everything I do fails.");
 		cog1.setAlternativeThought("Sometimes I struggle, but other times I succeed.");
 		cognitiveStage.addTask(cog1);
-		CognitiveTask cog2 = new CognitiveTask(user.getUserID(), 11, "Replace Negative Cognition 2", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+		CognitiveTask cog2 = new CognitiveTask(11, user.getUserID(), "Replace Negative Cognition 2", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
 				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
 				+ "Click here for further details.");
 		cognitiveStage.addTaskSet(cog2,3);
-		cognitiveStage.addTask(new CognitiveTask(user.getUserID(), 12, "Replace Negative Coalitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+		cognitiveStage.addTask(new CognitiveTask(12, user.getUserID(), "Replace Negative Coalitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
 				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
 				+ "Click here for further details."));
 
-		relationalStage.addTask(new CognitiveTask(user.getUserID(), 13, "Replace Negative Coalitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+		relationalStage.addTask(new CognitiveTask(13, user.getUserID(), "Replace Negative Coalitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
 				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
 				+ "Click here for further details."));
-		relationalStage.addTask(new CognitiveTask(user.getUserID(), 14, "Replace Negative Coalitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
+		relationalStage.addTask(new CognitiveTask(14, user.getUserID(), "Replace Negative Coalitions 3", "Throughout the day, pay attention to any negative thoughts you have about ED, your body, sex, etc.  "
 				+ "Once you notice it, pause, take a breath to get some distance from the thought, and then think of a realistic and balanced replacement though. "
 				+ "Click here for further details."));
 
