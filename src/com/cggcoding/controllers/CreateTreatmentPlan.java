@@ -1,11 +1,13 @@
 package com.cggcoding.controllers;
 
+import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.MessageHandler;
 
 import java.io.IOException;
@@ -77,6 +79,9 @@ public class CreateTreatmentPlan extends HttpServlet {
 		            case "planNameAndIssue":
 		                planName = request.getParameter("planName");
 		                planDescription = request.getParameter("planDescription");
+		                defaultIssueIDAsString = request.getParameter("defaultTreatmentIssue");
+		                existingCustomIssueIDAsString = request.getParameter("existingCustomTreatmentIssue");
+		                newCustomIssueName = request.getParameter("newCustomTreatmentIssue");
 		                
 		                if(planName.isEmpty() || planDescription.isEmpty()){
 		                	throw new ValidationException("You must enter a plan name and description.");
@@ -85,12 +90,8 @@ public class CreateTreatmentPlan extends HttpServlet {
 		                //validate plan name to make sure it doesn't exist for this user
 		                dbActionHandler.validateNewTreatmentPlanName(userAdmin.getUserID(), planName);
 		                
-		                //if new custom issue, validate
-		                defaultIssueIDAsString = request.getParameter("defaultTreatmentIssue");
-		                existingCustomIssueIDAsString = request.getParameter("existingCustomTreatmentIssue");
-		                newCustomIssueName = request.getParameter("newCustomTreatmentIssue");
+		                //detect which treatment issue source was used and validate
 		                int treatmentIssueID = getTreatmentIssueID(userAdmin, defaultIssueIDAsString, existingCustomIssueIDAsString, newCustomIssueName, request);
-		                
 		                
 		                TreatmentPlan newPlan = new TreatmentPlan(planName, user.getUserID(), planDescription, treatmentIssueID);
 		                
@@ -108,7 +109,7 @@ public class CreateTreatmentPlan extends HttpServlet {
 
 			}
 		
-    	} catch (ValidationException e) {
+    	} catch (ValidationException | DatabaseException e) {
     		request.setAttribute("errorMessage", e.getMessage());
     		request.setAttribute("planName", planName);
     		request.setAttribute("planDescription", planDescription);
@@ -132,7 +133,7 @@ public class CreateTreatmentPlan extends HttpServlet {
     
     //There are 3 options for setting the issue type for the new plan.  Since only 1 issue can be selected, here we first get all the possible parameters from the request
     //and if more than one has been selected, notify the user that they can only choose 1.  Otherwise, use the selected treatment issue.
-    private int getTreatmentIssueID(User user, String defaultIssueIDAsString, String existingCustomIssueIDAsString, String newCustomIssueName, HttpServletRequest request) throws ValidationException{
+    private int getTreatmentIssueID(User user, String defaultIssueIDAsString, String existingCustomIssueIDAsString, String newCustomIssueName, HttpServletRequest request) throws ValidationException, DatabaseException{
         int issueID = -1;
         boolean hasNewCustomIssue = !newCustomIssueName.isEmpty();
 
@@ -156,9 +157,9 @@ public class CreateTreatmentPlan extends HttpServlet {
         }
 
         if(numOfIDs > 1){
-            throw new ValidationException("Invalid condition. Multiple treatment issues are selected. Ensure that only 1 treatment issue is selected.");
+            throw new ValidationException(ErrorMessages.USER_SELECTED_MULTIPLE_ISSUES);
         }else if(numOfIDs < 1) {
-            throw new ValidationException("Invalid condition.  You must select a treatment issue for this plan");
+            throw new ValidationException(ErrorMessages.USER_SELECTED_NO_ISSUE);
         } else {
         	//if there are no validation problems and there is a new custom issue name, add the new issue to the database and get its id
         	if(hasNewCustomIssue){

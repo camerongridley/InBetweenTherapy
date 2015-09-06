@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.tomcat.jdbc.pool.DataSource;
 
+import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
@@ -13,72 +14,18 @@ import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
  * Created by cgrid_000 on 8/26/2015.
  */
 public class MySQLActionHandler {
-	private String message;
 	DataSource datasource;
-    /*TODO - removed old database connection code if I stick with new pool method
-     * Connection cn;
-    private String baseDbURL = "jdbc:mysql://localhost/";
-    private String catalog = "cggcodin_doitright";
-    private String userID = "admin";
-    private String password = "admin";
-    private String fullConnectionURL;
-    */
-    //private HttpServletRequest request;
-    // private WebMessageHandler messageHandler = new WebMessageHandler();
-    
 
     public MySQLActionHandler(DataSource datasource){
     	this.datasource = datasource;
-    	this.message = "";
-        //this.cn = null;
-        //fullConnectionURL = baseDbURL + catalog + "?user=" + userID + "&password=" + password;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void clearMessage(){
-        this.message = "";
-    }
-
-    /*
-    public Connection openConnection(){
-
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-        } catch (ClassNotFoundException ex) {
-            //messageHandler.setErrorMessage(request, "There seems to be a problem connecting to the database.  Please try again later.");
-            ex.printStackTrace();
-        } catch (IllegalAccessException ex){
-            //messageHandler.setErrorMessage(request, "There seems to be a problem connecting to the database.  Please try again later.");
-            System.out.println();
-            ex.printStackTrace();
-        } catch (InstantiationException ex){
-            //messageHandler.setErrorMessage(request, "There seems to be a problem connecting to the database.  Please try again later.");
-            ex.printStackTrace();
-        }
-
-
-        try {
-            cn = DriverManager.getConnection(fullConnectionURL);
-        } catch (SQLException e) {
-            //messageHandler.setErrorMessage(request, "There seems to be a problem connecting to the database.  Please try again later.");
-            e.printStackTrace();
-        }
-        return cn;
-
-    }
-    */
     
     public Connection getConnection(){
     	Connection conn = null;
@@ -93,21 +40,11 @@ public class MySQLActionHandler {
     }
     
 
-    /*
-    public void closeConnection(){
-        try {
-            cn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-    */
-
     /**************************************************
      *************** Login Methods ********************
      **************************************************/
      
-    public boolean validateUser(String email, String password){
+    public boolean validateUser(String email, String password) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet userInfo = null;
@@ -127,8 +64,8 @@ public class MySQLActionHandler {
             }
 
         } catch (SQLException e) {
-            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
             e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
 			DbUtils.closeQuietly(userInfo);
 			DbUtils.closeQuietly(ps);
@@ -144,7 +81,7 @@ public class MySQLActionHandler {
         }
     }
 
-    public User getUserInfo(String email, String password){
+    public User getUserInfo(String email, String password) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet userInfo = null;
@@ -180,8 +117,8 @@ public class MySQLActionHandler {
             
 
         } catch (SQLException e) {
-            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
-            e.printStackTrace();
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(userInfo);
 			DbUtils.closeQuietly(ps);
@@ -196,7 +133,7 @@ public class MySQLActionHandler {
      ******** Create Treatment Plan Methods ***********
      **************************************************/
     
-    public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID){
+    public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
@@ -218,8 +155,8 @@ public class MySQLActionHandler {
             }
 
         } catch (SQLException e) {
-            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
-            e.printStackTrace();
+        	e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
@@ -229,14 +166,14 @@ public class MySQLActionHandler {
         return issues;
     }
 
-	public ArrayList<TreatmentIssue> getDefaultTreatmentIssues() {
+	public ArrayList<TreatmentIssue> getDefaultTreatmentIssues() throws DatabaseException{
 		//TODO - probably shouldn't have a hardcoded value here for the admin user id and should instead lookup all the users with admin role and get their ids and run for each
 		ArrayList<TreatmentIssue> issues = getTreatmentIssuesList(1);
 		
 		return issues;
 	}
 	
-	public TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan){		
+	public TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan) throws DatabaseException{		
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
@@ -265,8 +202,8 @@ public class MySQLActionHandler {
             }
 
         } catch (SQLException e) {
-            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
             e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(generatedKeys);
 			DbUtils.closeQuietly(ps);
@@ -277,7 +214,7 @@ public class MySQLActionHandler {
 	}
 	
 	
-	public TreatmentIssue createTreatmentIssue(TreatmentIssue treatmentIssue) throws ValidationException{
+	public TreatmentIssue createTreatmentIssue(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
     	ResultSet rs = null;
@@ -308,8 +245,8 @@ public class MySQLActionHandler {
         	
 
         } catch (SQLException e) {
-            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
             e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(generatedKeys);
 			DbUtils.closeQuietly(ps);
@@ -319,7 +256,7 @@ public class MySQLActionHandler {
         return treatmentIssue;
 	}
 	
-	public boolean validateNewIssueName(String issueName, int userID) throws ValidationException{
+	public boolean validateNewIssueName(String issueName, int userID) throws ValidationException, DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
@@ -339,8 +276,8 @@ public class MySQLActionHandler {
             }
 
         } catch (SQLException e) {
-            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
             e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
 			DbUtils.closeQuietly(issueCount);
 			DbUtils.closeQuietly(ps);
@@ -348,16 +285,15 @@ public class MySQLActionHandler {
 			
 		}
 
-
         if(comboExists == 1){
-        	throw new ValidationException("The new custom treatment issue already exists in your profile.");
+        	throw new ValidationException(ErrorMessages.ISSUE_NAME_EXISTS);
             //return true;
         } else {
             return false;
         }
     }
 
-	public boolean validateNewTreatmentPlanName(int userID, String planName) throws ValidationException{
+	public boolean validateNewTreatmentPlanName(int userID, String planName) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
@@ -377,8 +313,8 @@ public class MySQLActionHandler {
             }
 
         } catch (SQLException e) {
-            //messageHandler.setErrorMessage(request, "There seems to be a problem accessing your information from the database.  Please try again later.");
             e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
 			DbUtils.closeQuietly(issueCount);
 			DbUtils.closeQuietly(ps);
@@ -387,7 +323,7 @@ public class MySQLActionHandler {
 		}
 
         if(comboExists != 0){
-        	throw new ValidationException("That treatment plan name already exists in your profile.  Please use a different name.");
+        	throw new ValidationException(ErrorMessages.PLAN_NAME_EXISTS);
             //return true;
         } else {
             return false;

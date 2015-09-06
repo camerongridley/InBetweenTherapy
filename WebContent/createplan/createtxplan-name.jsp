@@ -18,14 +18,14 @@
         <h2>Name the plan and identify what issue it is treating</h2>
     </div>
     
+    <!-- ERROR MESSAGE DISPLAY  -->
     <c:if test="${errorMessage != null}">
 		<div class="alert alert-danger alert-dismissible" role="alert">
 		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		  <strong>Error!</strong> ${errorMessage}
 		</div>
     </c:if>
-    
-    
+    <!-- END ERROR MESSAGE DISPLAY -->
     
     <form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
         <input type="hidden" name="treatmentPlanCreationStep" value="planNameAndIssue" />
