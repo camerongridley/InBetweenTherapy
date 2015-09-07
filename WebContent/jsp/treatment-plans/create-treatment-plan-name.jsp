@@ -17,7 +17,7 @@
         <h2>Name the plan and identify what issue it is treating</h2>
     </div>
     
-	<c:import url="../messagemodal.jsp"/>
+	<c:import url="../message-modal.jsp"/>
     
     <form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
         <input type="hidden" name="treatmentPlanCreationStep" value="planNameAndIssue" />

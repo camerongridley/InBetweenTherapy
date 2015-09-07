@@ -55,11 +55,11 @@ public class LogIn extends HttpServlet {
 					request.getSession().setAttribute("user", user);
 					
 					if(user.hasRole("admin")){
-				        request.getRequestDispatcher("/jsp/admintools/adminMainMenu.jsp").forward(request, response);
+				        request.getRequestDispatcher("/jsp/admin-tools/admin-main-menu.jsp").forward(request, response);
 					} else if(user.hasRole("therapist")){
-				        request.getRequestDispatcher("/jsp/therapisttools/therapistMainMenu.jsp").forward(request, response);
+				        request.getRequestDispatcher("/jsp/therapist-tools/therapist-main-menu.jsp").forward(request, response);
 					}if(user.hasRole("client")){
-				        request.getRequestDispatcher("/jsp/clienttools/clientmainmenu.jsp").forward(request,response);
+				        request.getRequestDispatcher("/jsp/client-tools/client-main-menu.jsp").forward(request,response);
 					}
 					
 				} else {

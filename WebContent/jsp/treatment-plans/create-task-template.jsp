@@ -11,7 +11,7 @@
         <h2>Subheading</h2>
     </div>
     
-	<c:import url="../messagemodal.jsp"/>
+	<c:import url="../message-modal.jsp"/>
 
 
 

@@ -7,7 +7,7 @@
 		
 
 
-	<c:import url="/jsp/messagemodal.jsp"/>
+	<c:import url="/jsp/message-modal.jsp"/>
 	
 	<div class="row">
 		<div class="col-md-2">

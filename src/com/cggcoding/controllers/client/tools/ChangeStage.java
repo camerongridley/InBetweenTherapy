@@ -41,7 +41,7 @@ public class ChangeStage extends HttpServlet {
 
         request.setAttribute("treatmentPlan", treatmentPlan);
 
-        request.getRequestDispatcher("/jsp/taskReview.jsp").forward(request,response);
+        request.getRequestDispatcher("/jsp/task-review.jsp").forward(request,response);
 
 	}
 

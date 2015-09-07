@@ -56,7 +56,7 @@ public class LoadData extends HttpServlet {
 
 		if(user.hasRole("client")){
 			UserClient userClient = (UserClient)session.getAttribute("user");
-			//load all treatmentPlans of the user.  If one is marked as inProgress put it is session and go straight to taskReview.jsp
+			//load all treatmentPlans of the user.  If one is marked as inProgress put it is session and go straight to task-review.jsp
 			//if none are inProgress then offer 1-2 lists of choices: the default templates and if applicable, any from associated therapist
 			activeTx = buildClientData(userClient);
 			
@@ -67,7 +67,7 @@ public class LoadData extends HttpServlet {
 			userClient.setActiveTreatmentPlanId(activeTx.getTreatmentPlanID());
 			switch (chosenAction) {
 				case "continue":
-					forwardTo = "jsp/taskReview.jsp";
+					forwardTo = "jsp/task-review.jsp";
 					break;
 				case "newplan":
 					forwardTo = "index.jsp";
@@ -90,7 +90,7 @@ public class LoadData extends HttpServlet {
 					request.setAttribute("defaultTaskTypes", getDefaultTasksTypes());
 
 
-					forwardTo = "jsp/createplan/createtxplan-name.jsp";
+					forwardTo = "/jsp/treatment-plans/create-treatment-plan-name.jsp";
 					break;
 				default:
 					forwardTo = "index.jsp";

@@ -81,7 +81,7 @@ public class CreateStageTemplate extends HttpServlet {
 		                
 		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_CREATE);
 
-		                forwardTo = "/jsp/admintools/adminMainMenu.jsp";
+		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
 
 				}
 

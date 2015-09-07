@@ -60,7 +60,7 @@ public class CreateTreatmentPlan extends HttpServlet {
 					
 	                TreatmentPlan newPlan = new TreatmentPlan(planName, user.getUserID(), planDescription, txIssueID);
 	                request.setAttribute("newPlan", newPlan);
-	                forwardTo = "/jsp/createplan/createtxplan-stages.jsp";
+	                forwardTo = "/jsp/treatment-plans/create-treatment-plan-stages.jsp";
 	                break;
 	            default:
 				}
@@ -74,7 +74,7 @@ public class CreateTreatmentPlan extends HttpServlet {
 						//get treatment issues associated with admin role
 						ArrayList<TreatmentIssue> treatmentIssues = dbActionHandler.getDefaultTreatmentIssues();
 						session.setAttribute("defaultTreatmentIssues", treatmentIssues);
-						forwardTo = "/jsp/createplan/createtxplan-name.jsp";
+						forwardTo = "/jsp/treatment-plans/create-treatment-plan-name.jsp";
 						break;
 		            case "planNameAndIssue":
 		                planName = request.getParameter("planName");
@@ -96,7 +96,7 @@ public class CreateTreatmentPlan extends HttpServlet {
 		                newPlan = dbActionHandler.createTreatmentPlanBasic(newPlan);
 		
 		                request.setAttribute("newPlan", newPlan);
-		                forwardTo = "/jsp/createplan/createtxplan-stages.jsp";
+		                forwardTo = "/jsp/treatment-plans/create-treatment-plan-stages.jsp";
 		                break;
 		            case "stageAndTask":
 	            	
@@ -114,7 +114,7 @@ public class CreateTreatmentPlan extends HttpServlet {
     		request.setAttribute("existingCustomTreatmentIssue", existingCustomIssueIDAsString);
     		request.setAttribute("newCustomTreatmentIssue", newCustomIssueName);
     		
-    		forwardTo = "/jsp/createplan/createtxplan-name.jsp";
+    		forwardTo = "/jsp/treatment-plans/create-treatment-plan-name.jsp";
 			//e.printStackTrace();
 		}
     	

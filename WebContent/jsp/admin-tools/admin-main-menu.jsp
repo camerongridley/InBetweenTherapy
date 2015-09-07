@@ -16,7 +16,7 @@
 	<h1>Admin Main Menu</h1>
 </div>
 
-<c:import url="../messagemodal.jsp" />
+<c:import url="../message-modal.jsp" />
 
 <div class="row">
 	<div class="col-md-6">

@@ -65,7 +65,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		request.setAttribute("treatmentPlan", treatmentPlan);
 		request.setAttribute("currentStage", updatedStage);
 
-		request.getRequestDispatcher("/jsp/taskReview.jsp").forward(request, response);
+		request.getRequestDispatcher("/jsp/task-review.jsp").forward(request, response);
 		
 	}
 
