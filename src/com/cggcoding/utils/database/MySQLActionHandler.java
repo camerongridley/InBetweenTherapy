@@ -8,6 +8,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -18,6 +19,10 @@ import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
  * Created by cgrid_000 on 8/26/2015.
+ */
+/**
+ * @author cgrid_000
+ *
  */
 public class MySQLActionHandler {
 	DataSource datasource;
@@ -130,7 +135,7 @@ public class MySQLActionHandler {
     
     
     /**************************************************************************************************
-     ****************************** Create Treatment Plan Methods *************************************
+     ****************************** Treatment Plan Methods *************************************
      **************************************************************************************************/
     
     public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID) throws DatabaseException{
@@ -173,34 +178,39 @@ public class MySQLActionHandler {
 		return issues;
 	}
 	
-	public TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan) throws DatabaseException{		
+	public TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException{		
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
         try {
         	cn = getConnection();
-        	String sql = "INSERT INTO `cggcodin_doitright`.`treatment_plan` (`treatment_plan_user_id_fk`, `treatment_plan_treatment_issue_id_fk`, `title`, `description`, `current_stage_index`, `active_view_stage_index`, `in_progress`) "
-            		+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
         	
-            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            
-            ps.setInt(1, treatmentPlan.getUserID());
-            ps.setInt(2, treatmentPlan.getTreatmentIssueID());
-            ps.setString(3, treatmentPlan.getName().trim());
-            ps.setString(4, treatmentPlan.getDescription().trim());
-            ps.setInt(5, treatmentPlan.getCurrentStageIndex());
-            ps.setInt(6, treatmentPlan.getActiveViewStageIndex());
-            ps.setBoolean(7, treatmentPlan.isInProgress());
-
-            int success = ps.executeUpdate();
-            
-            generatedKeys = ps.getGeneratedKeys();
-   
-            while (generatedKeys.next()){
-            	treatmentPlan.setTreatmentPlanID(generatedKeys.getInt(1));;
-            }
-
+        	//determine if the combo if userID and plan name exists, if not, then proceed to inserting new plan name
+        	boolean comboValid = validateNewTreatmentPlanName(cn, treatmentPlan.getUserID(), treatmentPlan.getName());
+        	
+        	if(comboValid){
+	        	String sql = "INSERT INTO `cggcodin_doitright`.`treatment_plan` (`treatment_plan_user_id_fk`, `treatment_plan_treatment_issue_id_fk`, `title`, `description`, `current_stage_index`, `active_view_stage_index`, `in_progress`) "
+	            		+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+	        	
+	            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            
+	            ps.setInt(1, treatmentPlan.getUserID());
+	            ps.setInt(2, treatmentPlan.getTreatmentIssueID());
+	            ps.setString(3, treatmentPlan.getName().trim());
+	            ps.setString(4, treatmentPlan.getDescription().trim());
+	            ps.setInt(5, treatmentPlan.getCurrentStageIndex());
+	            ps.setInt(6, treatmentPlan.getActiveViewStageIndex());
+	            ps.setBoolean(7, treatmentPlan.isInProgress());
+	
+	            int success = ps.executeUpdate();
+	            
+	            generatedKeys = ps.getGeneratedKeys();
+	   
+	            while (generatedKeys.next()){
+	            	treatmentPlan.setTreatmentPlanID(generatedKeys.getInt(1));;
+	            }
+        	}
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
@@ -214,18 +224,136 @@ public class MySQLActionHandler {
 	}
 	
 	
-	public TreatmentIssue createTreatmentIssue(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{
+	
+	
+	private boolean validateNewTreatmentPlanName(Connection cn, int userID, String planName) throws ValidationException, DatabaseException{
+    	PreparedStatement ps = null;
+        ResultSet issueCount = null;
+        int comboExists = 0;
+        
+        try {
+
+            ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_plan WHERE (((treatment_plan.title)=?) AND ((treatment_plan.treatment_plan_user_id_fk)=?))");
+            ps.setString(1, planName.trim());
+            ps.setInt(2, userID);
+
+            issueCount = ps.executeQuery();
+
+
+            while (issueCount.next()){
+                comboExists = issueCount.getInt("COUNT(*)");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(issueCount);
+			DbUtils.closeQuietly(ps);
+		}
+		
+        if(comboExists > 0){
+        	throw new ValidationException(ErrorMessages.PLAN_NAME_EXISTS);
+        } else {
+        	return true;
+        }
+		
+	}
+	
+    /**************************************************************************************************
+     ****************************************** Stage Methods *****************************************
+     **************************************************************************************************/	
+	
+	public Stage createStageTemplate(Stage newStageTemplate) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
-    	ResultSet rs = null;
         ResultSet generatedKeys = null;
         
         try {
         	cn = getConnection();
         	//first check to see if the userID and issue name combo already exists
-        	boolean comboExists = validateNewIssueName(treatmentIssue.getTreatmentIssueName(), treatmentIssue.getUserID());
+        	boolean comboValid = validateNewStageName(cn, newStageTemplate.getName(), newStageTemplate.getUserID());
         	
-        	if(!comboExists){
+        	if(comboValid){
+        		String sql = "INSERT INTO `cggcodin_doitright`.`stage` (`stage_user_id_fk`, `title`, `description`, `order`) "
+                		+ "VALUES (?, ?, ?, ?)";
+            	
+                ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                
+                ps.setInt(1, newStageTemplate.getUserID());
+                ps.setString(2, newStageTemplate.getName().trim());
+                ps.setString(3, newStageTemplate.getDescription().trim());
+                ps.setInt(4, newStageTemplate.getIndex());
+
+                int success = ps.executeUpdate();
+                
+                generatedKeys = ps.getGeneratedKeys();
+       
+                while (generatedKeys.next()){
+                	newStageTemplate.setStageID(generatedKeys.getInt(1));
+                }
+        	}
+        	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return newStageTemplate;
+	}
+
+
+	private boolean validateNewStageName(Connection cn, String stageName, int userID) throws ValidationException, DatabaseException{
+    	PreparedStatement ps = null;
+        ResultSet stageCount = null;
+        int comboExists = 0;
+	        
+        try {
+			ps = cn.prepareStatement("SELECT COUNT(*)  FROM stage WHERE (((stage.title)=?) AND ((stage.stage_user_id_fk)=?))");
+			ps.setString(1, stageName.trim());
+			ps.setInt(2, userID);
+
+			stageCount = ps.executeQuery();
+
+			while (stageCount.next()){
+			    comboExists = stageCount.getInt("COUNT(*)");
+			}
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(stageCount);
+			DbUtils.closeQuietly(ps);
+		}
+        
+		if(comboExists > 0){
+			throw new ValidationException(ErrorMessages.STAGE_NAME_EXISTS);
+		} else {
+			return true;
+		}
+	}
+	
+    /**************************************************************************************************
+     *************************************** Treatment Issue Methods **********************************
+     **************************************************************************************************/
+
+	public TreatmentIssue createTreatmentIssue(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+        	cn = getConnection();
+        	//first check to see if the userID and issue name combo already exists
+        	boolean comboValid = validateNewIssueName(cn, treatmentIssue.getTreatmentIssueName(), treatmentIssue.getUserID());
+        	
+        	if(comboValid){
         		String sql = "INSERT INTO `cggcodin_doitright`.`treatment_issue` (`issue`, `treatment_issue_user_id_fk`) "
                 		+ "VALUES (?, ?)";
             	
@@ -256,14 +384,23 @@ public class MySQLActionHandler {
         return treatmentIssue;
 	}
 	
-	public boolean validateNewIssueName(String issueName, int userID) throws ValidationException, DatabaseException{
-    	Connection cn = null;
+
+	/**
+	 * Checks if there is an existing combination of treatment issue name and userID in the database.
+	 * @param cn Database connection
+	 * @param issueName Treatment Issue name of new issue that user wants to create
+	 * @param userID id of the user
+	 * @return true if the the combination is valid and does not exist in the database. false if the combination exists and is therefore invalid.
+	 * @throws SQLException
+	 * @throws ValidationException 
+	 * @throws DatabaseException
+	 */
+	private boolean validateNewIssueName(Connection cn, String issueName, int userID) throws ValidationException, DatabaseException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
         
         try {
-        	cn = getConnection();
             ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_issue WHERE (((treatment_issue.issue)=?) AND ((treatment_issue.treatment_issue_user_id_fk)=?))");
             ps.setString(1, issueName.trim());
             ps.setInt(2, userID);
@@ -281,62 +418,14 @@ public class MySQLActionHandler {
         } finally {
 			DbUtils.closeQuietly(issueCount);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
-			
 		}
 
-        if(comboExists == 1){
+        if(comboExists > 0){
         	throw new ValidationException(ErrorMessages.ISSUE_NAME_EXISTS);
-            //return true;
         } else {
-            return false;
+            return true;
         }
     }
 
-	public boolean validateNewTreatmentPlanName(int userID, String planName) throws ValidationException, DatabaseException{
-		Connection cn = null;
-    	PreparedStatement ps = null;
-        ResultSet issueCount = null;
-        int comboExists = 0;
-        
-        try {
-        	cn = getConnection();
-            ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_plan WHERE (((treatment_plan.title)=?) AND ((treatment_plan.treatment_plan_user_id_fk)=?))");
-            ps.setString(1, planName.trim());
-            ps.setInt(2, userID);
-
-            issueCount = ps.executeQuery();
-
-
-            while (issueCount.next()){
-                comboExists = issueCount.getInt("COUNT(*)");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-        } finally {
-			DbUtils.closeQuietly(issueCount);
-			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
-			
-		}
-
-        if(comboExists != 0){
-        	throw new ValidationException(ErrorMessages.PLAN_NAME_EXISTS);
-            //return true;
-        } else {
-            return false;
-        }
-		
-	}
-	
-    /**************************************************************************************************
-     ****************************** Create Stage Methods *************************************
-     **************************************************************************************************/	
-	
-	public void createStageTemplate(){
-		
-	}
 
 }

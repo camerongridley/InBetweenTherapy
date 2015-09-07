@@ -21,8 +21,8 @@ public class Stage implements Completable {
 	private boolean inProgress;//TODO implement inProgress - add logic to update it appropriately - dynamic or simple?
 	private boolean isTemplate;
 
-	
-	private Stage (int stageID, int userID, String name, String description, int index){
+	//TODO if decide to use and Factories, change these constructors to private
+	public Stage (int stageID, int userID, String name, String description, int index){
 		this.stageID = stageID;
 		this.userID = userID;
 		this.name = name;
@@ -38,7 +38,7 @@ public class Stage implements Completable {
 		this.isTemplate = false;
 	}
 
-	private Stage (int userID, String name, String description){
+	public Stage (int userID, String name, String description){
 		this.userID = userID;
 		this.stageID = -1;
 		this.name = name;
@@ -64,6 +64,18 @@ public class Stage implements Completable {
 		return new Stage(stageID, userID, name, description, index);
 	}
 	
+	public void setStageID(int stageID) {
+		this.stageID = stageID;
+	}
+
+	public int getUserID() {
+		return userID;
+	}
+
+	public void setUserID(int userID) {
+		this.userID = userID;
+	}
+
 	public List<Task> getTasks() {
 		return tasks;
 	}

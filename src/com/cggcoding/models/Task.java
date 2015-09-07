@@ -15,6 +15,7 @@ public abstract class Task implements Completable, Updateable{
 	private int index;
 	private boolean isTemplate;
 
+	//TODO if going to use TaskFactory then make all of these and subclass constructors private!
 	public Task(int taskID) {
 		this.taskID = taskID;
 		this.taskSetID = -1;
