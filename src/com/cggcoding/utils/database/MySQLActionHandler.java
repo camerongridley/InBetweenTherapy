@@ -275,8 +275,8 @@ public class MySQLActionHandler {
         	boolean comboValid = validateNewStageName(cn, newStageTemplate.getName(), newStageTemplate.getUserID());
         	
         	if(comboValid){
-        		String sql = "INSERT INTO `cggcodin_doitright`.`stage` (`stage_user_id_fk`, `title`, `description`, `order`) "
-                		+ "VALUES (?, ?, ?, ?)";
+        		String sql = "INSERT INTO `cggcodin_doitright`.`stage` (`stage_user_id_fk`, `title`, `description`, `order`, `is_template`) "
+                		+ "VALUES (?, ?, ?, ?, ?)";
             	
                 ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 
@@ -284,6 +284,7 @@ public class MySQLActionHandler {
                 ps.setString(2, newStageTemplate.getName().trim());
                 ps.setString(3, newStageTemplate.getDescription().trim());
                 ps.setInt(4, newStageTemplate.getIndex());
+                ps.setInt(5, 1);
 
                 int success = ps.executeUpdate();
                 

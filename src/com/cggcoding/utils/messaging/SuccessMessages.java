@@ -14,4 +14,6 @@ public final class SuccessMessages {
 	//Stage Creation
 	public static final String STAGE_TEMPLATE_CREATE = "The stage template has been successfully added to your profile.";
 	
+	//Task Creation
+	public static final String TASK_TEMPLATE_CREATE = "The task template has been successfully added to your profile.";
 }
