@@ -1,4 +1,4 @@
-package com.cggcoding.controllers;
+package com.cggcoding.controllers.treatmentplan;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;

@@ -1,4 +1,4 @@
-package com.cggcoding.controllers.TreatmentPlanCreation;
+package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -55,6 +55,7 @@ public class CreateStageTemplate extends HttpServlet {
 		String creationStep = request.getParameter("chosenAction");
 		String stageName = request.getParameter("stageName");
     	String stageDescription = request.getParameter("stageDescription");
+    	String newStageGoal =request.getParameter("stageGoal");
 		
 		
 		try{
@@ -63,10 +64,7 @@ public class CreateStageTemplate extends HttpServlet {
 								
 				switch (creationStep){
 					case "beginning":
-						//get treatment issues associated with admin role
-						ArrayList<TreatmentIssue> treatmentIssues = dbActionHandler.getDefaultTreatmentIssues();
-						session.setAttribute("defaultTreatmentIssues", treatmentIssues);
-						forwardTo = "/jsp/treatment-plans/create-stage-template.jsp";
+						forwardTo = "/jsp/treatment-plans/stage-create-template.jsp";
 						break;
 		            case "stageName":
 		                if(stageName.isEmpty() || stageDescription.isEmpty()){
@@ -77,23 +75,37 @@ public class CreateStageTemplate extends HttpServlet {
 		                Stage newStageTemplate = new Stage(user.getUserID(), stageName, stageDescription);
 		                
 		                //validate plan name to make sure it doesn't exist for this user, if not then submit to be inserted into database
-		                dbActionHandler.createStageTemplate(newStageTemplate);
-		                
-		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_CREATE);
+		                newStageTemplate = dbActionHandler.createStageTemplate(newStageTemplate);
 
+		                request.setAttribute("stage", newStageTemplate);
+		                forwardTo = "/jsp/treatment-plans/stage-create-template-details.jsp";
+		                break;
+		            case "addGoal":
+		            	Stage stage = (Stage)request.getAttribute("stage");//dbActionHandler.getStageTemplate(user.getUserID(), Integer.parseInt(request.getParameter("stageID")));
+		            	request.setAttribute("stage", stage);
+		            	
+		            	
+		            	
+		                forwardTo = "/jsp/treatment-plans/stage-create-template-details.jsp";
+		            	break;
+		            case "stageGoalsTasks":
+		            	
+		            	
+		            	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_CREATE);
 		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
-
 				}
 
 			}
 			
 			
 		} catch (ValidationException | DatabaseException e){
+			//in case of error and user is sent back to page - re-populate the forms
 			request.setAttribute("stageName", stageName);
 			request.setAttribute("stageDescription", stageDescription);
 			request.setAttribute("errorMessage", e.getMessage());
-
-            forwardTo = "/jsp/treatment-plans/create-stage-template.jsp";
+			request.setAttribute("newStageGoal", newStageGoal);
+			
+            forwardTo = "/jsp/treatment-plans/stage-create-template.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

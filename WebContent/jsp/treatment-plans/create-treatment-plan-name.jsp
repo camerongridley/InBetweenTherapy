@@ -10,14 +10,14 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="../header.jsp" />
+<c:import url="/jsp/header.jsp" />
 
     <div class="page-header">
         <h1>Create a Treatment Plan</h1>
         <h2>Name the plan and identify what issue it is treating</h2>
     </div>
     
-	<c:import url="../message-modal.jsp"/>
+	<c:import url="/jsp/message-modal.jsp"/>
     
     <form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
         <input type="hidden" name="treatmentPlanCreationStep" value="planNameAndIssue" />
@@ -79,4 +79,4 @@
 
 
 
-<c:import url="../footer.jsp" />
+<c:import url="/jsp/footer.jsp" />

@@ -4,14 +4,14 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="../header.jsp" />
+<c:import url="/jsp/header.jsp" />
 
     <div class="page-header">
         <h1>Heading</h1>
         <h2>Subheading</h2>
     </div>
     
-	<c:import url="../message-modal.jsp"/>
+	<c:import url="/jsp/message-modal.jsp"/>
 
 	<form class="form-horizontal" action="./CreateStageTemplate" method="POST">
 		<input type=hidden name="chosenAction" value="stageName">
@@ -29,14 +29,14 @@
         </div>
         
         
-        <div class="form-group col-md-12">
+       <!--  <div class="form-group col-md-12">
                 <h4>Define the goals for the stage</h4>
         </div>
 
        
        	<div class="form-group col-md-12">
                <h4>Select the tasks for the stage</h4>
-           </div>
+        </div> -->
            <!-- TODO change this to list all the tasks associated with this stage
            <div class="form-group">
                <label for="existingCustomTreatmentIssue" class="col-sm-2 control-label">Existing Custom Tx Issues</label>
@@ -55,10 +55,10 @@
         
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Save Template</button>
+                <button type="submit" class="btn btn-default">Add Goals & Tasks >></button>
             </div>
         </div>
     </form>
 
 
-<c:import url="../footer.jsp" />
+<c:import url="/jsp/footer.jsp" />
