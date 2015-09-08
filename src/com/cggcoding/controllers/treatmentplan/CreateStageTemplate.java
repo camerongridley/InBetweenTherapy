@@ -53,9 +53,10 @@ public class CreateStageTemplate extends HttpServlet {
 		HttpSession session = request.getSession();
 		String forwardTo = "index.jsp";
 		String creationStep = request.getParameter("chosenAction");
+		int stageID = Integer.parseInt(request.getParameter("stageID"));
 		String stageName = request.getParameter("stageName");
     	String stageDescription = request.getParameter("stageDescription");
-    	String newStageGoal =request.getParameter("stageGoal");
+    	String newStageGoal =request.getParameter("newStageGoal");
 		
 		
 		try{
@@ -78,9 +79,11 @@ public class CreateStageTemplate extends HttpServlet {
 		                newStageTemplate = dbActionHandler.createStageTemplate(newStageTemplate);
 
 		                request.setAttribute("stage", newStageTemplate);
+		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
 		                forwardTo = "/jsp/treatment-plans/stage-create-template-details.jsp";
 		                break;
 		            case "addGoal":
+		            	//Stage stageWithNewGoal = new Stage()
 		            	Stage stage = (Stage)request.getAttribute("stage");//dbActionHandler.getStageTemplate(user.getUserID(), Integer.parseInt(request.getParameter("stageID")));
 		            	request.setAttribute("stage", stage);
 		            	
@@ -91,7 +94,7 @@ public class CreateStageTemplate extends HttpServlet {
 		            case "stageGoalsTasks":
 		            	
 		            	
-		            	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_CREATE);
+		            	
 		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
 				}
 

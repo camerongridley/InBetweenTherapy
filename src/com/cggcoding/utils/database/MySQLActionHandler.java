@@ -137,46 +137,6 @@ public class MySQLActionHandler {
     /**************************************************************************************************
      ****************************** Treatment Plan Methods *************************************
      **************************************************************************************************/
-    
-    public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID) throws DatabaseException{
-    	Connection cn = null;
-    	PreparedStatement ps = null;
-        ResultSet rs = null;
-        
-        ArrayList<TreatmentIssue> issues = new ArrayList<>();
-        
-        try {
-        	cn = getConnection();
-            ps = cn.prepareStatement("SELECT treatment_issue.treatment_issue_id, treatment_issue.issue, user.user_id "
-            		+ "FROM (user) INNER JOIN treatment_issue ON user.user_id = treatment_issue.treatment_issue_user_id_fk "
-            		+ "WHERE (((user.user_id)=?))");
-            ps.setInt(1, userID);
-
-            rs = ps.executeQuery();
-   
-            while (rs.next()){
-            	TreatmentIssue issue = new TreatmentIssue(rs.getInt("treatment_issue_id"), rs.getString("issue"));
-            	issues.add(issue);
-            }
-
-        } catch (SQLException e) {
-        	e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-        } finally {
-        	DbUtils.closeQuietly(rs);
-			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
-        }
-        
-        return issues;
-    }
-
-	public ArrayList<TreatmentIssue> getDefaultTreatmentIssues() throws DatabaseException{
-		//TODO - probably shouldn't have a hardcoded value here for the admin user id and should instead lookup all the users with admin role and get their ids and run for each
-		ArrayList<TreatmentIssue> issues = getTreatmentIssuesList(1);
-		
-		return issues;
-	}
 	
 	public TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException{		
 		Connection cn = null;
@@ -428,5 +388,44 @@ public class MySQLActionHandler {
         }
     }
 
+	public ArrayList<TreatmentIssue> getDefaultTreatmentIssues() throws DatabaseException{
+		//TODO - probably shouldn't have a hardcoded value here for the admin user id and should instead lookup all the users with admin role and get their ids and run for each
+		ArrayList<TreatmentIssue> issues = getTreatmentIssuesList(1);
+		
+		return issues;
+	}
+
+    public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID) throws DatabaseException{
+    	Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        ArrayList<TreatmentIssue> issues = new ArrayList<>();
+        
+        try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT treatment_issue.treatment_issue_id, treatment_issue.issue, user.user_id "
+            		+ "FROM (user) INNER JOIN treatment_issue ON user.user_id = treatment_issue.treatment_issue_user_id_fk "
+            		+ "WHERE (((user.user_id)=?))");
+            ps.setInt(1, userID);
+
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	TreatmentIssue issue = new TreatmentIssue(rs.getInt("treatment_issue_id"), rs.getString("issue"));
+            	issues.add(issue);
+            }
+
+        } catch (SQLException e) {
+        	e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return issues;
+    }
 
 }

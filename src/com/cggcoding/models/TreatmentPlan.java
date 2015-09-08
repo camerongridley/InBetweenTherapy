@@ -15,6 +15,7 @@ public class TreatmentPlan {
 	private int currentStageIndex;
 	private int activeViewStageIndex;
 	private boolean inProgress;
+	private boolean isTemplate;
 	
 	public TreatmentPlan(int treatmentPlanID, int userID, String name, String description, int txIssueID){
 		this.treatmentPlanID = treatmentPlanID;
@@ -117,6 +118,14 @@ public class TreatmentPlan {
 
 	public void setInProgress(boolean inProgress) {
 		this.inProgress = inProgress;
+	}
+
+	public boolean isTemplate() {
+		return isTemplate;
+	}
+
+	public void setTemplate(boolean isTemplate) {
+		this.isTemplate = isTemplate;
 	}
 
 	public int getNumberOfStages(){

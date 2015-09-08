@@ -12,7 +12,7 @@ public final class SuccessMessages {
 	public static final String TREATMENT_PLAN_TEMPLATE_CREATE = "The treatment plan template has been successfully added to your profile.";
 	
 	//Stage Creation
-	public static final String STAGE_TEMPLATE_CREATE = "The stage template has been successfully added to your profile.";
+	public static final String STAGE_TEMPLATE_BASIC_CREATE = "The basic stage template has been successfully added to your profile.  Now define goals and tasks for the stage.";
 	
 	//Task Creation
 	public static final String TASK_TEMPLATE_CREATE = "The task template has been successfully added to your profile.";

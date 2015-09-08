@@ -15,7 +15,6 @@
 
 <form class="form-horizontal" action="./CreateStageTemplate" method="POST">
 	<input type="hidden" name="chosenAction" value="stageGoalsTasks">
-	<input type="hidden" name="addingGoal" value="true">
 	<input type="hidden" name="stageID" value="stage.stageID">
 	<h2>Define goals for the stage: ${stage.name }</h2>
 
