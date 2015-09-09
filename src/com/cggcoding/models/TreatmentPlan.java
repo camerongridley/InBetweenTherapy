@@ -3,6 +3,13 @@ package com.cggcoding.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tomcat.jdbc.pool.DataSource;
+
+import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.database.DatabaseActionHandler;
+import com.cggcoding.utils.database.MySQLActionHandler;
+
 public class TreatmentPlan {
 	private int treatmentPlanID;
 	private int userID;
@@ -161,6 +168,12 @@ public class TreatmentPlan {
 
 	public int getActiveViewStageOrder(){
 		return getStageOrder(activeViewStageIndex);
+	}
+	
+	public void save(DataSource datasource) throws ValidationException, DatabaseException{
+		 DatabaseActionHandler mysqlActionHandler = new MySQLActionHandler(datasource);
+		 
+		 mysqlActionHandler.createTreatmentPlanBasic(this);
 	}
 
 }

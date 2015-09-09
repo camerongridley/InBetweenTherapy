@@ -19,6 +19,7 @@ import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.SuccessMessages;
 
@@ -49,7 +50,7 @@ public class CreateStageTemplate extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		User user = (User)request.getSession().getAttribute("user");
 		DataSource datasource = (DataSource)request.getServletContext().getAttribute("datasource");
-		MySQLActionHandler dbActionHandler = new MySQLActionHandler(datasource);
+		DatabaseActionHandler dbActionHandler = new MySQLActionHandler();
 		HttpSession session = request.getSession();
 		String forwardTo = "index.jsp";
 		String creationStep = request.getParameter("chosenAction");

@@ -32,6 +32,7 @@ public class DatasourceCreator implements ServletContextListener {
      * @see ServletContextListener#contextInitialized(ServletContextEvent)
      */
     public void contextInitialized(ServletContextEvent event)  { 
+    	/*
          PoolProperties props = new PoolProperties();
          props.setUrl("jdbc:mysql://localhost/cggcodin_doitright");
          props.setDriverClassName( "com.mysql.jdbc.Driver" );
@@ -41,6 +42,7 @@ public class DatasourceCreator implements ServletContextListener {
          DataSource datasource = new org.apache.tomcat.jdbc.pool.DataSource( props );
          
         event.getServletContext().setAttribute("datasource", datasource);
+        */
     }
 	
 }

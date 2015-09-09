@@ -24,32 +24,29 @@ import com.cggcoding.utils.messaging.ErrorMessages;
  * @author cgrid_000
  *
  */
-public class MySQLActionHandler {
-	DataSource datasource;
+public class MySQLActionHandler implements DatabaseActionHandler{
+	DatabaseConnection mysqlConn;
 
-    public MySQLActionHandler(DataSource datasource){
-    	this.datasource = datasource;
+    public MySQLActionHandler(){
+    	this.mysqlConn = new MySQLConnection();
     }
 
-    
+    /* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#getConnection()
+	 */
+	@Override
     public Connection getConnection(){
-    	Connection conn = null;
-    	try {
-    		conn = datasource.getConnection();
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
-		}
-    	
-    	return conn;
+		return mysqlConn.getConnection();
+
     }
     
 
-    /**************************************************
-     *************** Login Methods ********************
-     **************************************************/
+    /* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#validateUser(java.lang.String, java.lang.String)
+	 */
      
-    public boolean validateUser(String email, String password) throws DatabaseException{
+    @Override
+	public boolean validateUser(String email, String password) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet userInfo = null;
@@ -86,7 +83,11 @@ public class MySQLActionHandler {
         }
     }
 
-    public User getUserInfo(String email, String password) throws DatabaseException{
+    /* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#getUserInfo(java.lang.String, java.lang.String)
+	 */
+    @Override
+	public User getUserInfo(String email, String password) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet userInfo = null;
@@ -134,11 +135,12 @@ public class MySQLActionHandler {
     }
     
     
-    /**************************************************************************************************
-     ****************************** Treatment Plan Methods *************************************
-     **************************************************************************************************/
+    /* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#createTreatmentPlanBasic(com.cggcoding.models.TreatmentPlan)
+	 */
 	
-	public TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException{		
+	@Override
+	public TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan) throws DatabaseException{		
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
@@ -147,9 +149,9 @@ public class MySQLActionHandler {
         	cn = getConnection();
         	
         	//determine if the combo if userID and plan name exists, if not, then proceed to inserting new plan name
-        	boolean comboValid = validateNewTreatmentPlanName(cn, treatmentPlan.getUserID(), treatmentPlan.getName());
+        	//TODO delete commented validation code - boolean comboValid = validateNewTreatmentPlanName(cn, treatmentPlan.getUserID(), treatmentPlan.getName());
         	
-        	if(comboValid){
+        	//if(comboValid){
 	        	String sql = "INSERT INTO `cggcodin_doitright`.`treatment_plan` (`treatment_plan_user_id_fk`, `treatment_plan_treatment_issue_id_fk`, `title`, `description`, `current_stage_index`, `active_view_stage_index`, `in_progress`) "
 	            		+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
 	        	
@@ -170,7 +172,7 @@ public class MySQLActionHandler {
 	            while (generatedKeys.next()){
 	            	treatmentPlan.setTreatmentPlanID(generatedKeys.getInt(1));;
 	            }
-        	}
+        	//}
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
@@ -186,7 +188,7 @@ public class MySQLActionHandler {
 	
 	
 	
-	private boolean validateNewTreatmentPlanName(Connection cn, int userID, String planName) throws ValidationException, DatabaseException{
+	public boolean validateNewTreatmentPlanName(Connection cn, int userID, String planName) throws ValidationException, DatabaseException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
@@ -220,10 +222,11 @@ public class MySQLActionHandler {
 		
 	}
 	
-    /**************************************************************************************************
-     ****************************************** Stage Methods *****************************************
-     **************************************************************************************************/	
+    /* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#createStageTemplate(com.cggcoding.models.Stage)
+	 */	
 	
+	@Override
 	public Stage createStageTemplate(Stage newStageTemplate) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
@@ -300,10 +303,11 @@ public class MySQLActionHandler {
 		}
 	}
 	
-    /**************************************************************************************************
-     *************************************** Treatment Issue Methods **********************************
-     **************************************************************************************************/
+    /* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#createTreatmentIssue(com.cggcoding.models.TreatmentIssue)
+	 */
 
+	@Override
 	public TreatmentIssue createTreatmentIssue(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
@@ -388,14 +392,22 @@ public class MySQLActionHandler {
         }
     }
 
-	public ArrayList<TreatmentIssue> getDefaultTreatmentIssues() throws DatabaseException{
-		//TODO - probably shouldn't have a hardcoded value here for the admin user id and should instead lookup all the users with admin role and get their ids and run for each
-		ArrayList<TreatmentIssue> issues = getTreatmentIssuesList(1);
+	/* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#getDefaultTreatmentIssues()
+	 */
+	@Override
+	public ArrayList<TreatmentIssue> getDefaultTreatmentIssues(int adminUserID) throws DatabaseException{
+		//TODO - may want to change parameter to an array of adminUserIDs and return a list of all admin-created issues - assuming I allow for more than 1 admin role
+		ArrayList<TreatmentIssue> issues = getTreatmentIssuesList(adminUserID);
 		
 		return issues;
 	}
 
-    public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID) throws DatabaseException{
+    /* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#getTreatmentIssuesList(int)
+	 */
+    @Override
+	public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;

@@ -6,6 +6,7 @@ import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
@@ -43,7 +44,7 @@ public class LogIn extends HttpServlet {
         String password = request.getParameter("password");
         String userRole = "";
         DataSource datasource = (DataSource)request.getServletContext().getAttribute("datasource");
-        MySQLActionHandler mySQLActionHandler = new MySQLActionHandler(datasource);
+        DatabaseActionHandler mySQLActionHandler = new MySQLActionHandler();
     	
         
 	        try {
