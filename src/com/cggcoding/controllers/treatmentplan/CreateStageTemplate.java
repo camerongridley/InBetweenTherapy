@@ -49,12 +49,10 @@ public class CreateStageTemplate extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		User user = (User)request.getSession().getAttribute("user");
-		DataSource datasource = (DataSource)request.getServletContext().getAttribute("datasource");
-		DatabaseActionHandler dbActionHandler = new MySQLActionHandler();
 		HttpSession session = request.getSession();
 		String forwardTo = "index.jsp";
-		String creationStep = request.getParameter("chosenAction");
-		int stageID = Integer.parseInt(request.getParameter("stageID"));
+		String requestedAction = request.getParameter("chosenAction");
+		String stageIDAsString = request.getParameter("stageID");
 		String stageName = request.getParameter("stageName");
     	String stageDescription = request.getParameter("stageDescription");
     	String newStageGoal =request.getParameter("newStageGoal");
@@ -64,7 +62,7 @@ public class CreateStageTemplate extends HttpServlet {
 			if(user.hasRole("admin")){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								
-				switch (creationStep){
+				switch (requestedAction){
 					case "beginning":
 						forwardTo = "/jsp/treatment-plans/stage-create-template.jsp";
 						break;
@@ -75,9 +73,8 @@ public class CreateStageTemplate extends HttpServlet {
 		                
 		                //TODO use factory here?
 		                Stage newStageTemplate = new Stage(user.getUserID(), stageName, stageDescription);
-		                
-		                //validate plan name to make sure it doesn't exist for this user, if not then submit to be inserted into database
-		                newStageTemplate = dbActionHandler.createStageTemplate(newStageTemplate);
+
+		                newStageTemplate.saveNewInDatabase();
 
 		                request.setAttribute("stage", newStageTemplate);
 		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
@@ -94,8 +91,13 @@ public class CreateStageTemplate extends HttpServlet {
 		            	break;
 		            case "stageGoalsTasks":
 		            	
-		            	
-		            	
+		            	break;
+		            case "editplan" :
+		            	request.setAttribute("defaultStages", userAdmin.getDefaultStages());
+		            	forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
+		            	break;
+		            default:
+
 		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
 				}
 

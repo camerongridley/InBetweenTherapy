@@ -14,21 +14,36 @@ public abstract class User {
 	private int userID;
 	private String email;
 	private List<String> roles;
+	String role;
 	private List<TreatmentPlan> treatmentPlanList;
+	DatabaseActionHandler mysqlActionHandler;
 	
 	public User (int userID, String email){
 		this.userID = userID;
 		this.email = email;
 		roles = new ArrayList<>();
 		this.treatmentPlanList = new ArrayList<>();
+		mysqlActionHandler = new MySQLActionHandler();
 	}
 
 	public int getUserID(){
 		return userID;
 	}
-	
+
+	public String getEmail() {
+		return email;
+	}
+
 	public List<String> getRoles(){
 		return roles;
+	}
+	
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public boolean hasRole(String roleName){
@@ -43,10 +58,6 @@ public abstract class User {
 
 	public void addRole(String roleName){
 		roles.add(roleName);
-	}
-
-	public String getEmail() {
-		return email;
 	}
 
 	public void setTreatmentPlanList(List<TreatmentPlan> treatmentPlanList){
@@ -76,10 +87,15 @@ public abstract class User {
 	 * @throws DatabaseException
 	 */
 	public TreatmentIssue createTreatmentIssue(DataSource datasource, TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException {
-		DatabaseActionHandler mysqlActionHandler = new MySQLActionHandler(datasource);
+		mysqlActionHandler = new MySQLActionHandler();
 		return mysqlActionHandler.createTreatmentIssue(treatmentIssue);
 	}
 	
+	//TODO this could be a static method that really should go somewhere else
+	public List<Stage> getDefaultStages() throws DatabaseException{
+		mysqlActionHandler = new MySQLActionHandler();
+		return mysqlActionHandler.getDefaultStages();
+	}
 	
 	
 	@Override

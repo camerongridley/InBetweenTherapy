@@ -171,7 +171,7 @@ public class TreatmentPlan {
 	}
 	
 	public void save(DataSource datasource) throws ValidationException, DatabaseException{
-		 DatabaseActionHandler mysqlActionHandler = new MySQLActionHandler(datasource);
+		 DatabaseActionHandler mysqlActionHandler = new MySQLActionHandler();
 		 
 		 mysqlActionHandler.createTreatmentPlanBasic(this);
 	}

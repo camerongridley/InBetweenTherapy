@@ -59,7 +59,7 @@
 			<form class="form-inline" action="./CreateStageTemplate"
 				method="POST">
 				<div>
-					<button type="submit" class="btn btn-primary" disabled="disabled">Edit
+					<button type="submit" class="btn btn-primary" >Edit
 						Stage Template</button>
 				</div>
 				<input type=hidden name="chosenAction" value="editplan">

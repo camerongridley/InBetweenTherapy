@@ -70,8 +70,8 @@ public class CreateTreatmentPlan extends HttpServlet {
 				switch (creationStep){
 					case "beginning":
 						//get treatment issues associated with admin role
-						ArrayList<TreatmentIssue> treatmentIssues = userAdmin.getDefaultTreatmentIssues(datasource);
-						session.setAttribute("defaultTreatmentIssues", treatmentIssues);
+						ArrayList<TreatmentIssue> defaultreatmentIssues = userAdmin.getDefaultTreatmentIssues(datasource);
+						session.setAttribute("defaultTreatmentIssues", defaultreatmentIssues);
 						forwardTo = "/jsp/treatment-plans/create-treatment-plan-name.jsp";
 						break;
 		            case "planNameAndIssue":

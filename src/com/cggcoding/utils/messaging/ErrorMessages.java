@@ -10,7 +10,7 @@ public final class ErrorMessages {
 	public static final String USER_SELECTED_MULTIPLE_ISSUES = "Invalid condition. Multiple treatment issues are selected. Ensure that only 1 treatment issue is selected.";
 	public static final String USER_SELECTED_NO_ISSUE = "Invalid condition.  You must select a treatment issue for this plan";
 	public static final String ISSUE_NAME_EXISTS = "The new custom treatment issue already exists in your profile.  Please choose another name for the treatment issue.";
-	public static final String STAGE_NAME_EXISTS = "The stage name you entered already exists in your profile. Please use another name.";
+	public static final String STAGE_NAME_EXISTS = "The stage name you entered already exists in your profile. Please use another name. If you'd like to view or edit the existing task, <a href=#>click here</a>";
 
 	
 	//Database errors

@@ -38,7 +38,7 @@
                 <h4>Select <strong>one</strong> of the following options for designating the issue this plan will treat.</h4>
             </div>
             
-            <c:if test="${user.hasRole == 'admin' }">
+
             <div class="form-group">
                 <label for="defaultTreatmentIssue" class="col-sm-2 control-label">Default Tx Issues</label>
                 <div class="col-sm-10">
@@ -57,9 +57,9 @@
                     <input type="text" class="form-control" id="newDefaultTreatmentIssue" name="newDefaultTreatmentIssue" value="${newDefaultTreatmentIssue }" placeholder="Or enter a new default treatment issue.">
                 </div>
             </div>
-            </c:if>
+
             
-            <c:if test="${user.hasRole == 'therapist' }">
+            <c:if test="${customTreatmentIssues != null }">
             <div class="form-group">
                 <label for="existingCustomTreatmentIssue" class="col-sm-2 control-label">Existing Custom Tx Issues</label>
                 <div class="col-sm-10">

@@ -11,6 +11,8 @@ import org.apache.tomcat.jdbc.pool.PoolProperties;
  * Application Lifecycle Listener implementation class DatasourceCreator
  *
  */
+
+//TODO  DELETE THIS CLASS!!!
 @WebListener
 public class DatasourceCreator implements ServletContextListener {
 
