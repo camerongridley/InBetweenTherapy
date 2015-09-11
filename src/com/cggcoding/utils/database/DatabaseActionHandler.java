@@ -38,9 +38,7 @@ public interface DatabaseActionHandler {
 	
 	boolean stageTemplateUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException;
 	
-	Stage stageLoad(int userID, int stageID) throws DatabaseException, ValidationException;
-	
-	Stage stageLoad(int selectedDefaultStageID) throws DatabaseException, ValidationException;
+	Stage stageLoad(int stageID) throws DatabaseException, ValidationException;
 	
 	List<Stage> stagesGetDefaults() throws DatabaseException;
 	

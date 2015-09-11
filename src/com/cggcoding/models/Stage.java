@@ -72,8 +72,8 @@ public class Stage implements Completable, DatabaseModel {
 		
 	}
 	
-	public static Stage getInstanceFromDatabase(int userID, int stageID) throws DatabaseException, ValidationException{
-		return databaseActionHandler.stageLoad(userID, stageID);
+	public static Stage getInstanceFromDatabase(int stageID) throws DatabaseException, ValidationException{
+		return databaseActionHandler.stageLoad(stageID);
 	}
 	
 	public void setStageID(int stageID) {
@@ -336,8 +336,8 @@ public class Stage implements Completable, DatabaseModel {
 	}
 
 	@Override
-	public Stage loadDataFromDatabase() throws ValidationException, DatabaseException {
-		return getInstanceFromDatabase(this.userID, this.stageID);
+	public boolean loadDataFromDatabase() throws ValidationException, DatabaseException {
+		return getInstanceFromDatabase(this.stageID) != null;
 	}
 
 }

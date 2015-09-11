@@ -31,7 +31,7 @@ public interface DatabaseModel {
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	Object loadDataFromDatabase() throws ValidationException, DatabaseException;
+	boolean loadDataFromDatabase() throws ValidationException, DatabaseException;
 
 	/**Updates data from database and sets the corresponding properties in the object
 	 * @return true if successful loading the data, false if unsuccessful and throws Exception

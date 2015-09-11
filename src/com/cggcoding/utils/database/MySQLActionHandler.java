@@ -403,6 +403,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return defaultStageList;
 	}
 
+	/* TODO - delete? - realized I don't ever need the user ID to get a stage from the database - could keep it as parameter for an extra security measure I suppose.
 	@Override
 	public Stage stageLoad(int userID, int stageID) throws ValidationException, DatabaseException{
 		Connection cn = null;
@@ -439,7 +440,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         return stage;
 	}
-	
+	*/
 	@Override
 	public Stage stageLoad(int stageID) throws DatabaseException{
 		Connection cn = null;
@@ -474,6 +475,43 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         return stage;
 	}
+	
+	public int stageAddGoal(int stageID, String goal) throws DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        int goalID = 0;
+        
+        try {
+        	cn = getConnection();
+
+        	String sql = "INSERT INTO stage_goal (stage_goal_stage_id_fk, description) VALUES (?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setInt(1, stageID);
+            ps.setString(2, goal);
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	goalID = generatedKeys.getInt(1);;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return goalID;
+	}
+	
 
 	@Override
 	public TreatmentIssue treatmentIssueCreate(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{

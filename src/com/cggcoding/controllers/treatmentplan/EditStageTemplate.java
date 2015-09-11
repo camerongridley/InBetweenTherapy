@@ -65,6 +65,9 @@ public class EditStageTemplate extends HttpServlet {
 		            case "edit-stage-name" :
 		            	
 		            	break;
+		            case "stage-edit-add-goal" :
+		            	
+		            	break;
 		            default:
 
 		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
