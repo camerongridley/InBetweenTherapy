@@ -44,15 +44,15 @@ public class LogIn extends HttpServlet {
         String password = request.getParameter("password");
         String userRole = "";
         DataSource datasource = (DataSource)request.getServletContext().getAttribute("datasource");
-        DatabaseActionHandler mySQLActionHandler = new MySQLActionHandler();
+        DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
     	
         
 	        try {
-				boolean userExists = mySQLActionHandler.validateUser(email, password);
+				boolean userExists = databaseActionHandler.userValidate(email, password);
 
 				//use the above to get authenticate the user and get create a User object
 				if(userExists){
-					User user = mySQLActionHandler.getUserInfo(email, password);
+					User user = databaseActionHandler.userLoadInfo(email, password);
 					request.getSession().setAttribute("user", user);
 					
 					if(user.hasRole("admin")){

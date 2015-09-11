@@ -24,7 +24,7 @@ public class Stage implements Completable, DatabaseModel {
 	private List<String> goals;
 	private boolean inProgress;//TODO implement inProgress - add logic to update it appropriately - dynamic or simple?
 	private boolean isTemplate;
-	private static DatabaseActionHandler mySQLActionHandler;
+	private static DatabaseActionHandler databaseActionHandler;
 
 	//TODO if decide to use and Factories, change these constructors to private
 	public Stage (int stageID, int userID, String name, String description, int index){
@@ -41,7 +41,7 @@ public class Stage implements Completable, DatabaseModel {
 		this.goals = new ArrayList<>();
 		this.inProgress = false;
 		this.isTemplate = false;
-		mySQLActionHandler = new MySQLActionHandler();
+		databaseActionHandler = new MySQLActionHandler();
 	}
 
 	public Stage (int userID, String name, String description){
@@ -57,7 +57,7 @@ public class Stage implements Completable, DatabaseModel {
 		this.goals = new ArrayList<>();
 		this.inProgress = false;
 		this.isTemplate = false;
-		mySQLActionHandler = new MySQLActionHandler();
+		databaseActionHandler = new MySQLActionHandler();
 	}
 
 	//TODO decide if going to use Factory method or Static Factory class
@@ -73,7 +73,7 @@ public class Stage implements Completable, DatabaseModel {
 	}
 	
 	public static Stage getInstanceFromDatabase(int userID, int stageID) throws DatabaseException, ValidationException{
-		return mySQLActionHandler.loadStage(userID, stageID);
+		return databaseActionHandler.stageLoad(userID, stageID);
 	}
 	
 	public void setStageID(int stageID) {
@@ -303,7 +303,7 @@ public class Stage implements Completable, DatabaseModel {
 	@Override
 	public boolean saveNewInDatabase() throws ValidationException, DatabaseException {
 		if(this.validateForDatabase()){
-			mySQLActionHandler.createStageTemplate(this);
+			databaseActionHandler.stageTemplateCreate(this);
 			return true;
 		}
 		
@@ -315,7 +315,7 @@ public class Stage implements Completable, DatabaseModel {
 	@Override
 	public boolean updateInDatabase()  throws ValidationException, DatabaseException {
 		if(this.validateForDatabase()){
-			mySQLActionHandler.updateStageTemplate(this);
+			databaseActionHandler.stageTemplateUpdate(this);
 			return true;
 		}
 		
@@ -330,7 +330,7 @@ public class Stage implements Completable, DatabaseModel {
 
 	@Override
 	public boolean validateForDatabase() throws ValidationException, DatabaseException {
-		return mySQLActionHandler.validateNewStageName(name, userID);
+		return databaseActionHandler.stageValidateNewName(name, userID);
 
 
 	}

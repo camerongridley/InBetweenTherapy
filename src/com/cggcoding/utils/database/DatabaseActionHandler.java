@@ -19,38 +19,44 @@ public interface DatabaseActionHandler {
 	// *************** Login Methods *******************
 	//**************************************************
 
-	boolean validateUser(String email, String password) throws DatabaseException;
+	boolean userValidate(String email, String password) throws DatabaseException;
 
-	User getUserInfo(String email, String password) throws DatabaseException;
+	User userLoadInfo(String email, String password) throws DatabaseException;
 
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
 	//**************************************************************************************************
 
-	TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
+	TreatmentPlan treatmentPlanCreateBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
 
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
 	//**************************************************************************************************
-	boolean validateNewStageName(String stageName, int userID) throws ValidationException, DatabaseException;
+	boolean stageValidateNewName(String stageName, int userID) throws ValidationException, DatabaseException;
 	
-	Stage createStageTemplate(Stage newStageTemplate) throws ValidationException, DatabaseException;
+	Stage stageTemplateCreate(Stage newStageTemplate) throws ValidationException, DatabaseException;
 	
-	boolean updateStageTemplate(Stage newStageTemplate) throws ValidationException, DatabaseException;
+	boolean stageTemplateUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException;
 	
-	Stage loadStage(int userID, int stageID) throws DatabaseException, ValidationException;
+	Stage stageLoad(int userID, int stageID) throws DatabaseException, ValidationException;
 	
-	List<Stage> getDefaultStages() throws DatabaseException;
+	Stage stageLoad(int selectedDefaultStageID) throws DatabaseException, ValidationException;
+	
+	List<Stage> stagesGetDefaults() throws DatabaseException;
+	
+	
 
 	//**************************************************************************************************
 	//*************************************** Treatment Issue Methods **********************************
 	//**************************************************************************************************
 
-	TreatmentIssue createTreatmentIssue(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException;
+	TreatmentIssue treatmentIssueCreate(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException;
 
-	ArrayList<TreatmentIssue> getDefaultTreatmentIssues(int adminUserID) throws DatabaseException;
+	ArrayList<TreatmentIssue> treatmentIssueGetDefaults(int adminUserID) throws DatabaseException;
 
-	ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID) throws DatabaseException;
+	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
+
+	
 
 	
 

@@ -62,7 +62,7 @@
 					<button type="submit" class="btn btn-primary" >Edit
 						Stage Template</button>
 				</div>
-				<input type=hidden name="chosenAction" value="editplan">
+				<input type=hidden name="chosenAction" value="edit-stage-start">
 			</form>
 			</p>
 		</div>

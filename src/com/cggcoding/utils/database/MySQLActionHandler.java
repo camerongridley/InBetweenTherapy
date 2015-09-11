@@ -28,6 +28,7 @@ import com.cggcoding.utils.messaging.ErrorMessages;
  */
 public class MySQLActionHandler implements DatabaseActionHandler{
 	DatabaseConnection mysqlConn;
+	private static final int ADMIN_ROLE_ID = 1;
 
     public MySQLActionHandler(){
     	this.mysqlConn = new MySQLConnection();
@@ -48,7 +49,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 */
      
     @Override
-	public boolean validateUser(String email, String password) throws DatabaseException{
+	public boolean userValidate(String email, String password) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet userInfo = null;
@@ -89,7 +90,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @see com.cggcoding.utils.database.DatabaseActionHandler#getUserInfo(java.lang.String, java.lang.String)
 	 */
     @Override
-	public User getUserInfo(String email, String password) throws DatabaseException{
+	public User userLoadInfo(String email, String password) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet userInfo = null;
@@ -137,7 +138,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
     }
     
     
-    private List<Integer> getAdminIDs(Connection cn) throws DatabaseException{
+    private List<Integer> userGetAdminIDs(Connection cn) throws DatabaseException{
     	//Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
@@ -146,7 +147,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	//cn = getConnection();
 
-    		String sql = "SELECT user.user_id FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user_role.user_role_id)=1))";    	
+    		String sql = "SELECT user.user_id FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user_role.user_role_id)=" + ADMIN_ROLE_ID + "))";    	
 
     		ps = cn.prepareStatement(sql);
     		
@@ -170,7 +171,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
     }
 	
 	@Override
-	public TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan) throws DatabaseException{		
+	public TreatmentPlan treatmentPlanCreateBasic(TreatmentPlan treatmentPlan) throws DatabaseException{		
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
@@ -218,7 +219,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	
 	
 	
-	public boolean validateNewTreatmentPlanName(Connection cn, int userID, String planName) throws ValidationException, DatabaseException{
+	public boolean treatmentPlanValidateNewName(Connection cn, int userID, String planName) throws ValidationException, DatabaseException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
@@ -253,7 +254,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	@Override
-	public boolean validateNewStageName(String stageName, int userID) throws ValidationException, DatabaseException{
+	public boolean stageValidateNewName(String stageName, int userID) throws ValidationException, DatabaseException{
 		Connection cn = null;
 		PreparedStatement ps = null;
         ResultSet stageCount = null;
@@ -288,7 +289,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	@Override
-	public Stage createStageTemplate(Stage newStageTemplate) throws ValidationException, DatabaseException{
+	public Stage stageTemplateCreate(Stage newStageTemplate) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
@@ -330,7 +331,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
 	
 	@Override
-	public boolean updateStageTemplate(Stage newStageTemplate) throws ValidationException, DatabaseException{
+	public boolean stageTemplateUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         int success = 0;
@@ -365,16 +366,16 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return success == 1;
 	}
 	
-	public List<Stage> getDefaultStages() throws DatabaseException{
+	public List<Stage> stagesGetDefaults() throws DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Stage> defaultStageList = null;
+        List<Stage> defaultStageList = new ArrayList<>();
         
         try {
         	cn = getConnection();
         	
-        	List<Integer> adminIDList = getAdminIDs(cn);
+        	List<Integer> adminIDList = userGetAdminIDs(cn);
         	
         	String parameters = StringUtils.join(adminIDList.iterator(),",");
         	
@@ -403,7 +404,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 
 	@Override
-	public Stage loadStage(int userID, int stageID) throws ValidationException, DatabaseException{
+	public Stage stageLoad(int userID, int stageID) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
@@ -422,7 +423,43 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	stage = new Stage(stageID, userID, rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.order") );
+            	stage = Stage.getInstance(stageID, userID, rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.order"));
+            	
+            }
+        	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return stage;
+	}
+	
+	@Override
+	public Stage stageLoad(int stageID) throws DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Stage stage = null;
+        
+        try {
+        	cn = getConnection();
+
+    		String sql = "SELECT * FROM stage WHERE stage.stage_id =?";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, stageID);
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	stage = Stage.getInstance(stageID, rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.order") );
             }
         	
 
@@ -439,7 +476,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 
 	@Override
-	public TreatmentIssue createTreatmentIssue(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{
+	public TreatmentIssue treatmentIssueCreate(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
@@ -486,7 +523,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @throws ValidationException 
 	 * @throws DatabaseException
 	 */
-	public boolean validateNewIssueName(String issueName, int userID) throws ValidationException, DatabaseException{
+	public boolean treatmentIssueValidateNewName(String issueName, int userID) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
@@ -521,22 +558,17 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         }
     }
 
-	/* (non-Javadoc)
-	 * @see com.cggcoding.utils.database.DatabaseActionHandler#getDefaultTreatmentIssues()
-	 */
+	//TODO - change to make sure this works with a List of adminIDs
 	@Override
-	public ArrayList<TreatmentIssue> getDefaultTreatmentIssues(int adminUserID) throws DatabaseException{
-		//TODO - may want to change parameter to an array of adminUserIDs and return a list of all admin-created issues - assuming I allow for more than 1 admin role
-		ArrayList<TreatmentIssue> issues = getTreatmentIssuesList(adminUserID);
+	public ArrayList<TreatmentIssue> treatmentIssueGetDefaults(int adminUserID) throws DatabaseException{
+		ArrayList<TreatmentIssue> issues = treatmentIssueGetListByUserID(adminUserID);
 		
 		return issues;
 	}
 
-    /* (non-Javadoc)
-	 * @see com.cggcoding.utils.database.DatabaseActionHandler#getTreatmentIssuesList(int)
-	 */
+
     @Override
-	public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID) throws DatabaseException{
+	public ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;

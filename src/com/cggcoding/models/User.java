@@ -16,14 +16,14 @@ public abstract class User {
 	private List<String> roles;
 	String role;
 	private List<TreatmentPlan> treatmentPlanList;
-	DatabaseActionHandler mysqlActionHandler;
+	private DatabaseActionHandler databaseActionHandler;
 	
 	public User (int userID, String email){
 		this.userID = userID;
 		this.email = email;
 		roles = new ArrayList<>();
 		this.treatmentPlanList = new ArrayList<>();
-		mysqlActionHandler = new MySQLActionHandler();
+		databaseActionHandler = new MySQLActionHandler();
 	}
 
 	public int getUserID(){
@@ -87,14 +87,8 @@ public abstract class User {
 	 * @throws DatabaseException
 	 */
 	public TreatmentIssue createTreatmentIssue(DataSource datasource, TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException {
-		mysqlActionHandler = new MySQLActionHandler();
-		return mysqlActionHandler.createTreatmentIssue(treatmentIssue);
-	}
-	
-	//TODO this could be a static method that really should go somewhere else
-	public List<Stage> getDefaultStages() throws DatabaseException{
-		mysqlActionHandler = new MySQLActionHandler();
-		return mysqlActionHandler.getDefaultStages();
+		databaseActionHandler = new MySQLActionHandler();
+		return databaseActionHandler.treatmentIssueCreate(treatmentIssue);
 	}
 	
 	
