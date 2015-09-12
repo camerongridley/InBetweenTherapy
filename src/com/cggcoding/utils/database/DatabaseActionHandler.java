@@ -7,6 +7,7 @@ import java.util.List;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
+import com.cggcoding.models.StageGoal;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -32,9 +33,14 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
 	//**************************************************************************************************
-	boolean stageValidateNewName(String stageName, int userID) throws ValidationException, DatabaseException;
 	
-	Stage stageTemplateCreate(Stage newStageTemplate) throws ValidationException, DatabaseException;
+	Stage stageTemplateValidateAndCreate(Stage stageTemplate) throws ValidationException, DatabaseException;
+	
+	/* Removed so could make them private and wrap in stageTemplateValidateAndCreate and reduce number of connections opened
+	private boolean stageValidateNewName(Connection cn, Stage newStage) throws ValidationException, DatabaseException;
+	
+	Stage stageTemplateCreate(Connection cn, Stage newStageTemplate) throws ValidationException, DatabaseException;
+	*/
 	
 	boolean stageTemplateUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException;
 	
@@ -42,7 +48,7 @@ public interface DatabaseActionHandler {
 	
 	List<Stage> stagesGetDefaults() throws DatabaseException;
 	
-	
+	StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException;
 
 	//**************************************************************************************************
 	//*************************************** Treatment Issue Methods **********************************

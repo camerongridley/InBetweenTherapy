@@ -5,23 +5,46 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class StageGoal implements DatabaseModel{
+public class StageGoal {
 	private int stageGoalID;
 	private int stageID;
-	private String goal;
+	private String description;
+	private int associatedTaskID;
+	
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 	
-	public StageGoal(int stageGoalID, int stageID, String goal) {
+	private StageGoal(int stageGoalID, String description){
+		this.stageGoalID = stageGoalID;
+		this.description = description;
+		this.stageID = 0;
+		this.associatedTaskID = 0;
+	}
+	
+	private StageGoal(int stageGoalID, int stageID, String goal) {
 		this.stageGoalID = stageGoalID;
 		this.stageID = stageID;
-		this.goal = goal;
+		this.description = goal;
+		this.associatedTaskID = 0;
+	}
+	
+	private StageGoal(int stageGoalID, int stageID, String goal, int associatedTaskID) {
+		this.stageGoalID = stageGoalID;
+		this.stageID = stageID;
+		this.description = goal;
+		this.associatedTaskID = associatedTaskID;
+	}
+	
+	public static StageGoal getInstance(int stageGoalID, int stageID, String goal){
+		return new StageGoal(stageGoalID, stageID, goal);
 	}
 	
 	public static StageGoal getInstanceFromDatabase(int stageGoalID){
 		return null;
 	}
-
 	
+	public static StageGoal saveNewInDatabase(int stageID, String description) throws DatabaseException{
+		return databaseActionHandler.stageGoalValidateAndCreate(new StageGoal(stageID, description));
+	}
 	
 	public int getStageGoalID() {
 		return stageGoalID;
@@ -39,48 +62,22 @@ public class StageGoal implements DatabaseModel{
 		this.stageID = stageID;
 	}
 
-	public String getGoal() {
-		return goal;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setGoal(String goal) {
-		this.goal = goal;
+	public void setDescription(String goal) {
+		this.description = goal;
 	}
 
-	@Override
-	public boolean validateForDatabase() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
-		return false;
+	public int getAssociatedTaskID() {
+		return associatedTaskID;
 	}
 
-	@Override
-	public boolean saveNewInDatabase() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
-		return false;
+	public void setAssociatedTaskID(int associatedTaskID) {
+		this.associatedTaskID = associatedTaskID;
 	}
 
-	@Override
-	public boolean loadDataFromDatabase() throws ValidationException, DatabaseException {
-		StageGoal goal = getInstanceFromDatabase(this.stageGoalID);
-		if(goal != null){
-			this.stageGoalID = goal.stageGoalID;
-			this.stageID = goal.stageID;
-			this.goal = goal.goal;
-			return true;
-		}
-		return false;
-	}
 
-	@Override
-	public boolean updateInDatabase() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean deleteFromDatabase() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 }

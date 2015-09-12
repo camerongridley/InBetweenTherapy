@@ -71,11 +71,8 @@ public class CreateStageTemplate extends HttpServlet {
 		                if(stageName.isEmpty() || stageDescription.isEmpty()){
 		                	throw new ValidationException("You must enter a stage name and description.");
 		                }
-		                
-		                //TODO use factory here?
-		                Stage newStageTemplate = new Stage(user.getUserID(), stageName, stageDescription);
 
-		                newStageTemplate.saveNewInDatabase();
+		                Stage newStageTemplate = Stage.saveNewTemplateInDatabase(user.getUserID(), stageName, stageDescription);
 
 		                request.setAttribute("stage", newStageTemplate);
 		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);

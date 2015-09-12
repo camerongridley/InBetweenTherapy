@@ -7,8 +7,8 @@
 <c:import url="/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Heading</h1>
-	<h2>Subheading</h2>
+	<h1>Edit a Stage</h1>
+	<h2>Name and Description</h2>
 </div>
   
 <c:import url="/jsp/message-modal.jsp"/>
@@ -17,7 +17,7 @@
 		<input type=hidden name="chosenAction" value="edit-stage-select-stage">
 		
 		<div class="form-group">
-			<label for="defaultTreatmentIssue" class="col-sm-2 control-label">Default Stages</label>
+			<label for="defaultTreatmentIssue" class="col-sm-2 control-label">Select Default Stage to Edit</label>
 	        <div class="col-sm-5">
 	            <select class="form-control" id="selectedDefaultStage" name="selectedDefaultStage">
 	                <option  value="">Select a stage to edit.</option>
@@ -50,35 +50,10 @@
                 <input type="text" class="form-control" id="stageDescription" name="stageDescription" value="${selectedDefaultStage.description }" placeholder="Describe the stage.">
             </div>
         </div>
-        
-        
-       <!--  <div class="form-group col-md-12">
-                <h4>Define the goals for the stage</h4>
-        </div>
 
-       
-       	<div class="form-group col-md-12">
-               <h4>Select the tasks for the stage</h4>
-        </div> -->
-           <!-- TODO change this to list all the tasks associated with this stage
-           <div class="form-group">
-               <label for="existingCustomTreatmentIssue" class="col-sm-2 control-label">Existing Custom Tx Issues</label>
-               <div class="col-sm-10">
-                   <select class="form-control" id="existingCustomTreatmentIssue" name="existingCustomTreatmentIssue">
-                       <option value="">Or select an issue you've previously created.</option>
-                       <c:forEach items="${customTreatmentIssues}" var="customIssue">
-                           <option value="${customIssue.treatmentIssueID}">${customIssue.treatmentIssueName}</option>
-                       </c:forEach>
-                   </select>
-               </div>
-           </div>
-            -->
-
-        
-        
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Add Goals & Tasks >></button>
+                <button type="submit" class="btn btn-default">Add Goals >></button>
             </div>
         </div>
     </form>

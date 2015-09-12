@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.helpers.DefaultDatabaseCalls;
+import com.cggcoding.models.Stage;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 
@@ -46,6 +47,8 @@ public class EditStageTemplate extends HttpServlet {
 		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("chosenAction");
 		String stageIDAsString = request.getParameter("stageID");
+		String stageName = request.getParameter("stageName");
+		String stageDescription = request.getParameter("stageDescription");
 		
 		
 		try{
@@ -59,11 +62,16 @@ public class EditStageTemplate extends HttpServlet {
 		            	break;
 		            case "edit-stage-select-stage" :
 		            	int selectedDefaultStageID = Integer.parseInt(request.getParameter("selectedDefaultStage"));
-		            	request.setAttribute("selectedDefaultStage", DefaultDatabaseCalls.getDefaultStageByID(selectedDefaultStageID));
+		            	session.setAttribute("selectedDefaultStage", DefaultDatabaseCalls.getDefaultStageByID(selectedDefaultStageID));
 		            	forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
 		            	break;
 		            case "edit-stage-name" :
+		            	Stage stage = (Stage)session.getAttribute("selectedDefaultStage");
+		            	stage.setName(stageName);
+		            	stage.setDescription(stageDescription);
+		            	stage.updateInDatabase();
 		            	
+		            	forwardTo = "/jsp/treatment-plans/stage-edit-template-goals.jsp";
 		            	break;
 		            case "stage-edit-add-goal" :
 		            	
@@ -79,7 +87,8 @@ public class EditStageTemplate extends HttpServlet {
 		} catch (ValidationException | DatabaseException e){
 			//in case of error and user is sent back to page - re-populate the forms
 			request.setAttribute("errorMessage", e.getMessage());
-			
+			request.setAttribute("stageName", stageName);
+			request.setAttribute("stageDescription", stageDescription);
             forwardTo = "/jsp/treatment-plans/stage-create-template.jsp";
 		}
 		

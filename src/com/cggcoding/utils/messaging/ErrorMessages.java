@@ -1,7 +1,10 @@
 package com.cggcoding.utils.messaging;
 
 public final class ErrorMessages {
-	
+
+	//Database errors
+		public static final String GENERAL_DB_ERROR = "There seems to be a problem accessing your information from the database.  Please try again later.";
+		
 	//Log in
 	public static final String INVALID_USERNAME_OR_PASSWORD = "Login failed.  The email and password combination is not found in our records.  Please try again.";
 
@@ -12,8 +15,9 @@ public final class ErrorMessages {
 	public static final String ISSUE_NAME_EXISTS = "The new custom treatment issue already exists in your profile.  Please choose another name for the treatment issue.";
 	public static final String STAGE_NAME_EXISTS = "The stage name you entered already exists in your profile. Please use another name. If you'd like to view or edit the existing task, <a href=#>click here</a>";
 
+	//Stages
+	public static final String STAGE_GOAL_VALIDATION_ERROR = "You must enter a goal description.";
 	
-	//Database errors
-	public static final String GENERAL_DB_ERROR = "There seems to be a problem accessing your information from the database.  Please try again later.";
+	
 	
 }

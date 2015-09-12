@@ -42,7 +42,7 @@
 											<c:forEach items="${stage.goals}" var="goal">
 												<ul>
 													<li>
-														${goal}
+														${goal.description}
 													</li>
 												</ul>
 											</c:forEach>
