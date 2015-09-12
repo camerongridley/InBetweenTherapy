@@ -15,7 +15,7 @@ public class Stage implements Completable {
 	private int userID;
 	private String name;
 	private String description;
-	private int index; //the order of the stage within its treatment plan - if present decides the index it will be in the TreatmentPlan's List of Stages
+	private int stageOrder; //the order of the stage within its treatment plan - if present decides the index it will be in the TreatmentPlan's List of Stages
 	private List<Task> tasks;
 	private List<Task> extraTasks; //for when user chooses to do more tasks than asked of - won't count toward progress meter but can be saved for review or other analysis (e.g. themes)
 	private boolean completed;
@@ -25,12 +25,12 @@ public class Stage implements Completable {
 	private boolean isTemplate;
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 
-	private Stage (int stageID, int userID, String name, String description, int index){
+	private Stage (int stageID, int userID, String name, String description, int stageOrder){
 		this.stageID = stageID;
 		this.userID = userID;
 		this.name = name;
 		this.description = description;
-		this.index = index;
+		this.stageOrder = stageOrder;
 		this.tasks = new ArrayList<>();
 		this.extraTasks = new ArrayList<>();
 		this.completed = false;
@@ -54,7 +54,7 @@ public class Stage implements Completable {
 		this.isTemplate = false;
 	}
 
-	private Stage(int stageID, int treatmentPlanID, int userID, String name, String description, int index,
+	private Stage(int stageID, int treatmentPlanID, int userID, String name, String description, int stageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals,
 			boolean isTemplate) {
 		this.stageID = stageID;
@@ -62,7 +62,7 @@ public class Stage implements Completable {
 		this.userID = userID;
 		this.name = name;
 		this.description = description;
-		this.index = index;
+		this.stageOrder = stageOrder;
 		this.tasks = tasks;
 		this.extraTasks = extraTasks;
 		this.completed = completed;
@@ -72,9 +72,9 @@ public class Stage implements Completable {
 		this.isTemplate = isTemplate;
 	}
 
-	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String name, String description, int index,
+	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String name, String description, int stageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean isTemplate){
-		return new Stage(stageID, treatmentPlanID, userID, name, description, index, tasks, extraTasks, completed, percentComplete, goals, isTemplate);
+		return new Stage(stageID, treatmentPlanID, userID, name, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, isTemplate);
 	}
 	
 	public static Stage saveNewTemplateInDatabase(int userID, String name, String description) throws ValidationException, DatabaseException{
@@ -82,9 +82,9 @@ public class Stage implements Completable {
 	}
 
 	//TODO delete this method after finishing transition to database
-	public static Stage getInstanceAndCreateID(int userID, String name, String description, int index){
+	public static Stage getInstanceAndCreateID(int userID, String name, String description, int stageOrder){
 		int stageID = Math.abs(new Random().nextInt(10000));
-		return new Stage(stageID, userID, name, description, index);
+		return new Stage(stageID, userID, name, description, stageOrder);
 		
 	}
 	
@@ -162,13 +162,13 @@ public class Stage implements Completable {
 		this.description = description;
 	}
 
-	public int getIndex() {
-		return index;
+	public int getStageOrder() {
+		return stageOrder;
 	}
 
 	//sets the order of the stage in the treatment plan if relevant
-	public void setIndex(int index) {
-		this.index = index;
+	public void setStageOrder(int stageOrder) {
+		this.stageOrder = stageOrder;
 	}
 
 	public boolean isTemplate() {

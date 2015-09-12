@@ -260,7 +260,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
         try {
         	cn= getConnection();
-			if(stageValidateNewName(cn, stageTemplate)){
+			if(stageTemplateValidateNewName(cn, stageTemplate)){
 				return stageTemplateCreate(cn, stageTemplate);
 			}
 			
@@ -271,7 +271,15 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return null;
 	}
 	
-	private boolean stageValidateNewName(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
+	/** Validating a new Stage Template name involves checking is there is already a match for the combination of the new title and the userID.
+	 * If there is a match then the new name is invalid
+	 * @param cn
+	 * @param newStage - A Stage object containing at least a name and userID
+	 * @return true if valid combination, false throws ValidationException
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	private boolean stageTemplateValidateNewName(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
 		//Connection cn = null;
 		PreparedStatement ps = null;
         ResultSet stageCount = null;
@@ -279,7 +287,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        
         try {
         	cn= getConnection();
-			ps = cn.prepareStatement("SELECT COUNT(*)  FROM stage WHERE (((stage.title)=?) AND ((stage.stage_user_id_fk)=?))");
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE (((stage.title)=?) AND ((stage.stage_user_id_fk)=?))");
 			ps.setString(1, newStage.getName().trim());
 			ps.setInt(2, newStage.getUserID());
 
@@ -293,9 +301,52 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             e.printStackTrace();
             throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
-			//DbUtils.closeQuietly(stageCount);
+			DbUtils.closeQuietly(stageCount);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
+			//DbUtils.closeQuietly(cn);
+		}
+        
+		if(comboExists > 0){
+			throw new ValidationException(ErrorMessages.STAGE_NAME_EXISTS);
+		} else {
+			return true;
+		}
+	}
+	
+	/**Validating a new Stage Template name involves checking is there is already a match for the combination of the new title and the userID. However, since
+	 * in case the name wasn't actually changed, need to also exclude any results that have a stageID equal to the stageID of the Stage parameter
+	 * @param cn
+	 * @param newStage
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	private boolean stageTemplateValidateUpdatedName(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
+		//Connection cn = null;
+		PreparedStatement ps = null;
+        ResultSet stageCount = null;
+        int comboExists = 0;
+	        
+        try {
+        	cn= getConnection();
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE ((stage.title = ?) AND (stage.stage_id != ?) AND (stage.stage_user_id_fk = ?))");
+			ps.setString(1, newStage.getName().trim());
+			ps.setInt(2, newStage.getStageID());
+			ps.setInt(3, newStage.getUserID());
+
+			stageCount = ps.executeQuery();
+
+			while (stageCount.next()){
+			    comboExists = stageCount.getInt("COUNT(*)");
+			}
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(stageCount);
+			DbUtils.closeQuietly(ps);
+			//DbUtils.closeQuietly(cn);
 		}
         
 		if(comboExists > 0){
@@ -313,7 +364,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
 
-    		String sql = "INSERT INTO `cggcodin_doitright`.`stage` (`stage_user_id_fk`, `title`, `description`, `order`, `is_template`) "
+    		String sql = "INSERT INTO `cggcodin_doitright`.`stage` (`stage_user_id_fk`, `title`, `description`, `stage_order`, `is_template`) "
             		+ "VALUES (?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -321,7 +372,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setInt(1, newStageTemplate.getUserID());
             ps.setString(2, newStageTemplate.getName().trim());
             ps.setString(3, newStageTemplate.getDescription().trim());
-            ps.setInt(4, newStageTemplate.getIndex());
+            ps.setInt(4, newStageTemplate.getStageOrder());
             ps.setInt(5, 1);
 
             int success = ps.executeUpdate();
@@ -355,18 +406,18 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
         	
-        	if(stageValidateNewName(cn, newStageTemplate)){
+        	if(stageTemplateValidateUpdatedName(cn, newStageTemplate)){
 	        	//TODO needs to include updating of all the list properties of Stage.java
         		
         		
-	    		String sql = "UPDATE stage SET title=?, description=?, completed=?, `order`=?, percent_complete=?, is_template=? WHERE stage_id=?";
+	    		String sql = "UPDATE stage SET title=?, description=?, completed=?, `stage_order`=?, percent_complete=?, is_template=? WHERE stage_id=?";
 	        	
 	            ps = cn.prepareStatement(sql);
 	            
 	            ps.setString(1, newStageTemplate.getName().trim());
 	            ps.setString(2, newStageTemplate.getDescription().trim());
 	            ps.setBoolean(3, newStageTemplate.isCompleted());
-	            ps.setInt(4, newStageTemplate.getIndex());
+	            ps.setInt(4, newStageTemplate.getStageOrder());
 	            ps.setInt(5, newStageTemplate.getPercentComplete());
 	            ps.setBoolean(6, newStageTemplate.isTemplate());
 	            ps.setInt(7, newStageTemplate.getStageID());
@@ -419,7 +470,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             while (rs.next()){
             	defaultStageList.add(stageLoad(rs.getInt("stage_id")));
             	
-            	//defaultStageList.add(Stage.getInstance(rs.getInt("stage.stage_id"), rs.getInt("stage_user_id_fk"), rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.order")));
+            	//defaultStageList.add(Stage.getInstance(rs.getInt("stage.stage_id"), rs.getInt("stage_user_id_fk"), rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.stage_order")));
             }
         	//}
 
@@ -457,7 +508,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	stage = Stage.getInstance(stageID, userID, rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.order"));
+            	stage = Stage.getInstance(stageID, userID, rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.stage_order"));
             	
             }
         	
@@ -504,7 +555,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             	//boolean inProgress = rs.getInt("") == 1;
             	boolean isTemplate = rs.getInt("is_template") == 1;
             	
-            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.order"), tasks, extraTasks, completed, rs.getInt("percent_complete"), goals, isTemplate);
+            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.stage_order"), tasks, extraTasks, completed, rs.getInt("percent_complete"), goals, isTemplate);
             }
         	
 

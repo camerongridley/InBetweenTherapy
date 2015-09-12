@@ -19,7 +19,7 @@
 		<div class="form-group">
 			<label for="defaultTreatmentIssue" class="col-sm-2 control-label">Select Default Stage to Edit</label>
 	        <div class="col-sm-5">
-	            <select class="form-control" id="selectedDefaultStage" name="selectedDefaultStage">
+	            <select class="form-control" id="selectedDefaultStageID" name="selectedDefaultStageID">
 	                <option  value="">Select a stage to edit.</option>
 	                <c:forEach var="defaultStage" items="${defaultStageList }">
 	                    <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == selectedDefaultStage.stageID }">selected</c:if> >${defaultStage.name}</option>

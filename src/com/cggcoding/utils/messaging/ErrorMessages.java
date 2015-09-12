@@ -17,6 +17,7 @@ public final class ErrorMessages {
 
 	//Stages
 	public static final String STAGE_GOAL_VALIDATION_ERROR = "You must enter a goal description.";
+	public static final String STAGE_UPDATE_NO_SELECTION = "Please select and load a stage.";
 	
 	
 	

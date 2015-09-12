@@ -7,7 +7,7 @@
 <c:import url="/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Heading</h1>
+	<h1>Add Stage Goals</h1>
 	<h2>Subheading</h2>
 </div>
   

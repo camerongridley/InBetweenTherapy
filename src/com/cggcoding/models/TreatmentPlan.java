@@ -86,7 +86,7 @@ public class TreatmentPlan {
 	}
 	
 	public void addStage(Stage newStage){
-		stages.add(newStage.getIndex(), newStage);
+		stages.add(newStage.getStageOrder(), newStage);
 	}
 	
 	public void updateStages(){
@@ -155,7 +155,7 @@ public class TreatmentPlan {
 		int stageOrder = 0;
 		for(Stage stage : stages){
 			if(stage.getStageID() == stageID){
-				stageOrder = stage.getIndex();
+				stageOrder = stage.getStageOrder();
 				return stageOrder;
 			}
 		}
