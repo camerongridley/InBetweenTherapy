@@ -43,7 +43,6 @@ public class LogIn extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String userRole = "";
-        DataSource datasource = (DataSource)request.getServletContext().getAttribute("datasource");
         DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
     	
         

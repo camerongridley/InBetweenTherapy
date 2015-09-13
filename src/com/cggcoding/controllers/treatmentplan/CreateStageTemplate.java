@@ -1,7 +1,6 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,18 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
-
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Stage;
-import com.cggcoding.models.TreatmentIssue;
-import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
-import com.cggcoding.utils.database.DatabaseActionHandler;
-import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
