@@ -22,7 +22,7 @@
 	            <select class="form-control" id="selectedDefaultStageID" name="selectedDefaultStageID">
 	                <option  value="">Select a stage to edit.</option>
 	                <c:forEach var="defaultStage" items="${defaultStageList }">
-	                    <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == selectedDefaultStage.stageID }">selected</c:if> >${defaultStage.name}</option>
+	                    <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == selectedDefaultStage.stageID }">selected</c:if> >${defaultStage.title}</option>
 	                </c:forEach>
 	            </select>
 	             
@@ -39,9 +39,9 @@
 		<input type=hidden name="chosenAction" value="edit-stage-name">	
 		<input type="hidden" name="stageID" value="${selectedDefaultStage.stageID }" >	
         <div class="form-group">
-            <label for="stageName" class="col-sm-2 control-label">Stage Name</label>
+            <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="stageName" name="stageName" value="${selectedDefaultStage.name }" placeholder="Enter a stage name here.">
+                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value="${selectedDefaultStage.title }" placeholder="Enter a stage name here.">
             </div>
         </div>
         <div class="form-group">

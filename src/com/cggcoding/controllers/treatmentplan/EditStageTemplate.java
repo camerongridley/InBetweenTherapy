@@ -48,7 +48,7 @@ public class EditStageTemplate extends HttpServlet {
 		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("chosenAction");
 		String stageIDAsString = request.getParameter("stageID");
-		String stageName = request.getParameter("stageName");
+		String stageTitle = request.getParameter("stageTitle");
 		String stageDescription = request.getParameter("stageDescription");
 		
 		
@@ -72,7 +72,7 @@ public class EditStageTemplate extends HttpServlet {
 		            	}else{
 			            	int stageID = Integer.parseInt(stageIDAsString);
 			            	Stage stage =DefaultDatabaseCalls.getDefaultStageByID(stageID);
-			            	stage.setTitle(stageName);
+			            	stage.setTitle(stageTitle);
 			            	stage.setDescription(stageDescription);
 			            	stage.updateInDatabase();
 			            	
@@ -96,7 +96,7 @@ public class EditStageTemplate extends HttpServlet {
 		} catch (ValidationException | DatabaseException e){
 			//in case of error and user is sent back to page - re-populate the forms
 			request.setAttribute("errorMessage", e.getMessage());
-			request.setAttribute("stageName", stageName);
+			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
             forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
 		}

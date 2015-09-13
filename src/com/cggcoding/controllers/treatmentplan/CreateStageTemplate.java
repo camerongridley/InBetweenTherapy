@@ -54,7 +54,7 @@ public class CreateStageTemplate extends HttpServlet {
 		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("chosenAction");
 		String stageIDAsString = request.getParameter("stageID");
-		String stageName = request.getParameter("stageName");
+		String stageTitle = request.getParameter("stageTitle");
     	String stageDescription = request.getParameter("stageDescription");
     	String newStageGoal =request.getParameter("newStageGoal");
 		
@@ -67,12 +67,12 @@ public class CreateStageTemplate extends HttpServlet {
 					case "beginning":
 						forwardTo = "/jsp/treatment-plans/stage-create-template.jsp";
 						break;
-		            case "stageName":
-		                if(stageName.isEmpty() || stageDescription.isEmpty()){
+		            case "stageTitle":
+		                if(stageTitle.isEmpty() || stageDescription.isEmpty()){
 		                	throw new ValidationException("You must enter a stage name and description.");
 		                }
 
-		                Stage newStageTemplate = Stage.saveNewTemplateInDatabase(user.getUserID(), stageName, stageDescription);
+		                Stage newStageTemplate = Stage.saveNewTemplateInDatabase(user.getUserID(), stageTitle, stageDescription);
 
 		                request.setAttribute("stage", newStageTemplate);
 		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
@@ -112,7 +112,7 @@ public class CreateStageTemplate extends HttpServlet {
 			
 		} catch (ValidationException | DatabaseException e){
 			//in case of error and user is sent back to page - re-populate the forms
-			request.setAttribute("stageName", stageName);
+			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("newStageGoal", newStageGoal);

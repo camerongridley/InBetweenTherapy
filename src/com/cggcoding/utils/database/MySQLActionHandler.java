@@ -182,8 +182,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
         	
-        	//determine if the combo if userID and plan name exists, if not, then proceed to inserting new plan name
-        	//TODO delete commented validation code - boolean comboValid = validateNewTreatmentPlanName(cn, treatmentPlan.getUserID(), treatmentPlan.getName());
+        	//determine if the combo if userID and plan title exists, if not, then proceed to inserting new plan title
+        	//TODO delete commented validation code - boolean comboValid = validateNewTreatmentPlanTitle(cn, treatmentPlan.getUserID(), treatmentPlan.getTitle());
         	
         	//if(comboValid){
 	        	String sql = "INSERT INTO `cggcodin_doitright`.`treatment_plan` (`treatment_plan_user_id_fk`, `treatment_plan_treatment_issue_id_fk`, `title`, `description`, `current_stage_index`, `active_view_stage_index`, `in_progress`) "
@@ -193,7 +193,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	            
 	            ps.setInt(1, treatmentPlan.getUserID());
 	            ps.setInt(2, treatmentPlan.getTreatmentIssueID());
-	            ps.setString(3, treatmentPlan.getName().trim());
+	            ps.setString(3, treatmentPlan.getTitle().trim());
 	            ps.setString(4, treatmentPlan.getDescription().trim());
 	            ps.setInt(5, treatmentPlan.getCurrentStageIndex());
 	            ps.setInt(6, treatmentPlan.getActiveViewStageIndex());
@@ -222,7 +222,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	
 	
 	
-	public boolean treatmentPlanValidateNewName(Connection cn, int userID, String planName) throws ValidationException, DatabaseException{
+	public boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle) throws ValidationException, DatabaseException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
@@ -230,7 +230,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
 
             ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_plan WHERE (((treatment_plan.title)=?) AND ((treatment_plan.treatment_plan_user_id_fk)=?))");
-            ps.setString(1, planName.trim());
+            ps.setString(1, planTitle.trim());
             ps.setInt(2, userID);
 
             issueCount = ps.executeQuery();
@@ -249,7 +249,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		}
 		
         if(comboExists > 0){
-        	throw new ValidationException(ErrorMessages.PLAN_NAME_EXISTS);
+        	throw new ValidationException(ErrorMessages.PLAN_TITLE_EXISTS);
         } else {
         	return true;
         }
@@ -261,7 +261,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
         try {
         	cn= getConnection();
-			if(stageTemplateValidateNewName(cn, stageTemplate)){
+			if(stageTemplateValidateNewTitle(cn, stageTemplate)){
 				return stageTemplateCreate(cn, stageTemplate);
 			}
 			
@@ -272,15 +272,15 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return null;
 	}
 	
-	/** Validating a new Stage Template name involves checking is there is already a match for the combination of the new title and the userID.
-	 * If there is a match then the new name is invalid
+	/** Validating a new Stage Template title involves checking is there is already a match for the combination of the new title and the userID.
+	 * If there is a match then the new title is invalid
 	 * @param cn
-	 * @param newStage - A Stage object containing at least a name and userID
+	 * @param newStage - A Stage object containing at least a title and userID
 	 * @return true if valid combination, false throws ValidationException
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	private boolean stageTemplateValidateNewName(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
+	private boolean stageTemplateValidateNewTitle(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
 		//Connection cn = null;
 		PreparedStatement ps = null;
         ResultSet stageCount = null;
@@ -308,21 +308,21 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		}
         
 		if(comboExists > 0){
-			throw new ValidationException(ErrorMessages.STAGE_NAME_EXISTS);
+			throw new ValidationException(ErrorMessages.STAGE_TITLE_EXISTS);
 		} else {
 			return true;
 		}
 	}
 	
-	/**Validating a new Stage Template name involves checking is there is already a match for the combination of the new title and the userID. However, since
-	 * in case the name wasn't actually changed, need to also exclude any results that have a stageID equal to the stageID of the Stage parameter
+	/**Validating a new Stage Template title involves checking is there is already a match for the combination of the new title and the userID. However, since
+	 * in case the title wasn't actually changed, need to also exclude any results that have a stageID equal to the stageID of the Stage parameter
 	 * @param cn
 	 * @param newStage
 	 * @return
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	private boolean stageTemplateValidateUpdatedName(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
+	private boolean stageTemplateValidateUpdatedTitle(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
 		//Connection cn = null;
 		PreparedStatement ps = null;
         ResultSet stageCount = null;
@@ -351,7 +351,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		}
         
 		if(comboExists > 0){
-			throw new ValidationException(ErrorMessages.STAGE_NAME_EXISTS);
+			throw new ValidationException(ErrorMessages.STAGE_TITLE_EXISTS);
 		} else {
 			return true;
 		}
@@ -407,7 +407,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
         	
-        	if(stageTemplateValidateUpdatedName(cn, newStageTemplate)){
+        	if(stageTemplateValidateUpdatedTitle(cn, newStageTemplate)){
 	        	//TODO needs to include updating of all the list properties of Stage.java
         		
         		
@@ -714,7 +714,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	/**
 	 * Checks if there is an existing combination of treatment issue name and userID in the database.
 	 * @param cn Database connection
-	 * @param issueName Treatment Issue name of new issue that user wants to create
+	 * @param issueName Treatment Issue title of new issue that user wants to create
 	 * @param userID id of the user
 	 * @return true if the the combination is valid and does not exist in the database. false if the combination exists and is therefore invalid.
 	 * @throws SQLException

@@ -6,7 +6,7 @@
 <c:import url="header.jsp" />
 	
 	
-	<h1>Treatment Issue: ${treatmentPlan.name }</h1>
+	<h1>Treatment Issue: ${treatmentPlan.title }</h1>
 	<div class="row">
 		<div class="col-md-12">
 			
