@@ -618,38 +618,55 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return goal;
 	}
 	
-	public Task taskTemplateValidateAndCreate(Task newTask){
+	public Task taskTemplateValidateAndCreate(Task newTask) throws DatabaseException, ValidationException{
+		Connection cn = null;
+
+        try {
+        	cn= getConnection();
+			if(taskTemplateValidate(cn, newTask)){
+				return taskGenericTemplateCreate(cn, newTask);
+			}
+			
+        } finally {
+			DbUtils.closeQuietly(cn);
+		}
+        
+        return null;
 		
-		
-		return newTask;
 	}
 	
-	private Task taskTemplateValidate(Task newTask){
-		
-		
-		return newTask;
+	private boolean taskTemplateValidate(Connection cn, Task newTask) throws ValidationException{
+		//TODO Implement validation rules for a new task if there are any
+		return true;
 	}
 	
-	private Task taskGenericTemplateCreate(Connection cn, GenericTask newTask) throws DatabaseException{
+	/**Inserts a Generic Task template into the database.  Since it is a template, it does not insert for the 
+	 * fields: task_id, task_stage_id_fk, date_completed, or parent_task_id, and it sets is_extra_task = 0(false) and is_template = 1(true)
+	 * @param cn
+	 * @param newTask - Task object to be inserted.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private Task taskGenericTemplateCreate(Connection cn, Task newTask) throws DatabaseException{
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
         try {
         	cn = getConnection();
 
-        	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_stage_id_fk, task_generic_user_id_fk, title, "
-    				+ "instructions, completed, taskOrder, is_extra_task, is_template) VALUES ('1', null, '1', 'Manual Task Insert 2', 'task instructions 2', '0', '0', '0', '1')";
+        	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_user_id_fk, title, "
+    				+ "instructions, resource_link, completed, task_order, is_extra_task, is_template) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             ps.setInt(1, newTask.getTaskTypeID());
-            ps.setInt(2, newTask.getStageID());
-            ps.setInt(3, newTask.getUserID());
-            ps.setString(4, newTask.getTitle().trim());
-            ps.setInt(5, 1);
-            ps.setInt(6, 1);
-            ps.setInt(7, 1);
-            ps.setInt(8, 1);
+            ps.setInt(2, newTask.getUserID());
+            ps.setString(3, newTask.getTitle().trim());
+            ps.setString(4, newTask.getInstructions().trim());
+            ps.setString(5, newTask.getResourceLink().trim());
+            ps.setBoolean(6, newTask.isCompleted());
+            ps.setInt(7, newTask.getTaskOrder());
+            ps.setInt(8, 0);
             ps.setInt(9, 1);
 
             int success = ps.executeUpdate();

@@ -8,6 +8,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
+import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -60,8 +61,11 @@ public interface DatabaseActionHandler {
 
 	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
 
+	//**************************************************************************************************
+	//*************************************** Task Methods **********************************
+	//**************************************************************************************************
 	
-
+	Task taskTemplateValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
 	
 
 }

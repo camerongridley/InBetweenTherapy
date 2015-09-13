@@ -36,7 +36,7 @@
 			<p>
 			<form class="form-inline" action="./EditTreatmentPlan" method="POST">
 				<div>
-					<button type="submit" class="btn btn-primary" disabled="disabled">Edit
+					<button type="submit" class="btn btn-primary" disabled>Edit
 						Treatment Plan Template</button>
 				</div>
 				<input type=hidden name="chosenAction" value="editplan">
@@ -71,7 +71,7 @@
 			<p>
 			<form class="form-inline" action="./CreateTaskTemplate" method="POST">
 				<div>
-					<button type="submit" class="btn btn-primary" disabled="disabled">Create
+					<button type="submit" class="btn btn-primary" >Create
 						Task Template</button>
 				</div>
 				<input type=hidden name="chosenAction" value="editplan">
@@ -80,7 +80,7 @@
 			<p>
 			<form class="form-inline" action="./CreateTaskTemplate" method="POST">
 				<div>
-					<button type="submit" class="btn btn-primary" disabled="disabled">Edit
+					<button type="submit" class="btn btn-primary" disabled>Edit
 						Task Template</button>
 				</div>
 				<input type=hidden name="chosenAction" value="editplan">

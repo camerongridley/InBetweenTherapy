@@ -2,6 +2,8 @@ package com.cggcoding.models;
 
 import java.time.LocalDate;
 
+import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -18,8 +20,15 @@ public abstract class Task implements Completable, Updateable{
 	private boolean completed;
 	private LocalDate dateCompleted;
 	private int taskOrder;
-	private boolean isTemplate;
+	private boolean extraTask;
+	private boolean template;
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+	
+	//TODO see if I can eliminate some of these constructors!
+	//empty constructor necessary to allow static factory methods in subclasses
+	public Task(){
+		
+	}
 	
 	//basic parent Task that sets properties to defaults
 	public Task(int taskID, int userID) {
@@ -34,7 +43,8 @@ public abstract class Task implements Completable, Updateable{
 		this.completed = false;
 		this.dateCompleted = null;
 		this.taskOrder = 0;
-		this.isTemplate = false;
+		this.extraTask = false;
+		this.template = false;
 	}
 	
 	//basic parent Task that sets properties to defaults
@@ -50,7 +60,8 @@ public abstract class Task implements Completable, Updateable{
 		this.completed = false;
 		this.dateCompleted = null;
 		this.taskOrder = 0;
-		this.isTemplate = false;
+		this.extraTask = false;
+		this.template = false;
 	}
 
 	//basic parent Task before database insert that has no id and sets properties to defaults
@@ -66,7 +77,8 @@ public abstract class Task implements Completable, Updateable{
 		this.completed = false;
 		this.dateCompleted = null;
 		this.taskOrder = 0;
-		this.isTemplate = false;
+		this.extraTask = false;
+		this.template = false;
 	}
 	
 	//basic constructor if task is going to be a subtask
@@ -82,7 +94,63 @@ public abstract class Task implements Completable, Updateable{
 		this.completed = false;
 		this.dateCompleted = null;
 		this.taskOrder = 0;
-		this.isTemplate = false;
+		this.extraTask = false;
+		this.template = false;
+	}
+	
+	public Task (int userID, int taskTypeID, String title, String instructions, String resourceLink, boolean extraTask, boolean template) throws DatabaseException, ValidationException{
+		this.taskID = 0;
+		this.stageID = 0;
+		this.userID = userID;
+		this.taskTypeID = taskTypeID;
+		this.parentTaskID = 0;
+		this.title = title;
+		this.instructions = instructions;
+		this.resourceLink = resourceLink;
+		this.completed = false;
+		this.dateCompleted = null;
+		this.taskOrder = 0;
+		this.extraTask = extraTask;
+		this.template = true;
+	}
+	
+	
+	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
+	 * @param taskID
+	 * @param stageID
+	 * @param userID
+	 * @param taskTypeID
+	 * @param parentTaskID
+	 * @param title
+	 * @param instructions
+	 * @param resourceLink
+	 * @param completed
+	 * @param dateCompleted
+	 * @param taskOrder
+	 * @param extraTask
+	 * @param template
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	protected Task saveGeneralDataForTemplateInDatabase(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, 
+			String instructions, String resourceLink, boolean completed, LocalDate dateCompleted, int taskOrder,
+			boolean extraTask, boolean template) throws DatabaseException, ValidationException{
+		this.taskID = taskID;
+		this.stageID = stageID;
+		this.userID = userID;
+		this.taskTypeID = taskTypeID;
+		this.parentTaskID = parentTaskID;
+		this.title = title;
+		this.instructions = instructions;
+		this.resourceLink = resourceLink;
+		this.completed = completed;
+		this.dateCompleted = dateCompleted;
+		this.taskOrder = taskOrder;
+		this.extraTask = extraTask;
+		this.template = template;
+		
+		return databaseActionHandler.taskTemplateValidateAndCreate(this);
 	}
 	
 	public int getTaskID(){
@@ -166,11 +234,19 @@ public abstract class Task implements Completable, Updateable{
 	}
 
 	public boolean isTemplate() {
-		return isTemplate;
+		return template;
 	}
 
 	public void setTemplate(boolean isTemplate) {
-		this.isTemplate = isTemplate;
+		this.template = isTemplate;
+	}
+
+	public boolean isExtraTask() {
+		return extraTask;
+	}
+
+	public void setExtraTask(boolean extraTask) {
+		this.extraTask = extraTask;
 	}
 
 	public void setCompleted(boolean status){
@@ -223,8 +299,5 @@ public abstract class Task implements Completable, Updateable{
 		
 	}
 	
-	public void save(){
-		//databaseActionHandler
-	}
 
 }
