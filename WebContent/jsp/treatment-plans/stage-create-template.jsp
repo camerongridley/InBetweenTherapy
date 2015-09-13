@@ -14,11 +14,11 @@
 	<c:import url="/jsp/message-modal.jsp"/>
 
 	<form class="form-horizontal" action="./CreateStageTemplate" method="POST">
-		<input type=hidden name="chosenAction" value="stageName">
+		<input type=hidden name="chosenAction" value="stageTitle">
         <div class="form-group">
-            <label for="stageName" class="col-sm-2 control-label">Stage Name</label>
+            <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="stageName" name="stageName" value="${stageName }" placeholder="Enter a stage name here.">
+                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value="${stageTitle }" placeholder="Enter a stage name here.">
             </div>
         </div>
         <div class="form-group">

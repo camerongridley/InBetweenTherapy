@@ -3,13 +3,20 @@ package com.cggcoding.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tomcat.jdbc.pool.DataSource;
+
+import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.database.DatabaseActionHandler;
+import com.cggcoding.utils.database.MySQLActionHandler;
+
 public class TreatmentPlan {
 	private int treatmentPlanID;
 	private int userID;
 	private int userClientID; //TODO -  collapse these into one userID since there are other ways to track relationship between client and therapist?
 	private int userTherapistID;
 	private int treatmentIssueID;
-	private String name;
+	private String title;
 	private String description;
 	private List<Stage> stages;
 	private int currentStageIndex;
@@ -17,9 +24,9 @@ public class TreatmentPlan {
 	private boolean inProgress;
 	private boolean isTemplate;
 	
-	public TreatmentPlan(int treatmentPlanID, int userID, String name, String description, int txIssueID){
+	public TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID){
 		this.treatmentPlanID = treatmentPlanID;
-		this.name = name;
+		this.title = title;
 		this.description = description;
 		this.treatmentIssueID = txIssueID;
 		this.userID = userID;
@@ -28,8 +35,8 @@ public class TreatmentPlan {
 		this.activeViewStageIndex = 0;
 	}
 
-	public TreatmentPlan(String name, int userID, String description, int txIssueID){
-		this.name = name;
+	public TreatmentPlan(String title, int userID, String description, int txIssueID){
+		this.title = title;
 		this.userID = userID;
 		this.description = description;
 		this.treatmentIssueID = txIssueID;
@@ -58,8 +65,8 @@ public class TreatmentPlan {
 		return userID;
 	}
 	
-	public String getName() {
-		return name;
+	public String getTitle() {
+		return title;
 	}
 
 	public String getDescription() {
@@ -79,7 +86,7 @@ public class TreatmentPlan {
 	}
 	
 	public void addStage(Stage newStage){
-		stages.add(newStage.getIndex(), newStage);
+		stages.add(newStage.getStageOrder(), newStage);
 	}
 	
 	public void updateStages(){
@@ -148,7 +155,7 @@ public class TreatmentPlan {
 		int stageOrder = 0;
 		for(Stage stage : stages){
 			if(stage.getStageID() == stageID){
-				stageOrder = stage.getIndex();
+				stageOrder = stage.getStageOrder();
 				return stageOrder;
 			}
 		}
@@ -161,6 +168,12 @@ public class TreatmentPlan {
 
 	public int getActiveViewStageOrder(){
 		return getStageOrder(activeViewStageIndex);
+	}
+	
+	public void save(DataSource datasource) throws ValidationException, DatabaseException{
+		 DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
+		 
+		 databaseActionHandler.treatmentPlanCreateBasic(this);
 	}
 
 }

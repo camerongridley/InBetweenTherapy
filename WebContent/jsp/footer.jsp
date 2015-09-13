@@ -14,6 +14,17 @@
     <script src="./js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+
+    <script src="./js/jquery-1.11.3.min.js"></script>
+    <script>
+ 
+    $( document ).ready(function() {
+    	console.log( "Ready for js to run!" );
+     
+    });
+ 
+    </script>
+    
   </body>
 </html>
 

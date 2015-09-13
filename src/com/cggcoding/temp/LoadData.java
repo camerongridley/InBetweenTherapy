@@ -164,16 +164,16 @@ public class LoadData extends HttpServlet {
 
 		//create stages
 		Stage psychEdStage = Stage.getInstanceAndCreateID(user.getUserID(), "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.", 0);
-		psychEdStage.setGoals(new ArrayList<>(Arrays.asList("Have a better understanding of the human sexual response.", "Learned about common myths of male sexuality.")));
+		psychEdStage.setGoals(new ArrayList<>(Arrays.asList(StageGoal.getInstance(1, psychEdStage.getStageID(), "Have a better understanding of the human sexual response."), StageGoal.getInstance(2, psychEdStage.getStageID(),"Learned about common myths of male sexuality."))));
 
 		Stage relaxStage = Stage.getInstanceAndCreateID(user.getUserID(), "Relaxation", "Learning to relax your body on command is a fundamental building block of overcoming any sexual difficulty", 1);
-		relaxStage.setGoals(new ArrayList<>(Arrays.asList("Notice the physiological sensations that indicated I am feeling stress or tension.", "Be able to begin relaxation on cue.", "To mindfully meditate for 15 minutes.")));
+		relaxStage.setGoals(new ArrayList<>(Arrays.asList(StageGoal.getInstance(3, relaxStage.getStageID(),"Notice the physiological sensations that indicated I am feeling stress or tension."), StageGoal.getInstance(4, relaxStage.getStageID(),"Be able to begin relaxation on cue."), StageGoal.getInstance(5, relaxStage.getStageID(),"To mindfully meditate for 15 minutes."))));
 
 		Stage cognitiveStage = Stage.getInstanceAndCreateID(user.getUserID(), "Cognitive", "Here we help you monitor and respond differently to unhelpful thinking.", 2);
-		cognitiveStage.setGoals(new ArrayList<>(Arrays.asList("Be able to identify irrational thoughts and form a balanced and realistic replacement thought.", "Breathe and feel my body shift out of negative thinking and release/relax.")));
+		cognitiveStage.setGoals(new ArrayList<>(Arrays.asList(StageGoal.getInstance(6, cognitiveStage.getStageID(),"Be able to identify irrational thoughts and form a balanced and realistic replacement thought."), StageGoal.getInstance(7, cognitiveStage.getStageID(), "Breathe and feel my body shift out of negative thinking and release/relax."))));
 
 		Stage relationalStage = Stage.getInstanceAndCreateID(user.getUserID(), "Relational", "Including your partner.", 3);
-		relationalStage.setGoals(new ArrayList<>(Arrays.asList("Have conversation x with my partner.", "Done sensate focus to the point of comfort.")));
+		relationalStage.setGoals(new ArrayList<>(Arrays.asList(StageGoal.getInstance(8, relationalStage.getStageID(), "Have conversation x with my partner."), StageGoal.getInstance(9, relationalStage.getStageID(), "Done sensate focus to the point of comfort."))));
 
 		//create and load tasks for each stage
 		//TODO have Task creation go through a factory or factory method

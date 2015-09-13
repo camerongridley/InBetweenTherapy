@@ -6,7 +6,7 @@
 <c:import url="header.jsp" />
 	
 	
-	<h1>Treatment Issue: ${treatmentPlan.name }</h1>
+	<h1>Treatment Issue: ${treatmentPlan.title }</h1>
 	<div class="row">
 		<div class="col-md-12">
 			
@@ -17,15 +17,15 @@
 					<!---------------------------------------------------------
 					For stage that is currently being viewed (enabled-active)
 					---------------------------------------------------------->
-					<c:if test="${stage.index == treatmentPlan.activeViewStageIndex }">
+					<c:if test="${stage.stageOrder == treatmentPlan.activeViewStageIndex }">
 						<div class="progress-bar progress-bar-primary progress-stage-enabled-active" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
-							<c:if test="${stage.index <= treatmentPlan.currentStageIndex }"><form action="./ChangeStage" method="POST"></c:if>
-							${stage.name }
+							<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex }"><form action="./ChangeStage" method="POST"></c:if>
+							${stage.title }
 								<a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal">
 									<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 								</a>
-								<input type="hidden" name="stageIndex" value=${stage.index } /><input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-							<c:if test="${stage.index <= treatmentPlan.currentStageIndex  }"></form></c:if>
+								<input type="hidden" name="stageIndex" value=${stage.stageOrder } /><input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
+							<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }"></form></c:if>
 						</div>
 						<!-- Modal popup for information about stage currently being viewed -->
 						<div class="modal fade" id="stageInfoModal" tabindex="-1" role="dialog" aria-labelledby="stageInfoModalLabel">
@@ -33,7 +33,7 @@
 								<div class="modal-content">
 									<div class="modal-header">
 										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-										<h4 class="modal-title" id="stageInfoModalLabel">${stage.name} Overview and Goals</h4>
+										<h4 class="modal-title" id="stageInfoModalLabel">${stage.title} Overview and Goals</h4>
 									</div>
 									<div class="modal-body">
 										<p>${stage.description}</p>
@@ -42,7 +42,7 @@
 											<c:forEach items="${stage.goals}" var="goal">
 												<ul>
 													<li>
-														${goal}
+														${goal.description}
 													</li>
 												</ul>
 											</c:forEach>
@@ -58,19 +58,19 @@
 					<!---------------------------------------------------------------------
 					For stage that is accessible but NOT the active view (enabled-inactive)
 					---------------------------------------------------------------------->
-					<c:if test="${stage.index != treatmentPlan.activeViewStageIndex && stage.index <= treatmentPlan.currentStageIndex}">
+					<c:if test="${stage.stageOrder != treatmentPlan.activeViewStageIndex && stage.stageOrder <= treatmentPlan.currentStageIndex}">
 						<div class="progress-bar progress-bar-info progress-stage-enabled-inactive" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
-							<c:if test="${stage.index <= treatmentPlan.currentStageIndex  }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
-							${stage.name }<input type="hidden" name="stageIndex" value=${stage.index } /><input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-							<c:if test="${stage.index <= treatmentPlan.currentStageIndex  }"></a></form></c:if>
+							<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
+							${stage.title }<input type="hidden" name="stageIndex" value=${stage.stageOrder } /><input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
+							<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }"></a></form></c:if>
 						</div>
 					</c:if>
 					<!----------------------------------------------------
 					For stage that is inaccssible at this time (disabled)
 					----------------------------------------------------->
-					<c:if test="${stage.index != treatmentPlan.activeViewStageIndex && stage.index > treatmentPlan.currentStageIndex}">
+					<c:if test="${stage.stageOrder != treatmentPlan.activeViewStageIndex && stage.stageOrder > treatmentPlan.currentStageIndex}">
 						<div class="progress-bar progress-bar-info progress-stage-disabled" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
-								${stage.name }<input type="hidden" name="stageIndex" value=${stage.index } />
+								${stage.title }<input type="hidden" name="stageIndex" value=${stage.stageOrder } />
 						</div>
 					</c:if>
 					<c:if test="${!stageStatus.last }">
@@ -108,7 +108,7 @@
 
 			<form action="./UpdateTaskCompletion" method="post" class="form-inline">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-			<strong>Stage: <c:out value="${treatmentPlan.activeViewStage.name }" /> - ${treatmentPlan.activeViewStage.percentComplete }% Complete</strong>
+			<strong>Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${treatmentPlan.activeViewStage.percentComplete }% Complete</strong>
 			<div class="progress">
 			  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${treatmentPlan.activeViewStage.percentComplete }%;">
 			    <strong>${treatmentPlan.activeViewStage.percentComplete }%</strong>
@@ -122,9 +122,9 @@
 						  <div class="panel-heading panel-heading-task">
 						  	<input type="hidden" name="allTaskIDs" value="${task.taskID}"/>
 							  <input type="hidden" name="taskTypeName${task.taskID}" value="${task.taskTypeName}"/>
-						  	<input type="checkbox" id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]" aria-label="Task: ${task.name }">
+						  	<input type="checkbox" id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]" aria-label="Task: ${task.title }">
 							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
-					          ${task.name } - Task Type: ${task.taskTypeName }
+					          ${task.title } - Task Type: ${task.taskTypeName }
 					        </a>
 							  <!-- TODO task set/repetition info goes here -->
 						  </div>
@@ -134,7 +134,7 @@
 							  <c:if test="${task.taskTypeName == 'PsychEdTask' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 									  <div class="panel-body panel-body-task">
-										${task.description }
+										${task.instructions }
 									  </div>
 								  </div>
 							  </c:if>
@@ -144,7 +144,7 @@
 							  <c:if test="${task.taskTypeName == 'RelaxationTask' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 									  <div class="panel-body panel-body-task">
-										${task.description }
+										${task.instructions }
 									  </div>
 									  <div class="panel-body panel-body-task">
 										Duration: ${task.durationInMinutes }
@@ -157,7 +157,7 @@
 							  <c:if test="${task.taskTypeName == 'CognitiveTask' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 									  <div class="panel-body panel-body-task">
-										${task.description }
+										${task.instructions }
 									  </div>
 									  <div class="panel-body panel-body-task">
 										<input type="text" class="form-control" placeholder="Enter your automatic thought." name="automaticThought${task.taskID }" value="${task.automaticThought }">
@@ -179,14 +179,14 @@
 						  <div class="panel-heading panel-heading-task">
 						  	<input type="hidden" name="allTaskIDs" value="${task.taskID}"/>
 						  	<input type="hidden" name="taskTypeName${task.taskID}" value="${task.taskTypeName}"/>
-						  	<input type="checkbox" id="${task.taskID }" aria-label="Task: ${task.name }" value="${task.taskID }" name="taskChkBx[]" checked>
+						  	<input type="checkbox" id="${task.taskID }" aria-label="Task: ${task.title }" value="${task.taskID }" name="taskChkBx[]" checked>
 							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
-					          <span class="task-completed">${task.name }</span> - Completed ${task.dateCompleted }
+					          <span class="task-completed">${task.title }</span> - Completed ${task.dateCompleted }
 					        </a>
 						  </div>
 						  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 							  <div class="panel-body panel-body-task">
-							    ${task.description }
+							    ${task.instructions }
 							  </div>
 							  <c:if test="${task.taskTypeName == 'CognitiveTask'}">
 								  <div class="panel-body panel-body-task">
@@ -215,7 +215,7 @@
 				  </div>
 				  <div id="collapse121212" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading121212">
 					  <div class="panel-body panel-body-task">
-					    Extra task description would go here.
+					    Extra task instructions would go here.
 					  </div>
 				  </div>
 				</div>

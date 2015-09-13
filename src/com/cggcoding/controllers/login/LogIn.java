@@ -6,6 +6,7 @@ import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
@@ -42,16 +43,15 @@ public class LogIn extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String userRole = "";
-        DataSource datasource = (DataSource)request.getServletContext().getAttribute("datasource");
-        MySQLActionHandler mySQLActionHandler = new MySQLActionHandler(datasource);
+        DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
     	
         
 	        try {
-				boolean userExists = mySQLActionHandler.validateUser(email, password);
+				boolean userExists = databaseActionHandler.userValidate(email, password);
 
 				//use the above to get authenticate the user and get create a User object
 				if(userExists){
-					User user = mySQLActionHandler.getUserInfo(email, password);
+					User user = databaseActionHandler.userLoadInfo(email, password);
 					request.getSession().setAttribute("user", user);
 					
 					if(user.hasRole("admin")){

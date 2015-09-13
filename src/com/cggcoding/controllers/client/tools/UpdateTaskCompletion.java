@@ -52,7 +52,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
 
 		//build maps containing new data to pass back to service layer for updating
-		Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(checkedTaskIDs, allTaskIDs, request);
+		Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(user, checkedTaskIDs, allTaskIDs, request);
 
 		//call to service layer to save and process the new task data and return an updated Stage
 		Stage updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
@@ -73,7 +73,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 	* Marks these data holder tasks as completed if checked and incomplete if not in the list of checked tasks.
 	* Then the service layer can use this temporary task's isCompleted to determine determine logic for updating completion and progress states in the persistant task.
 	* */
-	private Map<Integer, Task> buildNewInfoOnlyTaskMap(List<Integer> checkedTaskIDs, List<Integer> allTasksIDs, HttpServletRequest request){
+	private Map<Integer, Task> buildNewInfoOnlyTaskMap(User user, List<Integer> checkedTaskIDs, List<Integer> allTasksIDs, HttpServletRequest request){
 
 		Map<Integer, Task> newInfoTaskMap = new HashMap<>();
 
@@ -89,7 +89,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 			switch (taskTypeName) {
 				case "CognitiveTask":
 					System.out.println("Updating Cognitive Task");
-					CognitiveTask cogTask = new CognitiveTask(currentTaskID);
+					CognitiveTask cogTask = new CognitiveTask(currentTaskID, user.getUserID());
 					String autoThought = (String)request.getParameter("automaticThought" + cogTask.getTaskID());
 					cogTask.setAutomaticThought(autoThought);
 					String altThought = (String) request.getParameter("alternativeThought" + cogTask.getTaskID());
@@ -99,13 +99,13 @@ public class UpdateTaskCompletion extends HttpServlet {
 					break;
 				case "RelaxationTask":
 					System.out.println("Updating Relaxation Task.");
-					RelaxationTask relaxTask = new RelaxationTask(currentTaskID);
+					RelaxationTask relaxTask = new RelaxationTask(currentTaskID, user.getUserID());
 
 					updatedTask =  relaxTask;
 					break;
 				case "PsychEdTask":
 					System.out.println("Updating PsychEdTask");
-					PsychEdTask psychEdTask = new PsychEdTask(currentTaskID);
+					PsychEdTask psychEdTask = new PsychEdTask(currentTaskID, user.getUserID());
 
 					updatedTask = psychEdTask;
 					break;

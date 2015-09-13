@@ -2,19 +2,24 @@ package com.cggcoding.utils.database;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.dbutils.DbUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tomcat.jdbc.pool.DataSource;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
+import com.cggcoding.models.StageGoal;
+import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.models.tasktypes.GenericTask;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
@@ -24,32 +29,30 @@ import com.cggcoding.utils.messaging.ErrorMessages;
  * @author cgrid_000
  *
  */
-public class MySQLActionHandler {
-	DataSource datasource;
+public class MySQLActionHandler implements DatabaseActionHandler{
+	DatabaseConnection mysqlConn;
+	private static final int ADMIN_ROLE_ID = 1;
 
-    public MySQLActionHandler(DataSource datasource){
-    	this.datasource = datasource;
+    public MySQLActionHandler(){
+    	this.mysqlConn = new MySQLConnection();
     }
 
-    
+    /* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#getConnection()
+	 */
+	@Override
     public Connection getConnection(){
-    	Connection conn = null;
-    	try {
-    		conn = datasource.getConnection();
-		} catch (SQLException e) {
-			
-			e.printStackTrace();
-		}
-    	
-    	return conn;
+		return mysqlConn.getConnection();
+
     }
     
 
-    /**************************************************
-     *************** Login Methods ********************
-     **************************************************/
+    /* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#validateUser(java.lang.String, java.lang.String)
+	 */
      
-    public boolean validateUser(String email, String password) throws DatabaseException{
+    @Override
+	public boolean userValidate(String email, String password) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet userInfo = null;
@@ -86,7 +89,11 @@ public class MySQLActionHandler {
         }
     }
 
-    public User getUserInfo(String email, String password) throws DatabaseException{
+    /* (non-Javadoc)
+	 * @see com.cggcoding.utils.database.DatabaseActionHandler#getUserInfo(java.lang.String, java.lang.String)
+	 */
+    @Override
+	public User userLoadInfo(String email, String password) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet userInfo = null;
@@ -134,11 +141,40 @@ public class MySQLActionHandler {
     }
     
     
-    /**************************************************************************************************
-     ****************************** Treatment Plan Methods *************************************
-     **************************************************************************************************/
+    private List<Integer> userGetAdminIDs(Connection cn) throws DatabaseException{
+    	//Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Integer> adminIDList = new ArrayList<>();
+        
+        try {
+        	//cn = getConnection();
+
+    		String sql = "SELECT user.user_id FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user_role.user_role_id)=" + ADMIN_ROLE_ID + "))";    	
+
+    		ps = cn.prepareStatement(sql);
+    		
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	adminIDList.add(rs.getInt("user_id"));
+            }
+        	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			//DbUtils.closeQuietly(cn);
+        }
+        
+        return adminIDList;
+    }
 	
-	public TreatmentPlan createTreatmentPlanBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException{		
+	@Override
+	public TreatmentPlan treatmentPlanCreateBasic(TreatmentPlan treatmentPlan) throws DatabaseException{		
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
@@ -146,10 +182,10 @@ public class MySQLActionHandler {
         try {
         	cn = getConnection();
         	
-        	//determine if the combo if userID and plan name exists, if not, then proceed to inserting new plan name
-        	boolean comboValid = validateNewTreatmentPlanName(cn, treatmentPlan.getUserID(), treatmentPlan.getName());
+        	//determine if the combo if userID and plan title exists, if not, then proceed to inserting new plan title
+        	//TODO delete commented validation code - boolean comboValid = validateNewTreatmentPlanTitle(cn, treatmentPlan.getUserID(), treatmentPlan.getTitle());
         	
-        	if(comboValid){
+        	//if(comboValid){
 	        	String sql = "INSERT INTO `cggcodin_doitright`.`treatment_plan` (`treatment_plan_user_id_fk`, `treatment_plan_treatment_issue_id_fk`, `title`, `description`, `current_stage_index`, `active_view_stage_index`, `in_progress`) "
 	            		+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
 	        	
@@ -157,7 +193,7 @@ public class MySQLActionHandler {
 	            
 	            ps.setInt(1, treatmentPlan.getUserID());
 	            ps.setInt(2, treatmentPlan.getTreatmentIssueID());
-	            ps.setString(3, treatmentPlan.getName().trim());
+	            ps.setString(3, treatmentPlan.getTitle().trim());
 	            ps.setString(4, treatmentPlan.getDescription().trim());
 	            ps.setInt(5, treatmentPlan.getCurrentStageIndex());
 	            ps.setInt(6, treatmentPlan.getActiveViewStageIndex());
@@ -170,7 +206,7 @@ public class MySQLActionHandler {
 	            while (generatedKeys.next()){
 	            	treatmentPlan.setTreatmentPlanID(generatedKeys.getInt(1));;
 	            }
-        	}
+        	//}
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
@@ -186,7 +222,7 @@ public class MySQLActionHandler {
 	
 	
 	
-	private boolean validateNewTreatmentPlanName(Connection cn, int userID, String planName) throws ValidationException, DatabaseException{
+	public boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle) throws ValidationException, DatabaseException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
@@ -194,7 +230,7 @@ public class MySQLActionHandler {
         try {
 
             ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_plan WHERE (((treatment_plan.title)=?) AND ((treatment_plan.treatment_plan_user_id_fk)=?))");
-            ps.setString(1, planName.trim());
+            ps.setString(1, planTitle.trim());
             ps.setInt(2, userID);
 
             issueCount = ps.executeQuery();
@@ -213,71 +249,48 @@ public class MySQLActionHandler {
 		}
 		
         if(comboExists > 0){
-        	throw new ValidationException(ErrorMessages.PLAN_NAME_EXISTS);
+        	throw new ValidationException(ErrorMessages.PLAN_TITLE_EXISTS);
         } else {
         	return true;
         }
 		
 	}
 	
-    /**************************************************************************************************
-     ****************************************** Stage Methods *****************************************
-     **************************************************************************************************/	
-	
-	public Stage createStageTemplate(Stage newStageTemplate) throws ValidationException, DatabaseException{
+	public Stage stageTemplateValidateAndCreate(Stage stageTemplate) throws ValidationException, DatabaseException{
 		Connection cn = null;
-    	PreparedStatement ps = null;
-        ResultSet generatedKeys = null;
-        
+
         try {
-        	cn = getConnection();
-        	//first check to see if the userID and issue name combo already exists
-        	boolean comboValid = validateNewStageName(cn, newStageTemplate.getName(), newStageTemplate.getUserID());
-        	
-        	if(comboValid){
-        		String sql = "INSERT INTO `cggcodin_doitright`.`stage` (`stage_user_id_fk`, `title`, `description`, `order`, `is_template`) "
-                		+ "VALUES (?, ?, ?, ?, ?)";
-            	
-                ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                
-                ps.setInt(1, newStageTemplate.getUserID());
-                ps.setString(2, newStageTemplate.getName().trim());
-                ps.setString(3, newStageTemplate.getDescription().trim());
-                ps.setInt(4, newStageTemplate.getIndex());
-                ps.setInt(5, 1);
-
-                int success = ps.executeUpdate();
-                
-                generatedKeys = ps.getGeneratedKeys();
-       
-                while (generatedKeys.next()){
-                	newStageTemplate.setStageID(generatedKeys.getInt(1));
-                }
-        	}
-        	
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        	cn= getConnection();
+			if(stageTemplateValidateNewTitle(cn, stageTemplate)){
+				return stageTemplateCreate(cn, stageTemplate);
+			}
+			
         } finally {
-        	DbUtils.closeQuietly(generatedKeys);
-			DbUtils.closeQuietly(ps);
 			DbUtils.closeQuietly(cn);
-        }
+		}
         
-        return newStageTemplate;
+        return null;
 	}
-
-
-	private boolean validateNewStageName(Connection cn, String stageName, int userID) throws ValidationException, DatabaseException{
-    	PreparedStatement ps = null;
+	
+	/** Validating a new Stage Template title involves checking is there is already a match for the combination of the new title and the userID.
+	 * If there is a match then the new title is invalid
+	 * @param cn
+	 * @param newStage - A Stage object containing at least a title and userID
+	 * @return true if valid combination, false throws ValidationException
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	private boolean stageTemplateValidateNewTitle(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
+		//Connection cn = null;
+		PreparedStatement ps = null;
         ResultSet stageCount = null;
         int comboExists = 0;
 	        
         try {
-			ps = cn.prepareStatement("SELECT COUNT(*)  FROM stage WHERE (((stage.title)=?) AND ((stage.stage_user_id_fk)=?))");
-			ps.setString(1, stageName.trim());
-			ps.setInt(2, userID);
+        	cn= getConnection();
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE (((stage.title)=?) AND ((stage.stage_user_id_fk)=?))");
+			ps.setString(1, newStage.getTitle().trim());
+			ps.setInt(2, newStage.getUserID());
 
 			stageCount = ps.executeQuery();
 
@@ -291,47 +304,416 @@ public class MySQLActionHandler {
         } finally {
 			DbUtils.closeQuietly(stageCount);
 			DbUtils.closeQuietly(ps);
+			//DbUtils.closeQuietly(cn);
 		}
         
 		if(comboExists > 0){
-			throw new ValidationException(ErrorMessages.STAGE_NAME_EXISTS);
+			throw new ValidationException(ErrorMessages.STAGE_TITLE_EXISTS);
 		} else {
 			return true;
 		}
 	}
 	
-    /**************************************************************************************************
-     *************************************** Treatment Issue Methods **********************************
-     **************************************************************************************************/
+	/**Validating a new Stage Template title involves checking is there is already a match for the combination of the new title and the userID. However, since
+	 * in case the title wasn't actually changed, need to also exclude any results that have a stageID equal to the stageID of the Stage parameter
+	 * @param cn
+	 * @param newStage
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	private boolean stageTemplateValidateUpdatedTitle(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
+		//Connection cn = null;
+		PreparedStatement ps = null;
+        ResultSet stageCount = null;
+        int comboExists = 0;
+	        
+        try {
+        	cn= getConnection();
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE ((stage.title = ?) AND (stage.stage_id != ?) AND (stage.stage_user_id_fk = ?))");
+			ps.setString(1, newStage.getTitle().trim());
+			ps.setInt(2, newStage.getStageID());
+			ps.setInt(3, newStage.getUserID());
 
-	public TreatmentIssue createTreatmentIssue(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{
+			stageCount = ps.executeQuery();
+
+			while (stageCount.next()){
+			    comboExists = stageCount.getInt("COUNT(*)");
+			}
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(stageCount);
+			DbUtils.closeQuietly(ps);
+			//DbUtils.closeQuietly(cn);
+		}
+        
+		if(comboExists > 0){
+			throw new ValidationException(ErrorMessages.STAGE_TITLE_EXISTS);
+		} else {
+			return true;
+		}
+	}
+	
+	private Stage stageTemplateCreate(Connection cn, Stage newStageTemplate) throws ValidationException, DatabaseException{
+		//Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+        	cn = getConnection();
+
+    		String sql = "INSERT INTO `cggcodin_doitright`.`stage` (`stage_user_id_fk`, `title`, `description`, `stage_order`, `is_template`) "
+            		+ "VALUES (?, ?, ?, ?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setInt(1, newStageTemplate.getUserID());
+            ps.setString(2, newStageTemplate.getTitle().trim());
+            ps.setString(3, newStageTemplate.getDescription().trim());
+            ps.setInt(4, newStageTemplate.getStageOrder());
+            ps.setInt(5, 1);
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	newStageTemplate.setStageID(generatedKeys.getInt(1));
+            }
+        	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+			//DbUtils.closeQuietly(cn);
+        }
+        
+        return newStageTemplate;
+	}
+
+	
+	@Override
+	public boolean stageTemplateUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        int success = 0;
+        
+        try {
+        	cn = getConnection();
+        	
+        	if(stageTemplateValidateUpdatedTitle(cn, newStageTemplate)){
+	        	//TODO needs to include updating of all the list properties of Stage.java
+        		
+        		
+	    		String sql = "UPDATE stage SET title=?, description=?, completed=?, `stage_order`=?, percent_complete=?, is_template=? WHERE stage_id=?";
+	        	
+	            ps = cn.prepareStatement(sql);
+	            
+	            ps.setString(1, newStageTemplate.getTitle().trim());
+	            ps.setString(2, newStageTemplate.getDescription().trim());
+	            ps.setBoolean(3, newStageTemplate.isCompleted());
+	            ps.setInt(4, newStageTemplate.getStageOrder());
+	            ps.setInt(5, newStageTemplate.getPercentComplete());
+	            ps.setBoolean(6, newStageTemplate.isTemplate());
+	            ps.setInt(7, newStageTemplate.getStageID());
+	
+	            success = ps.executeUpdate();
+        	}
+        	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return success == 1;
+	}
+	
+	public List<Stage> stagesGetDefaults() throws DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Stage> defaultStageList = new ArrayList<>();
+        
+        try {
+        	cn = getConnection();
+        	
+        	List<Integer> adminIDList = userGetAdminIDs(cn);
+        	
+        	//String parameters = StringUtils.join(adminIDList.iterator(),",");
+        	
+        	StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (");
+        	
+        	for(Integer adminID : adminIDList){
+        		sqlBuilder.append("?,");
+        	}	
+        	
+        	sqlBuilder.deleteCharAt(sqlBuilder.length()-1);
+        	sqlBuilder.append(")");
+    		String sql = sqlBuilder.toString();//substring(0, (sqlBuilder.length()-1));
+    		ps = cn.prepareStatement(sql);
+    		
+    		for(int i = 0; i < adminIDList.size(); i++){
+    			ps.setInt(i+1, adminIDList.get(i));
+    		}
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	defaultStageList.add(stageLoad(rs.getInt("stage_id")));
+            	
+            	//defaultStageList.add(Stage.getInstance(rs.getInt("stage.stage_id"), rs.getInt("stage_user_id_fk"), rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.stage_order")));
+            }
+        	//}
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return defaultStageList;
+	}
+
+	
+	/* TODO - delete? - realized I don't ever need the user ID to get a stage from the database - could keep it as parameter for an extra security measure I suppose.
+	@Override
+	public Stage stageLoad(int userID, int stageID) throws ValidationException, DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Stage stage = null;
+        
+        try {
+        	cn = getConnection();
+
+    		String sql = "SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk`=? AND `stage.stage_id`=?";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, userID);
+            ps.setInt(2, stageID);
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	stage = Stage.getInstance(stageID, userID, rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.stage_order"));
+            	
+            }
+        	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return stage;
+	}
+	*/
+	@Override
+	public Stage stageLoad(int stageID) throws DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Stage stage = null;
+        
+        try {
+        	cn = getConnection();
+
+    		String sql = "SELECT * FROM stage WHERE stage.stage_id =?";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, stageID);
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	//TODO load tasks
+            	List<Task> tasks = new ArrayList<>();
+            	//TODO load extra tasks
+            	List<Task> extraTasks = new ArrayList<>();
+            	//TODO load goals
+            	List<StageGoal> goals = new ArrayList<>();
+            	
+            	boolean completed = rs.getInt("completed") == 1;
+            	//boolean inProgress = rs.getInt("") == 1;
+            	boolean isTemplate = rs.getInt("is_template") == 1;
+            	
+            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.stage_order"), tasks, extraTasks, completed, rs.getInt("percent_complete"), goals, isTemplate);
+            }
+        	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return stage;
+	}
+	
+	public StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        int goalID = 0;
+        
+        try {
+	        if(goal.getStageID() != 0 && !goal.getDescription().isEmpty()){
+	        	
+	        	cn = getConnection();
+	
+	        	String sql = "INSERT INTO stage_goal (stage_goal_stage_id_fk, description) VALUES (?, ?)";
+	        	
+	            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	            
+	            ps.setInt(1, goal.getStageID());
+	            ps.setString(2, goal.getDescription());
+	
+	            int success = ps.executeUpdate();
+	            
+	            generatedKeys = ps.getGeneratedKeys();
+	   
+	            while (generatedKeys.next()){
+	            	goalID = generatedKeys.getInt(1);;
+	            }
+	            
+	            goal.setStageGoalID(goalID);
+        	} else {
+        		throw new ValidationException(ErrorMessages.STAGE_GOAL_VALIDATION_ERROR);
+        	}
+        		
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } catch (ValidationException e){
+        	e.printStackTrace();
+        }finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return goal;
+	}
+	
+	public Task taskTemplateValidateAndCreate(Task newTask) throws DatabaseException, ValidationException{
+		Connection cn = null;
+
+        try {
+        	cn= getConnection();
+			if(taskTemplateValidate(cn, newTask)){
+				return taskGenericTemplateCreate(cn, newTask);
+			}
+			
+        } finally {
+			DbUtils.closeQuietly(cn);
+		}
+        
+        return null;
+		
+	}
+	
+	private boolean taskTemplateValidate(Connection cn, Task newTask) throws ValidationException{
+		//TODO Implement validation rules for a new task if there are any
+		return true;
+	}
+	
+	/**Inserts a Generic Task template into the database.  Since it is a template, it does not insert for the 
+	 * fields: task_id, task_stage_id_fk, date_completed, or parent_task_id, and it sets is_extra_task = 0(false) and is_template = 1(true)
+	 * @param cn
+	 * @param newTask - Task object to be inserted.
+	 * @return
+	 * @throws DatabaseException
+	 */
+	private Task taskGenericTemplateCreate(Connection cn, Task newTask) throws DatabaseException{
+		PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+        	cn = getConnection();
+
+        	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_user_id_fk, title, "
+    				+ "instructions, resource_link, completed, task_order, is_extra_task, is_template) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setInt(1, newTask.getTaskTypeID());
+            ps.setInt(2, newTask.getUserID());
+            ps.setString(3, newTask.getTitle().trim());
+            ps.setString(4, newTask.getInstructions().trim());
+            ps.setString(5, newTask.getResourceLink().trim());
+            ps.setBoolean(6, newTask.isCompleted());
+            ps.setInt(7, newTask.getTaskOrder());
+            ps.setInt(8, 0);
+            ps.setInt(9, 1);
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	newTask.setTaskID(generatedKeys.getInt(1));
+            }
+        	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+			//DbUtils.closeQuietly(cn);
+        }
+		
+		return newTask;
+	}
+
+	@Override
+	public TreatmentIssue treatmentIssueCreate(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
         try {
         	cn = getConnection();
-        	//first check to see if the userID and issue name combo already exists
-        	boolean comboValid = validateNewIssueName(cn, treatmentIssue.getTreatmentIssueName(), treatmentIssue.getUserID());
         	
-        	if(comboValid){
-        		String sql = "INSERT INTO `cggcodin_doitright`.`treatment_issue` (`issue`, `treatment_issue_user_id_fk`) "
-                		+ "VALUES (?, ?)";
-            	
-                ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                
-                ps.setString(1, treatmentIssue.getTreatmentIssueName().trim());
-                ps.setInt(2, treatmentIssue.getUserID());
+    		String sql = "INSERT INTO `cggcodin_doitright`.`treatment_issue` (`issue`, `treatment_issue_user_id_fk`) "
+            		+ "VALUES (?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setString(1, treatmentIssue.getTreatmentIssueName().trim());
+            ps.setInt(2, treatmentIssue.getUserID());
 
-                int success = ps.executeUpdate();
-                
-                generatedKeys = ps.getGeneratedKeys();
-       
-                while (generatedKeys.next()){
-                	treatmentIssue.setTreatmentIssueID(generatedKeys.getInt(1));
-                }
-        	}
-        	
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	treatmentIssue.setTreatmentIssueID(generatedKeys.getInt(1));
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -349,19 +731,21 @@ public class MySQLActionHandler {
 	/**
 	 * Checks if there is an existing combination of treatment issue name and userID in the database.
 	 * @param cn Database connection
-	 * @param issueName Treatment Issue name of new issue that user wants to create
+	 * @param issueName Treatment Issue title of new issue that user wants to create
 	 * @param userID id of the user
 	 * @return true if the the combination is valid and does not exist in the database. false if the combination exists and is therefore invalid.
 	 * @throws SQLException
 	 * @throws ValidationException 
 	 * @throws DatabaseException
 	 */
-	private boolean validateNewIssueName(Connection cn, String issueName, int userID) throws ValidationException, DatabaseException{
+	public boolean treatmentIssueValidateNewName(String issueName, int userID) throws ValidationException, DatabaseException{
+		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
         
         try {
+        	cn = getConnection();
             ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_issue WHERE (((treatment_issue.issue)=?) AND ((treatment_issue.treatment_issue_user_id_fk)=?))");
             ps.setString(1, issueName.trim());
             ps.setInt(2, userID);
@@ -379,6 +763,7 @@ public class MySQLActionHandler {
         } finally {
 			DbUtils.closeQuietly(issueCount);
 			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
 		}
 
         if(comboExists > 0){
@@ -388,14 +773,17 @@ public class MySQLActionHandler {
         }
     }
 
-	public ArrayList<TreatmentIssue> getDefaultTreatmentIssues() throws DatabaseException{
-		//TODO - probably shouldn't have a hardcoded value here for the admin user id and should instead lookup all the users with admin role and get their ids and run for each
-		ArrayList<TreatmentIssue> issues = getTreatmentIssuesList(1);
+	//TODO - change to make sure this works with a List of adminIDs
+	@Override
+	public ArrayList<TreatmentIssue> treatmentIssueGetDefaults(int adminUserID) throws DatabaseException{
+		ArrayList<TreatmentIssue> issues = treatmentIssueGetListByUserID(adminUserID);
 		
 		return issues;
 	}
 
-    public ArrayList<TreatmentIssue> getTreatmentIssuesList(int userID) throws DatabaseException{
+
+    @Override
+	public ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
@@ -404,9 +792,12 @@ public class MySQLActionHandler {
         
         try {
         	cn = getConnection();
-            ps = cn.prepareStatement("SELECT treatment_issue.treatment_issue_id, treatment_issue.issue, user.user_id "
+        	
+        	String sql = "SELECT treatment_issue.treatment_issue_id, treatment_issue.issue, user.user_id "
             		+ "FROM (user) INNER JOIN treatment_issue ON user.user_id = treatment_issue.treatment_issue_user_id_fk "
-            		+ "WHERE (((user.user_id)=?))");
+            		+ "WHERE (((user.user_id)=?))";
+        	
+            ps = cn.prepareStatement(sql);
             ps.setInt(1, userID);
 
             rs = ps.executeQuery();
@@ -427,5 +818,6 @@ public class MySQLActionHandler {
         
         return issues;
     }
+
 
 }
