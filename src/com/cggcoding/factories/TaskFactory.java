@@ -18,7 +18,6 @@ public class TaskFactory {
         if(taskType == null){
             return null;
         }
-        //TODO 
         switch (taskType){
             case "CognitiveTask":
                 System.out.println("In TaskFactory.newInstance() for CognitiveTask");
@@ -65,15 +64,15 @@ public class TaskFactory {
             switch (task.getTaskTypeName()){
                 case "CognitiveTask":
                     CognitiveTask cogTask = (CognitiveTask)task;
-                    taskCopies.add(new CognitiveTask(cogTask.getTaskID(), cogTask.getUserID(), cogTask.getParentTaskID(), cogTask.getName(), cogTask.getDescription(), cogTask.getAutomaticThought(), cogTask.getAlternativeThought(), cogTask.getPreSUDS(), cogTask.getPostSUDS()));
+                    taskCopies.add(new CognitiveTask(cogTask.getTaskID(), cogTask.getUserID(), cogTask.getParentTaskID(), cogTask.getTitle(), cogTask.getInstructions(), cogTask.getAutomaticThought(), cogTask.getAlternativeThought(), cogTask.getPreSUDS(), cogTask.getPostSUDS()));
                     break;
                 case "PsychEdTask":
                     PsychEdTask psychEdTask = (PsychEdTask)task;
-                    taskCopies.add(new PsychEdTask(psychEdTask.getTaskID(), psychEdTask.getUserID(), psychEdTask.getParentTaskID(), psychEdTask.getName(), psychEdTask.getDescription()));
+                    taskCopies.add(new PsychEdTask(psychEdTask.getTaskID(), psychEdTask.getUserID(), psychEdTask.getParentTaskID(), psychEdTask.getTitle(), psychEdTask.getInstructions()));
                     break;
                 case "RelaxationTask":
                     RelaxationTask relaxTask = (RelaxationTask)task;
-                    taskCopies.add(new RelaxationTask(relaxTask.getTaskID(), relaxTask.getUserID(), relaxTask.getParentTaskID(), relaxTask.getName(), relaxTask.getDescription(), relaxTask.getDurationInMinutes()));
+                    taskCopies.add(new RelaxationTask(relaxTask.getTaskID(), relaxTask.getUserID(), relaxTask.getParentTaskID(), relaxTask.getTitle(), relaxTask.getInstructions(), relaxTask.getDurationInMinutes()));
                     break;
 
             }

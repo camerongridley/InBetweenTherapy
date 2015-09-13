@@ -9,8 +9,9 @@ public class RelaxationTask extends Task implements Updateable{
 	
 	private int durationInMinutes;
 
-	public RelaxationTask(int taskID){
-		super(taskID);
+
+	public RelaxationTask(int taskID, int userID) {
+		super(taskID, userID);
 	}
 
 	public RelaxationTask(int taskID, int userID, String name, String instructions, int duration) {

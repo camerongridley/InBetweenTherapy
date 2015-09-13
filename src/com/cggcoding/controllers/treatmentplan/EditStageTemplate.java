@@ -72,7 +72,7 @@ public class EditStageTemplate extends HttpServlet {
 		            	}else{
 			            	int stageID = Integer.parseInt(stageIDAsString);
 			            	Stage stage =DefaultDatabaseCalls.getDefaultStageByID(stageID);
-			            	stage.setName(stageName);
+			            	stage.setTitle(stageName);
 			            	stage.setDescription(stageDescription);
 			            	stage.updateInDatabase();
 			            	

@@ -2,48 +2,89 @@ package com.cggcoding.models;
 
 import java.time.LocalDate;
 
+import com.cggcoding.utils.database.DatabaseActionHandler;
+import com.cggcoding.utils.database.MySQLActionHandler;
+
 
 public abstract class Task implements Completable, Updateable{
 	private int taskID;
 	private int stageID;
 	private int userID;
+	private int taskTypeID;
 	private int parentTaskID;//if this task is a subtask, then the parent's taskID is set here. If this is a parenttask it equals 0;
-	private String name;
+	private String title;
 	private String instructions;
+	private String resourceLink;
 	private boolean completed;
 	private LocalDate dateCompleted;
-	private int index;
+	private int taskOrder;
 	private boolean isTemplate;
-
-	//TODO if going to use TaskFactory then make all of these and subclass constructors private!
-	public Task(int taskID) {
+	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+	
+	//basic parent Task that sets properties to defaults
+	public Task(int taskID, int userID) {
 		this.taskID = taskID;
+		this.stageID = 0;
+		this.userID = userID;
+		this.taskTypeID = 0;
 		this.parentTaskID = 0;
-		this.name = "";
+		this.title = "";
 		this.instructions = "";
+		this.resourceLink = null;
 		this.completed = false;
+		this.dateCompleted = null;
+		this.taskOrder = 0;
+		this.isTemplate = false;
 	}
-
-	public Task(int taskID, int userID, String name, String instructions){
+	
+	//basic parent Task that sets properties to defaults
+	public Task(int taskID, int userID, String title, String instructions){
 		this.taskID = taskID;
+		this.stageID = 0;
 		this.userID = userID;
+		this.taskTypeID = 0;
 		this.parentTaskID = 0;
-		this.name = name;
+		this.title = title;
 		this.instructions = instructions;
+		this.resourceLink = null;
 		this.completed = false;
+		this.dateCompleted = null;
+		this.taskOrder = 0;
+		this.isTemplate = false;
 	}
 
-	//constructor if task is going to be a subtask
-	public Task(int taskID, int userID, int parentTaskID, String name, String instructions){
-		this.taskID = taskID;
+	//basic parent Task before database insert that has no id and sets properties to defaults
+	public Task(int userID, String title, String instructions){
+		this.taskID = 0;
+		this.stageID = 0;
 		this.userID = userID;
-		this.parentTaskID = parentTaskID;
-		this.name = name;
+		this.taskTypeID = 0;
+		this.parentTaskID = 0;
+		this.title = title;
 		this.instructions = instructions;
+		this.resourceLink = null;
 		this.completed = false;
+		this.dateCompleted = null;
+		this.taskOrder = 0;
+		this.isTemplate = false;
 	}
-
-
+	
+	//basic constructor if task is going to be a subtask
+	public Task(int taskID, int userID, int parentTaskID, String title, String instructions){
+		this.taskID = taskID;
+		this.stageID = 0;
+		this.userID = userID;
+		this.taskTypeID = 0;
+		this.parentTaskID = parentTaskID;
+		this.title = title;
+		this.instructions = instructions;
+		this.resourceLink = null;
+		this.completed = false;
+		this.dateCompleted = null;
+		this.taskOrder = 0;
+		this.isTemplate = false;
+	}
+	
 	public int getTaskID(){
 		return taskID;
 	}
@@ -60,6 +101,14 @@ public abstract class Task implements Completable, Updateable{
 		this.userID = userID;
 	}
 	
+	public int getTaskTypeID() {
+		return taskTypeID;
+	}
+
+	public void setTaskTypeID(int taskTypeID) {
+		this.taskTypeID = taskTypeID;
+	}
+
 	public int getParentTaskID() {
 		return parentTaskID;
 	}
@@ -75,15 +124,31 @@ public abstract class Task implements Completable, Updateable{
 	public void setStageID(int stageID) {
 		this.stageID = stageID;
 	}
-
-	public String getName() {
-		return name;
+	
+	public String getTitle() {
+		return title;
 	}
 
-	public String getDescription() {
+	public void setTitle(String name) {
+		this.title = name;
+	}
+
+	public String getInstructions() {
 		return instructions;
 	}
 
+	public void setInstructions(String instructions) {
+		this.instructions = instructions;
+	}
+
+	public String getResourceLink() {
+		return resourceLink;
+	}
+
+	public void setResourceLink(String resourceLink) {
+		this.resourceLink = resourceLink;
+	}
+	
 	public void setDateCompleted(LocalDate date){
 		dateCompleted = date;
 	}
@@ -92,12 +157,12 @@ public abstract class Task implements Completable, Updateable{
 		return dateCompleted;
 	}
 	
-	public int getIndex() {
-		return index;
+	public int getTaskOrder() {
+		return taskOrder;
 	}
 
-	public void setIndex(int index) {
-		this.index = index;
+	public void setTaskOrder(int taskOrder) {
+		this.taskOrder = taskOrder;
 	}
 
 	public boolean isTemplate() {
@@ -116,7 +181,7 @@ public abstract class Task implements Completable, Updateable{
 		return parentTaskID == 0;
 	}
 
-	//a task is completed when all of the repetitions are performed
+	
 	@Override
 	public boolean isCompleted() {
 		return completed;
@@ -143,7 +208,7 @@ public abstract class Task implements Completable, Updateable{
 		//return (int)(((double)repetitionsCompleted/(double)repetitions) * 100);
 	}
 
-
+	//TODO redo this to get name from the database table
 	public String getTaskTypeName(){
 		return this.getClass().getSimpleName();
 	}
@@ -153,4 +218,13 @@ public abstract class Task implements Completable, Updateable{
 	public boolean updateData(Task taskWithNewData) {
 		return false;
 	}
+	
+	private void transferDataToThisTask(Task task){
+		
+	}
+	
+	public void save(){
+		//databaseActionHandler
+	}
+
 }

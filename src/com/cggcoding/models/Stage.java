@@ -13,7 +13,7 @@ public class Stage implements Completable {
 	private int stageID;
 	private int treatmentPlanID;
 	private int userID;
-	private String name;
+	private String title;
 	private String description;
 	private int stageOrder; //the order of the stage within its treatment plan - if present decides the index it will be in the TreatmentPlan's List of Stages
 	private List<Task> tasks;
@@ -25,10 +25,10 @@ public class Stage implements Completable {
 	private boolean isTemplate;
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 
-	private Stage (int stageID, int userID, String name, String description, int stageOrder){
+	private Stage (int stageID, int userID, String title, String description, int stageOrder){
 		this.stageID = stageID;
 		this.userID = userID;
-		this.name = name;
+		this.title = title;
 		this.description = description;
 		this.stageOrder = stageOrder;
 		this.tasks = new ArrayList<>();
@@ -36,31 +36,31 @@ public class Stage implements Completable {
 		this.completed = false;
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
-		this.inProgress = false;
+		//this.inProgress = false;
 		this.isTemplate = false;
 	}
 
-	private Stage (int userID, String name, String description){
+	private Stage (int userID, String title, String description){
 		this.userID = userID;
 		this.stageID = 0;
-		this.name = name;
+		this.title = title;
 		this.description = description;
 		this.tasks = new ArrayList<>();
 		this.extraTasks = new ArrayList<>();
 		this.completed = false;
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
-		this.inProgress = false;
+		//this.inProgress = false;
 		this.isTemplate = false;
 	}
-
-	private Stage(int stageID, int treatmentPlanID, int userID, String name, String description, int stageOrder,
+	
+	private Stage(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals,
 			boolean isTemplate) {
 		this.stageID = stageID;
 		this.treatmentPlanID = treatmentPlanID;
 		this.userID = userID;
-		this.name = name;
+		this.title = title;
 		this.description = description;
 		this.stageOrder = stageOrder;
 		this.tasks = tasks;
@@ -68,23 +68,25 @@ public class Stage implements Completable {
 		this.completed = completed;
 		this.percentComplete = percentComplete;
 		this.goals = goals;
-		//this.inProgress = inProgress;
+		//this.inProgress = inProgress;  TODO - delete from constructor if this propery isn't in the database model so maybe remove as a class member and just make as a dynamic method
 		this.isTemplate = isTemplate;
 	}
 
-	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String name, String description, int stageOrder,
+	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean isTemplate){
-		return new Stage(stageID, treatmentPlanID, userID, name, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, isTemplate);
+		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, isTemplate);
 	}
 	
-	public static Stage saveNewTemplateInDatabase(int userID, String name, String description) throws ValidationException, DatabaseException{
-		return databaseActionHandler.stageTemplateValidateAndCreate(new Stage(userID, name, description));
+	public static Stage saveNewTemplateInDatabase(int userID, String title, String description) throws ValidationException, DatabaseException{
+		Stage stage = new Stage(userID, title, description);
+		stage.isTemplate = true;
+		return databaseActionHandler.stageTemplateValidateAndCreate(stage);
 	}
 
 	//TODO delete this method after finishing transition to database
-	public static Stage getInstanceAndCreateID(int userID, String name, String description, int stageOrder){
+	public static Stage getInstanceAndCreateID(int userID, String title, String description, int stageOrder){
 		int stageID = Math.abs(new Random().nextInt(10000));
-		return new Stage(stageID, userID, name, description, stageOrder);
+		return new Stage(stageID, userID, title, description, stageOrder);
 		
 	}
 	
@@ -146,12 +148,12 @@ public class Stage implements Completable {
 		return stageID;
 	}
 
-	public String getName() {
-		return name;
+	public String getTitle() {
+		return title;
 	}
 	
-	public void setName(String name){
-		this.name = name;
+	public void setTitle(String title){
+		this.title = title;
 	}
 
 	public String getDescription() {
@@ -365,7 +367,7 @@ public class Stage implements Completable {
 /*
 	@Override
 	public boolean validateForDatabase() throws ValidationException, DatabaseException {
-		return databaseActionHandler.stageValidateNewName(name, userID);
+		return databaseActionHandler.stageValidateNewName(title, userID);
 	}
 
 	@Override

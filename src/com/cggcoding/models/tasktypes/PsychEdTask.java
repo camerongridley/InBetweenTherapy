@@ -7,10 +7,12 @@ import java.util.Random;
 
 public class PsychEdTask extends Task implements Updateable{
 
-	public PsychEdTask (int taskID) {
-		super(taskID);
-	}
 
+
+
+	public PsychEdTask(int taskID, int userID) {
+		super(taskID, userID);
+	}
 
 	public PsychEdTask(int taskID, int userID, String title, String instructions) {
 		super(taskID, userID, title, instructions);

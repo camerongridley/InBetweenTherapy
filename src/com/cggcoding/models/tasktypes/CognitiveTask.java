@@ -11,8 +11,9 @@ public class CognitiveTask extends Task implements Updateable{
 	private int preSUDS;
 	private int postSUDS;
 
-	public CognitiveTask (int taskID){
-		super(taskID);
+	
+	public CognitiveTask(int taskID, int userID) {
+		super(taskID, userID);
 	}
 
 	public CognitiveTask (int taskID, int userID, String name, String instructions){

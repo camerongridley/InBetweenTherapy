@@ -1,5 +1,7 @@
 package com.cggcoding.models;
 
+import java.util.List;
+
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 
@@ -9,27 +11,29 @@ import com.cggcoding.exceptions.ValidationException;
  *
  */
 public interface DatabaseModel {
-	//TODO decide if save and load should be static factory methods 
 	
-	/**Validates the data in the object before inserting or updating in the database
-	 * @return true if valid, false if invalid
+	/**Validates the data in the object and if ok, inserts new record in the database
+	 * @return true if valid and insert successful, false if invalid and insert unsuccessful
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	//boolean validateForDatabase()  throws ValidationException, DatabaseException;
+	boolean validateAndSaveNewInDatabase() throws ValidationException, DatabaseException;
 	
-
-	//boolean saveNewInDatabase() throws ValidationException, DatabaseException;
-	
-	
-	//boolean loadDataFromDatabase() throws ValidationException, DatabaseException;
-
-	/**Updates data from database and sets the corresponding properties in the object
+	/**Validates and if ok, updates data from database and sets the corresponding properties in the object
 	 * @return true if successful loading the data, false if unsuccessful and throws Exception
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	boolean updateInDatabase() throws ValidationException, DatabaseException;
+	boolean validateAndUpdateInDatabase() throws ValidationException, DatabaseException;
+	
+	
+	/**If the object has the id property set, can call this to retrieve the rest of it's data from the database
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	boolean loadDataFromDatabase() throws ValidationException, DatabaseException;
+	
 	
 	/**Deleted data from database and destroys the object
 	 * @return true if successful deleting the data, false if unsuccessful and throws Exception
@@ -37,4 +41,12 @@ public interface DatabaseModel {
 	 * @throws DatabaseException
 	 */
 	boolean deleteFromDatabase() throws ValidationException, DatabaseException;
+	
+
+	/**Copies the object the specified number of times
+	 * @param o The class that models a database table
+	 * @param numberOfCopies Number of copies desired of the model
+	 * @return A list of the copied object
+	 */
+	List<Object> copy(Object o, int numberOfCopies);
 }

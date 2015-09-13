@@ -19,6 +19,7 @@ import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.models.tasktypes.GenericTask;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
@@ -288,7 +289,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn= getConnection();
 			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE (((stage.title)=?) AND ((stage.stage_user_id_fk)=?))");
-			ps.setString(1, newStage.getName().trim());
+			ps.setString(1, newStage.getTitle().trim());
 			ps.setInt(2, newStage.getUserID());
 
 			stageCount = ps.executeQuery();
@@ -330,7 +331,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn= getConnection();
 			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE ((stage.title = ?) AND (stage.stage_id != ?) AND (stage.stage_user_id_fk = ?))");
-			ps.setString(1, newStage.getName().trim());
+			ps.setString(1, newStage.getTitle().trim());
 			ps.setInt(2, newStage.getStageID());
 			ps.setInt(3, newStage.getUserID());
 
@@ -370,7 +371,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             ps.setInt(1, newStageTemplate.getUserID());
-            ps.setString(2, newStageTemplate.getName().trim());
+            ps.setString(2, newStageTemplate.getTitle().trim());
             ps.setString(3, newStageTemplate.getDescription().trim());
             ps.setInt(4, newStageTemplate.getStageOrder());
             ps.setInt(5, 1);
@@ -414,7 +415,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        	
 	            ps = cn.prepareStatement(sql);
 	            
-	            ps.setString(1, newStageTemplate.getName().trim());
+	            ps.setString(1, newStageTemplate.getTitle().trim());
 	            ps.setString(2, newStageTemplate.getDescription().trim());
 	            ps.setBoolean(3, newStageTemplate.isCompleted());
 	            ps.setInt(4, newStageTemplate.getStageOrder());
@@ -617,6 +618,60 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return goal;
 	}
 	
+	public Task taskTemplateValidateAndCreate(Task newTask){
+		
+		
+		return newTask;
+	}
+	
+	private Task taskTemplateValidate(Task newTask){
+		
+		
+		return newTask;
+	}
+	
+	private Task taskGenericTemplateCreate(Connection cn, GenericTask newTask) throws DatabaseException{
+		PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+        	cn = getConnection();
+
+        	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_stage_id_fk, task_generic_user_id_fk, title, "
+    				+ "instructions, completed, taskOrder, is_extra_task, is_template) VALUES ('1', null, '1', 'Manual Task Insert 2', 'task instructions 2', '0', '0', '0', '1')";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setInt(1, newTask.getTaskTypeID());
+            ps.setInt(2, newTask.getStageID());
+            ps.setInt(3, newTask.getUserID());
+            ps.setString(4, newTask.getTitle().trim());
+            ps.setInt(5, 1);
+            ps.setInt(6, 1);
+            ps.setInt(7, 1);
+            ps.setInt(8, 1);
+            ps.setInt(9, 1);
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	newTask.setTaskID(generatedKeys.getInt(1));
+            }
+        	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+			//DbUtils.closeQuietly(cn);
+        }
+		
+		return newTask;
+	}
 
 	@Override
 	public TreatmentIssue treatmentIssueCreate(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{
