@@ -636,7 +636,11 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	private boolean taskTemplateValidate(Connection cn, Task newTask) throws ValidationException{
-		//TODO Implement validation rules for a new task if there are any
+
+		if(newTask.getTitle() == null || newTask.getTitle().isEmpty() || newTask.getInstructions() == null || newTask.getInstructions().isEmpty()){
+			throw new ValidationException("You must enter a task name and instructions.");
+		}
+		
 		return true;
 	}
 	

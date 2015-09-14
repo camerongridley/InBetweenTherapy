@@ -28,7 +28,7 @@
 					<button type="submit" class="btn btn-primary">Create
 						Treatment Plan Template</button>
 				</div>
-				<input type=hidden name="treatmentPlanCreationStep"
+				<input type=hidden name="requestedAction"
 					value="beginning">
 			</form>
 			</p>
@@ -39,7 +39,7 @@
 					<button type="submit" class="btn btn-primary" disabled>Edit
 						Treatment Plan Template</button>
 				</div>
-				<input type=hidden name="chosenAction" value="editplan">
+				<input type=hidden name="requestedAction" value="editplan">
 			</form>
 			</p>
 		</div>
@@ -52,7 +52,7 @@
 					<button type="submit" class="btn btn-primary">Create Stage
 						Template</button>
 				</div>
-				<input type=hidden name="chosenAction" value="beginning">
+				<input type=hidden name="requestedAction" value="beginning">
 			</form>
 			</p>
 			<p>
@@ -62,7 +62,7 @@
 					<button type="submit" class="btn btn-primary" >Edit
 						Stage Template</button>
 				</div>
-				<input type=hidden name="chosenAction" value="edit-stage-start">
+				<input type=hidden name="requestedAction" value="edit-stage-start">
 			</form>
 			</p>
 		</div>
@@ -74,7 +74,7 @@
 					<button type="submit" class="btn btn-primary" >Create
 						Task Template</button>
 				</div>
-				<input type=hidden name="chosenAction" value="editplan">
+				<input type=hidden name="requestedAction" value="create-task-start">
 			</form>
 			</p>
 			<p>
@@ -83,7 +83,7 @@
 					<button type="submit" class="btn btn-primary" disabled>Edit
 						Task Template</button>
 				</div>
-				<input type=hidden name="chosenAction" value="editplan">
+				<input type=hidden name="requestedAction" value="edit-task-start">
 			</form>
 			</p>
 		</div>

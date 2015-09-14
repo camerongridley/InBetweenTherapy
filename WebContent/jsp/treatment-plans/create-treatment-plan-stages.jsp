@@ -30,7 +30,7 @@
             </div>
 
 
-            <input type="hidden" name="treatmentPlanCreationStep" value="planNameAndIssue"/>
+            <input type="hidden" name="requestedAction" value="planNameAndIssue"/>
             <button type="submit" class="btn btn-primary">Next Step >></button>
 
         </div>

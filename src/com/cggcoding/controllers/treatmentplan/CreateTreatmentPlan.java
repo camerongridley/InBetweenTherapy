@@ -33,7 +33,7 @@ public class CreateTreatmentPlan extends HttpServlet {
     	DataSource datasource = (DataSource)request.getServletContext().getAttribute("datasource");
     	User user = (User)session.getAttribute("user");
     	String forwardTo = "index.jsp";
-    	String creationStep = request.getParameter("treatmentPlanCreationStep");
+    	String requestedAction = request.getParameter("requestedAction");
     	String planName = "";
     	String planDescription = "";
     	String defaultIssueIDAsString = null;
@@ -49,7 +49,7 @@ public class CreateTreatmentPlan extends HttpServlet {
 	
 			} else if(user.hasRole("therapist")){
 				//UserTherapist userTherapist = (UserTherapist)session.getAttribute("user");
-				switch (creationStep){
+				switch (requestedAction){
 	            case "planNameAndIssue":
 	                planName = request.getParameter("planName");
 	                planDescription = request.getParameter("planDescription");
@@ -67,7 +67,7 @@ public class CreateTreatmentPlan extends HttpServlet {
 			} else if(user.hasRole("admin")){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								
-				switch (creationStep){
+				switch (requestedAction){
 					case "beginning":
 						//get treatment issues associated with admin role
 						ArrayList<TreatmentIssue> defaultreatmentIssues = userAdmin.getDefaultTreatmentIssues(datasource);//TODO change not use Datasource - update userAdmin model method

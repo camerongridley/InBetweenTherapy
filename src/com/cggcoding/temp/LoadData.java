@@ -44,7 +44,7 @@ public class LoadData extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//load all data - in place of a db call since the db is not yet implemented
 		HttpSession session = request.getSession();
-		String chosenAction = request.getParameter("chosenAction");
+		String requestedAction = request.getParameter("requestedAction");
 		User user = (User)session.getAttribute("user");
 
 		TreatmentPlan activeTx = null;
@@ -65,7 +65,7 @@ public class LoadData extends HttpServlet {
 			
 			userClient.addTreatmentPlan(activeTx);
 			userClient.setActiveTreatmentPlanId(activeTx.getTreatmentPlanID());
-			switch (chosenAction) {
+			switch (requestedAction) {
 				case "continue":
 					forwardTo = "jsp/task-review.jsp";
 					break;
@@ -82,7 +82,7 @@ public class LoadData extends HttpServlet {
 			//put the therapists owned treatmentPlans in session - or just load them into the UserTherapist object
 			activeTx = buildTherapistData(userTherapist);
 
-			switch (chosenAction) {
+			switch (requestedAction) {
 				case "createplan":
 
 					request.setAttribute("defaultTreatmentIssues", getDefaultTxIssueList());

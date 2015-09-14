@@ -45,7 +45,7 @@ public class CreateStageTemplate extends HttpServlet {
 		User user = (User)request.getSession().getAttribute("user");
 		HttpSession session = request.getSession();
 		String forwardTo = "index.jsp";
-		String requestedAction = request.getParameter("chosenAction");
+		String requestedAction = request.getParameter("requestedAction");
 		String stageIDAsString = request.getParameter("stageID");
 		String stageTitle = request.getParameter("stageTitle");
     	String stageDescription = request.getParameter("stageDescription");

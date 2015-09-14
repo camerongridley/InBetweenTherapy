@@ -22,6 +22,7 @@ public abstract class Task implements Completable, Updateable{
 	private int taskOrder;
 	private boolean extraTask;
 	private boolean template;
+	
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
 	
 	//TODO see if I can eliminate some of these constructors!
