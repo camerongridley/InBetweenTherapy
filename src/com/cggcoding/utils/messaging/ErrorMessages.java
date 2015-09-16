@@ -19,6 +19,9 @@ public final class ErrorMessages {
 	public static final String STAGE_GOAL_VALIDATION_ERROR = "You must enter a goal description.";
 	public static final String STAGE_UPDATE_NO_SELECTION = "Please select and load a stage.";
 	
+	//Tasks
+	public static final String TASK_MISSING_INFO = "You must select a task type as well as enter a task name and instructions.";
+	
 	
 	
 }

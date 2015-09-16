@@ -14,7 +14,7 @@
 <c:import url="/jsp/message-modal.jsp"/>
 	
 	<form class="form-horizontal" action="./EditStageTemplate" method="POST">
-		<input type=hidden name="requestedAction" value="edit-stage-select-stage">
+		<input type="hidden" name="requestedAction" value="edit-stage-select-stage">
 		
 		<div class="form-group">
 			<label for="defaultTreatmentIssue" class="col-sm-2 control-label">Select Default Stage to Edit</label>
@@ -36,7 +36,7 @@
 	<hr>
 	
 	<form class="form-horizontal" action="./EditStageTemplate" method="POST">
-		<input type=hidden name="requestedAction" value="edit-stage-name">	
+		<input type="hidden" name="requestedAction" value="edit-stage-name">	
 		<input type="hidden" name="stageID" value="${selectedDefaultStage.stageID }" >	
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>

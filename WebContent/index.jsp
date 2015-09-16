@@ -16,8 +16,8 @@
 		<div class="col-md-10">
 			<form class="form-inline" action="./LogIn" method="POST">
 				<div><button type="submit" class="btn btn-primary">Log in</button></div>
-				<input type=hidden name="email" value="bob@aol.com">
-				<input type=hidden name="password" value="password">
+				<input type="hidden" name="email" value="bob@aol.com">
+				<input type="hidden" name="password" value="password">
 			</form>
 		</div>
 	</div>
@@ -29,8 +29,8 @@
 		<div class="col-md-10">
 			<form class="form-inline" action="./LogIn" method="POST">
 				<div><button type="submit" class="btn btn-primary">Log in</button></div>
-				<input type=hidden name="email" value="camerongridley@gmail.com">
-				<input type=hidden name="password" value="password">
+				<input type="hidden" name="email" value="camerongridley@gmail.com">
+				<input type="hidden" name="password" value="password">
 
 			</form>
 		</div>
@@ -43,8 +43,8 @@
 		<div class="col-md-10">
 			<form class="form-inline" action="./LogIn" method="POST">
 				<div><button type="submit" class="btn btn-primary">Log in</button></div>
-				<input type=hidden name="email" value="cgridley@gmail.com">
-				<input type=hidden name="password" value="admin">
+				<input type="hidden" name="email" value="cgridley@gmail.com">
+				<input type="hidden" name="password" value="admin">
 
 			</form>
 		</div>

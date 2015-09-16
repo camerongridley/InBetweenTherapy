@@ -2,7 +2,9 @@ package com.cggcoding.utils.database;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.dbutils.DbUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -637,8 +639,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	
 	private boolean taskTemplateValidate(Connection cn, Task newTask) throws ValidationException{
 
-		if(newTask.getTitle() == null || newTask.getTitle().isEmpty() || newTask.getInstructions() == null || newTask.getInstructions().isEmpty()){
-			throw new ValidationException("You must enter a task name and instructions.");
+		if(newTask.getTitle() == null || newTask.getTitle().isEmpty() || 
+				newTask.getInstructions() == null || newTask.getInstructions().isEmpty() ||
+				newTask.getTaskTypeID() == 0){
+			throw new ValidationException(ErrorMessages.TASK_MISSING_INFO);
 		}
 		
 		return true;
@@ -692,6 +696,34 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         }
 		
 		return newTask;
+	}
+	
+	public Map<Integer, String> taskTypesLoad() throws DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        HashMap<Integer, String> taskTypeMap = new HashMap<>();
+        
+        try {
+        	cn = getConnection();
+        	String sql = "SELECT * FROM task_type;";
+    		ps = cn.prepareStatement(sql);
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	taskTypeMap.put(rs.getInt("task_type_id"), rs.getString("type"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+		
+		return taskTypeMap;
 	}
 
 	@Override

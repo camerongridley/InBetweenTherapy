@@ -3,6 +3,7 @@ package com.cggcoding.utils.database;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -66,6 +67,9 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	
 	Task taskTemplateValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
+	
+	
+	Map<Integer, String> taskTypesLoad() throws DatabaseException;
 	
 
 }

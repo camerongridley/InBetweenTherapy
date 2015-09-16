@@ -18,28 +18,28 @@
   <p>
     <form class="form-inline" action="./LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary">Create Treatment Plan</button></div>
-      <input type=hidden name="requestedAction" value="createplan">
+      <input type="hidden" name="requestedAction" value="createplan">
     </form>
   </p>
 
   <p>
     <form class="form-inline" action="./LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary">Edit Treatment Plans</button></div>
-      <input type=hidden name="requestedAction" value="editplan">
+      <input type="hidden" name="requestedAction" value="editplan">
     </form>
   </p>
 
   <p>
     <form class="form-inline" action="./LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary">Assign Plan to Client</button></div>
-      <input type=hidden name="requestedAction" value="assignplan">
+      <input type="hidden" name="requestedAction" value="assignplan">
     </form>
   </p>
 
   <p>
     <form class="form-inline" action="./LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary">View Client Progress</button></div>
-      <input type=hidden name="requestedAction" value="viewclient">
+      <input type="hidden" name="requestedAction" value="viewclient">
     </form>
   </p>
 

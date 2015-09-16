@@ -1,6 +1,7 @@
 package com.cggcoding.helpers;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -27,4 +28,7 @@ public class DefaultDatabaseCalls {
 		return databaseActionHandler.stageLoad(selectedDefaultStageID);
 	}
 	
+	public static Map<Integer, String> getTaskTypeMap() throws DatabaseException {
+		return databaseActionHandler.taskTypesLoad();
+	}
 }

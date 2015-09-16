@@ -18,14 +18,14 @@
     <p>
     <form class="form-inline" action="./LoadData" method="POST">
         <div><button type="submit" class="btn btn-primary">Continue Plan In Progress</button></div>
-        <input type=hidden name="requestedAction" value="continue">
+        <input type="hidden" name="requestedAction" value="continue">
     </form>
     </p>
 
     <p>
     <form class="form-inline" action="../LoadData" method="POST">
         <div><button type="submit" class="btn btn-primary">Start New Plan</button></div>
-        <input type=hidden name="requestedAction" value="newplan">
+        <input type="hidden" name="requestedAction" value="newplan">
     </form>
     </p>
 
