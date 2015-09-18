@@ -175,9 +175,59 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return adminIDList;
     }
 	
-	@Override
-	public TreatmentPlan treatmentPlanCreateBasic(TreatmentPlan treatmentPlan) throws DatabaseException{		
-		Connection cn = null;
+    public TreatmentPlan treatmentPlanValidateAndCreateBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException{
+    	Connection cn = null;
+        
+        try {
+        	cn = getConnection();
+        	if(treatmentPlanValidateNewTitle(cn, treatmentPlan.getUserID(), treatmentPlan.getTitle())){
+        		treatmentPlan = treatmentPlanCreateBasic(cn, treatmentPlan);
+        	}
+        } finally {
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return treatmentPlan;
+    }
+    
+	
+	private boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle) throws ValidationException, DatabaseException{
+    	PreparedStatement ps = null;
+        ResultSet issueCount = null;
+        int comboExists = 0;
+        
+        try {
+
+            ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_plan WHERE (((treatment_plan.title)=?) AND ((treatment_plan.treatment_plan_user_id_fk)=?))");
+            ps.setString(1, planTitle.trim());
+            ps.setInt(2, userID);
+
+            issueCount = ps.executeQuery();
+
+
+            while (issueCount.next()){
+                comboExists = issueCount.getInt("COUNT(*)");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(issueCount);
+			DbUtils.closeQuietly(ps);
+		}
+		
+        if(comboExists > 0){
+        	throw new ValidationException(ErrorMessages.PLAN_TITLE_EXISTS);
+        } else {
+        	return true;
+        }
+		
+	}
+	
+
+	private TreatmentPlan treatmentPlanCreateBasic(Connection cn, TreatmentPlan treatmentPlan) throws DatabaseException{		
+		//Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
@@ -215,48 +265,12 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         } finally {
         	DbUtils.closeQuietly(generatedKeys);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
+			//DbUtils.closeQuietly(cn);
         }
         
         return treatmentPlan;
 	}
 	
-	
-	
-	
-	public boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle) throws ValidationException, DatabaseException{
-    	PreparedStatement ps = null;
-        ResultSet issueCount = null;
-        int comboExists = 0;
-        
-        try {
-
-            ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_plan WHERE (((treatment_plan.title)=?) AND ((treatment_plan.treatment_plan_user_id_fk)=?))");
-            ps.setString(1, planTitle.trim());
-            ps.setInt(2, userID);
-
-            issueCount = ps.executeQuery();
-
-
-            while (issueCount.next()){
-                comboExists = issueCount.getInt("COUNT(*)");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-        } finally {
-			DbUtils.closeQuietly(issueCount);
-			DbUtils.closeQuietly(ps);
-		}
-		
-        if(comboExists > 0){
-        	throw new ValidationException(ErrorMessages.PLAN_TITLE_EXISTS);
-        } else {
-        	return true;
-        }
-		
-	}
 	
 	public Stage stageTemplateValidateAndCreate(Stage stageTemplate) throws ValidationException, DatabaseException{
 		Connection cn = null;
@@ -811,9 +825,21 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
 	//TODO - change to make sure this works with a List of adminIDs
 	@Override
-	public ArrayList<TreatmentIssue> treatmentIssueGetDefaults(int adminUserID) throws DatabaseException{
-		ArrayList<TreatmentIssue> issues = treatmentIssueGetListByUserID(adminUserID);
+	public ArrayList<TreatmentIssue> treatmentIssueGetDefaults() throws DatabaseException{
+		Connection cn = null;
+		ArrayList<TreatmentIssue> issues = new ArrayList<>();
 		
+		try{
+			cn = getConnection();
+			List<Integer> userIDs = userGetAdminIDs(cn);
+			for(int adminUserID : userIDs){
+				issues.addAll(treatmentIssueGetListByUserID(adminUserID));
+			}
+			
+		} finally {
+			DbUtils.closeQuietly(cn);
+		}
+
 		return issues;
 	}
 

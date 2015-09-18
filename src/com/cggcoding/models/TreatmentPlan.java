@@ -24,6 +24,8 @@ public class TreatmentPlan {
 	private boolean inProgress;
 	private boolean isTemplate;
 	
+	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+	
 	public TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID){
 		this.treatmentPlanID = treatmentPlanID;
 		this.title = title;
@@ -170,10 +172,8 @@ public class TreatmentPlan {
 		return getStageOrder(activeViewStageIndex);
 	}
 	
-	public void save(DataSource datasource) throws ValidationException, DatabaseException{
-		 DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
-		 
-		 databaseActionHandler.treatmentPlanCreateBasic(this);
+	public void save() throws ValidationException, DatabaseException{
+		 databaseActionHandler.treatmentPlanValidateAndCreateBasic(this);
 	}
 
 }

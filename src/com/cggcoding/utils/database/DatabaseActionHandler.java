@@ -30,7 +30,7 @@ public interface DatabaseActionHandler {
 	//****************************** Treatment Plan Methods *************************************
 	//**************************************************************************************************
 
-	TreatmentPlan treatmentPlanCreateBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
+	TreatmentPlan treatmentPlanValidateAndCreateBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
 
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
@@ -58,7 +58,7 @@ public interface DatabaseActionHandler {
 
 	TreatmentIssue treatmentIssueCreate(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException;
 
-	ArrayList<TreatmentIssue> treatmentIssueGetDefaults(int adminUserID) throws DatabaseException;
+	ArrayList<TreatmentIssue> treatmentIssueGetDefaults() throws DatabaseException;
 
 	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
 

@@ -22,9 +22,9 @@ public class GenericTask extends Task implements Updateable {
 	}
 	
 
-	private GenericTask(int userID, int taskTypeID, String title, String instructions, String resourceLink,
-			boolean extraTask, boolean template) throws DatabaseException, ValidationException {
-		super(userID, taskTypeID, title, instructions, resourceLink, extraTask, template);
+	private GenericTask(int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+			boolean extraTask, boolean template) {
+		super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
 
 	}
 
@@ -46,5 +46,11 @@ public class GenericTask extends Task implements Updateable {
 				title, instructions, resourceLink, false, null, 0, extraTask, true);
 
 	}
-
+	
+	public static GenericTask getInstance(int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+			boolean extraTask, boolean template){
+		return new GenericTask(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
+	}
+	
+	
 }

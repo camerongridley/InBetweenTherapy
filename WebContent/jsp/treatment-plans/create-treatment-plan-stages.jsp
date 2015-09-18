@@ -18,7 +18,7 @@
         <h2>Select or Create the Plan's Stages</h2>
     </div>
     <p>
-        Plan ID: ${newPlan.treatmentPlanID} - Plan Name: ${newPlan.name} - Plan Description: ${newPlan.description} - Issue ID: ${newPlan.treatmentIssueID}
+        Plan ID: ${newPlan.treatmentPlanID} - Plan Name: ${newPlan.title} - Plan Description: ${newPlan.description} - Issue ID: ${newPlan.treatmentIssueID}
     </p>
 
     <p>

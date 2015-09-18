@@ -23,21 +23,8 @@ import com.cggcoding.models.tasktypes.GenericTask;
 @WebServlet("/CreateTaskTemplate")
 public class CreateTaskTemplate extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    //all parameters used in servlet
-	int taskID = 0;
-	int stageID = 0;
 	int userID =  0;
-	int taskTypeID =  0;
-	int parentTaskID =  0;//if this task is a subtask, then the parent's taskID is set here. If this is a parenttask it equals 0;
-	String title = "";
-	String instructions = "";
-	String resourceLink = "";
-	//boolean completed = "";
-	//LocalDate dateCompleted = ""; - set in the service layer when task is marked complete
-	int taskOrder =  0;
-	boolean extraTask = false;
-	
-	
+
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -61,29 +48,14 @@ public class CreateTaskTemplate extends HttpServlet {
 		HttpSession session = request.getSession();
 		String requestedAction = request.getParameter("requestedAction");
 		String forwardTo = "/index.jsp";
+		Task tempTask = getParametersFromRequest(request);
 		
-		//get and maintain value of isTemplate, which indicates if this is for creating/editing templates vs data tied to specific user
-		String isTemplate = request.getParameter("isTemplate");
-		request.setAttribute("isTemplate", isTemplate);
-		
-		/*TODO Delete if revised approach works out
-		//get all parameters associated with Task and do null checks
-		int taskID = ((request.getParameter("taskID")!=null) ? Integer.parseInt(request.getParameter("taskID")) : 0);
-		int stageID = ((request.getParameter("stageID")!=null) ? Integer.parseInt(request.getParameter("stageID")) : 0);
-		int userID =  user.getUserID();
-		int taskTypeID =  ((request.getParameter("taskTypeID")!=null) ? Integer.parseInt(request.getParameter("taskTypeID")) : 0);
-		int parentTaskID =  ((request.getParameter("parentTaskID")!=null) ? Integer.parseInt(request.getParameter("parentTaskID")) : 0);//if this task is a subtask, then the parent's taskID is set here. If this is a parenttask it equals 0;
-		String title = request.getParameter("taskTitle");
-		String instructions = request.getParameter("taskInstructions");
-		String resourceLink = request.getParameter("resourceLink");
-		//boolean completed = request.getParameter("requestedAction");
-		//LocalDate dateCompleted = request.getParameter("requestedAction"); - set in the service layer when task is marked complete
-		int taskOrder =  ((request.getParameter("taskOrder")!=null) ? Integer.parseInt(request.getParameter("taskOrder")) : 0);
-		boolean extraTask = ((request.getParameter("isExtraTask")!=null) ? request.getParameter("isExtraTask").equalsIgnoreCase("true") : false);*/
-		
-		
-		
-		
+		//get and maintain value of creatingTemplate, which indicates if this is for creating/editing templates vs data tied to specific user
+		String creatingTemplate = request.getParameter("isTemplate");
+		if(creatingTemplate.equals("true")){
+			tempTask.setTemplate(true);
+		}
+
 		try {
 			//put user-independent attributes acquired from database in the request
 			request.setAttribute("taskTypeMap", DefaultDatabaseCalls.getTaskTypeMap());
@@ -91,27 +63,29 @@ public class CreateTaskTemplate extends HttpServlet {
 			if(user.hasRole("admin")){
 				switch(requestedAction){
 				case ("create-task-start"):
+					//set tempTask in request so page knows value of isTemplate
+					request.setAttribute("task", tempTask);
 					forwardTo = "/jsp/treatment-plans/task-create-template.jsp";
 					break;
 				case ("taskInfo"):
-					if(isTemplate.equals("true")){
-						getParametersFromRequest(request);
-						GenericTask.saveGenericTemplateInDatabase(user.getUserID(), taskTypeID, title, instructions, resourceLink, extraTask);
+					if(creatingTemplate.equals("true")){
+						tempTask = getParametersFromRequest(request);
+						GenericTask.saveGenericTemplateInDatabase(user.getUserID(), tempTask.getTaskTypeID(), tempTask.getTitle(), tempTask.getInstructions(), tempTask.getResourceLink(), tempTask.isExtraTask());//TODO confirm this is the best set of parameters for this factory method
 						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
 					}else{
-						
+						//code for non-template/clientTask creation and editing
 					}
 					
 					break;
 				}
-				
-				
 			}
 			
 		} catch (DatabaseException | ValidationException e) {
+			//put in temporary task object so values can be saved in inputs after error
+			request.setAttribute("task", tempTask);
+			//request.setAttribute("hasSubtasks", hasSubtasks);
 			request.setAttribute("errorMessage", e.getMessage());
-			request.setAttribute("title", title);
-			request.setAttribute("instructions", instructions);
+
 			forwardTo = "/jsp/treatment-plans/task-create-template.jsp";
 		}
 		
@@ -121,26 +95,36 @@ public class CreateTaskTemplate extends HttpServlet {
 	/**
 	 * Gets all the parameter values from request, except user info which is set in doPost()
 	 */
-	private void getParametersFromRequest(HttpServletRequest request){
+	private Task getParametersFromRequest(HttpServletRequest request){
 		//get all parameters associated with Task and do null checks
-				taskID = getIntParameter(request, "taskID");
-				stageID = getIntParameter(request, "stageID");
-				taskTypeID =  getIntParameter(request, "taskTypeID");
-				parentTaskID =  getIntParameter(request, "parentTaskID");//if this task is a subtask, then the parent's taskID is set here. If this is a parenttask it equals 0;
-				title = request.getParameter("taskTitle");
-				instructions = request.getParameter("taskInstructions");
-				resourceLink = request.getParameter("resourceLink");
-				//completed = request.getParameter("requestedAction");
-				//dateCompleted = request.getParameter("requestedAction"); - set in the service layer when task is marked complete
-				taskOrder =  getIntParameter(request, "taskOrder");
-				extraTask = ((request.getParameter("isExtraTask")!=null) ? request.getParameter("isExtraTask").equalsIgnoreCase("true") : false);   ;
+				int taskID = getIntParameter(request, "taskID");
+				int taskTypeID =  getIntParameter(request, "taskTypeID");
+				int stageID = getIntParameter(request, "stageID");
+				int parentTaskID =  getIntParameter(request, "parentTaskID");//if this task is a subtask, then the parent's taskID is set here. If this is a parenttask it equals 0;
+				String title = request.getParameter("taskTitle");
+				String instructions = request.getParameter("taskInstructions");
+				String resourceLink = request.getParameter("resourceLink");
+				//boolean completed = request.getParameter("requestedAction");
+				//LocalDate dateCompleted = request.getParameter("requestedAction"); - set in the service layer when task is marked complete
+				int taskOrder =  getIntParameter(request, "taskOrder");
+				boolean extraTask = ((request.getParameter("isExtraTask")!=null) ? request.getParameter("isExtraTask").equalsIgnoreCase("true") : false); 
+				boolean template = ((request.getParameter("isTemplate")!=null) ? request.getParameter("isTemplate").equalsIgnoreCase("true") : false); 
+				
+				String hasSubtasks = request.getParameter("hasSubtasks");
+						
+				Task task = GenericTask.getInstance(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
+				task.setTaskID(taskID);
+				task.setStageID(stageID);
+				task.setTaskOrder(taskOrder);
+								
+				return task;
 	}
 	
 	private int getIntParameter(HttpServletRequest request, String intParameterName){
 		if(request.getParameter(intParameterName)==null || request.getParameter(intParameterName).isEmpty()){
 			return 0;
 		} else{
-			return Integer.parseInt(request.getParameter("taskID"));
+			return Integer.parseInt(request.getParameter(intParameterName));
 		}
 	}
 

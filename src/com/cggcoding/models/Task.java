@@ -99,18 +99,34 @@ public abstract class Task implements Completable, Updateable{
 		this.template = false;
 	}
 	
-	public Task (int userID, int taskTypeID, String title, String instructions, String resourceLink, boolean extraTask, boolean template) throws DatabaseException, ValidationException{
+	public Task (int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean extraTask, boolean template){
 		this.taskID = 0;
 		this.stageID = 0;
 		this.userID = userID;
 		this.taskTypeID = taskTypeID;
-		this.parentTaskID = 0;
+		this.parentTaskID = parentTaskID;
 		this.title = title;
 		this.instructions = instructions;
 		this.resourceLink = resourceLink;
 		this.completed = false;
 		this.dateCompleted = null;
 		this.taskOrder = 0;
+		this.extraTask = extraTask;
+		this.template = true;
+	}
+	
+	public Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template){
+		this.taskID = 0;
+		this.stageID = stageID;
+		this.userID = userID;
+		this.taskTypeID = taskTypeID;
+		this.parentTaskID = parentTaskID;
+		this.title = title;
+		this.instructions = instructions;
+		this.resourceLink = resourceLink;
+		this.completed = false;
+		this.dateCompleted = null;
+		this.taskOrder = taskOrder;
 		this.extraTask = extraTask;
 		this.template = true;
 	}

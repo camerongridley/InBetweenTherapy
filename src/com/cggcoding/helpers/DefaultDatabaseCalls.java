@@ -1,11 +1,15 @@
 package com.cggcoding.helpers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.tomcat.jdbc.pool.DataSource;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
+import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -30,5 +34,9 @@ public class DefaultDatabaseCalls {
 	
 	public static Map<Integer, String> getTaskTypeMap() throws DatabaseException {
 		return databaseActionHandler.taskTypesLoad();
+	}
+	
+	public static ArrayList<TreatmentIssue> getDefaultTreatmentIssues() throws DatabaseException {
+		return databaseActionHandler.treatmentIssueGetDefaults();
 	}
 }

@@ -17,11 +17,4 @@ public class UserAdmin extends User{
 		this.customTreatmentIssues = new ArrayList<>();
 	}
 
-	public ArrayList<TreatmentIssue> getDefaultTreatmentIssues(DataSource datasource) throws DatabaseException {
-		DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
-		return databaseActionHandler.treatmentIssueGetDefaults(super.getUserID());
-	}
-	
-	
-
 }
