@@ -9,6 +9,7 @@ public final class ErrorMessages {
 	public static final String INVALID_USERNAME_OR_PASSWORD = "Login failed.  The email and password combination is not found in our records.  Please try again.";
 
 	//Treatment Plan Creation Stage One - Choosing plan name, description, and treatment issue
+	public static final String PLAN_MISSING_INFO = "You must enter a plan name and description.";
 	public static final String PLAN_TITLE_EXISTS = "That treatment plan name already exists in your profile.  Please choose another one.";
 	public static final String USER_SELECTED_MULTIPLE_ISSUES = "Invalid condition. Multiple treatment issues are selected. Ensure that only 1 treatment issue is selected.";
 	public static final String USER_SELECTED_NO_ISSUE = "Invalid condition.  You must select a treatment issue for this plan";

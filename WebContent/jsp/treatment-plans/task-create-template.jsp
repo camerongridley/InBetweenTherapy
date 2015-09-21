@@ -14,7 +14,7 @@
 <c:import url="/jsp/message-modal.jsp"/>
 	
 <form class="form-horizontal" action="./CreateTaskTemplate" method="POST">
-		<input type="hidden" name="requestedAction" value="taskInfo">
+		<input type="hidden" name="requestedAction" value="task-add-info">
 		<input type="hidden" name="creatingTemplate" value="${creatingTemplate }">
 		<input type="hidden" name="taskID" value="${task.taskID }">
 		<input type="hidden" name="stageID" value="${task.stageID }">
@@ -22,6 +22,18 @@
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
 		
+		<div class="form-group">
+            <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
+            <div class="col-sm-10">
+                <select class="form-control" id="taskList" name="taskList">
+                    <option  value="">Select a default task.</option>
+                    <c:forEach items="${taskTypeMap}" var="taskType">
+                        <option value="${fn:escapeXml(taskType.key)}">${taskType.value}</option>
+                    </c:forEach>
+                </select>
+            </div>
+        </div>	
+		<hr>
 		<div class="form-group">
             <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
             <div class="col-sm-10">

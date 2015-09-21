@@ -50,7 +50,7 @@ public class CreateTreatmentPlan extends HttpServlet {
 			} else if(user.hasRole("therapist")){
 				//UserTherapist userTherapist = (UserTherapist)session.getAttribute("user");
 				switch (requestedAction){
-	            case "planNameAndIssue":
+	            case "plan-create-name-and-issue":
 	                planName = request.getParameter("planName");
 	                planDescription = request.getParameter("planDescription");
 	                int txIssueID;
@@ -59,7 +59,7 @@ public class CreateTreatmentPlan extends HttpServlet {
 					
 	                TreatmentPlan newPlan = new TreatmentPlan(planName, user.getUserID(), planDescription, txIssueID);
 	                request.setAttribute("newPlan", newPlan);
-	                forwardTo = "/jsp/treatment-plans/create-treatment-plan-stages.jsp";
+	                forwardTo = "/jsp/treatment-plans/treatment-plan-create-stages.jsp";
 	                break;
 	            default:
 				}
@@ -68,13 +68,13 @@ public class CreateTreatmentPlan extends HttpServlet {
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								
 				switch (requestedAction){
-					case "beginning":
+					case "plan-create-start":
 						//get treatment issues associated with admin role
 						ArrayList<TreatmentIssue> defaultreatmentIssues = DefaultDatabaseCalls.getDefaultTreatmentIssues();
 						session.setAttribute("defaultTreatmentIssues", defaultreatmentIssues);
-						forwardTo = "/jsp/treatment-plans/create-treatment-plan-name.jsp";
+						forwardTo = "/jsp/treatment-plans/treatment-plan-create-name.jsp";
 						break;
-		            case "planNameAndIssue":
+		            case "plan-create-name-and-issue":
 		                planName = request.getParameter("planName");
 		                planDescription = request.getParameter("planDescription");
 		                defaultIssueIDAsString = request.getParameter("defaultTreatmentIssue");
@@ -82,7 +82,7 @@ public class CreateTreatmentPlan extends HttpServlet {
 		                newDefaultIssueName = request.getParameter("newDefaultTreatmentIssue");
 		                
 		                if(planName.isEmpty() || planDescription.isEmpty()){
-		                	throw new ValidationException("You must enter a plan name and description.");
+		                	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
 		                }
 		                
 		                //detect which treatment issue source was used and validate
@@ -94,9 +94,9 @@ public class CreateTreatmentPlan extends HttpServlet {
 		                newPlan.save();
 		
 		                request.setAttribute("newPlan", newPlan);
-		                forwardTo = "/jsp/treatment-plans/create-treatment-plan-stages.jsp";
+		                forwardTo = "/jsp/treatment-plans/treatment-plan-create-stages.jsp";
 		                break;
-		            case "stageAndTask":
+		            case "plan-create-stages":
 	            	
 	            	forwardTo = "/jsp/createplan/createtxplan-review.jsp";
 	            	break;
@@ -113,7 +113,7 @@ public class CreateTreatmentPlan extends HttpServlet {
     		request.setAttribute("newDefaultTreatmentIssue", newDefaultIssueName);
     		request.setAttribute("newCustomTreatmentIssue", newCustomIssueName);
     		
-    		forwardTo = "/jsp/treatment-plans/create-treatment-plan-name.jsp";
+    		forwardTo = "/jsp/treatment-plans/treatment-plan-create-name.jsp";
 			//e.printStackTrace();
 		}
     	

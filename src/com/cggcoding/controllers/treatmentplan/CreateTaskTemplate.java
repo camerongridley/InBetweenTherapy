@@ -48,13 +48,15 @@ public class CreateTaskTemplate extends HttpServlet {
 		HttpSession session = request.getSession();
 		String requestedAction = request.getParameter("requestedAction");
 		String forwardTo = "/index.jsp";
+		
+		//performed here to get parameters for all tasks run below
 		Task tempTask = getParametersFromRequest(request);
 		
 		//get and maintain value of creatingTemplate, which indicates if this is for creating/editing templates vs data tied to specific user
-		String creatingTemplate = request.getParameter("isTemplate");
+		/*String creatingTemplate = request.getParameter("isTemplate");
 		if(creatingTemplate.equals("true")){
 			tempTask.setTemplate(true);
-		}
+		}*/
 
 		try {
 			//put user-independent attributes acquired from database in the request
@@ -62,20 +64,29 @@ public class CreateTaskTemplate extends HttpServlet {
 			
 			if(user.hasRole("admin")){
 				switch(requestedAction){
-				case ("create-task-start"):
+				case ("create-task-template-start"):
+					request.setAttribute("actionType", "create");
+					tempTask.setTemplate(true);
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", tempTask);
 					forwardTo = "/jsp/treatment-plans/task-create-template.jsp";
 					break;
-				case ("taskInfo"):
-					if(creatingTemplate.equals("true")){
+				case ("task-add-info"):
+					request.setAttribute("actionType", "create");
+					if(tempTask.isTemplate()==true){
 						tempTask = getParametersFromRequest(request);
 						GenericTask.saveGenericTemplateInDatabase(user.getUserID(), tempTask.getTaskTypeID(), tempTask.getTitle(), tempTask.getInstructions(), tempTask.getResourceLink(), tempTask.isExtraTask());//TODO confirm this is the best set of parameters for this factory method
 						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
 					}else{
 						//code for non-template/clientTask creation and editing
 					}
-					
+					break;
+				case ("edit-task-template-start"):
+					request.setAttribute("actionType", "edit");
+					tempTask.setTemplate(true);
+					//set tempTask in request so page knows value of isTemplate
+					request.setAttribute("task", tempTask);
+					forwardTo = "/jsp/treatment-plans/task-create-template.jsp";
 					break;
 				}
 			}

@@ -9,18 +9,10 @@ public class GenericTask extends Task implements Updateable {
 
 	private GenericTask(){
 	}
-	private GenericTask(int taskID, int userID, int parentTaskID, String title, String instructions) {
-		super(taskID, userID, parentTaskID, title, instructions);
-	}
-
-	public GenericTask(int taskID, int userID, String title, String instructions) {
-		super(taskID, userID, title, instructions);
-	}
 
 	private GenericTask(int taskID, int userID) {
 		super(taskID, userID);
 	}
-	
 
 	private GenericTask(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			int taskOrder, boolean extraTask, boolean template) {

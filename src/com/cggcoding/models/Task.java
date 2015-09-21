@@ -25,7 +25,7 @@ public abstract class Task implements Completable, Updateable{
 	
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
 	
-	//TODO see if I can eliminate some of these constructors!
+	//TODO see if I can eliminate some of these constructors! Once done with temp LoadData.java and actually load client data from database, look at GenericTask and prune to use only constructors needed for it
 	//empty constructor necessary to allow static factory methods in subclasses
 	public Task(){
 		
@@ -128,7 +128,7 @@ public abstract class Task implements Completable, Updateable{
 		this.dateCompleted = null;
 		this.taskOrder = taskOrder;
 		this.extraTask = extraTask;
-		this.template = false;
+		this.template = template;
 	}
 	
 	

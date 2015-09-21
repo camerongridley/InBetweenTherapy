@@ -22,6 +22,7 @@ import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
 import com.cggcoding.models.tasktypes.GenericTask;
+import com.cggcoding.utils.SqlBuilders;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
@@ -460,9 +461,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	List<Integer> adminIDList = userGetAdminIDs(cn);
         	
-        	//String parameters = StringUtils.join(adminIDList.iterator(),",");
-        	
-        	StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (");
+        	String sql = SqlBuilders.includeMultipleIntParams("SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (", adminIDList);
+        	/*StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (");
         	
         	for(Integer adminID : adminIDList){
         		sqlBuilder.append("?,");
@@ -470,7 +470,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	sqlBuilder.deleteCharAt(sqlBuilder.length()-1);
         	sqlBuilder.append(")");
-    		String sql = sqlBuilder.toString();//substring(0, (sqlBuilder.length()-1));
+    		String sql = sqlBuilder.toString();*/
     		ps = cn.prepareStatement(sql);
     		
     		for(int i = 0; i < adminIDList.size(); i++){
@@ -629,6 +629,43 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return goal;
 	}
 	
+	public List<Task> taskGetDefaults() throws DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Task> defaultTaskList = new ArrayList<>();
+        
+        try {
+        	cn = getConnection();
+        	
+        	List<Integer> adminIDList = userGetAdminIDs(cn);
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams("SELECT * FROM task_generic WHERE task_generic_user_id_fk in (", adminIDList);
+        	
+    		ps = cn.prepareStatement(sql);
+    		
+    		for(int i = 0; i < adminIDList.size(); i++){
+    			ps.setInt(i+1, adminIDList.get(i));
+    		}
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	defaultTaskList.add(taskGenericLoad(rs.getInt("task_id")));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return defaultTaskList;
+	}
+	
 	public Task taskGenericLoad(int taskID) throws DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
@@ -669,7 +706,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn= getConnection();
 			if(taskTemplateValidate(cn, newTask)){
-				return taskGenericTemplateCreate(cn, newTask);
+				return taskGenericCreate(cn, newTask);
 			}
 			
         } finally {
@@ -698,27 +735,32 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private Task taskGenericTemplateCreate(Connection cn, Task newTask) throws DatabaseException{
+	private Task taskGenericCreate(Connection cn, Task newTask) throws DatabaseException{
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
         try {
         	cn = getConnection();
 
-        	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_user_id_fk, title, "
-    				+ "instructions, resource_link, completed, task_order, is_extra_task, is_template) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_stage_id_fk, task_generic_user_id_fk, "
+        			+ "parent_task_id, title, instructions, resource_link, completed, date_completed, task_order, is_extra_task, is_template) "
+    				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             ps.setInt(1, newTask.getTaskTypeID());
-            ps.setInt(2, newTask.getUserID());
-            ps.setString(3, newTask.getTitle().trim());
-            ps.setString(4, newTask.getInstructions().trim());
-            ps.setString(5, newTask.getResourceLink().trim());
-            ps.setBoolean(6, newTask.isCompleted());
-            ps.setInt(7, newTask.getTaskOrder());
-            ps.setInt(8, 0);
-            ps.setInt(9, 1);
+            ps.setInt(2, newTask.getStageID());
+            ps.setInt(3, newTask.getUserID());
+            ps.setInt(4, newTask.getParentTaskID());
+            ps.setString(5, newTask.getTitle().trim());
+            ps.setString(6, newTask.getInstructions().trim());
+            ps.setString(7, newTask.getResourceLink().trim());
+            ps.setBoolean(8, newTask.isCompleted());
+            Date dateCompleted = newTask.getDateCompleted()==null ? null : Date.valueOf(newTask.getDateCompleted());
+            ps.setDate(9, dateCompleted);
+            ps.setInt(10, newTask.getTaskOrder());
+            ps.setBoolean(11, newTask.isExtraTask());
+            ps.setBoolean(12, newTask.isTemplate());
 
             int success = ps.executeUpdate();
             

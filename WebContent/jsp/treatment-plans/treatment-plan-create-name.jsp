@@ -20,7 +20,7 @@
 	<c:import url="/jsp/message-modal.jsp"/>
     
     <form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
-        <input type="hidden" name="requestedAction" value="planNameAndIssue" />
+        <input type="hidden" name="requestedAction" value="plan-create-name-and-issue" />
         <div class="form-group">
             <label for="planName" class="col-sm-2 control-label">Plan Name</label>
             <div class="col-sm-10">

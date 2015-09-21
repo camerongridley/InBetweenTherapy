@@ -90,7 +90,7 @@ public class LoadData extends HttpServlet {
 					request.setAttribute("defaultTaskTypes", getDefaultTasksTypes());
 
 
-					forwardTo = "/jsp/treatment-plans/create-treatment-plan-name.jsp";
+					forwardTo = "/jsp/treatment-plans/treatment-plan-create-name.jsp";
 					break;
 				default:
 					forwardTo = "index.jsp";

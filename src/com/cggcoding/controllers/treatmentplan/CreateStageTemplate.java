@@ -57,10 +57,10 @@ public class CreateStageTemplate extends HttpServlet {
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								
 				switch (requestedAction){
-					case "beginning":
+					case "stage-create-start":
 						forwardTo = "/jsp/treatment-plans/stage-create-template.jsp";
 						break;
-		            case "stageTitle":
+		            case "stage-create-title":
 		                if(stageTitle.isEmpty() || stageDescription.isEmpty()){
 		                	throw new ValidationException("You must enter a stage name and description.");
 		                }
@@ -71,28 +71,26 @@ public class CreateStageTemplate extends HttpServlet {
 		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
 		                forwardTo = "/jsp/treatment-plans/stage-create-template-details.jsp";
 		                break;
-		            case "addGoal":
+		            case "stage-add-goal":
 		            	//Stage stageWithNewGoal = new Stage()
 		            	Stage stage = (Stage)request.getAttribute("stage");//dbActionHandler.getStageTemplate(user.getUserID(), Integer.parseInt(request.getParameter("stageID")));
 		            	request.setAttribute("stage", stage);
-		            	
-		            	
-		            	
+
 		                forwardTo = "/jsp/treatment-plans/stage-create-template-details.jsp";
 		            	break;
-		            case "stageGoalsTasks":
+		            case "stage-create-goals-and-tasks":
 		            	
 		            	break;
-		            case "edit-stage-start" :
+		            case "stage-edit-start" :
 		            	session.setAttribute("defaultStageList", DefaultDatabaseCalls.getDefaultStages());
 		            	forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
 		            	break;
-		            case "edit-stage-select-stage" :
+		            case "stage-edit-select-stage" :
 		            	int selectedDefaultStageID = Integer.parseInt(request.getParameter("selectedDefaultStage"));
 		            	request.setAttribute("selectedDefaultStage", DefaultDatabaseCalls.getDefaultStageByID(selectedDefaultStageID));
 		            	forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
 		            	break;
-		            case "edit-stage-name" :
+		            case "stage-edit-name" :
 		            	
 		            	break;
 		            default:

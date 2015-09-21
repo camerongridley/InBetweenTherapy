@@ -57,16 +57,16 @@ public class EditStageTemplate extends HttpServlet {
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								
 				switch (requestedAction){
-		            case "edit-stage-start" :
+		            case "stage-edit-start" :
 		            	session.setAttribute("defaultStageList", DefaultDatabaseCalls.getDefaultStages());
 		            	forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
 		            	break;
-		            case "edit-stage-select-stage" :
+		            case "stage-edit-select-stage" :
 		            	int selectedDefaultStageID = Integer.parseInt(request.getParameter("selectedDefaultStageID"));
 		            	request.setAttribute("selectedDefaultStage", DefaultDatabaseCalls.getDefaultStageByID(selectedDefaultStageID));
 		            	forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
 		            	break;
-		            case "edit-stage-name" :
+		            case "stage-edit-name" :
 		            	if(stageIDAsString.isEmpty()){
 		            		throw new ValidationException(ErrorMessages.STAGE_UPDATE_NO_SELECTION);
 		            	}else{
