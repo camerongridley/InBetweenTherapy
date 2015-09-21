@@ -2,7 +2,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <c:import url="/jsp/header.jsp" />
 
@@ -28,7 +28,7 @@
                 <select class="form-control" id="taskTypeID" name="taskTypeID">
                     <option  value="">Select a default treatment issue.</option>
                     <c:forEach items="${taskTypeMap}" var="taskType">
-                        <option value="${taskType.key}">${taskType.value}</option>
+                        <option value="${fn:escapeXml(taskType.key)}">${taskType.value}</option>
                     </c:forEach>
                 </select>
             </div>
@@ -36,19 +36,19 @@
         <div class="form-group">
             <label for="taskTitle" class="col-sm-2 control-label">Task Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="taskTitle" name="taskTitle" value="${task.title }" placeholder="Enter a task name here.">
+                <input type="text" class="form-control" id="taskTitle" name="taskTitle" value="<c:out value="${task.title }"/>" placeholder="Enter a task name here.">
             </div>
         </div>
         <div class="form-group">
             <label for="taskInstructions" class="col-sm-2 control-label">Instructions</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="taskInstructions" name="taskInstructions" value="${task.instructions }" placeholder="Describe the stage.">
+                <input type="text" class="form-control" id="taskInstructions" name="taskInstructions" value="<c:out value="${task.instructions }"/>" placeholder="Describe the stage.">
             </div>
         </div>
 		<div class="form-group">
             <label for="resourceLink" class="col-sm-2 control-label">Resource Link</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="${task.resourceLink }" placeholder="Add a link to related resources for this task.">
+                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${task.resourceLink }"/>" placeholder="Add a link to related resources for this task.">
             </div>
         </div>
         <div class="form-group">

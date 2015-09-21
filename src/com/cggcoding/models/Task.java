@@ -112,7 +112,7 @@ public abstract class Task implements Completable, Updateable{
 		this.dateCompleted = null;
 		this.taskOrder = 0;
 		this.extraTask = extraTask;
-		this.template = true;
+		this.template = false;
 	}
 	
 	public Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template){
@@ -128,7 +128,7 @@ public abstract class Task implements Completable, Updateable{
 		this.dateCompleted = null;
 		this.taskOrder = taskOrder;
 		this.extraTask = extraTask;
-		this.template = true;
+		this.template = false;
 	}
 	
 	

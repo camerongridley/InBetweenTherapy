@@ -112,7 +112,7 @@ public class CreateTaskTemplate extends HttpServlet {
 				
 				String hasSubtasks = request.getParameter("hasSubtasks");
 						
-				Task task = GenericTask.getInstance(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
+				Task task = GenericTask.getInstanceWithoutTaskID(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
 				task.setTaskID(taskID);
 				task.setStageID(stageID);
 				task.setTaskOrder(taskOrder);

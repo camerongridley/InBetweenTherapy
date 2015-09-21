@@ -22,9 +22,10 @@ public class GenericTask extends Task implements Updateable {
 	}
 	
 
-	private GenericTask(int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
-			boolean extraTask, boolean template) {
-		super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
+	private GenericTask(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+			int taskOrder, boolean extraTask, boolean template) {
+		//super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
+		super(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
 
 	}
 
@@ -47,10 +48,14 @@ public class GenericTask extends Task implements Updateable {
 
 	}
 	
-	public static GenericTask getInstance(int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
-			boolean extraTask, boolean template){
-		return new GenericTask(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
+	public static GenericTask getInstanceWithoutTaskID(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+			int taskOrder, boolean extraTask, boolean template){
+		return new GenericTask(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
 	}
 	
+	public static GenericTask getInstance(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+			int taskOrder, boolean extraTask, boolean template){
+		return new GenericTask(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
+	}
 	
 }
