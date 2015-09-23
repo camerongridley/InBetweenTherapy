@@ -55,7 +55,7 @@
 			</form>
 			</p>
 			<p>
-			<form class="form-inline" action="./CreateStageTemplate"
+			<form class="form-inline" action="./EditStageTemplate"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Edit
@@ -77,12 +77,12 @@
 			</form>
 			</p>
 			<p>
-			<form class="form-inline" action="./CreateTaskTemplate" method="POST">
+			<form class="form-inline" action="./EditTask" method="POST">
 				<div>
-					<button type="submit" class="btn btn-primary" disabled>Edit
+					<button type="submit" class="btn btn-primary" >Edit
 						Task Template</button>
 				</div>
-				<input type="hidden" name="requestedAction" value="edit-task-template-start">
+				<input type="hidden" name="requestedAction" value="edit-task-start">
 			</form>
 			</p>
 		</div>

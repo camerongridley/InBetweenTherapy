@@ -15,6 +15,7 @@ import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
@@ -81,18 +82,31 @@ public class CreateStageTemplate extends HttpServlet {
 		            case "stage-create-goals-and-tasks":
 		            	
 		            	break;
-		            case "stage-edit-start" :
+		            /*case "stage-edit-start" :
 		            	session.setAttribute("defaultStageList", DefaultDatabaseCalls.getDefaultStages());
 		            	forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
 		            	break;
 		            case "stage-edit-select-stage" :
-		            	int selectedDefaultStageID = Integer.parseInt(request.getParameter("selectedDefaultStage"));
+		            	int selectedDefaultStageID = Integer.parseInt(request.getParameter("selectedDefaultStageID"));
 		            	request.setAttribute("selectedDefaultStage", DefaultDatabaseCalls.getDefaultStageByID(selectedDefaultStageID));
 		            	forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
 		            	break;
 		            case "stage-edit-name" :
-		            	
-		            	break;
+		            	if(stageIDAsString.isEmpty()){
+		            		throw new ValidationException(ErrorMessages.STAGE_UPDATE_NO_SELECTION);
+		            	}else{
+			            	int stageID = Integer.parseInt(stageIDAsString);
+			            	Stage stageToUpdate = DefaultDatabaseCalls.getDefaultStageByID(stageID);
+			            	stageToUpdate.setTitle(stageTitle);
+			            	stageToUpdate.setDescription(stageDescription);
+			            	stageToUpdate.updateInDatabase();
+			            	
+			            	request.setAttribute("selectedDefaultStage", stageToUpdate);
+			            	
+			            	forwardTo = "/jsp/treatment-plans/stage-edit-template-goals.jsp";
+		            	}
+
+		            	break;*/
 		            default:
 
 		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";

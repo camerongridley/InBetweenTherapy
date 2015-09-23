@@ -13,6 +13,7 @@ import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.models.tasktypes.GenericTask;
 
 public interface DatabaseActionHandler {
 
@@ -65,9 +66,13 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	//*************************************** Task Methods **********************************
 	//**************************************************************************************************
+	List<Task> taskGetDefaults() throws DatabaseException;
 	
 	Task taskTemplateValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
 	
+	Task taskGenericLoad(int taskID) throws DatabaseException;
+	
+	boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException;
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
 	

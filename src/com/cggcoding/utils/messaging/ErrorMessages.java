@@ -22,6 +22,7 @@ public final class ErrorMessages {
 	
 	//Tasks
 	public static final String TASK_MISSING_INFO = "You must select a task type as well as enter a task name and instructions.";
+	public static final String TASK_INVALID_ID = "There appears to be a problem with your task.  Please email customer support with a detailed explanation of what happened.";
 	
 	
 	

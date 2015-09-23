@@ -71,7 +71,7 @@ public class EditStageTemplate extends HttpServlet {
 		            		throw new ValidationException(ErrorMessages.STAGE_UPDATE_NO_SELECTION);
 		            	}else{
 			            	int stageID = Integer.parseInt(stageIDAsString);
-			            	Stage stage =DefaultDatabaseCalls.getDefaultStageByID(stageID);
+			            	Stage stage = DefaultDatabaseCalls.getDefaultStageByID(stageID);
 			            	stage.setTitle(stageTitle);
 			            	stage.setDescription(stageDescription);
 			            	stage.updateInDatabase();

@@ -10,7 +10,7 @@ public class SqlBuilders {
 	 * @return
 	 */
 	public static String includeMultipleIntParams(String baseSQLStatement, List<Integer> intValues){
-    	StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (");
+    	StringBuilder sqlBuilder = new StringBuilder(baseSQLStatement);
     	
     	for(Integer value : intValues){
     		sqlBuilder.append("?,");

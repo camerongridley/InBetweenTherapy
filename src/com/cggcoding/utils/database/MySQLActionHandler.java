@@ -461,7 +461,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	List<Integer> adminIDList = userGetAdminIDs(cn);
         	
-        	String sql = SqlBuilders.includeMultipleIntParams("SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (", adminIDList);
+        	String baseStatement = "SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (";
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList);
         	/*StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (");
         	
         	for(Integer adminID : adminIDList){
@@ -629,6 +631,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return goal;
 	}
 	
+	@Override
 	public List<Task> taskGetDefaults() throws DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
@@ -640,7 +643,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	List<Integer> adminIDList = userGetAdminIDs(cn);
         	
-        	String sql = SqlBuilders.includeMultipleIntParams("SELECT * FROM task_generic WHERE task_generic_user_id_fk in (", adminIDList);
+        	String baseStatement = "SELECT * FROM task_generic WHERE task_generic_user_id_fk in (";
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList);
         	
     		ps = cn.prepareStatement(sql);
     		
@@ -651,7 +656,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	defaultTaskList.add(taskGenericLoad(rs.getInt("task_id")));
+            	defaultTaskList.add(taskGenericLoad(rs.getInt("task_generic_id")));
             }
 
         } catch (SQLException e) {
@@ -666,6 +671,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return defaultTaskList;
 	}
 	
+	@Override
 	public Task taskGenericLoad(int taskID) throws DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
@@ -675,7 +681,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
 
-    		String sql = "SELECT * FROM task_generic WHERE task_id =?";
+    		String sql = "SELECT * FROM task_generic WHERE task_generic_id =?";
         	
             ps = cn.prepareStatement(sql);
             
@@ -684,7 +690,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	task = GenericTask.getInstance(rs.getInt("task_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("is_template"));
+            	task = GenericTask.getInstance(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("is_template"));
             }
         	
 
@@ -700,12 +706,57 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return task;
 	}
 	
+	@Override
+	public boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException {
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        int success = 0;
+        
+        try {
+        	cn = getConnection();
+        	
+        	if(taskValidate(cn, taskToUpdate)){
+
+	    		String sql = "UPDATE task_generic SET task_generic_task_type_id_fk=?, task_generic_stage_id_fk=?, task_generic_user_id_fk=?, parent_task_id=?, title=?, instructions=?, resource_link=?, "
+	    				+ "completed=?, date_completed=?, task_order=?, is_extra_task=?, is_template=? WHERE task_generic_id=?";
+	        	
+	            ps = cn.prepareStatement(sql);
+	            
+	            ps.setInt(1, taskToUpdate.getTaskTypeID());
+	            ps.setInt(2, taskToUpdate.getStageID());
+	            ps.setInt(3, taskToUpdate.getUserID());
+	            ps.setInt(4, taskToUpdate.getParentTaskID());
+	            ps.setString(5, taskToUpdate.getTitle().trim());
+	            ps.setString(6,  taskToUpdate.getInstructions().trim());
+	            ps.setString(7, taskToUpdate.getResourceLink().trim());
+	            ps.setBoolean(8, taskToUpdate.isCompleted());
+	            ps.setDate(9, taskToUpdate.getDateCompleted() == null ? null : Date.valueOf(taskToUpdate.getDateCompleted()));//TODO validate properties elsewhere?
+	            ps.setInt(10, taskToUpdate.getTaskOrder());
+	            ps.setBoolean(11, taskToUpdate.isExtraTask());
+	            ps.setBoolean(12, taskToUpdate.isTemplate());
+	            ps.setInt(13, taskToUpdate.getTaskID());
+	
+	            success = ps.executeUpdate();
+        	}
+        	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return success == 1;
+	}
+	
 	public Task taskTemplateValidateAndCreate(Task newTask) throws DatabaseException, ValidationException{
 		Connection cn = null;
 
         try {
         	cn= getConnection();
-			if(taskTemplateValidate(cn, newTask)){
+			if(taskValidate(cn, newTask)){
 				return taskGenericCreate(cn, newTask);
 			}
 			
@@ -717,7 +768,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
 	}
 	
-	private boolean taskTemplateValidate(Connection cn, Task newTask) throws ValidationException{
+	private boolean taskValidate(Connection cn, Task newTask) throws ValidationException{
 
 		if(newTask.getTitle() == null || newTask.getTitle().isEmpty() || 
 				newTask.getInstructions() == null || newTask.getInstructions().isEmpty() ||

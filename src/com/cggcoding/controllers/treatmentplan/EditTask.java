@@ -1,14 +1,11 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
-import java.time.LocalDate;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -17,19 +14,20 @@ import com.cggcoding.models.Task;
 import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.GenericTask;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
- * Servlet implementation class CreateTaskTemplate
+ * Servlet implementation class EditTask
  */
-@WebServlet("/CreateTaskTemplate")
-public class CreateTaskTemplate extends HttpServlet {
+@WebServlet("/EditTask")
+public class EditTask extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	int userID =  0;
-
+	int userID = 0;
+       
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public CreateTaskTemplate() {
+    public EditTask() {
         super();
     }
 
@@ -51,36 +49,45 @@ public class CreateTaskTemplate extends HttpServlet {
 		
 		//performed here to get parameters for all tasks run below
 		Task tempTask = ParameterUtils.getTaskParametersFromRequest(request, userID);
+		
+		//get and maintain value of creatingTemplate, which indicates if this is for creating/editing templates vs data tied to specific user
+		/*String creatingTemplate = request.getParameter("isTemplate");
+		if(creatingTemplate.equals("true")){
+			tempTask.setTemplate(true);
+		}*/
 
 		try {
 			//put user-independent attributes acquired from database in the request
 			request.setAttribute("taskTypeMap", DefaultDatabaseCalls.getTaskTypeMap());
+			request.setAttribute("taskTemplateList", DefaultDatabaseCalls.getDefaultTasks());
 			
 			if(user.hasRole("admin")){
 				switch(requestedAction){
-				case ("create-task-template-start"):
-					tempTask.setTemplate(true);
-					//set tempTask in request so page knows value of isTemplate
-					request.setAttribute("task", tempTask);
-					forwardTo = "/jsp/treatment-plans/task-create-template.jsp";
-					break;
-				case ("task-add-info"):
-					if(tempTask.isTemplate()==true){
-						tempTask = ParameterUtils.getTaskParametersFromRequest(request, userID);
-						GenericTask.saveGenericTemplateInDatabase(user.getUserID(), tempTask.getTaskTypeID(), tempTask.getTitle(), tempTask.getInstructions(), tempTask.getResourceLink(), tempTask.isExtraTask());//TODO confirm this is the best set of parameters for this factory method
-						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
-					}else{
-						//code for non-template/clientTask creation and editing
-					}
-					break;
-				case ("edit-task-template-start"):
+				case ("edit-task-start"):
 					tempTask.setTemplate(true);
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", tempTask);
 					forwardTo = "/jsp/treatment-plans/task-edit-template.jsp";
 					break;
+				case ("edit-task-select-task"):
+					int selectedTaskID = ParameterUtils.parseIntParameter(request, "defaultTaskListID");
+					if(selectedTaskID == 0){
+						throw new ValidationException(ErrorMessages.TASK_INVALID_ID);
+					}
+					request.setAttribute("task", DefaultDatabaseCalls.getGenericTaskByID(selectedTaskID));
+					forwardTo = "/jsp/treatment-plans/task-edit-template.jsp";
+					break;
+				case ("edit-task-update"):
+					switch(tempTask.getTaskTypeName()){
+					case ("GenericTask"):
+						GenericTask genericTask = (GenericTask)tempTask;
+						genericTask.updateGeneralData();
+					}
+					
+					break;
 				}
 			}
+				
 			
 		} catch (DatabaseException | ValidationException e) {
 			//put in temporary task object so values can be saved in inputs after error
@@ -88,7 +95,7 @@ public class CreateTaskTemplate extends HttpServlet {
 			//request.setAttribute("hasSubtasks", hasSubtasks);
 			request.setAttribute("errorMessage", e.getMessage());
 
-			forwardTo = "/jsp/treatment-plans/task-create-template.jsp";
+			forwardTo = "/jsp/treatment-plans/task-edit-template.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

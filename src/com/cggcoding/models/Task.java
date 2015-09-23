@@ -131,6 +131,21 @@ public abstract class Task implements Completable, Updateable{
 		this.template = template;
 	}
 	
+	public Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template){
+		this.taskID = taskID;
+		this.stageID = stageID;
+		this.userID = userID;
+		this.taskTypeID = taskTypeID;
+		this.parentTaskID = parentTaskID;
+		this.title = title;
+		this.instructions = instructions;
+		this.resourceLink = resourceLink;
+		this.completed = false;
+		this.dateCompleted = null;
+		this.taskOrder = taskOrder;
+		this.extraTask = extraTask;
+		this.template = template;
+	}
 	
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
 	 * @param taskID
@@ -169,6 +184,13 @@ public abstract class Task implements Completable, Updateable{
 		
 		return databaseActionHandler.taskTemplateValidateAndCreate(this);
 	}
+	
+	protected boolean updateGeneralData(Task task) throws DatabaseException, ValidationException{
+		return databaseActionHandler.taskGenericUpdate(task);
+	}
+	
+	//in place so can be overridden by concrete classes to use for subclass-specific data
+	public abstract boolean updateAdditionalData(Task taskWithNewData);
 	
 	public int getTaskID(){
 		return taskID;
@@ -306,7 +328,7 @@ public abstract class Task implements Completable, Updateable{
 		return this.getClass().getSimpleName();
 	}
 
-	//in place so can be overridden by concrete classes
+	//TODO Remove this and consider eliminating Updateable interface if using abstract updateGeneralData - though Updateable is being used by Stage and TreatmentPlan...
 	@Override
 	public boolean updateData(Task taskWithNewData) {
 		return false;

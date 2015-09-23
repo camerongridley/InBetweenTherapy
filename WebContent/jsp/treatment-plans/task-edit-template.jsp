@@ -7,19 +7,40 @@
 <c:import url="/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Create A Task</h1>
+	<h1>Edit A Task</h1>
 	<h2>Subheading</h2>
 </div>
   
 <c:import url="/jsp/message-modal.jsp"/>
+
+<form class="form-horizontal" action="./EditTask" method="POST">
+	<input type="hidden" name="requestedAction" value="edit-task-select-task">
+
+	<div class="form-group">
+		<label for="defaultTaskListID" class="col-sm-2 control-label">Select Task</label>
+		<div class="col-sm-8">
+			<select class="form-control" id="defaultTaskListID" name="defaultTaskListID">
+			    <option  value="">Select a default task.</option>
+			    	<c:forEach items="${taskTemplateList}" var="taskTemplate">
+						<option value="${taskTemplate.taskID}" <c:if test="${taskTemplate.taskID == task.taskID }">selected</c:if> >${fn:escapeXml(taskTemplate.title)}</option>
+					</c:forEach>
+			</select>
+		</div>
+		<div class="col-sm-2">
+			<button type="submit" class="btn btn-primary">Load</button>
+		</div>
+	</div>	
+<hr>
+</form>
 	
-<form class="form-horizontal" action="./CreateTaskTemplate" method="POST">
-		<input type="hidden" name="requestedAction" value="task-add-info">
+<form class="form-horizontal" action="./EditTask" method="POST">
+		<input type="hidden" name="requestedAction" value="edit-task-update">
 		<input type="hidden" name="taskID" value="${task.taskID }">
 		<input type="hidden" name="stageID" value="${task.stageID }">
 		<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
+		
 		
 		<div class="form-group">
             <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>

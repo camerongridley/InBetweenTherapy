@@ -5,7 +5,7 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.Updateable;
 
-public class GenericTask extends Task implements Updateable {
+public class GenericTask extends Task {
 
 	private GenericTask(){
 	}
@@ -14,11 +14,18 @@ public class GenericTask extends Task implements Updateable {
 		super(taskID, userID);
 	}
 
+	//constructor without taskID - for Tasks objects that haven't been saved to database and don't have a taskID yet
 	private GenericTask(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			int taskOrder, boolean extraTask, boolean template) {
 		//super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
 		super(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
-
+	}
+	
+	//full constructor
+	private GenericTask(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+			int taskOrder, boolean extraTask, boolean template) {
+		//super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
+		super(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
 	}
 
 	/**This class is a concretized version of Task to map up with the GenericTask table in the database.  There is no "Task" table in the database
@@ -40,6 +47,14 @@ public class GenericTask extends Task implements Updateable {
 
 	}
 	
+	public boolean updateGeneralData() throws DatabaseException, ValidationException{
+		return super.updateGeneralData(this);
+	}
+	
+	@Override
+	public boolean updateAdditionalData(Task taskWithNewData) {
+		return false;//there is no additional data in GenericTask to update
+	}
 	public static GenericTask getInstanceWithoutTaskID(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			int taskOrder, boolean extraTask, boolean template){
 		return new GenericTask(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
@@ -47,7 +62,9 @@ public class GenericTask extends Task implements Updateable {
 	
 	public static GenericTask getInstance(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			int taskOrder, boolean extraTask, boolean template){
-		return new GenericTask(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
+		return new GenericTask(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
 	}
+
+	
 	
 }
