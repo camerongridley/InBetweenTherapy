@@ -13,7 +13,7 @@
     
 	<c:import url="/jsp/message-modal.jsp"/>
 
-	<form class="form-horizontal" action="./CreateStageTemplate" method="POST">
+	<form class="form-horizontal" action="./CreateStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-create-title">
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>

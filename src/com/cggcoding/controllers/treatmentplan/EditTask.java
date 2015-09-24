@@ -67,7 +67,7 @@ public class EditTask extends HttpServlet {
 					tempTask.setTemplate(true);
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", tempTask);
-					forwardTo = "/jsp/treatment-plans/task-edit-template.jsp";
+					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-select-task"):
 					int selectedTaskID = ParameterUtils.parseIntParameter(request, "defaultTaskListID");
@@ -75,7 +75,7 @@ public class EditTask extends HttpServlet {
 						throw new ValidationException(ErrorMessages.TASK_INVALID_ID);
 					}
 					request.setAttribute("task", DefaultDatabaseCalls.getGenericTaskByID(selectedTaskID));
-					forwardTo = "/jsp/treatment-plans/task-edit-template.jsp";
+					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-update"):
 					switch(tempTask.getTaskTypeName()){
@@ -95,7 +95,7 @@ public class EditTask extends HttpServlet {
 			//request.setAttribute("hasSubtasks", hasSubtasks);
 			request.setAttribute("errorMessage", e.getMessage());
 
-			forwardTo = "/jsp/treatment-plans/task-edit-template.jsp";
+			forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

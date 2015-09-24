@@ -45,7 +45,7 @@
 
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="./CreateStageTemplate"
+			<form class="form-inline" action="./CreateStage"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary">Create Stage
@@ -55,7 +55,7 @@
 			</form>
 			</p>
 			<p>
-			<form class="form-inline" action="./EditStageTemplate"
+			<form class="form-inline" action="./EditStage"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Edit
@@ -68,7 +68,7 @@
 
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="./CreateTaskTemplate" method="POST">
+			<form class="form-inline" action="./CreateTask" method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Create
 						Task Template</button>

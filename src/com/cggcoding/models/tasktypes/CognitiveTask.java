@@ -86,4 +86,11 @@ public class CognitiveTask extends Task implements Updateable{
 		return true;//TODO returns true if DB update was success
 	}
 
+
+	@Override
+	public boolean updateAdditionalData(Task taskWithNewData) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

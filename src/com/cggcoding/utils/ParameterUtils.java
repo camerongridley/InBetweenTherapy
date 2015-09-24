@@ -48,7 +48,7 @@ public class ParameterUtils {
 				String instructions = request.getParameter("taskInstructions");
 				String resourceLink = request.getParameter("resourceLink");
 				//boolean completed = request.getParameter("requestedAction");
-				//LocalDate dateCompleted = request.getParameter("requestedAction"); - set in the service layer when task is marked complete
+				//LocalDateTime dateCompleted = request.getParameter("requestedAction"); - set in the service layer when task is marked complete
 				int taskOrder =  parseIntParameter(request, "taskOrder");
 				boolean extraTask = getBooleanParameter(request, "isExtraTask"); 
 				boolean template = getBooleanParameter(request, "isTemplate"); 

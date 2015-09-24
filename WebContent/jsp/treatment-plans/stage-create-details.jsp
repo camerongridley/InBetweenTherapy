@@ -13,7 +13,7 @@
 
 <c:import url="/jsp/message-modal.jsp"/>
 
-<form class="form-horizontal" action="./CreateStageTemplate" method="POST">
+<form class="form-horizontal" action="./CreateStage" method="POST">
 	<input type="hidden" name="requestedAction" value="stage-create-goals-and-tasks">
 	<input type="hidden" name="stageID" value="stage.stageID">
 	<h2>Define goals for the stage: ${stage.title }</h2>
@@ -53,7 +53,7 @@
            -->
 	</form>
        
-   <form class="form-horizontal" action="./CreateStageTemplate" method="POST">
+   <form class="form-horizontal" action="./CreateStage" method="POST">
 	<input type="hidden" name="requestedAction" value="stage-create-goals-and-tasks">
 	<input type="hidden" name="addingGoal" value="false">
 	<input type="hidden" name="stageID" value="stage.stageID">  

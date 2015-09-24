@@ -17,6 +17,7 @@ import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.CognitiveTask;
+import com.cggcoding.models.tasktypes.GenericTask;
 import com.cggcoding.models.tasktypes.PsychEdTask;
 import com.cggcoding.models.tasktypes.RelaxationTask;
 
@@ -45,7 +46,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		TreatmentPlan treatmentPlan = user.getTreatmentPlan(treatmentPlanID);
 		Stage activeStage = treatmentPlan.getActiveViewStage();
 
-		//get checked values from the request and convery to List<Integer>
+		//get checked values from the request and convert to List<Integer>
 		List<Integer> checkedTaskIDs = convertStringArrayToInt(request.getParameterValues("taskChkBx[]"));
 
 		//get all Task ids from hidden field so we can get at unchecked values
@@ -87,6 +88,12 @@ public class UpdateTaskCompletion extends HttpServlet {
 
 			//TODO Do I use a static factory method here or just stick with contructors?
 			switch (taskTypeName) {
+				case "GenericTask":
+					System.out.println("Updating Generic Task.");
+					GenericTask genTask = GenericTask.getInstanceByID(currentTaskID, user.getUserID());
+
+					updatedTask =  genTask;
+					break;
 				case "CognitiveTask":
 					System.out.println("Updating Cognitive Task");
 					CognitiveTask cogTask = new CognitiveTask(currentTaskID, user.getUserID());

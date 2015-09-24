@@ -1,6 +1,6 @@
 package com.cggcoding.models;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -18,7 +18,7 @@ public abstract class Task implements Completable, Updateable{
 	private String instructions;
 	private String resourceLink;
 	private boolean completed;
-	private LocalDate dateCompleted;
+	private LocalDateTime dateCompleted;
 	private int taskOrder;
 	private boolean extraTask;
 	private boolean template;
@@ -46,6 +46,7 @@ public abstract class Task implements Completable, Updateable{
 		this.taskOrder = 0;
 		this.extraTask = false;
 		this.template = false;
+
 	}
 	
 	//basic parent Task that sets properties to defaults
@@ -147,6 +148,22 @@ public abstract class Task implements Completable, Updateable{
 		this.template = template;
 	}
 	
+	public Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template){
+		this.taskID = taskID;
+		this.stageID = stageID;
+		this.userID = userID;
+		this.taskTypeID = taskTypeID;
+		this.parentTaskID = parentTaskID;
+		this.title = title;
+		this.instructions = instructions;
+		this.resourceLink = resourceLink;
+		this.completed = completed;
+		this.dateCompleted = dateCompleted;
+		this.taskOrder = taskOrder;
+		this.extraTask = extraTask;
+		this.template = template;
+	}
+	
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
 	 * @param taskID
 	 * @param stageID
@@ -166,7 +183,7 @@ public abstract class Task implements Completable, Updateable{
 	 * @throws ValidationException
 	 */
 	protected Task saveGeneralDataForTemplateInDatabase(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, 
-			String instructions, String resourceLink, boolean completed, LocalDate dateCompleted, int taskOrder,
+			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,
 			boolean extraTask, boolean template) throws DatabaseException, ValidationException{
 		this.taskID = taskID;
 		this.stageID = stageID;
@@ -256,11 +273,11 @@ public abstract class Task implements Completable, Updateable{
 		this.resourceLink = resourceLink;
 	}
 	
-	public void setDateCompleted(LocalDate date){
+	public void setDateCompleted(LocalDateTime date){
 		dateCompleted = date;
 	}
 	
-	public LocalDate getDateCompleted(){
+	public LocalDateTime getDateCompleted(){
 		return dateCompleted;
 	}
 	
@@ -305,7 +322,7 @@ public abstract class Task implements Completable, Updateable{
 	@Override
 	public void markComplete() {
 		completed = true;
-		dateCompleted = LocalDate.now();
+		dateCompleted = LocalDateTime.now();
 	}
 
 	@Override

@@ -183,6 +183,7 @@ public class Stage implements Completable {
 
 	//Tasks will be displayed in the order in which they are in the List
 	public void addTask(Task task){
+		task.setStageID(this.stageID);
 		tasks.add(task);
 	}
 	

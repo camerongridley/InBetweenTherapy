@@ -1,14 +1,12 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
-import java.time.LocalDate;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -19,17 +17,17 @@ import com.cggcoding.models.tasktypes.GenericTask;
 import com.cggcoding.utils.ParameterUtils;
 
 /**
- * Servlet implementation class CreateTaskTemplate
+ * Servlet implementation class CreateTask
  */
-@WebServlet("/CreateTaskTemplate")
-public class CreateTaskTemplate extends HttpServlet {
+@WebServlet("/CreateTask")
+public class CreateTask extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	int userID =  0;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public CreateTaskTemplate() {
+    public CreateTask() {
         super();
     }
 
@@ -62,7 +60,7 @@ public class CreateTaskTemplate extends HttpServlet {
 					tempTask.setTemplate(true);
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", tempTask);
-					forwardTo = "/jsp/treatment-plans/task-create-template.jsp";
+					forwardTo = "/jsp/treatment-plans/task-create.jsp";
 					break;
 				case ("task-add-info"):
 					if(tempTask.isTemplate()==true){
@@ -77,7 +75,7 @@ public class CreateTaskTemplate extends HttpServlet {
 					tempTask.setTemplate(true);
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", tempTask);
-					forwardTo = "/jsp/treatment-plans/task-edit-template.jsp";
+					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				}
 			}
@@ -88,7 +86,7 @@ public class CreateTaskTemplate extends HttpServlet {
 			//request.setAttribute("hasSubtasks", hasSubtasks);
 			request.setAttribute("errorMessage", e.getMessage());
 
-			forwardTo = "/jsp/treatment-plans/task-create-template.jsp";
+			forwardTo = "/jsp/treatment-plans/task-create.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

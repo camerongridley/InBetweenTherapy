@@ -1,6 +1,7 @@
 package com.cggcoding.utils.database;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -690,7 +691,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	task = GenericTask.getInstance(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("is_template"));
+            	//TODO ADD GETTING DATE COMPLETED - just setting and returning it to null now
+            	task = GenericTask.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("completed"), null/*rs.getDate("date_completed")*/, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("is_template"));
             }
         	
 
@@ -730,7 +732,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	            ps.setString(6,  taskToUpdate.getInstructions().trim());
 	            ps.setString(7, taskToUpdate.getResourceLink().trim());
 	            ps.setBoolean(8, taskToUpdate.isCompleted());
-	            ps.setDate(9, taskToUpdate.getDateCompleted() == null ? null : Date.valueOf(taskToUpdate.getDateCompleted()));//TODO validate properties elsewhere?
+	            ps.setDate(9, null);//taskToUpdate.getDateCompleted() == null ? null : Date.valueOf(taskToUpdate.getDateCompleted()));//TODO ACTUALLY UPDATE THE DATE COMPLETED! Just setting to null now.
 	            ps.setInt(10, taskToUpdate.getTaskOrder());
 	            ps.setBoolean(11, taskToUpdate.isExtraTask());
 	            ps.setBoolean(12, taskToUpdate.isTemplate());
@@ -807,7 +809,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setString(6, newTask.getInstructions().trim());
             ps.setString(7, newTask.getResourceLink().trim());
             ps.setBoolean(8, newTask.isCompleted());
-            Date dateCompleted = newTask.getDateCompleted()==null ? null : Date.valueOf(newTask.getDateCompleted());
+            Date dateCompleted = null;//newTask.getDateCompleted()==null ? null : Date.valueOf(newTask.getDateCompleted()); //TODO ACTUALLY SET THE DATE COMPLETED> just setting to null now.
             ps.setDate(9, dateCompleted);
             ps.setInt(10, newTask.getTaskOrder());
             ps.setBoolean(11, newTask.isExtraTask());

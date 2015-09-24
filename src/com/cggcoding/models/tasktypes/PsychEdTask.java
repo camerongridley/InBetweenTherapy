@@ -40,4 +40,9 @@ public class PsychEdTask extends Task implements Updateable{
 
 		return true;//TODO returns true if DB update was success
 	}
+
+	@Override
+	public boolean updateAdditionalData(Task taskWithNewData) {
+		return true;//no additional data to update
+	}
 }

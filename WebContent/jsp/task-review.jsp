@@ -129,7 +129,17 @@
 							  <!-- TODO task set/repetition info goes here -->
 						  </div>
 							<!---------------------------------------------------------
-							 PsychEd Tasks
+							 Generic Task Detail
+							 ---------------------------------------------------------->
+							  <c:if test="${task.taskTypeName == 'GenericTask' }">
+								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
+									  <div class="panel-body panel-body-task">
+										${task.instructions }
+									  </div>
+								  </div>
+							  </c:if>
+							<!---------------------------------------------------------
+							 PsychEd Task Detail
 							 ---------------------------------------------------------->
 							  <c:if test="${task.taskTypeName == 'PsychEdTask' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
@@ -139,7 +149,7 @@
 								  </div>
 							  </c:if>
 							<!---------------------------------------------------------
-							 Relaxation Tasks
+							 Relaxation Task Detail
 							 ---------------------------------------------------------->
 							  <c:if test="${task.taskTypeName == 'RelaxationTask' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
@@ -152,7 +162,7 @@
 								  </div>
 							  </c:if>
 							<!---------------------------------------------------------
-							 Cognitive Tasks
+							 Cognitive Task Detail
 							 ---------------------------------------------------------->
 							  <c:if test="${task.taskTypeName == 'CognitiveTask' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.models.*;
 import com.cggcoding.models.tasktypes.CognitiveTask;
+import com.cggcoding.models.tasktypes.GenericTask;
 import com.cggcoding.models.tasktypes.PsychEdTask;
 import com.cggcoding.models.tasktypes.RelaxationTask;
 
@@ -177,6 +178,7 @@ public class LoadData extends HttpServlet {
 
 		//create and load tasks for each stage
 		//TODO have Task creation go through a factory or factory method
+		//psychEdStage.addTask(GenericTask.getInstanceFull(0, psychEdStage.getStageID(), user.getUserID(), 1, 0, "Coping with ED!!!", "Chapter 3 - Developing Realistic Expectations", "", false, null, 0, false, false));
 		psychEdStage.addTask(new PsychEdTask(0, user.getUserID(), "Coping with ED", "Chapter 3 - Developing Realistic Expectations"));
 		Task completedTask = new PsychEdTask(1, user.getUserID(), "New Male Sexuality", "Chapter 2 - Male Sexual Myths");
 		completedTask.markComplete();

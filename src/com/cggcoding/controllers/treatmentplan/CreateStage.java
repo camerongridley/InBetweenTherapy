@@ -1,6 +1,7 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,27 +16,26 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.messaging.ErrorMessages;
+import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
- * Servlet implementation class EditStageTemplate
+ * Servlet implementation class CreateStage
  */
-@WebServlet("/EditStageTemplate")
-public class EditStageTemplate extends HttpServlet {
+@WebServlet("/CreateStage")
+public class CreateStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public EditStageTemplate() {
+    public CreateStage() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
@@ -49,7 +49,8 @@ public class EditStageTemplate extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String stageIDAsString = request.getParameter("stageID");
 		String stageTitle = request.getParameter("stageTitle");
-		String stageDescription = request.getParameter("stageDescription");
+    	String stageDescription = request.getParameter("stageDescription");
+    	String newStageGoal =request.getParameter("newStageGoal");
 		
 		
 		try{
@@ -57,34 +58,55 @@ public class EditStageTemplate extends HttpServlet {
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								
 				switch (requestedAction){
-		            case "stage-edit-start" :
+					case "stage-create-start":
+						forwardTo = "/jsp/treatment-plans/stage-create.jsp";
+						break;
+		            case "stage-create-title":
+		                if(stageTitle.isEmpty() || stageDescription.isEmpty()){
+		                	throw new ValidationException("You must enter a stage name and description.");
+		                }
+
+		                Stage newStageTemplate = Stage.saveNewTemplateInDatabase(user.getUserID(), stageTitle, stageDescription);
+
+		                request.setAttribute("stage", newStageTemplate);
+		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
+		                forwardTo = "/jsp/treatment-plans/stage-create-details.jsp";
+		                break;
+		            case "stage-add-goal":
+		            	//Stage stageWithNewGoal = new Stage()
+		            	Stage stage = (Stage)request.getAttribute("stage");//dbActionHandler.getStageTemplate(user.getUserID(), Integer.parseInt(request.getParameter("stageID")));
+		            	request.setAttribute("stage", stage);
+
+		                forwardTo = "/jsp/treatment-plans/stage-create-details.jsp";
+		            	break;
+		            case "stage-create-goals-and-tasks":
+		            	
+		            	break;
+		            /*case "stage-edit-start" :
 		            	session.setAttribute("defaultStageList", DefaultDatabaseCalls.getDefaultStages());
-		            	forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
+		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-select-stage" :
 		            	int selectedDefaultStageID = Integer.parseInt(request.getParameter("selectedDefaultStageID"));
 		            	request.setAttribute("selectedDefaultStage", DefaultDatabaseCalls.getDefaultStageByID(selectedDefaultStageID));
-		            	forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
+		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-name" :
 		            	if(stageIDAsString.isEmpty()){
 		            		throw new ValidationException(ErrorMessages.STAGE_UPDATE_NO_SELECTION);
 		            	}else{
 			            	int stageID = Integer.parseInt(stageIDAsString);
-			            	Stage stage = DefaultDatabaseCalls.getDefaultStageByID(stageID);
-			            	stage.setTitle(stageTitle);
-			            	stage.setDescription(stageDescription);
-			            	stage.updateInDatabase();
+			            	Stage stageToUpdate = DefaultDatabaseCalls.getDefaultStageByID(stageID);
+			            	stageToUpdate.setTitle(stageTitle);
+			            	stageToUpdate.setDescription(stageDescription);
+			            	stageToUpdate.updateInDatabase();
 			            	
-			            	request.setAttribute("selectedDefaultStage", stage);
+			            	request.setAttribute("selectedDefaultStage", stageToUpdate);
 			            	
-			            	forwardTo = "/jsp/treatment-plans/stage-edit-template-goals.jsp";
+			            	forwardTo = "/jsp/treatment-plans/stage-edit-goals.jsp";
 		            	}
 
-		            	break;
-		            case "stage-edit-add-goal" :
-		            	
-		            	break;
+		            	break;*/
 		            default:
 
 		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
@@ -95,13 +117,16 @@ public class EditStageTemplate extends HttpServlet {
 			
 		} catch (ValidationException | DatabaseException e){
 			//in case of error and user is sent back to page - re-populate the forms
-			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
-            forwardTo = "/jsp/treatment-plans/stage-edit-template.jsp";
+			request.setAttribute("errorMessage", e.getMessage());
+			request.setAttribute("newStageGoal", newStageGoal);
+			
+            forwardTo = "/jsp/treatment-plans/stage-create.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
+		
 	}
 
 }

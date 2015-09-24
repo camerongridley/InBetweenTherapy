@@ -13,7 +13,7 @@
   
 <c:import url="/jsp/message-modal.jsp"/>
 	
-	<form class="form-horizontal" action="./EditStageTemplate" method="POST">
+	<form class="form-horizontal" action="./EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-select-stage">
 		
 		<div class="form-group">
@@ -35,7 +35,7 @@
 	
 	<hr>
 	
-	<form class="form-horizontal" action="./EditStageTemplate" method="POST">
+	<form class="form-horizontal" action="./EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-name">	
 		<input type="hidden" name="stageID" value="${selectedDefaultStage.stageID }" >	
         <div class="form-group">

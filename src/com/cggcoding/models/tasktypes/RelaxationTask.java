@@ -46,4 +46,10 @@ public class RelaxationTask extends Task implements Updateable{
 
 		return true;//TODO returns true if DB update was success
 	}
+
+	@Override
+	public boolean updateAdditionalData(Task taskWithNewData) {
+		// TODO if keeping this class, implement method for updating additional data 
+		return false;
+	}
 }
