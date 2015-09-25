@@ -1,11 +1,14 @@
 package com.cggcoding.models.tasktypes;
 
+import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.DatabaseModel;
 import com.cggcoding.models.Task;
-import com.cggcoding.models.Updateable;
 
+import java.util.List;
 import java.util.Random;
 
-public class RelaxationTask extends Task implements Updateable{
+public class RelaxationTask extends Task implements DatabaseModel{
 	
 	private int durationInMinutes;
 
@@ -36,7 +39,7 @@ public class RelaxationTask extends Task implements Updateable{
 		return this.durationInMinutes;
 	}
 
-	@Override
+	//TODO DELETE this after db integration done - maybe move to update()?
 	public boolean updateData(Task taskWithNewData) {
 		//update universal properties
 		this.setCompleted(taskWithNewData.isCompleted());
@@ -48,8 +51,32 @@ public class RelaxationTask extends Task implements Updateable{
 	}
 
 	@Override
-	public boolean updateAdditionalData(Task taskWithNewData) {
+	public boolean updateAdditionalData() {
 		// TODO if keeping this class, implement method for updating additional data 
 		return false;
+	}
+
+	@Override
+	public void saveNew() throws ValidationException, DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update() throws ValidationException, DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void delete() throws ValidationException, DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Object> copy(Object o, int numberOfCopies) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

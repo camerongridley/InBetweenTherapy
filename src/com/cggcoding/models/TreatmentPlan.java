@@ -10,11 +10,9 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class TreatmentPlan {
+public class TreatmentPlan implements DatabaseModel{
 	private int treatmentPlanID;
 	private int userID;
-	private int userClientID; //TODO -  collapse these into one userID since there are other ways to track relationship between client and therapist?
-	private int userTherapistID;
 	private int treatmentIssueID;
 	private String title;
 	private String description;
@@ -45,6 +43,10 @@ public class TreatmentPlan {
 		this.stages = new ArrayList<>();
 		this.currentStageIndex = 0;
 		this.activeViewStageIndex = 0;
+	}
+	
+	public static TreatmentPlan getInstanceWithoutID(String title, int userID, String description, int txIssueID){
+		return new TreatmentPlan(title, userID, description, txIssueID);
 	}
 
 	//TODO update with proper logic once app is connected to database
@@ -172,8 +174,28 @@ public class TreatmentPlan {
 		return getStageOrder(activeViewStageIndex);
 	}
 	
-	public void save() throws ValidationException, DatabaseException{
-		 databaseActionHandler.treatmentPlanValidateAndCreateBasic(this);
+	@Override
+	public void saveNew() throws ValidationException, DatabaseException{
+		 TreatmentPlan savedPlan = databaseActionHandler.treatmentPlanValidateAndCreateBasic(this);
+		 this.treatmentPlanID = savedPlan.getTreatmentPlanID();
+	}
+
+	@Override
+	public void update() throws ValidationException, DatabaseException {
+		// TODO implement method
+		
+	}
+
+	@Override
+	public void delete() throws ValidationException, DatabaseException {
+		// TODO implement method
+		
+	}
+
+	@Override
+	public List<Object> copy(Object o, int numberOfCopies) {
+		// TODO implement method
+		return null;
 	}
 
 }

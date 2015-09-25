@@ -57,7 +57,7 @@ public interface DatabaseActionHandler {
 	//*************************************** Treatment Issue Methods **********************************
 	//**************************************************************************************************
 
-	TreatmentIssue treatmentIssueCreate(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException;
+	TreatmentIssue treatmentIssueValidateAndCreate(TreatmentIssue treatmentIssue, int userID) throws ValidationException, DatabaseException;
 
 	ArrayList<TreatmentIssue> treatmentIssueGetDefaults() throws DatabaseException;
 

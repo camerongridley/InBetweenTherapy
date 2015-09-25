@@ -23,6 +23,11 @@ public class ParameterUtils {
 		}
 	}
 	
+	/**Gets and converts boolean parameter from the request object provided.
+	 * @param request HttpServletRequest
+	 * @param boolParameterName Name of the boolean parameter as a string.
+	 * @return boolean value of the parameter
+	 */
 	public static boolean getBooleanParameter(HttpServletRequest request, String boolParameterName){
 		//return ((request.getParameter(boolParameterName)!=null) ? request.getParameter(boolParameterName).equalsIgnoreCase("true") : false); 
 		if(request.getParameter(boolParameterName) != null){

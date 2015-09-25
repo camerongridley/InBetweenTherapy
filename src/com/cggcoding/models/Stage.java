@@ -8,7 +8,7 @@ import com.cggcoding.utils.database.MySQLActionHandler;
 
 import java.util.*;
 
-public class Stage implements Completable {
+public class Stage implements Completable, DatabaseModel {
 
 	private int stageID;
 	private int treatmentPlanID;
@@ -22,7 +22,7 @@ public class Stage implements Completable {
 	private double percentComplete;
 	private List<StageGoal> goals;
 	private boolean inProgress;//TODO implement inProgress - add logic to update it appropriately - dynamic or simple?
-	private boolean isTemplate;
+	private boolean template;
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 
 	private Stage (int stageID, int userID, String title, String description, int stageOrder){
@@ -37,7 +37,7 @@ public class Stage implements Completable {
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
 		//this.inProgress = false;
-		this.isTemplate = false;
+		this.template = false;
 	}
 
 	private Stage (int userID, String title, String description){
@@ -51,12 +51,12 @@ public class Stage implements Completable {
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
 		//this.inProgress = false;
-		this.isTemplate = false;
+		this.template = false;
 	}
 	
 	private Stage(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals,
-			boolean isTemplate) {
+			boolean template) {
 		this.stageID = stageID;
 		this.treatmentPlanID = treatmentPlanID;
 		this.userID = userID;
@@ -69,18 +69,18 @@ public class Stage implements Completable {
 		this.percentComplete = percentComplete;
 		this.goals = goals;
 		//this.inProgress = inProgress;  TODO - delete from constructor if this propery isn't in the database model so maybe remove as a class member and just make as a dynamic method
-		this.isTemplate = isTemplate;
+		this.template = template;
 	}
 
 	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
-			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean isTemplate){
-		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, isTemplate);
+			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean template){
+		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, template);
 	}
 	
-	public static Stage saveNewTemplateInDatabase(int userID, String title, String description) throws ValidationException, DatabaseException{
+	public static Stage getTemplateInstance(int userID, String title, String description) throws ValidationException, DatabaseException{
 		Stage stage = new Stage(userID, title, description);
-		stage.isTemplate = true;
-		return databaseActionHandler.stageTemplateValidateAndCreate(stage);
+		stage.template = true;
+		return stage;
 	}
 
 	//TODO delete this method after finishing transition to database
@@ -174,11 +174,11 @@ public class Stage implements Completable {
 	}
 
 	public boolean isTemplate() {
-		return isTemplate;
+		return template;
 	}
 
-	public void setTemplate(boolean isTemplate) {
-		this.isTemplate = isTemplate;
+	public void setTemplate(boolean template) {
+		this.template = template;
 	}
 
 	//Tasks will be displayed in the order in which they are in the List
@@ -240,7 +240,7 @@ public class Stage implements Completable {
 		//iterate through task map to update with info from updatedTasks list
 		for(Task persistentTask : this.tasks){
 			Task taskWithNewInfo = updatedTasksMap.get(persistentTask.getTaskID());
-			persistentTask.updateData(taskWithNewInfo);
+			persistentTask.updateData(taskWithNewInfo);//TODO replace this with task.update()
 			//updateTaskData(persistentTask, taskWithNewInfo);
 		}
 
@@ -341,39 +341,30 @@ public class Stage implements Completable {
 		return null;
 	}
 
-/*	removed in place of static factory method
- *  @Override
-	public boolean saveNewInDatabase() throws ValidationException, DatabaseException {
-		if(this.validateForDatabase()){
-			databaseActionHandler.stageTemplateCreate(this);
-			return true;
-		}
-		
-		return false;
-	}*/
 
+	@Override
+	public void saveNew() throws ValidationException, DatabaseException{
+		Stage savedStage = databaseActionHandler.stageTemplateValidateAndCreate(this);
+		this.stageID = savedStage.getStageID();
+	}
 
-
-	public void updateInDatabase()  throws ValidationException, DatabaseException {
+	
+	@Override
+	public void update()  throws ValidationException, DatabaseException {
 		//if(this.validateForDatabase()){
 			databaseActionHandler.stageTemplateUpdate(this);
 		//}
 		
 	}
-
-	public boolean deleteFromDatabase() throws ValidationException, DatabaseException  {
+	@Override
+	public void delete() throws ValidationException, DatabaseException {
 		// TODO implement method
-		return false;
-	}
-/*
-	@Override
-	public boolean validateForDatabase() throws ValidationException, DatabaseException {
-		return databaseActionHandler.stageValidateNewName(title, userID);
+		
 	}
 
 	@Override
-	public boolean loadDataFromDatabase() throws ValidationException, DatabaseException {
-		return getInstanceFromDatabase(this.stageID) != null;
+	public List<Object> copy(Object o, int numberOfCopies) {
+		// TODO  implement method
+		return null;
 	}
-*/
 }

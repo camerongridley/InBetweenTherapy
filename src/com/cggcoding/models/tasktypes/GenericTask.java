@@ -1,16 +1,14 @@
 package com.cggcoding.models.tasktypes;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.DatabaseModel;
 import com.cggcoding.models.Task;
-import com.cggcoding.models.Updateable;
 
-public class GenericTask extends Task {
-
-	private GenericTask(){
-	}
+public class GenericTask extends Task implements DatabaseModel{
 
 	private GenericTask(int taskID, int userID) {
 		super(taskID, userID);
@@ -34,6 +32,7 @@ public class GenericTask extends Task {
 	public static GenericTask getInstanceByID(int taskID, int userID){
 		return new GenericTask(taskID, userID);
 	}
+	
 	public static GenericTask getInstanceWithoutTaskID(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			int taskOrder, boolean extraTask, boolean template){
 		return new GenericTask(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
@@ -56,22 +55,41 @@ public class GenericTask extends Task {
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
-	public static GenericTask saveGenericTemplateInDatabase(int userID, int taskTypeID, String title, String instructions, 
-			String resourceLink, boolean extraTask) throws DatabaseException, ValidationException{
-		GenericTask task = new GenericTask();
-		
-		return (GenericTask)task.saveGeneralDataForTemplateInDatabase(0, 0, userID, taskTypeID, 0, 
+	public static GenericTask getTemplateInstance(int userID, int taskTypeID, String title, String instructions, 
+			String resourceLink, boolean extraTask){
+		return new GenericTask(0, 0, userID, taskTypeID, 0, 
 				title, instructions, resourceLink, false, null, 0, extraTask, true);
 	}
 	
-	public boolean updateGeneralData() throws DatabaseException, ValidationException{
-		return super.updateGeneralData(this);
+	@Override
+	public void saveNew() throws DatabaseException, ValidationException{
+		super.saveNewGeneralDataInDatabase();
+		updateAdditionalData(); //this does nothing here but just putting in place for sake of consistency with other task types
 	}
 	
 	@Override
-	public boolean updateAdditionalData(Task taskWithNewData) {
+	public void update() throws DatabaseException, ValidationException{
+		super.updateGeneralDataInDatabase();
+		//for other tasks call update method for additional data
+	}
+	
+	@Override
+	public void delete() throws ValidationException, DatabaseException {
+		// TODO  implement method
+		
+	}
+
+	@Override
+	public List<Object> copy(Object o, int numberOfCopies) {
+		// TODO  implement method
+		return null;
+	}
+	
+	@Override
+	public boolean updateAdditionalData () {
 		return true;//there is no additional data in GenericTask to update
 	}
+
 	
 
 

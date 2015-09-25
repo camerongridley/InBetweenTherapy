@@ -81,7 +81,7 @@ public class EditTask extends HttpServlet {
 					switch(tempTask.getTaskTypeName()){
 					case ("GenericTask"):
 						GenericTask genericTask = (GenericTask)tempTask;
-						genericTask.updateGeneralData();
+						genericTask.update();
 					}
 					
 					break;

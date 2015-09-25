@@ -66,7 +66,8 @@ public class CreateStage extends HttpServlet {
 		                	throw new ValidationException("You must enter a stage name and description.");
 		                }
 
-		                Stage newStageTemplate = Stage.saveNewTemplateInDatabase(user.getUserID(), stageTitle, stageDescription);
+		                Stage newStageTemplate = Stage.getTemplateInstance(user.getUserID(), stageTitle, stageDescription);
+		                newStageTemplate.saveNew();
 
 		                request.setAttribute("stage", newStageTemplate);
 		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);

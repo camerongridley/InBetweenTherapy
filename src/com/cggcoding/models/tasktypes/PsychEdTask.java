@@ -1,11 +1,14 @@
 package com.cggcoding.models.tasktypes;
 
+import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.DatabaseModel;
 import com.cggcoding.models.Task;
-import com.cggcoding.models.Updateable;
 
+import java.util.List;
 import java.util.Random;
 
-public class PsychEdTask extends Task implements Updateable{
+public class PsychEdTask extends Task implements DatabaseModel{
 
 
 
@@ -30,7 +33,7 @@ public class PsychEdTask extends Task implements Updateable{
 		return new PsychEdTask(taskID, taskSetID, title, instructions);
 	}
 
-	@Override
+	//TODO DELETE this after db integration done - maybe move to update()
 	public boolean updateData(Task taskWithNewData) {
 		//update universal properties
 		this.setCompleted(taskWithNewData.isCompleted());
@@ -42,7 +45,31 @@ public class PsychEdTask extends Task implements Updateable{
 	}
 
 	@Override
-	public boolean updateAdditionalData(Task taskWithNewData) {
+	public boolean updateAdditionalData() {
 		return true;//no additional data to update
+	}
+
+	@Override
+	public void saveNew() throws ValidationException, DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update() throws ValidationException, DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void delete() throws ValidationException, DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Object> copy(Object o, int numberOfCopies) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

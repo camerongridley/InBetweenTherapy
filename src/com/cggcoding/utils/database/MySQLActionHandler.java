@@ -865,7 +865,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 
 	@Override
-	public TreatmentIssue treatmentIssueCreate(TreatmentIssue treatmentIssue) throws ValidationException, DatabaseException{
+	public TreatmentIssue treatmentIssueValidateAndCreate(TreatmentIssue treatmentIssue, int userID) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
@@ -873,22 +873,24 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
         	
-    		String sql = "INSERT INTO `cggcodin_doitright`.`treatment_issue` (`issue`, `treatment_issue_user_id_fk`) "
-            		+ "VALUES (?, ?)";
+        	if(treatmentIssueValidateNewName(cn, treatmentIssue.getTreatmentIssueName(), userID)){
+        		String sql = "INSERT INTO `cggcodin_doitright`.`treatment_issue` (`issue`, `treatment_issue_user_id_fk`) "
+                		+ "VALUES (?, ?)";
+            	
+                ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                
+                ps.setString(1, treatmentIssue.getTreatmentIssueName().trim());
+                ps.setInt(2, treatmentIssue.getUserID());
+
+                int success = ps.executeUpdate();
+                
+                generatedKeys = ps.getGeneratedKeys();
+       
+                while (generatedKeys.next()){
+                	treatmentIssue.setTreatmentIssueID(generatedKeys.getInt(1));
+                }
+        	}
         	
-            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            
-            ps.setString(1, treatmentIssue.getTreatmentIssueName().trim());
-            ps.setInt(2, treatmentIssue.getUserID());
-
-            int success = ps.executeUpdate();
-            
-            generatedKeys = ps.getGeneratedKeys();
-   
-            while (generatedKeys.next()){
-            	treatmentIssue.setTreatmentIssueID(generatedKeys.getInt(1));
-            }
-
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
@@ -912,8 +914,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @throws ValidationException 
 	 * @throws DatabaseException
 	 */
-	public boolean treatmentIssueValidateNewName(String issueName, int userID) throws ValidationException, DatabaseException{
-		Connection cn = null;
+	private boolean treatmentIssueValidateNewName(Connection cn, String issueName, int userID) throws ValidationException, DatabaseException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
@@ -937,7 +938,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         } finally {
 			DbUtils.closeQuietly(issueCount);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
 		}
 
         if(comboExists > 0){

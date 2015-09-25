@@ -8,7 +8,7 @@ import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
 
-public abstract class Task implements Completable, Updateable{
+public abstract class Task implements Completable{
 	private int taskID;
 	private int stageID;
 	private int userID;
@@ -182,32 +182,24 @@ public abstract class Task implements Completable, Updateable{
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
-	protected Task saveGeneralDataForTemplateInDatabase(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, 
-			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,
-			boolean extraTask, boolean template) throws DatabaseException, ValidationException{
-		this.taskID = taskID;
-		this.stageID = stageID;
-		this.userID = userID;
-		this.taskTypeID = taskTypeID;
-		this.parentTaskID = parentTaskID;
-		this.title = title;
-		this.instructions = instructions;
-		this.resourceLink = resourceLink;
-		this.completed = completed;
-		this.dateCompleted = dateCompleted;
-		this.taskOrder = taskOrder;
-		this.extraTask = extraTask;
-		this.template = template;
-		
-		return databaseActionHandler.taskTemplateValidateAndCreate(this);
+	protected Task saveNewGeneralDataInDatabase() throws DatabaseException, ValidationException{
+		Task savedTask = databaseActionHandler.taskTemplateValidateAndCreate(this);
+		this.taskID = savedTask.getTaskID();
+		return savedTask;
 	}
 	
-	protected boolean updateGeneralData(Task task) throws DatabaseException, ValidationException{
-		return databaseActionHandler.taskGenericUpdate(task);
+	//TODO delete argument and pass "this" to DAO?
+	protected boolean updateGeneralDataInDatabase() throws DatabaseException, ValidationException{
+		return databaseActionHandler.taskGenericUpdate(this);
 	}
 	
-	//in place so can be overridden by concrete classes to use for subclass-specific data
-	public abstract boolean updateAdditionalData(Task taskWithNewData);
+
+	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
+	 * @param taskWithNewData
+	 * @return true if update successful, false if error
+	 */
+	public abstract boolean updateAdditionalData();
+	
 	
 	public int getTaskID(){
 		return taskID;
@@ -345,8 +337,7 @@ public abstract class Task implements Completable, Updateable{
 		return this.getClass().getSimpleName();
 	}
 
-	//TODO Remove this and consider eliminating Updateable interface if using abstract updateGeneralData - though Updateable is being used by Stage and TreatmentPlan...
-	@Override
+	//TODO DELETE after done integrating db - a remnant of Updateable interface
 	public boolean updateData(Task taskWithNewData) {
 		return false;
 	}

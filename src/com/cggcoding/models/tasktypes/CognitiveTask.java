@@ -1,11 +1,14 @@
 package com.cggcoding.models.tasktypes;
 
+import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.DatabaseModel;
 import com.cggcoding.models.Task;
-import com.cggcoding.models.Updateable;
 
+import java.util.List;
 import java.util.Random;
 
-public class CognitiveTask extends Task implements Updateable{
+public class CognitiveTask extends Task implements DatabaseModel{
 	private String automaticThought;
 	private String alternativeThought;
 	private int preSUDS;
@@ -67,8 +70,7 @@ public class CognitiveTask extends Task implements Updateable{
 	}
 
 
-	//TODO Do I keep this DB call here or go back to having it in Stage?
-	@Override
+	//TODO DELETE method after done with db integration - move to update()?
 	public boolean updateData(Task taskWithNewData) {
 		//update universal properties
 		this.setCompleted(taskWithNewData.isCompleted());
@@ -88,9 +90,33 @@ public class CognitiveTask extends Task implements Updateable{
 
 
 	@Override
-	public boolean updateAdditionalData(Task taskWithNewData) {
+	public boolean updateAdditionalData() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void saveNew() throws ValidationException, DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update() throws ValidationException, DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void delete() throws ValidationException, DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Object> copy(Object o, int numberOfCopies) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -74,7 +74,7 @@ public class EditStage extends HttpServlet {
 			            	Stage stage = DefaultDatabaseCalls.getDefaultStageByID(stageID);
 			            	stage.setTitle(stageTitle);
 			            	stage.setDescription(stageDescription);
-			            	stage.updateInDatabase();
+			            	stage.update();
 			            	
 			            	request.setAttribute("selectedDefaultStage", stage);
 			            	

@@ -48,7 +48,7 @@ public class CreateTask extends HttpServlet {
 		String forwardTo = "/index.jsp";
 		
 		//performed here to get parameters for all tasks run below
-		Task tempTask = ParameterUtils.getTaskParametersFromRequest(request, userID);
+		Task tempGeneralDataTask = ParameterUtils.getTaskParametersFromRequest(request, userID);
 
 		try {
 			//put user-independent attributes acquired from database in the request
@@ -57,24 +57,25 @@ public class CreateTask extends HttpServlet {
 			if(user.hasRole("admin")){
 				switch(requestedAction){
 				case ("create-task-template-start"):
-					tempTask.setTemplate(true);
+					tempGeneralDataTask.setTemplate(true);
 					//set tempTask in request so page knows value of isTemplate
-					request.setAttribute("task", tempTask);
+					request.setAttribute("task", tempGeneralDataTask);
 					forwardTo = "/jsp/treatment-plans/task-create.jsp";
 					break;
 				case ("task-add-info"):
-					if(tempTask.isTemplate()==true){
-						tempTask = ParameterUtils.getTaskParametersFromRequest(request, userID);
-						GenericTask.saveGenericTemplateInDatabase(user.getUserID(), tempTask.getTaskTypeID(), tempTask.getTitle(), tempTask.getInstructions(), tempTask.getResourceLink(), tempTask.isExtraTask());//TODO confirm this is the best set of parameters for this factory method
+					if(tempGeneralDataTask.isTemplate()==true){
+						tempGeneralDataTask = ParameterUtils.getTaskParametersFromRequest(request, userID);
+						GenericTask genericTask = GenericTask.getTemplateInstance(user.getUserID(), tempGeneralDataTask.getTaskTypeID(), tempGeneralDataTask.getTitle(), tempGeneralDataTask.getInstructions(), tempGeneralDataTask.getResourceLink(), tempGeneralDataTask.isExtraTask());//TODO confirm this is the best set of parameters for this factory method
+						genericTask.saveNew();
 						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
 					}else{
 						//code for non-template/clientTask creation and editing
 					}
 					break;
 				case ("edit-task-template-start"):
-					tempTask.setTemplate(true);
+					tempGeneralDataTask.setTemplate(true);
 					//set tempTask in request so page knows value of isTemplate
-					request.setAttribute("task", tempTask);
+					request.setAttribute("task", tempGeneralDataTask);
 					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				}
@@ -82,7 +83,7 @@ public class CreateTask extends HttpServlet {
 			
 		} catch (DatabaseException | ValidationException e) {
 			//put in temporary task object so values can be saved in inputs after error
-			request.setAttribute("task", tempTask);
+			request.setAttribute("task", tempGeneralDataTask);
 			//request.setAttribute("hasSubtasks", hasSubtasks);
 			request.setAttribute("errorMessage", e.getMessage());
 
