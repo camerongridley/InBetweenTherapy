@@ -53,6 +53,8 @@ public class CreateStage extends HttpServlet {
 		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 		String stageTitle = request.getParameter("stageTitle");
     	String stageDescription = request.getParameter("stageDescription");
+    	int stageOrder = ParameterUtils.parseIntParameter(request, "stageOrder");
+    	boolean template = ParameterUtils.getBooleanParameter(request, "template");
     	String newStageGoal =request.getParameter("newStageGoal");
 		
 		
@@ -75,7 +77,7 @@ public class CreateStage extends HttpServlet {
 		                	throw new ValidationException("You must enter a stage name and description.");
 		                }
 
-		                Stage newStageTemplate = Stage.getInstanceWithoutID(user.getUserID(), treatmentPlanID, stageTitle, stageDescription);
+		                Stage newStageTemplate = Stage.getInstanceWithoutID(treatmentPlanID, user.getUserID(), stageTitle, stageDescription, stageOrder, template);
 		                newStageTemplate.setTreatmentPlanID(ParameterUtils.parseIntParameter(request, "treatmentPlanID"));
 		                newStageTemplate.saveNew();
 

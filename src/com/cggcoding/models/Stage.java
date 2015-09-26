@@ -23,9 +23,11 @@ public class Stage implements Completable, DatabaseModel {
 	private List<StageGoal> goals;
 	private boolean inProgress;//TODO implement inProgress - add logic to update it appropriately - dynamic or simple?
 	private boolean template;
+	
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 
-	private Stage (int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder){
+/*	//TODO Delete?
+ * 	private Stage (int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder){
 		this.stageID = stageID;
 		this.treatmentPlanID = treatmentPlanID;
 		this.userID = userID;
@@ -39,22 +41,23 @@ public class Stage implements Completable, DatabaseModel {
 		this.goals = new ArrayList<>();
 		//this.inProgress = false;
 		this.template = false;
-	}
+	}*/
 
-	private Stage (int userID, int treatmentPlanID, String title, String description){
-		this.userID = userID;
+	private Stage (int treatmentPlanID, int userID, String title, String description, int stageOrder, boolean template){
 		this.stageID = 0;
+		this.treatmentPlanID = treatmentPlanID;
+		this.userID = userID;
 		this.title = title;
 		this.description = description;
-		this.tasks = new ArrayList<>();
+		this.stageOrder = stageOrder;
+		this.tasks = new ArrayList<>();;
 		this.extraTasks = new ArrayList<>();
 		this.completed = false;
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
 		//this.inProgress = false;
-		this.template = false;
+		this.template = template;
 	}
-	
 	
 	//Full constructor - asks for every argument stage has
 	private Stage(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
@@ -75,26 +78,51 @@ public class Stage implements Completable, DatabaseModel {
 		this.template = template;
 	}
 
+	/**Gets a complete instance of Stage and asks for every argument in class
+	 * @param stageID id of this stage
+	 * @param treatmentPlanID id of the parent TreatmentPlan
+	 * @param userID is of the user who owns this
+	 * @param title Title of the stage
+	 * @param description Description of the stage
+	 * @param stageOrder Order of the stage within the parent TreatmentPlan
+	 * @param tasks List of tasks within this stage
+	 * @param extraTasks List of extra tasks within this stage
+	 * @param completed True if all tasks in the stage have been completed
+	 * @param percentComplete Percentage stage is complete based on number of tasks completed
+	 * @param goals List of the goals designated for this stage
+	 * @param template True if this is a Stage template and therefore has no concrete parent TreatmentPlan
+	 * @return Stage object
+	 */
 	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean template){
 		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, template);
 	}
 	
-	public static Stage getInstanceWithoutID(int userID, int treatmentPlanID, String title, String description) throws ValidationException, DatabaseException{
-		Stage stage = new Stage(userID, treatmentPlanID, title, description);
+	/**For use when creating a new Stage. As such, these are the only parameters that could be available for saving to the database.  
+	 * Other parameters such as tasks, extraTasks, and goals are Lists that are added to the stage once it has already been created and 
+	 * has had a stageID generated. At that point one should use the regular getInstance() method.
+	 * @param treatmentPlanID
+	 * @param userID
+	 * @param title
+	 * @param description
+	 * @param stageOrder
+	 * @param template
+	 * @return
+	 */
+	public static Stage getInstanceWithoutID(int treatmentPlanID, int userID, String title, String description, int stageOrder, boolean template) {
+		Stage stage = new Stage(treatmentPlanID, userID, title, description, stageOrder, template);
 		stage.template = true;
 		return stage;
 	}
 
 	//TODO delete this method after finishing transition to database
-	public static Stage getInstanceAndCreateID(int userID, int treatmentPlanID, String title, String description, int stageOrder){
+	/*public static Stage getInstanceAndCreateID(int userID, int treatmentPlanID, String title, String description, int stageOrder){
 		int stageID = Math.abs(new Random().nextInt(10000));
 		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder);
 		
-	}
+	}*/
 	
-	//TODO replace this with load()?
-	public static Stage getInstanceFromDatabase(int stageID) throws DatabaseException, ValidationException{
+	public static Stage load(int stageID) throws DatabaseException, ValidationException{
 		return databaseActionHandler.stageLoad(stageID);
 	}
 	

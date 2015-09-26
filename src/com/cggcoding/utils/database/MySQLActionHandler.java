@@ -333,9 +333,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        
         try {
         	cn= getConnection();
-			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE (((stage.title)=?) AND ((stage.stage_user_id_fk)=?))");
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE ((title=?) AND (stage_treatment_plan_id_fk=?) AND (stage_user_id_fk=?))");
 			ps.setString(1, newStage.getTitle().trim());
-			ps.setInt(2, newStage.getUserID());
+			ps.setInt(2, newStage.getTreatmentPlanID());
+			ps.setInt(3, newStage.getUserID());
 
 			stageCount = ps.executeQuery();
 
