@@ -91,19 +91,19 @@ public class CognitiveTask extends Task implements DatabaseModel{
 
 	@Override
 	public boolean updateAdditionalData() {
-		// TODO Auto-generated method stub
+		// TODO implement method
 		return false;
 	}
 
 	@Override
 	public void saveNew() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
+		// TODO implement method
 		
 	}
 
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
+		// TODO implement method
 		
 	}
 
@@ -115,7 +115,7 @@ public class CognitiveTask extends Task implements DatabaseModel{
 
 	@Override
 	public List<Object> copy(Object o, int numberOfCopies) {
-		// TODO Auto-generated method stub
+		// TODO implement method
 		return null;
 	}
 

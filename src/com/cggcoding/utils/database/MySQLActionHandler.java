@@ -770,7 +770,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
 	}
 	
-	private boolean taskValidate(Connection cn, Task newTask) throws ValidationException{
+	private boolean taskValidate(Connection cn, Task newTask) throws ValidationException, DatabaseException{
 
 		if(newTask.getTitle() == null || newTask.getTitle().isEmpty() || 
 				newTask.getInstructions() == null || newTask.getInstructions().isEmpty() ||
@@ -778,7 +778,36 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 			throw new ValidationException(ErrorMessages.TASK_MISSING_INFO);
 		}
 		
-		return true;
+		PreparedStatement ps = null;
+        ResultSet stageCount = null;
+        int comboExists = 0;
+	        
+        try {
+        	cn= getConnection();
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM task_generic WHERE ((task_generic.title=?) AND (task_generic_stage_id_fk=?))");
+			ps.setString(1, newTask.getTitle().trim());
+			ps.setInt(2, newTask.getStageID());
+
+			stageCount = ps.executeQuery();
+
+			while (stageCount.next()){
+			    comboExists = stageCount.getInt("COUNT(*)");
+			}
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(stageCount);
+			DbUtils.closeQuietly(ps);
+		}
+        
+		if(comboExists > 0){
+			throw new ValidationException(ErrorMessages.TASK_TITLE_EXISTS_FOR_STAGE);
+		} else {
+			return true;
+		}
+		
 	}
 	
 	/**Inserts a Generic Task template into the database.  Since it is a template, it does not insert for the 
