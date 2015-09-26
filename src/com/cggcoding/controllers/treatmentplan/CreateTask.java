@@ -56,7 +56,7 @@ public class CreateTask extends HttpServlet {
 			
 			if(user.hasRole("admin")){
 				switch(requestedAction){
-				case ("create-task-template-start"):
+				case ("create-task-start"):
 					tempGeneralDataTask.setTemplate(true);
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", tempGeneralDataTask);

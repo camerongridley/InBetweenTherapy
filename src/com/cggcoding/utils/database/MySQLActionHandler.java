@@ -177,6 +177,38 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return adminIDList;
     }
 	
+    public TreatmentPlan treatmentPlanLoadBasic(int treatmentPlanID) throws DatabaseException{
+    	Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet planInfo = null;
+        TreatmentPlan plan = null;
+        
+        try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT * from treatment_plan WHERE treatment_plan_id=?");
+            ps.setInt(1, treatmentPlanID);
+
+
+            planInfo = ps.executeQuery();
+
+            while (planInfo.next()){
+            	plan = TreatmentPlan.getInstanceBasic(planInfo.getInt("treatment_plan_id"), planInfo.getInt("treatment_plan_user_id_fk"), 
+            			planInfo.getString("title"), planInfo.getString("description"), planInfo.getInt("treatment_plan_treatment_issue_id_fk"));
+            }
+            
+
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(planInfo);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+
+        return plan;
+    }
+    
     @Override
     public TreatmentPlan treatmentPlanValidateAndCreateBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException{
     	Connection cn = null;
@@ -269,7 +301,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	
-	public Stage stageTemplateValidateAndCreate(Stage stageTemplate) throws ValidationException, DatabaseException{
+	public Stage stageValidateAndCreate(Stage stageTemplate) throws ValidationException, DatabaseException{
 		Connection cn = null;
 
         try {
@@ -378,16 +410,17 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
 
-    		String sql = "INSERT INTO `cggcodin_doitright`.`stage` (`stage_user_id_fk`, `title`, `description`, `stage_order`, `is_template`) "
-            		+ "VALUES (?, ?, ?, ?, ?)";
+    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, title, description, stage_order, is_template) "
+            		+ "VALUES (?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             ps.setInt(1, newStageTemplate.getUserID());
-            ps.setString(2, newStageTemplate.getTitle().trim());
-            ps.setString(3, newStageTemplate.getDescription().trim());
-            ps.setInt(4, newStageTemplate.getStageOrder());
-            ps.setInt(5, 1);
+            ps.setInt(2, newStageTemplate.getTreatmentPlanID());
+            ps.setString(3, newStageTemplate.getTitle().trim());
+            ps.setString(4, newStageTemplate.getDescription().trim());
+            ps.setInt(5, newStageTemplate.getStageOrder());
+            ps.setInt(6, 1);
 
             int success = ps.executeUpdate();
             

@@ -10,7 +10,7 @@ public class ParameterUtils {
 	public ParameterUtils() {
 
 	}
-	/** Checks specified int parameter in request. If it is null or empty returns 0, otherwise parses the paran string and return the int value
+	/** Checks specified int parameter in request. If it is null or empty returns 0, otherwise parses the parameter string and return the int value
 	 * @param request HttpServletRequest
 	 * @param intParameterName the parameter name for a variable of type int
 	 * @return int value of parameter or 0 if null or empty

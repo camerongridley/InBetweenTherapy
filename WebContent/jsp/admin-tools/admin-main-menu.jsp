@@ -73,7 +73,7 @@
 					<button type="submit" class="btn btn-primary" >Create
 						Task Template</button>
 				</div>
-				<input type="hidden" name="requestedAction" value="create-task-template-start">
+				<input type="hidden" name="requestedAction" value="create-task-start">
 			</form>
 			</p>
 			<p>

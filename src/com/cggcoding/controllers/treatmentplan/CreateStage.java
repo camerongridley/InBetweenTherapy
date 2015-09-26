@@ -13,8 +13,10 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Stage;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
 
@@ -48,6 +50,7 @@ public class CreateStage extends HttpServlet {
 		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("requestedAction");
 		String stageIDAsString = request.getParameter("stageID");
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 		String stageTitle = request.getParameter("stageTitle");
     	String stageDescription = request.getParameter("stageDescription");
     	String newStageGoal =request.getParameter("newStageGoal");
@@ -59,19 +62,26 @@ public class CreateStage extends HttpServlet {
 								
 				switch (requestedAction){
 					case "stage-create-start":
+						//get the TreatmentPlan for this stage and put in request
+		                loadTreatmentPlanFromDatabaseIntoRequest(request, treatmentPlanID);
+		                
 						forwardTo = "/jsp/treatment-plans/stage-create.jsp";
 						break;
 		            case "stage-create-title":
+		            	//get the TreatmentPlan for this stage and put in request
+		                loadTreatmentPlanFromDatabaseIntoRequest(request, treatmentPlanID);
+		                
 		                if(stageTitle.isEmpty() || stageDescription.isEmpty()){
 		                	throw new ValidationException("You must enter a stage name and description.");
 		                }
 
-		                Stage newStageTemplate = Stage.getTemplateInstance(user.getUserID(), stageTitle, stageDescription);
+		                Stage newStageTemplate = Stage.getInstanceWithoutID(user.getUserID(), treatmentPlanID, stageTitle, stageDescription);
+		                newStageTemplate.setTreatmentPlanID(ParameterUtils.parseIntParameter(request, "treatmentPlanID"));
 		                newStageTemplate.saveNew();
 
 		                request.setAttribute("stage", newStageTemplate);
 		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
-		                forwardTo = "/jsp/treatment-plans/stage-create-details.jsp";
+		                forwardTo = "/jsp/treatment-plans/task-create.jsp";
 		                break;
 		            case "stage-add-goal":
 		            	//Stage stageWithNewGoal = new Stage()
@@ -80,7 +90,7 @@ public class CreateStage extends HttpServlet {
 
 		                forwardTo = "/jsp/treatment-plans/stage-create-details.jsp";
 		            	break;
-		            case "stage-create-goals-and-tasks":
+		            case "stage-add-tasks":
 		            	
 		            	break;
 		            /*case "stage-edit-start" :
@@ -117,7 +127,7 @@ public class CreateStage extends HttpServlet {
 			
 			
 		} catch (ValidationException | DatabaseException e){
-			//in case of error and user is sent back to page - re-populate the forms
+			//in case of error and user is sent back to page - to maintain data and re-populate the forms
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
 			request.setAttribute("errorMessage", e.getMessage());
@@ -128,6 +138,11 @@ public class CreateStage extends HttpServlet {
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 		
+	}
+	
+	private void loadTreatmentPlanFromDatabaseIntoRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException{
+		TreatmentPlan treatmentPlan = TreatmentPlan.loadBasic(treatmentPlanID);
+        request.setAttribute("treatmentPlan", treatmentPlan);
 	}
 
 }

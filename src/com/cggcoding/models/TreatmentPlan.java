@@ -35,7 +35,7 @@ public class TreatmentPlan implements DatabaseModel{
 		this.activeViewStageIndex = 0;
 	}
 
-	public TreatmentPlan(String title, int userID, String description, int txIssueID){
+	public TreatmentPlan(int userID, String title, String description, int txIssueID){
 		this.title = title;
 		this.userID = userID;
 		this.description = description;
@@ -46,7 +46,11 @@ public class TreatmentPlan implements DatabaseModel{
 	}
 	
 	public static TreatmentPlan getInstanceWithoutID(String title, int userID, String description, int txIssueID){
-		return new TreatmentPlan(title, userID, description, txIssueID);
+		return new TreatmentPlan(userID, title, description, txIssueID);
+	}
+	
+	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int treatmentIssueID){
+		return new TreatmentPlan(treatmentPlanID, userID, title, description, treatmentIssueID);
 	}
 
 	//TODO update with proper logic once app is connected to database
@@ -198,4 +202,7 @@ public class TreatmentPlan implements DatabaseModel{
 		return null;
 	}
 
+	public static TreatmentPlan loadBasic(int treatmentPlanID) throws DatabaseException{
+		return databaseActionHandler.treatmentPlanLoadBasic(treatmentPlanID);
+	}
 }

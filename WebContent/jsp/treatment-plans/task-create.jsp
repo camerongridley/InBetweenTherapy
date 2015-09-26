@@ -8,7 +8,7 @@
 
 <div class="page-header">
 	<h1>Create A Task</h1>
-	<h2>Subheading</h2>
+	<h2>Stage: ${stage.title}</h2>
 </div>
   
 <c:import url="/jsp/message-modal.jsp"/>
@@ -16,7 +16,9 @@
 <form class="form-horizontal" action="./CreateTask" method="POST">
 		<input type="hidden" name="requestedAction" value="task-add-info">
 		<input type="hidden" name="taskID" value="${task.taskID }">
-		<input type="hidden" name="stageID" value="${task.stageID }">
+		<input type="hidden" name="stageID" value="${stage.stageID }">
+		
+		
 		<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">

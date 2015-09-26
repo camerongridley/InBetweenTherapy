@@ -32,12 +32,14 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 
 	TreatmentPlan treatmentPlanValidateAndCreateBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
+	
+	TreatmentPlan treatmentPlanLoadBasic(int treatmentPlanID) throws DatabaseException;
 
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
 	//**************************************************************************************************
 	
-	Stage stageTemplateValidateAndCreate(Stage stageTemplate) throws ValidationException, DatabaseException;
+	Stage stageValidateAndCreate(Stage stage) throws ValidationException, DatabaseException;
 	
 	/* Removed so could make them private and wrap in stageTemplateValidateAndCreate and reduce number of connections opened
 	private boolean stageValidateNewName(Connection cn, Stage newStage) throws ValidationException, DatabaseException;

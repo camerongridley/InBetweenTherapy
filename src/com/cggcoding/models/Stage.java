@@ -25,8 +25,9 @@ public class Stage implements Completable, DatabaseModel {
 	private boolean template;
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 
-	private Stage (int stageID, int userID, String title, String description, int stageOrder){
+	private Stage (int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder){
 		this.stageID = stageID;
+		this.treatmentPlanID = treatmentPlanID;
 		this.userID = userID;
 		this.title = title;
 		this.description = description;
@@ -40,7 +41,7 @@ public class Stage implements Completable, DatabaseModel {
 		this.template = false;
 	}
 
-	private Stage (int userID, String title, String description){
+	private Stage (int userID, int treatmentPlanID, String title, String description){
 		this.userID = userID;
 		this.stageID = 0;
 		this.title = title;
@@ -54,6 +55,8 @@ public class Stage implements Completable, DatabaseModel {
 		this.template = false;
 	}
 	
+	
+	//Full constructor - asks for every argument stage has
 	private Stage(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals,
 			boolean template) {
@@ -68,7 +71,7 @@ public class Stage implements Completable, DatabaseModel {
 		this.completed = completed;
 		this.percentComplete = percentComplete;
 		this.goals = goals;
-		//this.inProgress = inProgress;  TODO - delete from constructor if this propery isn't in the database model so maybe remove as a class member and just make as a dynamic method
+		//this.inProgress = inProgress;  TODO - delete from constructor if this property isn't in the database model so maybe remove as a class member and just make as a dynamic method
 		this.template = template;
 	}
 
@@ -77,25 +80,38 @@ public class Stage implements Completable, DatabaseModel {
 		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, template);
 	}
 	
-	public static Stage getTemplateInstance(int userID, String title, String description) throws ValidationException, DatabaseException{
-		Stage stage = new Stage(userID, title, description);
+	public static Stage getInstanceWithoutID(int userID, int treatmentPlanID, String title, String description) throws ValidationException, DatabaseException{
+		Stage stage = new Stage(userID, treatmentPlanID, title, description);
 		stage.template = true;
 		return stage;
 	}
 
 	//TODO delete this method after finishing transition to database
-	public static Stage getInstanceAndCreateID(int userID, String title, String description, int stageOrder){
+	public static Stage getInstanceAndCreateID(int userID, int treatmentPlanID, String title, String description, int stageOrder){
 		int stageID = Math.abs(new Random().nextInt(10000));
-		return new Stage(stageID, userID, title, description, stageOrder);
+		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder);
 		
 	}
 	
+	//TODO replace this with load()?
 	public static Stage getInstanceFromDatabase(int stageID) throws DatabaseException, ValidationException{
 		return databaseActionHandler.stageLoad(stageID);
 	}
 	
+	public int getStageID() {
+		return stageID;
+	}
+	
 	public void setStageID(int stageID) {
 		this.stageID = stageID;
+	}
+	
+	public int getTreatmentPlanID() {
+		return treatmentPlanID;
+	}
+
+	public void setTreatmentPlanID(int treatmentPlanID) {
+		this.treatmentPlanID = treatmentPlanID;
 	}
 
 	public int getUserID() {
@@ -142,10 +158,6 @@ public class Stage implements Completable, DatabaseModel {
 		}
 
 		return returnMe.getTaskTypeName();
-	}
-
-	public int getStageID() {
-		return stageID;
 	}
 
 	public String getTitle() {
@@ -344,7 +356,7 @@ public class Stage implements Completable, DatabaseModel {
 
 	@Override
 	public void saveNew() throws ValidationException, DatabaseException{
-		Stage savedStage = databaseActionHandler.stageTemplateValidateAndCreate(this);
+		Stage savedStage = databaseActionHandler.stageValidateAndCreate(this);
 		this.stageID = savedStage.getStageID();
 	}
 

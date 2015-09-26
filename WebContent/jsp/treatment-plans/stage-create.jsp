@@ -7,14 +7,16 @@
 <c:import url="/jsp/header.jsp" />
 
     <div class="page-header">
-        <h1>Heading</h1>
-        <h2>Subheading</h2>
+        <h1>Create Stage</h1>
+        <h2>Treatment Plan: ${treatmentPlan.title} (${treatmentPlan.treatmentPlanID })</h2>
     </div>
     
 	<c:import url="/jsp/message-modal.jsp"/>
 
 	<form class="form-horizontal" action="./CreateStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-create-title">
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
             <div class="col-sm-10">
