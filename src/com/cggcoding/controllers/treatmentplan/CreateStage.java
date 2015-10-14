@@ -143,7 +143,7 @@ public class CreateStage extends HttpServlet {
 	}
 	
 	private void loadTreatmentPlanFromDatabaseIntoRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException{
-		TreatmentPlan treatmentPlan = TreatmentPlan.loadBasic(treatmentPlanID);
+		TreatmentPlan treatmentPlan = TreatmentPlan.loadWithEmptyLists(treatmentPlanID);
         request.setAttribute("treatmentPlan", treatmentPlan);
 	}
 

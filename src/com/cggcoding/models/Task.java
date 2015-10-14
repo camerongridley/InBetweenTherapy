@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.tasktypes.GenericTask;
+import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -164,6 +166,18 @@ public abstract class Task implements Completable{
 		this.template = template;
 	}
 	
+	public static Task load(int taskID, int taskTypeID) throws DatabaseException{
+		switch(taskTypeID){
+		case 1: //taskTypeID for GenericTask 
+			return GenericTask.load(taskID);
+
+		case 2: //taskTypeID for TwoTextBoxesTask
+			return TwoTextBoxesTask.load(taskID);
+		}
+		
+		return null;
+	}
+	
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
 	 * @param taskID
 	 * @param stageID
@@ -188,9 +202,9 @@ public abstract class Task implements Completable{
 		return savedTask;
 	}
 	
-	//TODO delete argument and pass "this" to DAO?
-	protected boolean updateGeneralDataInDatabase() throws DatabaseException, ValidationException{
-		return databaseActionHandler.taskGenericUpdate(this);
+	protected void updateDataInDatabase() throws DatabaseException, ValidationException{
+		databaseActionHandler.taskGenericUpdate(this);
+		updateAdditionalData();
 	}
 	
 
@@ -198,8 +212,9 @@ public abstract class Task implements Completable{
 	 * @param taskWithNewData
 	 * @return true if update successful, false if error
 	 */
-	public abstract boolean updateAdditionalData();
+	protected abstract boolean updateAdditionalData();
 	
+	protected abstract void loadAdditionalData();
 	
 	public int getTaskID(){
 		return taskID;
@@ -342,9 +357,6 @@ public abstract class Task implements Completable{
 		return false;
 	}
 	
-	private void transferDataToThisTask(Task task){
-		
-	}
 	
 
 }

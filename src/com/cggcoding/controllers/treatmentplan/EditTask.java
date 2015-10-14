@@ -74,7 +74,8 @@ public class EditTask extends HttpServlet {
 					if(selectedTaskID == 0){
 						throw new ValidationException(ErrorMessages.TASK_INVALID_ID);
 					}
-					request.setAttribute("task", DefaultDatabaseCalls.getGenericTaskByID(selectedTaskID));
+					
+					request.setAttribute("task", DefaultDatabaseCalls.getTaskByID(selectedTaskID));
 					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-update"):

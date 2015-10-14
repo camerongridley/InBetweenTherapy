@@ -26,9 +26,6 @@
 					</c:forEach>
 			</select>
 		</div>
-		<div class="col-sm-2">
-			<button type="submit" class="btn btn-primary">Load</button>
-		</div>
 	</div>	
 <hr>
 </form>
@@ -89,5 +86,12 @@
         </div>
     </form>
 	
+	<script>
+	$(function() {
+	    $('#defaultTaskListID').change(function() {
+	    	this.form.submit();
+	    });
+	});
+	</script>
 
 <c:import url="/jsp/footer.jsp" />

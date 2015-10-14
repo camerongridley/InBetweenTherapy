@@ -14,6 +14,7 @@ import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
@@ -35,16 +36,34 @@ public class EditStage extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		User user = (User)request.getSession().getAttribute("user");
+		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		if(user.hasRole("admin")){
+			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+			int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+			int taskID = ParameterUtils.parseIntParameter(request, "taskID");
+			
+			Stage stage;
+			try {
+				stage = Stage.load(stageID);
+				request.setAttribute("stage", stage);
+			} catch (DatabaseException | ValidationException e) {
+				request.setAttribute("errorMessage", e.getMessage());
+				e.printStackTrace();
+			}
+			
+			
+			request.getRequestDispatcher("/jsp/treatment-plans/stage-edit.jsp").forward(request, response);
+		}
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		User user = (User)request.getSession().getAttribute("user");
 		HttpSession session = request.getSession();
+		User user = (User)session.getAttribute("user");
 		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("requestedAction");
 		String stageIDAsString = request.getParameter("stageID");
@@ -53,17 +72,18 @@ public class EditStage extends HttpServlet {
 		
 		
 		try{
+			request.setAttribute("defaultStageList", DefaultDatabaseCalls.getDefaultStages());
+			
 			if(user.hasRole("admin")){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								
 				switch (requestedAction){
 		            case "stage-edit-start" :
-		            	session.setAttribute("defaultStageList", DefaultDatabaseCalls.getDefaultStages());
 		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-select-stage" :
 		            	int selectedDefaultStageID = Integer.parseInt(request.getParameter("selectedDefaultStageID"));
-		            	request.setAttribute("selectedDefaultStage", DefaultDatabaseCalls.getDefaultStageByID(selectedDefaultStageID));
+		            	request.setAttribute("stage", DefaultDatabaseCalls.getDefaultStageByID(selectedDefaultStageID));
 		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-name" :
@@ -76,7 +96,7 @@ public class EditStage extends HttpServlet {
 			            	stage.setDescription(stageDescription);
 			            	stage.update();
 			            	
-			            	request.setAttribute("selectedDefaultStage", stage);
+			            	request.setAttribute("stage", stage);
 			            	
 			            	forwardTo = "/jsp/treatment-plans/stage-edit-goals.jsp";
 		            	}

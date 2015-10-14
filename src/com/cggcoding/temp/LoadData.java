@@ -161,9 +161,11 @@ public class LoadData extends HttpServlet {
 	}
 
 	private TreatmentPlan buildDefaultEDPlan(User user){
-		TreatmentPlan treatmentPlan = new TreatmentPlan(0,user.getUserID(), "ED", "Erectile dysfunction", 0);
+		TreatmentPlan treatmentPlan = null;//new TreatmentPlan(0,user.getUserID(), "ED", "Erectile dysfunction", 0);
 
-		//create stages
+		/*
+		 * 
+		 * //create stages
 		Stage psychEdStage = Stage.getInstanceAndCreateID(user.getUserID(), treatmentPlan.getTreatmentPlanID(), "PsychoEducation", "Important concepts to learn about the problem you are experiencing.  Understanding some of these core concept can help you feel confident about the treatment strategies implemented here.", 0);
 		psychEdStage.setGoals(new ArrayList<>(Arrays.asList(StageGoal.getInstance(1, psychEdStage.getStageID(), "Have a better understanding of the human sexual response."), StageGoal.getInstance(2, psychEdStage.getStageID(),"Learned about common myths of male sexuality."))));
 
@@ -221,6 +223,8 @@ public class LoadData extends HttpServlet {
 		treatmentPlan.addStage(relaxStage);
 		treatmentPlan.addStage(cognitiveStage);
 		treatmentPlan.addStage(relationalStage);
+		
+		*/
 
 		return treatmentPlan;
 	}

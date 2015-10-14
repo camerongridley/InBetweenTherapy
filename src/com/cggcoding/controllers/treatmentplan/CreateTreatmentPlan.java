@@ -7,11 +7,14 @@ import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.utils.CommonServletFunctions;
+import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -32,16 +35,19 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession();
+		String requestedAction = request.getParameter("requestedAction");
+    	String path = request.getParameter("path");
+    	request.setAttribute("path", path);
+		
+		HttpSession session = request.getSession();
     	User user = (User)session.getAttribute("user");
     	String forwardTo = "index.jsp";
-    	String requestedAction = request.getParameter("requestedAction");
-    	String planName = "";
-    	String planDescription = "";
-    	String defaultIssueIDAsString = null;
-    	String newDefaultIssueName = null;
-    	String existingCustomIssueIDAsString = null;
-    	String newCustomIssueName = null;
+    	String planTitle = request.getParameter("planTitle");
+    	String planDescription = request.getParameter("planDescription");
+    	int selectedDefaultIssueID = ParameterUtils.parseIntParameter(request, "defaultTreatmentIssue");
+    	int selectedCustomIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
+
+    	TreatmentPlan treatmentPlan = null;
     	
     	try {
 			if(user.hasRole("client")){
@@ -52,68 +58,73 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 				//UserTherapist userTherapist = (UserTherapist)session.getAttribute("user");
 				switch (requestedAction){
 	            case "plan-create-name-and-issue":
-	                planName = request.getParameter("planName");
-	                planDescription = request.getParameter("planDescription");
-	                int txIssueID;
-					
-					txIssueID = getTreatmentIssueID(user, defaultIssueIDAsString, existingCustomIssueIDAsString, newCustomIssueName, request);
-					
-	                TreatmentPlan newPlan = new TreatmentPlan(user.getUserID(), planName, planDescription, txIssueID);
-	                request.setAttribute("newPlan", newPlan);
-	                forwardTo = "/jsp/treatment-plans/treatment-plan-create-stages.jsp";
-	                break;
+	                
 	            default:
 				}
 				
 			} else if(user.hasRole("admin")){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
-								
+				ArrayList<TreatmentIssue> defaultreatmentIssues = DefaultDatabaseCalls.getDefaultTreatmentIssues();		
+				request.setAttribute("defaultTreatmentIssues", defaultreatmentIssues);
+				
 				switch (requestedAction){
+					case "create-default-treatment-issue":
+		            	CommonServletFunctions.createDefaultTreatmentIssue(request, user.getUserID());
+	
+						forwardTo = "/jsp/treatment-plans/treatment-plan-create-name.jsp";
+		            	break;
 					case "plan-create-start":
-						//get treatment issues associated with admin role
-						ArrayList<TreatmentIssue> defaultreatmentIssues = DefaultDatabaseCalls.getDefaultTreatmentIssues();
-						session.setAttribute("defaultTreatmentIssues", defaultreatmentIssues);
+
 						forwardTo = "/jsp/treatment-plans/treatment-plan-create-name.jsp";
 						break;
-		            case "plan-create-name-and-issue":
-		                planName = request.getParameter("planName");
-		                planDescription = request.getParameter("planDescription");
-		                defaultIssueIDAsString = request.getParameter("defaultTreatmentIssue");
-		                existingCustomIssueIDAsString = request.getParameter("existingCustomTreatmentIssue");
-		                newDefaultIssueName = request.getParameter("newDefaultTreatmentIssue");
-		                
-		                if(planName.isEmpty() || planDescription.isEmpty()){
+		            case "plan-create-name":
+		            	
+		                if(planTitle.isEmpty() || planDescription.isEmpty()){
 		                	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
 		                }
 		                
-		                //detect which treatment issue source was used and validate
-		                int treatmentIssueID = getTreatmentIssueID(userAdmin, defaultIssueIDAsString, existingCustomIssueIDAsString, newDefaultIssueName, request);
-		                
-		                TreatmentPlan newPlan = TreatmentPlan.getInstanceWithoutID(planName, user.getUserID(), planDescription, treatmentIssueID);
-		                //submit to be validated and if passes then inserted into database and get the treatmentplan with autogenerated id returned
-		                newPlan.saveNew();
-		
-		                request.setAttribute("treatmentPlan", newPlan);
-		                //forwardTo = "/jsp/treatment-plans/treatment-plan-create-stages.jsp";/TODO delete
-		                forwardTo = "/jsp/treatment-plans/stage-create.jsp";
-		                break;
-		            case "plan-create-stages":
+		              //detect which treatment issue source was used and validate
+		                int treatmentIssueID = -1;
+		                if(selectedDefaultIssueID == -1 && selectedCustomIssueID == -1){
+		                	throw new ValidationException(ErrorMessages.ISSUE_NONE_SELECTED);
+		                }
+		                if(selectedDefaultIssueID > 0 && selectedCustomIssueID > 0){
+		                	throw new ValidationException(ErrorMessages.ISSUE_MULTIPLE_SELECTED);
+		                }
+		                if(selectedDefaultIssueID > 0 && selectedCustomIssueID <= 0){
+		                	treatmentIssueID = selectedDefaultIssueID;
+		                }
+		                if(selectedDefaultIssueID <= 0 && selectedCustomIssueID > 0){
+		                	treatmentIssueID = selectedCustomIssueID;
+		                }
 
-		            	//forwardTo = "";
-	            	break;
+		                treatmentPlan = TreatmentPlan.getInstanceWithoutID(planTitle, user.getUserID(), planDescription, treatmentIssueID);
+		                
+		                //because this is created by an admin, it has to be a template
+		                treatmentPlan.setTemplate(true);
+		                
+		                //submit to be validated and if passes then inserted into database and get the treatmentplan with autogenerated id returned
+		                treatmentPlan.saveNew();
+		
+		                request.setAttribute("treatmentPlan", treatmentPlan);
+		                forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		                break;
 				}
 
 			}
-		
+			
+			request.setAttribute("planTitle", planTitle);
+    		request.setAttribute("planDescription", planDescription);
+    		request.setAttribute("selectedDefaultIssueID", selectedDefaultIssueID);
+    		request.setAttribute("selectedCustomTreatmentIssue", selectedCustomIssueID);
+			
     	} catch (ValidationException | DatabaseException e) {
     		request.setAttribute("errorMessage", e.getMessage());
-    		request.setAttribute("planName", planName);
+    		request.setAttribute("planTitle", planTitle);
     		request.setAttribute("planDescription", planDescription);
-    		request.setAttribute("defaultTreatmentIssue", defaultIssueIDAsString);
-    		request.setAttribute("existingCustomTreatmentIssue", existingCustomIssueIDAsString);
-    		request.setAttribute("newDefaultTreatmentIssue", newDefaultIssueName);
-    		request.setAttribute("newCustomTreatmentIssue", newCustomIssueName);
-    		
+    		request.setAttribute("selectedDefaultIssueID", selectedDefaultIssueID);
+    		request.setAttribute("selectedCustomTreatmentIssue", selectedCustomIssueID);
+
     		forwardTo = "/jsp/treatment-plans/treatment-plan-create-name.jsp";
 			//e.printStackTrace();
 		}
@@ -129,57 +140,4 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
     
     
     
-    /**
-     * Gets the appropriate treatment issue id in the process of creating a new Treatment Plan.
-     * There are 3 options for setting the issue type for the new plan.  Since only 1 issue can be selected, here we first get all the possible parameters from the request
-     * and if more than one has been selected, notify the user that they can only choose 1.  Otherwise, use the selected treatment issue.
-     * @param user
-     * @param defaultIssueIDAsString
-     * @param existingIssueIDAsString
-     * @param newIssueName
-     * @param request
-     * @return the issueID of the selected TreatmentIssue
-     * @throws ValidationException
-     * @throws DatabaseException
-     */
-    private int getTreatmentIssueID(User user, String defaultIssueIDAsString, String existingIssueIDAsString, String newIssueName, HttpServletRequest request) throws ValidationException, DatabaseException{
-        int issueID = -1;
-        boolean hasNewCustomIssue = !newIssueName.isEmpty();
-
-        int numOfIDs = 0;
-        if(defaultIssueIDAsString != null){
-	        if(!defaultIssueIDAsString.equals("")){
-	            issueID = Integer.parseInt(defaultIssueIDAsString);
-	            numOfIDs++;
-	        }
-        }
-        
-        if(existingIssueIDAsString != null){
-        	if(!existingIssueIDAsString.equals("")){
-	            issueID = Integer.parseInt(existingIssueIDAsString);
-	            numOfIDs++;
-        	}
-        }    
-
-        if(hasNewCustomIssue){
-            numOfIDs++;
-        }
-
-        if(numOfIDs > 1){
-            throw new ValidationException(ErrorMessages.USER_SELECTED_MULTIPLE_ISSUES);
-        }else if(numOfIDs < 1) {
-            throw new ValidationException(ErrorMessages.USER_SELECTED_NO_ISSUE);
-        } else {
-        	//if there are no validation problems and there is a new custom issue name, add the new issue to the database and get its id
-        	if(hasNewCustomIssue){
-	        	TreatmentIssue issue = new TreatmentIssue(newIssueName, user.getUserID());
-				issue.saveNew();// = user.createTreatmentIssue(issue);
-	            issueID = issue.getTreatmentIssueID();
-        	}
-        	
-        }
-
-
-        return issueID;
-    }
 }

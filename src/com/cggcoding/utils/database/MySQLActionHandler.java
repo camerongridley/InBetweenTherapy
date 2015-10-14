@@ -23,6 +23,7 @@ import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
 import com.cggcoding.models.tasktypes.GenericTask;
+import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
 import com.cggcoding.utils.SqlBuilders;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
@@ -176,8 +177,51 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         return adminIDList;
     }
+    
+
+	@Override
+	public List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException {
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<TreatmentPlan> defaultPlanList = new ArrayList<>();
+        
+        try {
+        	cn = getConnection();
+        	
+        	List<Integer> adminIDList = userGetAdminIDs(cn);
+        	
+        	String baseStatement = "SELECT * FROM treatment_plan WHERE `treatment_plan_user_id_fk` in (";
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, null);
+        	
+    		ps = cn.prepareStatement(sql);
+    		
+    		for(int i = 0; i < adminIDList.size(); i++){
+    			ps.setInt(i+1, adminIDList.get(i));
+    		}
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	defaultPlanList.add(treatmentPlanLoadWithEmpyLists(rs.getInt("treatment_plan_id")));
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return defaultPlanList;
+	}
 	
-    public TreatmentPlan treatmentPlanLoadBasic(int treatmentPlanID) throws DatabaseException{
+    @Override
+    public TreatmentPlan treatmentPlanLoadWithEmpyLists(int treatmentPlanID) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet planInfo = null;
@@ -193,7 +237,108 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
             while (planInfo.next()){
             	plan = TreatmentPlan.getInstanceBasic(planInfo.getInt("treatment_plan_id"), planInfo.getInt("treatment_plan_user_id_fk"), 
-            			planInfo.getString("title"), planInfo.getString("description"), planInfo.getInt("treatment_plan_treatment_issue_id_fk"));
+            			planInfo.getString("treatment_plan_title"), planInfo.getString("treatment_plan_description"), planInfo.getInt("treatment_plan_treatment_issue_id_fk"),
+            			planInfo.getBoolean("in_progress"), planInfo.getBoolean("treatment_plan_is_template"), planInfo.getBoolean("treatment_plan_completed")
+            			);
+            	
+            }
+            
+
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(planInfo);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+
+        return plan;
+    }
+    
+    @Override
+    public List<Integer> treatmentPlanGetStageIDs(int treatmentPlanID) throws DatabaseException {
+    	Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Integer> stageIDs = new ArrayList<>();
+        
+        try {
+        	cn = getConnection();
+        	ps = cn.prepareStatement("SELECT stage_id FROM stage WHERE stage_treatment_plan_id_fk=?");
+            ps.setInt(1, treatmentPlanID);
+
+
+            rs = ps.executeQuery();
+
+            while (rs.next()){
+            	stageIDs.add(rs.getInt("stage_id"));
+            }
+            /*The code below was for when this method returned a list of Stages instead of a list of stageIDs
+             * ps = cn.prepareStatement("SELECT stage.*, stage_goal.* FROM stage INNER JOIN stage_goal ON stage.stage_id = stage_goal.stage_goal_stage_id_fk WHERE stage_id=?");
+            ps.setInt(1, treatmentPlanID);
+
+
+            rs = ps.executeQuery();
+
+            while (rs.next()){
+            	stages.add(Stage.getInstance(rs.getInt("stage_id"), rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage_user_id_fk"), rs.getString("stage_title"), 
+            			rs.getString("stage_description"), rs.getInt("stage_order"), new ArrayList<Task>(), new ArrayList<Task>(), rs.getBoolean("stage_completed"), rs.getInt("percent_complete"),
+            			new ArrayList<StageGoal>(), rs.getBoolean("stage_is_template"))	);
+            }*/
+            
+
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+
+        return stageIDs;
+    }
+    
+    //TODO delete method?
+    public TreatmentPlan treatmentPlanLoadWithStageAndTaskCoreData(int treatmentPlanID) throws DatabaseException{
+    	Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet planInfo = null;
+        TreatmentPlan plan = null;
+        int stageID = 0;
+        int taskID = 0;
+        
+        try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT treatment_plan.treatment_plan_id, treatment_plan.*, treatment_issue.issue, stage.*, task_generic.*, task_type.task_type "
+            + "FROM (treatment_issue INNER JOIN treatment_plan ON treatment_issue.treatment_issue_id = treatment_plan.treatment_plan_treatment_issue_id_fk) "
+            + "LEFT JOIN (task_type RIGHT JOIN (stage LEFT JOIN task_generic ON stage.stage_id = task_generic.task_generic_stage_id_fk) "
+            + "ON task_type.task_type_id = task_generic.task_generic_task_type_id_fk) ON treatment_plan.treatment_plan_id = stage.stage_treatment_plan_id_fk "
+            + "WHERE (((treatment_plan.treatment_plan_id)=?))");
+            
+            ps.setInt(1, treatmentPlanID);
+
+
+            planInfo = ps.executeQuery();
+
+            while (planInfo.next()){
+            	if(planInfo.isFirst()){
+            		plan = TreatmentPlan.getInstanceBasic(planInfo.getInt("treatment_plan_id"), planInfo.getInt("treatment_plan_user_id_fk"), 
+                			planInfo.getString("treatment_plan_title"), planInfo.getString("treatment_plan_description"), planInfo.getInt("treatment_plan_treatment_issue_id_fk"),
+                			planInfo.getBoolean("in_progress"), planInfo.getBoolean("treatment_plan_is_template"), planInfo.getBoolean("treatment_plan_completed")
+                			);
+            		
+            		//need to initialize these variables
+            		stageID = planInfo.getInt("stage_id");
+                	taskID = planInfo.getInt("task_generic_id");
+            	}
+            	
+            	stageID = planInfo.getInt("stage_id");
+            	taskID = planInfo.getInt("task_generic_id");
+            	
+            	
+            	
             }
             
 
@@ -233,7 +378,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         try {
 
-            ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_plan WHERE (((treatment_plan.title)=?) AND ((treatment_plan.treatment_plan_user_id_fk)=?))");
+            ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_plan WHERE (((treatment_plan.treatment_plan_title)=?) AND ((treatment_plan.treatment_plan_user_id_fk)=?))");
             ps.setString(1, planTitle.trim());
             ps.setInt(2, userID);
 
@@ -268,8 +413,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
 
-        	String sql = "INSERT INTO `cggcodin_doitright`.`treatment_plan` (`treatment_plan_user_id_fk`, `treatment_plan_treatment_issue_id_fk`, `title`, `description`, `current_stage_index`, `active_view_stage_index`, `in_progress`) "
-            		+ "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        	String sql = "INSERT INTO treatment_plan (treatment_plan_user_id_fk, treatment_plan_treatment_issue_id_fk, treatment_plan_title, treatment_plan_description, current_stage_index, active_view_stage_index, in_progress, treatment_plan_is_template) "
+            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
@@ -280,6 +425,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setInt(5, treatmentPlan.getCurrentStageIndex());
             ps.setInt(6, treatmentPlan.getActiveViewStageIndex());
             ps.setBoolean(7, treatmentPlan.isInProgress());
+            ps.setBoolean(8, treatmentPlan.isTemplate());
 
             int success = ps.executeUpdate();
             
@@ -333,7 +479,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        
         try {
         	cn= getConnection();
-			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE ((title=?) AND (stage_treatment_plan_id_fk=?) AND (stage_user_id_fk=?))");
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE ((stage_title=?) AND (stage_treatment_plan_id_fk=?) AND (stage_user_id_fk=?))");
 			ps.setString(1, newStage.getTitle().trim());
 			ps.setInt(2, newStage.getTreatmentPlanID());
 			ps.setInt(3, newStage.getUserID());
@@ -376,7 +522,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        
         try {
         	cn= getConnection();
-			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE ((stage.title = ?) AND (stage.stage_id != ?) AND (stage.stage_user_id_fk = ?))");
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE ((stage.stage_title = ?) AND (stage.stage_id != ?) AND (stage.stage_user_id_fk = ?))");
 			ps.setString(1, newStage.getTitle().trim());
 			ps.setInt(2, newStage.getStageID());
 			ps.setInt(3, newStage.getUserID());
@@ -411,7 +557,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
 
-    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, title, description, stage_order, is_template) "
+    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, stage_title, stage_description, stage_order, stage_is_template) "
             		+ "VALUES (?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -458,7 +604,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        	//TODO needs to include updating of all the list properties of Stage.java
         		
         		
-	    		String sql = "UPDATE stage SET title=?, description=?, completed=?, `stage_order`=?, percent_complete=?, is_template=? WHERE stage_id=?";
+	    		String sql = "UPDATE stage SET stage_title=?, stage_description=?, stage_completed=?, `stage_order`=?, percent_complete=?, stage_is_template=? WHERE stage_id=?";
 	        	
 	            ps = cn.prepareStatement(sql);
 	            
@@ -498,7 +644,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	String baseStatement = "SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (";
         	
-        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList);
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, " LIMIT 0, 10000");
         	/*StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (");
         	
         	for(Integer adminID : adminIDList){
@@ -517,9 +663,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	defaultStageList.add(stageLoad(rs.getInt("stage_id")));
+            	defaultStageList.add(stageLoadWithEmplyLists(rs.getInt("stage_id")));
             	
-            	//defaultStageList.add(Stage.getInstance(rs.getInt("stage.stage_id"), rs.getInt("stage_user_id_fk"), rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.stage_order")));
+            	//defaultStageList.add(Stage.getInstance(rs.getInt("stage.stage_id"), rs.getInt("stage_user_id_fk"), rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order")));
             }
         	//}
 
@@ -557,7 +703,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	stage = Stage.getInstance(stageID, userID, rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.stage_order"));
+            	stage = Stage.getInstance(stageID, userID, rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order"));
             	
             }
         	
@@ -575,7 +721,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	*/
 	@Override
-	public Stage stageLoad(int stageID) throws DatabaseException{
+	public Stage stageLoadWithEmplyLists(int stageID) throws DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
@@ -600,11 +746,11 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             	//TODO load goals
             	List<StageGoal> goals = new ArrayList<>();
             	
-            	boolean completed = rs.getInt("completed") == 1;
+            	boolean completed = rs.getInt("stage_completed") == 1;
             	//boolean inProgress = rs.getInt("") == 1;
-            	boolean isTemplate = rs.getInt("is_template") == 1;
+            	boolean isTemplate = rs.getInt("stage_is_template") == 1;
             	
-            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.title"), rs.getString("stage.description"), rs.getInt("stage.stage_order"), tasks, extraTasks, completed, rs.getInt("percent_complete"), goals, isTemplate);
+            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order"), tasks, extraTasks, completed, rs.getInt("percent_complete"), goals, isTemplate);
             }
         	
 
@@ -631,7 +777,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        	
 	        	cn = getConnection();
 	
-	        	String sql = "INSERT INTO stage_goal (stage_goal_stage_id_fk, description) VALUES (?, ?)";
+	        	String sql = "INSERT INTO stage_goal (stage_goal_stage_id_fk, stage_goal_description) VALUES (?, ?)";
 	        	
 	            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	            
@@ -666,6 +812,70 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return goal;
 	}
 	
+	public Map<Integer, Integer> stageGetTaskIDTypeMap(int stageID) throws DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<Integer, Integer> taskIDtaskTypeMap = new HashMap<>();
+        
+        try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT task_generic_id, task_generic_task_type_id_fk, task_order FROM task_generic WHERE task_generic_stage_id_fk=? ORDER BY task_order");
+            ps.setInt(1, stageID);
+            
+
+            rs = ps.executeQuery();
+
+            //TODO set date completed properly
+            while (rs.next()){
+            	taskIDtaskTypeMap.put(rs.getInt("task_generic_id"), rs.getInt("task_generic_task_type_id_fk"));
+            	/*tasks.add(GenericTask.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"),
+            			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), null, rs.getInt("task_order"), 
+            			rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_tempalte")));*/
+            }
+            
+
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+
+        return taskIDtaskTypeMap;
+	}
+	
+	public List<StageGoal> stageLoadGoals(int stageID) throws DatabaseException{
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<StageGoal> goals = new ArrayList<>();
+        
+        try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT * FROM stage_goal WHERE stage_goal_stage_id_fk=?");
+            ps.setInt(1, stageID);
+
+            rs = ps.executeQuery();
+
+            while (rs.next()){
+            	goals.add(StageGoal.getInstance(rs.getInt("stage_goal_id"), rs.getInt("stage_goal_stage_id_fk"), rs.getString("stage_goal_description")));
+            }
+            
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+
+        return goals;
+	}
+	
 	@Override
 	public List<Task> taskGetDefaults() throws DatabaseException{
 		Connection cn = null;
@@ -680,7 +890,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	String baseStatement = "SELECT * FROM task_generic WHERE task_generic_user_id_fk in (";
         	
-        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList);
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, null);
         	
     		ps = cn.prepareStatement(sql);
     		
@@ -706,6 +916,35 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return defaultTaskList;
 	}
 	
+	/*
+	public Task taskLoad(int taskID) throws DatabaseException {
+		Connection cn = null;
+        Task task = null;
+
+        try {
+        	cn = getConnection();
+        	
+        	GenericTask genericTask = (GenericTask)taskGenericLoad(cn, taskID);
+        	
+    		
+    		switch(genericTask.getTaskTypeID()){
+    			case 1:
+    				task = genericTask;
+    				break;
+    			case 2:
+    				task = taskTwoTextBoxesLoad(cn, taskID);
+    		}
+        	
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return task;
+	}*/
+	
 	@Override
 	public Task taskGenericLoad(int taskID) throws DatabaseException{
 		Connection cn = null;
@@ -726,7 +965,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
    
             while (rs.next()){
             	//TODO ADD GETTING DATE COMPLETED - just setting and returning it to null now
-            	task = GenericTask.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("completed"), null/*rs.getDate("date_completed")*/, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("is_template"));
+            	task = GenericTask.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), null/*rs.getDate("task_date_completed")*/, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"));
             }
         	
 
@@ -743,6 +982,45 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	@Override
+	public Task taskTwoTextBoxesLoad(int taskID) throws DatabaseException {
+		Connection cn = null;
+		PreparedStatement ps = null;
+        ResultSet rs = null;
+        Task task = null;
+        
+        try {
+        	cn = getConnection();
+
+    		String sql = "SELECT task_generic.*, task_two_textboxes.extra_text_label_1, task_two_textboxes.extra_text_value_1, task_two_textboxes.extra_text_lable_2, task_two_textboxes.extra_text_value_2 "
+    				+ "FROM task_generic INNER JOIN task_two_textboxes ON task_generic.task_generic_id = task_two_textboxes.task_generic_id WHERE task_generic_id =?";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, taskID);
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	task = TwoTextBoxesTask.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
+            			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
+            			null/*rs.getDate("task_date_completed")*/, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"),
+            			rs.getString("extra_text_label_1"), rs.getString("extra_text_value_1"), rs.getString("extra_text_label_2"), rs.getString("extra_text_value_2"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return task;
+	}
+
+	
+	@Override
 	public boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException {
 		Connection cn = null;
     	PreparedStatement ps = null;
@@ -753,8 +1031,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	if(taskValidate(cn, taskToUpdate)){
 
-	    		String sql = "UPDATE task_generic SET task_generic_task_type_id_fk=?, task_generic_stage_id_fk=?, task_generic_user_id_fk=?, parent_task_id=?, title=?, instructions=?, resource_link=?, "
-	    				+ "completed=?, date_completed=?, task_order=?, is_extra_task=?, is_template=? WHERE task_generic_id=?";
+	    		String sql = "UPDATE task_generic SET task_generic_task_type_id_fk=?, task_generic_stage_id_fk=?, task_generic_user_id_fk=?, parent_task_id=?, task_title=?, instructions=?, resource_link=?, "
+	    				+ "task_completed=?, task_date_completed=?, task_order=?, is_extra_task=?, task_is_template=? WHERE task_generic_id=?";
 	        	
 	            ps = cn.prepareStatement(sql);
 	            
@@ -804,6 +1082,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
 	}
 	
+	//TODO - bug fix - either create different validate method for updates so doesn't throw TaskTitleExists exception when updating fields of a task without changing the title or add logic in method below to do this
 	private boolean taskValidate(Connection cn, Task newTask) throws ValidationException, DatabaseException{
 
 		if(newTask.getTitle() == null || newTask.getTitle().isEmpty() || 
@@ -818,7 +1097,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        
         try {
         	cn= getConnection();
-			ps = cn.prepareStatement("SELECT COUNT(*) FROM task_generic WHERE ((task_generic.title=?) AND (task_generic_stage_id_fk=?))");
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM task_generic WHERE ((task_generic.task_title=?) AND (task_generic_stage_id_fk=?))");
 			ps.setString(1, newTask.getTitle().trim());
 			ps.setInt(2, newTask.getStageID());
 
@@ -845,7 +1124,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	/**Inserts a Generic Task template into the database.  Since it is a template, it does not insert for the 
-	 * fields: task_id, task_stage_id_fk, date_completed, or parent_task_id, and it sets is_extra_task = 0(false) and is_template = 1(true)
+	 * fields: task_id, task_stage_id_fk, task_date_completed, or parent_task_id, and it sets is_extra_task = 0(false) and task_is_template = 1(true)
 	 * @param cn
 	 * @param newTask - Task object to be inserted.
 	 * @return
@@ -859,7 +1138,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	cn = getConnection();
 
         	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_stage_id_fk, task_generic_user_id_fk, "
-        			+ "parent_task_id, title, instructions, resource_link, completed, date_completed, task_order, is_extra_task, is_template) "
+        			+ "parent_task_id, task_title, instructions, resource_link, task_completed, task_date_completed, task_order, is_extra_task, task_is_template) "
     				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -912,7 +1191,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	taskTypeMap.put(rs.getInt("task_type_id"), rs.getString("type"));
+            	taskTypeMap.put(rs.getInt("task_type_id"), rs.getString("task_type"));
             }
 
         } catch (SQLException e) {
@@ -983,6 +1262,11 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         int comboExists = 0;
         
         try {
+        	
+        	if(issueName.isEmpty() || issueName ==""){
+        		throw new ValidationException(ErrorMessages.ISSUE_NAME_MISSING);
+        	}
+        	
         	cn = getConnection();
             ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_issue WHERE (((treatment_issue.issue)=?) AND ((treatment_issue.treatment_issue_user_id_fk)=?))");
             ps.setString(1, issueName.trim());
@@ -1043,8 +1327,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	cn = getConnection();
         	
         	String sql = "SELECT treatment_issue.treatment_issue_id, treatment_issue.issue, user.user_id "
-            		+ "FROM (user) INNER JOIN treatment_issue ON user.user_id = treatment_issue.treatment_issue_user_id_fk "
-            		+ "WHERE (((user.user_id)=?))";
+            		+ "FROM user INNER JOIN treatment_issue ON user.user_id = treatment_issue.treatment_issue_user_id_fk "
+            		+ "WHERE user.user_id=?";
         	
             ps = cn.prepareStatement(sql);
             ps.setInt(1, userID);
@@ -1067,6 +1351,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         return issues;
     }
+
 
 
 }

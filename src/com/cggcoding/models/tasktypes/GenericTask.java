@@ -7,9 +7,12 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.DatabaseModel;
 import com.cggcoding.models.Task;
+import com.cggcoding.utils.database.DatabaseActionHandler;
+import com.cggcoding.utils.database.MySQLActionHandler;
 
 public class GenericTask extends Task implements DatabaseModel{
-
+	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+	
 	private GenericTask(int taskID, int userID) {
 		super(taskID, userID);
 	}
@@ -61,6 +64,10 @@ public class GenericTask extends Task implements DatabaseModel{
 				title, instructions, resourceLink, false, null, 0, extraTask, true);
 	}
 	
+	public static Task load(int taskID) throws DatabaseException{
+		return databaseActionHandler.taskGenericLoad(taskID);
+	}
+	
 	@Override
 	public void saveNew() throws DatabaseException, ValidationException{
 		super.saveNewGeneralDataInDatabase();
@@ -69,7 +76,7 @@ public class GenericTask extends Task implements DatabaseModel{
 	
 	@Override
 	public void update() throws DatabaseException, ValidationException{
-		super.updateGeneralDataInDatabase();
+		super.updateDataInDatabase();
 		//for other tasks call update method for additional data
 	}
 	
@@ -86,13 +93,14 @@ public class GenericTask extends Task implements DatabaseModel{
 	}
 	
 	@Override
-	public boolean updateAdditionalData () {
+	protected boolean updateAdditionalData () {
 		return true;//there is no additional data in GenericTask to update
 	}
 
-	
-
-
+	@Override
+	protected void loadAdditionalData() {
+		//there is no additional data to load for GenericTask
+	}
 	
 	
 }

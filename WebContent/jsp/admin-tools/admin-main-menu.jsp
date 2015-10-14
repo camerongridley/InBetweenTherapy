@@ -29,16 +29,18 @@
 						Treatment Plan Template</button>
 				</div>
 				<input type="hidden" name="requestedAction"	value="plan-create-start">
+				<input type="hidden" name="path"	value="creatingPlan">
 			</form>
 			</p>
 
 			<p>
 			<form class="form-inline" action="./EditTreatmentPlan" method="POST">
 				<div>
-					<button type="submit" class="btn btn-primary" disabled>Edit
+					<button type="submit" class="btn btn-primary">Edit
 						Treatment Plan Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="plan-edit-start">
+				<input type="hidden" name="path"	value="editingPlan">
 			</form>
 			</p>
 		</div>

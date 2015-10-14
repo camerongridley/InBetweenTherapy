@@ -9,7 +9,7 @@ public class SqlBuilders {
 	 * @param intValues - needed for to know how many int parameters there are
 	 * @return
 	 */
-	public static String includeMultipleIntParams(String baseSQLStatement, List<Integer> intValues){
+	public static String includeMultipleIntParams(String baseSQLStatement, List<Integer> intValues, String suffix){
     	StringBuilder sqlBuilder = new StringBuilder(baseSQLStatement);
     	
     	for(Integer value : intValues){
@@ -18,8 +18,15 @@ public class SqlBuilders {
     	
     	sqlBuilder.deleteCharAt(sqlBuilder.length()-1);
     	sqlBuilder.append(")");
+    	
+    	if(suffix != null){
+    		sqlBuilder.append(suffix);
+    	}
+    	
 		String sql = sqlBuilder.toString();
 		
 		return sql;
 	}
+	
+
 }

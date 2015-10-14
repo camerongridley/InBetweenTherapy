@@ -51,11 +51,17 @@ public class RelaxationTask extends Task implements DatabaseModel{
 	}
 
 	@Override
-	public boolean updateAdditionalData() {
+	protected boolean updateAdditionalData() {
 		// TODO if keeping this class, implement method for updating additional data 
 		return false;
 	}
 
+	@Override
+	protected void loadAdditionalData() {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	@Override
 	public void saveNew() throws ValidationException, DatabaseException {
 		// TODO Auto-generated method stub
@@ -79,4 +85,5 @@ public class RelaxationTask extends Task implements DatabaseModel{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

@@ -38,9 +38,9 @@ public class StageGoal {
 		return new StageGoal(stageGoalID, stageID, goal);
 	}
 	
-	public static StageGoal getInstanceFromDatabase(int stageGoalID){
+	/*public static StageGoal getInstanceFromDatabase(int stageGoalID){
 		return null;
-	}
+	}*/
 	
 	public static StageGoal saveNewInDatabase(int stageID, String description) throws DatabaseException{
 		return databaseActionHandler.stageGoalValidateAndCreate(new StageGoal(stageID, description));

@@ -21,10 +21,24 @@ public class TreatmentPlan implements DatabaseModel{
 	private int activeViewStageIndex;
 	private boolean inProgress;
 	private boolean isTemplate;
+	private boolean completed;
 	
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
 	
-	public TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID){
+	private TreatmentPlan(int userID, String title, String description, int treatmentPlanID){
+		this.title = title;
+		this.userID = userID;
+		this.description = description;
+		this.treatmentIssueID = treatmentPlanID;
+		this.stages = new ArrayList<>();
+		this.currentStageIndex = 0;
+		this.activeViewStageIndex = 0;
+		this.inProgress = false;
+		this.isTemplate = false;
+		this.completed = false;
+	}	
+	
+	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID){
 		this.treatmentPlanID = treatmentPlanID;
 		this.title = title;
 		this.description = description;
@@ -33,24 +47,31 @@ public class TreatmentPlan implements DatabaseModel{
 		this.stages = new ArrayList<>();
 		this.currentStageIndex = 0;
 		this.activeViewStageIndex = 0;
+		this.inProgress = false;
+		this.isTemplate = false;
+		this.completed = false;
 	}
 
-	public TreatmentPlan(int userID, String title, String description, int txIssueID){
+	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, boolean isTemplate, boolean completed){
+		this.treatmentPlanID = treatmentPlanID;
 		this.title = title;
-		this.userID = userID;
 		this.description = description;
 		this.treatmentIssueID = txIssueID;
+		this.userID = userID;
 		this.stages = new ArrayList<>();
 		this.currentStageIndex = 0;
 		this.activeViewStageIndex = 0;
+		this.inProgress = inProgress;
+		this.isTemplate = isTemplate;
+		this.completed = completed;
 	}
 	
-	public static TreatmentPlan getInstanceWithoutID(String title, int userID, String description, int txIssueID){
-		return new TreatmentPlan(userID, title, description, txIssueID);
+	public static TreatmentPlan getInstanceWithoutID(String title, int userID, String description, int treatmentPlanID){
+		return new TreatmentPlan(userID, title, description, treatmentPlanID);
 	}
 	
-	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int treatmentIssueID){
-		return new TreatmentPlan(treatmentPlanID, userID, title, description, treatmentIssueID);
+	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, boolean isTemplate, boolean completed){
+		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed);
 	}
 
 	//TODO update with proper logic once app is connected to database
@@ -73,14 +94,26 @@ public class TreatmentPlan implements DatabaseModel{
 		return userID;
 	}
 	
+	public void setTitle(String title){
+		this.title = title;
+	}
+	
 	public String getTitle() {
 		return title;
 	}
 
+	public void setDescription(String description){
+		this.description = description;
+	}
+	
 	public String getDescription() {
 		return description;
 	}
 
+	public void setTreatmentIssueID(int treatmentIssueID){
+		this.treatmentIssueID = treatmentIssueID;
+	}
+	
 	public int getTreatmentIssueID() {
 		return treatmentIssueID;
 	}
@@ -94,7 +127,7 @@ public class TreatmentPlan implements DatabaseModel{
 	}
 	
 	public void addStage(Stage newStage){
-		stages.add(newStage.getStageOrder(), newStage);
+		stages.add(newStage);
 	}
 	
 	public void updateStages(){
@@ -202,7 +235,22 @@ public class TreatmentPlan implements DatabaseModel{
 		return null;
 	}
 
-	public static TreatmentPlan loadBasic(int treatmentPlanID) throws DatabaseException{
-		return databaseActionHandler.treatmentPlanLoadBasic(treatmentPlanID);
+	public static TreatmentPlan load(int treatmentPlanID) throws DatabaseException, ValidationException{
+		TreatmentPlan plan = databaseActionHandler.treatmentPlanLoadWithEmpyLists(treatmentPlanID);
+		plan.loadStages();
+
+		return plan;
+	}
+	
+	public void loadStages() throws DatabaseException, ValidationException{
+		List<Integer> stageIDs = databaseActionHandler.treatmentPlanGetStageIDs(this.treatmentPlanID);
+		for(int stageID : stageIDs){
+			addStage(Stage.load(stageID));
+		}
+	}
+	
+	//TODO delete this method?
+	public static TreatmentPlan loadWithEmptyLists(int treatmentPlanID) throws DatabaseException{
+		return databaseActionHandler.treatmentPlanLoadWithEmpyLists(treatmentPlanID);
 	}
 }

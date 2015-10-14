@@ -45,10 +45,15 @@ public class PsychEdTask extends Task implements DatabaseModel{
 	}
 
 	@Override
-	public boolean updateAdditionalData() {
+	protected boolean updateAdditionalData() {
 		return true;//no additional data to update
 	}
 
+	@Override
+	protected void loadAdditionalData() {
+		// TODO Auto-generated method stub
+	}
+	
 	@Override
 	public void saveNew() throws ValidationException, DatabaseException {
 		// TODO Auto-generated method stub
@@ -72,4 +77,6 @@ public class PsychEdTask extends Task implements DatabaseModel{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	
 }

@@ -33,7 +33,11 @@ public interface DatabaseActionHandler {
 
 	TreatmentPlan treatmentPlanValidateAndCreateBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
 	
-	TreatmentPlan treatmentPlanLoadBasic(int treatmentPlanID) throws DatabaseException;
+	TreatmentPlan treatmentPlanLoadWithEmpyLists(int treatmentPlanID) throws DatabaseException;
+	
+	List<Integer> treatmentPlanGetStageIDs(int treatmentPlanID) throws DatabaseException;
+	
+	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException;
 
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
@@ -49,11 +53,15 @@ public interface DatabaseActionHandler {
 	
 	boolean stageTemplateUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException;
 	
-	Stage stageLoad(int stageID) throws DatabaseException, ValidationException;
+	Stage stageLoadWithEmplyLists(int stageID) throws DatabaseException, ValidationException;
 	
 	List<Stage> stagesGetDefaults() throws DatabaseException;
 	
 	StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException;
+	
+	Map<Integer, Integer> stageGetTaskIDTypeMap(int stageID) throws DatabaseException;
+	
+	List<StageGoal> stageLoadGoals(int stageID) throws DatabaseException;
 
 	//**************************************************************************************************
 	//*************************************** Treatment Issue Methods **********************************
@@ -73,6 +81,8 @@ public interface DatabaseActionHandler {
 	Task taskTemplateValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
 	
 	Task taskGenericLoad(int taskID) throws DatabaseException;
+	
+	Task taskTwoTextBoxesLoad(int taskID) throws DatabaseException;
 	
 	boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException;
 	

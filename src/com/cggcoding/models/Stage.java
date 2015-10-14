@@ -3,6 +3,8 @@ package com.cggcoding.models;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.factories.TaskFactory;
+import com.cggcoding.models.tasktypes.GenericTask;
+import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -123,7 +125,23 @@ public class Stage implements Completable, DatabaseModel {
 	}*/
 	
 	public static Stage load(int stageID) throws DatabaseException, ValidationException{
-		return databaseActionHandler.stageLoad(stageID);
+		Stage stage = databaseActionHandler.stageLoadWithEmplyLists(stageID);
+		stage.loadTasks();
+		stage.loadGoals();
+		
+		return stage;
+	}
+	
+	public void loadTasks() throws DatabaseException{
+		HashMap<Integer, Integer> taskIDTaskTypeMap = (HashMap<Integer, Integer>)databaseActionHandler.stageGetTaskIDTypeMap(stageID);
+		
+		for(Map.Entry<Integer, Integer> entry : taskIDTaskTypeMap.entrySet()){
+			addTask(Task.load(entry.getKey(), entry.getValue()));
+		}
+	}
+	
+	public void loadGoals() throws DatabaseException{
+		setGoals(databaseActionHandler.stageLoadGoals(stageID));
 	}
 	
 	public int getStageID() {
@@ -380,7 +398,6 @@ public class Stage implements Completable, DatabaseModel {
 		
 		return null;
 	}
-
 
 	@Override
 	public void saveNew() throws ValidationException, DatabaseException{

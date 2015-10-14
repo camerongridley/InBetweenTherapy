@@ -23,12 +23,12 @@ public class CognitiveTask extends Task implements DatabaseModel{
 		super(taskID, userID, title, instructions);
 	}
 
-	public CognitiveTask (int taskID, int userID, int taskSetID, String title, String instructions){
-		super(taskID, userID, taskSetID, title, instructions);
+	public CognitiveTask (int taskID, int userID, int parentTaskID, String title, String instructions){
+		super(taskID, userID, parentTaskID, title, instructions);
 	}
 	
-	public CognitiveTask (int taskID, int userID, int taskSetID, String title, String instructions, String automaticThought, String alternativeThought, int preSUDS, int postSUDS){
-		super(taskID, userID, taskSetID, title, instructions);
+	public CognitiveTask (int taskID, int userID, int parentTaskID, String title, String instructions, String automaticThought, String alternativeThought, int preSUDS, int postSUDS){
+		super(taskID, userID, parentTaskID, title, instructions);
 		this.automaticThought = automaticThought;
 		this.alternativeThought = alternativeThought;
 		this.preSUDS = preSUDS;
@@ -43,6 +43,9 @@ public class CognitiveTask extends Task implements DatabaseModel{
 		return new CognitiveTask(taskID, taskSetID, title, description);
 	}*/
 
+	public static CognitiveTask convertFromGenericTask(GenericTask genericTask, String automaticThought, String alternativeThought, int preSUDS, int postSUDS){
+		return new CognitiveTask(genericTask.getTaskID(), genericTask.getUserID(), genericTask.getParentTaskID(), genericTask.getTitle(), genericTask.getInstructions(), automaticThought, alternativeThought, preSUDS, postSUDS);
+	}
 	
 	public String getAutomaticThought() {
 		return automaticThought;
@@ -90,7 +93,7 @@ public class CognitiveTask extends Task implements DatabaseModel{
 
 
 	@Override
-	public boolean updateAdditionalData() {
+	protected boolean updateAdditionalData() {
 		// TODO implement method
 		return false;
 	}
@@ -117,6 +120,12 @@ public class CognitiveTask extends Task implements DatabaseModel{
 	public List<Object> copy(Object o, int numberOfCopies) {
 		// TODO implement method
 		return null;
+	}
+
+	@Override
+	protected void loadAdditionalData() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
