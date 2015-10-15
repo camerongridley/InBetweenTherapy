@@ -37,6 +37,12 @@ public interface DatabaseActionHandler {
 	
 	List<Integer> treatmentPlanGetStageIDs(int treatmentPlanID) throws DatabaseException;
 	
+	/**Gets all of the "default" TreatmentPlans, which means it returns all the the TreatmentPlans that have been created by an Admin user and can be copied for use by Therapist and Client users.
+	 * It returns all TreatmentPlans that are owned by users of type Admin and have isTemplate as true.  It specifically excludes TreatmentPlan with id=0 since that TreatmentPlan is designated
+	 * as a holder for all default Stages and is not eligible for copying or use by other user types.
+	 * @return
+	 * @throws DatabaseException
+	 */
 	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException;
 
 	//**************************************************************************************************
@@ -51,16 +57,16 @@ public interface DatabaseActionHandler {
 	 */
 	Stage stageValidateAndCreate(Stage stage) throws ValidationException, DatabaseException;
 	
-	/* Removed so could make them private and wrap in stageTemplateValidateAndCreate and reduce number of connections opened
-	private boolean stageValidateNewName(Connection cn, Stage newStage) throws ValidationException, DatabaseException;
-	
-	Stage stageTemplateCreate(Connection cn, Stage newStageTemplate) throws ValidationException, DatabaseException;
-	*/
-	
 	boolean stageUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException;
 	
 	Stage stageLoadWithEmplyLists(int stageID) throws DatabaseException, ValidationException;
 	
+	/**Gets all of the "default" Stages, which means it returns all the the Stages that have been created by an Admin user and can be copied for use by Therapist and Client users.
+	 * It returns all Stages that are owned by users of type Admin and have isTemplate as true.  It specifically excludes Stage with id=0 since that Stage is designated
+	 * as a holder for all default Tasks and is not eligible for copying or use by other user types.
+	 * @return
+	 * @throws DatabaseException
+	 */
 	List<Stage> stagesGetDefaults() throws DatabaseException;
 	
 	StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException;

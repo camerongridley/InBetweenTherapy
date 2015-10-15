@@ -92,6 +92,16 @@
 			</form>
 			</p>
 		</div>
+		<div class="well well-sm">
+			<p>
+			<form class="form-inline" action="" method="POST">
+				<div>
+					<button type="submit" class="btn btn-primary" >Manage Lists</button>
+				</div>
+				<input type="hidden" name="requestedAction" value="manage-lists">
+			</form>
+			</p>
+		</div>
 	</div>
 </div>
 

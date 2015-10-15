@@ -204,7 +204,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	defaultPlanList.add(treatmentPlanLoadWithEmpyLists(rs.getInt("treatment_plan_id")));
+            	if(rs.getInt("treatment_plan_id") != 0){ //TreatmentPlan with id=0 is the Plan that holds all Stage Defaults and so should not be included in the results of this query.
+            		defaultPlanList.add(treatmentPlanLoadWithEmpyLists(rs.getInt("treatment_plan_id")));
+            	}
+            	
             }
 
 
@@ -477,33 +480,40 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         ResultSet stageCount = null;
         int comboExists = 0;
 	        
-        try {
-        	cn= getConnection();
-			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE ((stage_title=?) AND (stage_treatment_plan_id_fk=?) AND (stage_user_id_fk=?))");
-			ps.setString(1, newStage.getTitle().trim());
-			ps.setInt(2, newStage.getTreatmentPlanID());
-			ps.setInt(3, newStage.getUserID());
-
-			stageCount = ps.executeQuery();
-
-			while (stageCount.next()){
-			    comboExists = stageCount.getInt("COUNT(*)");
-			}
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-        } finally {
-			DbUtils.closeQuietly(stageCount);
-			DbUtils.closeQuietly(ps);
-			//DbUtils.closeQuietly(cn);
-		}
+        if(newStage.getTitle().isEmpty()){
+        		throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
+        	}
         
-		if(comboExists > 0){
-			throw new ValidationException(ErrorMessages.STAGE_TITLE_EXISTS);
-		} else {
-			return true;
-		}
+        if(newStage.isTemplate()){//only templates need to worry about not having the same name for a particular user.  There can be multiple non-template stages with the same name.
+        	try {
+
+	        	cn= getConnection();
+				ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE ((stage_title=?) AND (stage_treatment_plan_id_fk=?) AND (stage_user_id_fk=?))");
+				ps.setString(1, newStage.getTitle().trim());
+				ps.setInt(2, newStage.getTreatmentPlanID());
+				ps.setInt(3, newStage.getUserID());
+	
+				stageCount = ps.executeQuery();
+	
+				while (stageCount.next()){
+				    comboExists = stageCount.getInt("COUNT(*)");
+				}
+				
+				if(comboExists > 0){
+					throw new ValidationException(ErrorMessages.STAGE_TITLE_EXISTS);
+				}
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+	        } finally {
+				DbUtils.closeQuietly(stageCount);
+				DbUtils.closeQuietly(ps);
+				//DbUtils.closeQuietly(cn);
+			}
+        }
+        
+		return true;
 	}
 	
 	/**Validating a new Stage title involves checking is there is already a match for the combination of the new title and the userID. However, since
@@ -563,12 +573,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             ps.setInt(1, newStageTemplate.getUserID());
-            //if isTemplate == true then there is no parent treatmentPlanID, so set stage.treatmentPlanID to null
-            if(newStageTemplate.isTemplate()){
-            	ps.setNull(2, java.sql.Types.INTEGER);
-            }else{
-            	ps.setInt(2, newStageTemplate.getTreatmentPlanID());
-            }
+            ps.setInt(2, newStageTemplate.getTreatmentPlanID());
             ps.setString(3, newStageTemplate.getTitle().trim());
             ps.setString(4, newStageTemplate.getDescription().trim());
             ps.setBoolean(5,  newStageTemplate.isCompleted());
@@ -614,11 +619,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	    		String sql = "UPDATE stage SET stage_treatment_plan_id_fk=?, stage_user_id_fk=?, stage_title=?, stage_description=?, stage_completed=?, `stage_order`=?, percent_complete=?, stage_is_template=? WHERE stage_id=?";
 	        	
 	            ps = cn.prepareStatement(sql);
-	            if(newStage.isTemplate()){
-	            	ps.setNull(1, java.sql.Types.INTEGER);
-	            }else{
-	            	ps.setInt(1, newStage.getTreatmentPlanID());
-	            }
+
+	            ps.setInt(1, newStage.getTreatmentPlanID());
 	            ps.setInt(2, newStage.getUserID());
 	            ps.setString(3, newStage.getTitle().trim());
 	            ps.setString(4, newStage.getDescription().trim());
@@ -656,16 +658,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	String baseStatement = "SELECT * FROM stage WHERE stage_is_template=1 AND stage_user_id_fk in (";
         	
-        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, " LIMIT 0, 10000");
-        	/*StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (");
-        	
-        	for(Integer adminID : adminIDList){
-        		sqlBuilder.append("?,");
-        	}	
-        	
-        	sqlBuilder.deleteCharAt(sqlBuilder.length()-1);
-        	sqlBuilder.append(")");
-    		String sql = sqlBuilder.toString();*/
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, null);
+
     		ps = cn.prepareStatement(sql);
     		
     		for(int i = 0; i < adminIDList.size(); i++){
@@ -675,11 +669,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	defaultStageList.add(stageLoadWithEmplyLists(rs.getInt("stage_id")));
-            	
-            	//defaultStageList.add(Stage.getInstance(rs.getInt("stage.stage_id"), rs.getInt("stage_user_id_fk"), rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order")));
+            	if(rs.getInt("stage_id") != 0){// The Stage with id=0 is the Stage that holds all of the Task templates, so should not be returned in this query
+            		defaultStageList.add(stageLoadWithEmplyLists(rs.getInt("stage_id")));
+            	}
             }
-        	//}
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1049,11 +1042,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	            ps = cn.prepareStatement(sql);
 	            
 	            ps.setInt(1, taskToUpdate.getTaskTypeID());
-	            if(taskToUpdate.isTemplate()){
-	            	ps.setNull(2, java.sql.Types.INTEGER);
-	            }else{
-	            	ps.setInt(2, taskToUpdate.getStageID());
-	            }
+	            ps.setInt(2, taskToUpdate.getStageID());
 	            ps.setInt(3, taskToUpdate.getUserID());
 	            ps.setInt(4, taskToUpdate.getParentTaskID());
 	            ps.setString(5, taskToUpdate.getTitle().trim());
@@ -1161,11 +1150,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             ps.setInt(1, newTask.getTaskTypeID());
-            if(newTask.isTemplate()){
-            	ps.setNull(2, java.sql.Types.INTEGER);
-            }else{
-            	ps.setInt(2, newTask.getStageID());
-            }
+
+            ps.setInt(2, newTask.getStageID());
             ps.setInt(3, newTask.getUserID());
             ps.setInt(4, newTask.getParentTaskID());
             ps.setString(5, newTask.getTitle().trim());
