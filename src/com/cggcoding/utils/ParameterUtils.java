@@ -17,7 +17,7 @@ public class ParameterUtils {
 	 */
 	public static int parseIntParameter(HttpServletRequest request, String intParameterName){
 		if(request.getParameter(intParameterName)==null || request.getParameter(intParameterName).isEmpty()){
-			return -1;
+			return 0;
 		} else{
 			return Integer.parseInt(request.getParameter(intParameterName));
 		}

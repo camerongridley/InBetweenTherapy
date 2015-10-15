@@ -33,7 +33,12 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
+    
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+    }
+    
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String requestedAction = request.getParameter("requestedAction");
     	String path = request.getParameter("path");
@@ -84,8 +89,8 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 		                }
 		                
 		              //detect which treatment issue source was used and validate
-		                int treatmentIssueID = -1;
-		                if(selectedDefaultIssueID == -1 && selectedCustomIssueID == -1){
+		                int treatmentIssueID = 0;
+		                if(selectedDefaultIssueID == 0 && selectedCustomIssueID == 0){
 		                	throw new ValidationException(ErrorMessages.ISSUE_NONE_SELECTED);
 		                }
 		                if(selectedDefaultIssueID > 0 && selectedCustomIssueID > 0){
@@ -132,11 +137,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 		request.getRequestDispatcher(forwardTo).forward(request,response);
 		
     }
-    
-    
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-    }
     
     
     

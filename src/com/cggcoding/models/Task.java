@@ -197,7 +197,7 @@ public abstract class Task implements Completable{
 	 * @throws ValidationException
 	 */
 	protected Task saveNewGeneralDataInDatabase() throws DatabaseException, ValidationException{
-		Task savedTask = databaseActionHandler.taskTemplateValidateAndCreate(this);
+		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);
 		this.taskID = savedTask.getTaskID();
 		return savedTask;
 	}

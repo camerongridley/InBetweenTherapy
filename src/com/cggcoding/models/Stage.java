@@ -409,7 +409,7 @@ public class Stage implements Completable, DatabaseModel {
 	@Override
 	public void update()  throws ValidationException, DatabaseException {
 		//if(this.validateForDatabase()){
-			databaseActionHandler.stageTemplateUpdate(this);
+			databaseActionHandler.stageUpdate(this);
 		//}
 		
 	}

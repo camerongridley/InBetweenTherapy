@@ -43,6 +43,12 @@ public interface DatabaseActionHandler {
 	//****************************************** Stage Methods *****************************************
 	//**************************************************************************************************
 	
+	/**Validates and if passes, creates stage.  If the Stage.isTemplate=true, then the treatmentPlanID foreign key is set to null before inserting into the database.
+	 * @param stage
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
 	Stage stageValidateAndCreate(Stage stage) throws ValidationException, DatabaseException;
 	
 	/* Removed so could make them private and wrap in stageTemplateValidateAndCreate and reduce number of connections opened
@@ -51,7 +57,7 @@ public interface DatabaseActionHandler {
 	Stage stageTemplateCreate(Connection cn, Stage newStageTemplate) throws ValidationException, DatabaseException;
 	*/
 	
-	boolean stageTemplateUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException;
+	boolean stageUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException;
 	
 	Stage stageLoadWithEmplyLists(int stageID) throws DatabaseException, ValidationException;
 	
@@ -78,12 +84,24 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	List<Task> taskGetDefaults() throws DatabaseException;
 	
-	Task taskTemplateValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
+	/**Validates and if passes, creates task.  If the Task.isTemplate=true, then the stageID foreign key is set to null before inserting into the database.
+	 * @param newTask
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	Task taskValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
 	
 	Task taskGenericLoad(int taskID) throws DatabaseException;
 	
 	Task taskTwoTextBoxesLoad(int taskID) throws DatabaseException;
 	
+	/**Updates task with new data.  If taskToUpdate.isTemplate == true, then stageID foreign key is set to null before inserting
+	 * @param taskToUpdate
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
 	boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException;
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;

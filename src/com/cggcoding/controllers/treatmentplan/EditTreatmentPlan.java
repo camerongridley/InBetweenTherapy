@@ -66,7 +66,7 @@ public class EditTreatmentPlan extends HttpServlet {
     		//set default lists in the request
     		request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());
     		request.setAttribute("defaultTreatmentPlanList", DefaultDatabaseCalls.getDefaultTreatmentPlans());
-    		if(treatmentPlanID != -1) {
+    		if(treatmentPlanID != 0) {
     			loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
     		}
     		
@@ -97,8 +97,8 @@ public class EditTreatmentPlan extends HttpServlet {
 		                }
 		                
 		                //detect which treatment issue source was used and validate
-		                int treatmentIssueID = -1;
-		                if(defaultIssueID == -1 && customIssueID == -1){
+		                int treatmentIssueID = 0;
+		                if(defaultIssueID == 0 && customIssueID == 0){
 		                	throw new ValidationException(ErrorMessages.ISSUE_NONE_SELECTED);
 		                }
 		                if(defaultIssueID > 0 && customIssueID > 0){
@@ -152,11 +152,7 @@ public class EditTreatmentPlan extends HttpServlet {
     		
     		treatmentPlan = TreatmentPlan.getInstanceBasic(ParameterUtils.parseIntParameter(request, "treatmentPlanID"), user.getUserID(), request.getParameter("planTitle"), request.getParameter("planDescription"), 0, false, false, false);
     		//create a temporary treatmentPlan to hold info for plan that is in the process of creation
-    		/*if(treatmentPlanID == -1){
-    			 
-    		} else {
-    			
-    		}
+    		/*
     		request.setAttribute("treatmentPlanID", treatmentPlanID);
     		request.setAttribute("planTitle", planTitle);
     		request.setAttribute("planDescription", planDescription);*/
@@ -190,7 +186,7 @@ public class EditTreatmentPlan extends HttpServlet {
      * @throws DatabaseException
      */
     private int getTreatmentIssueID(User user, String defaultIssueIDAsString, String existingIssueIDAsString, String newIssueName, HttpServletRequest request) throws ValidationException, DatabaseException{
-        int issueID = -1;
+        int issueID = 0;
         boolean hasNewCustomIssue = !newIssueName.isEmpty();
 
         int numOfIDs = 0;

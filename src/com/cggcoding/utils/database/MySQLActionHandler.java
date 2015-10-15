@@ -452,8 +452,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
         try {
         	cn= getConnection();
-			if(stageTemplateValidateNewTitle(cn, stageTemplate)){
-				return stageTemplateCreate(cn, stageTemplate);
+			if(stageValidateNewTitle(cn, stageTemplate)){
+				return stageCreate(cn, stageTemplate);
 			}
 			
         } finally {
@@ -463,7 +463,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return null;
 	}
 	
-	/** Validating a new Stage Template title involves checking is there is already a match for the combination of the new title and the userID.
+	/** Validating a new Stage title involves checking is there is already a match for the combination of the new title and the userID.
 	 * If there is a match then the new title is invalid
 	 * @param cn
 	 * @param newStage - A Stage object containing at least a title and userID
@@ -471,7 +471,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	private boolean stageTemplateValidateNewTitle(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
+	private boolean stageValidateNewTitle(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
 		//Connection cn = null;
 		PreparedStatement ps = null;
         ResultSet stageCount = null;
@@ -506,7 +506,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		}
 	}
 	
-	/**Validating a new Stage Template title involves checking is there is already a match for the combination of the new title and the userID. However, since
+	/**Validating a new Stage title involves checking is there is already a match for the combination of the new title and the userID. However, since
 	 * in case the title wasn't actually changed, need to also exclude any results that have a stageID equal to the stageID of the Stage parameter
 	 * @param cn
 	 * @param newStage
@@ -514,7 +514,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	private boolean stageTemplateValidateUpdatedTitle(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
+	private boolean stageValidateUpdatedTitle(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
 		//Connection cn = null;
 		PreparedStatement ps = null;
         ResultSet stageCount = null;
@@ -549,7 +549,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		}
 	}
 	
-	private Stage stageTemplateCreate(Connection cn, Stage newStageTemplate) throws ValidationException, DatabaseException{
+	private Stage stageCreate(Connection cn, Stage newStageTemplate) throws ValidationException, DatabaseException{
 		//Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
@@ -557,17 +557,24 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
 
-    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, stage_title, stage_description, stage_order, stage_is_template) "
-            		+ "VALUES (?, ?, ?, ?, ?, ?)";
+    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, stage_title, stage_description, stage_completed, stage_order, percent_complete, stage_is_template) "
+            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             ps.setInt(1, newStageTemplate.getUserID());
-            ps.setInt(2, newStageTemplate.getTreatmentPlanID());
+            //if isTemplate == true then there is no parent treatmentPlanID, so set stage.treatmentPlanID to null
+            if(newStageTemplate.isTemplate()){
+            	ps.setNull(2, java.sql.Types.INTEGER);
+            }else{
+            	ps.setInt(2, newStageTemplate.getTreatmentPlanID());
+            }
             ps.setString(3, newStageTemplate.getTitle().trim());
             ps.setString(4, newStageTemplate.getDescription().trim());
-            ps.setInt(5, newStageTemplate.getStageOrder());
-            ps.setInt(6, 1);
+            ps.setBoolean(5,  newStageTemplate.isCompleted());
+            ps.setInt(6, newStageTemplate.getStageOrder());
+            ps.setInt(7, newStageTemplate.getPercentComplete());
+            ps.setBoolean(8, newStageTemplate.isTemplate());
 
             int success = ps.executeUpdate();
             
@@ -592,7 +599,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
 	
 	@Override
-	public boolean stageTemplateUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException{
+	public boolean stageUpdate(Stage newStage) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         int success = 0;
@@ -600,21 +607,26 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
         	
-        	if(stageTemplateValidateUpdatedTitle(cn, newStageTemplate)){
-	        	//TODO needs to include updating of all the list properties of Stage.java
+        	if(stageValidateUpdatedTitle(cn, newStage)){
+	        	//TODO include updating of all the list properties of Stage.java?
         		
         		
-	    		String sql = "UPDATE stage SET stage_title=?, stage_description=?, stage_completed=?, `stage_order`=?, percent_complete=?, stage_is_template=? WHERE stage_id=?";
+	    		String sql = "UPDATE stage SET stage_treatment_plan_id_fk=?, stage_user_id_fk=?, stage_title=?, stage_description=?, stage_completed=?, `stage_order`=?, percent_complete=?, stage_is_template=? WHERE stage_id=?";
 	        	
 	            ps = cn.prepareStatement(sql);
-	            
-	            ps.setString(1, newStageTemplate.getTitle().trim());
-	            ps.setString(2, newStageTemplate.getDescription().trim());
-	            ps.setBoolean(3, newStageTemplate.isCompleted());
-	            ps.setInt(4, newStageTemplate.getStageOrder());
-	            ps.setInt(5, newStageTemplate.getPercentComplete());
-	            ps.setBoolean(6, newStageTemplate.isTemplate());
-	            ps.setInt(7, newStageTemplate.getStageID());
+	            if(newStage.isTemplate()){
+	            	ps.setNull(1, java.sql.Types.INTEGER);
+	            }else{
+	            	ps.setInt(1, newStage.getTreatmentPlanID());
+	            }
+	            ps.setInt(2, newStage.getUserID());
+	            ps.setString(3, newStage.getTitle().trim());
+	            ps.setString(4, newStage.getDescription().trim());
+	            ps.setBoolean(5, newStage.isCompleted());
+	            ps.setInt(6, newStage.getStageOrder());
+	            ps.setInt(7, newStage.getPercentComplete());
+	            ps.setBoolean(8, newStage.isTemplate());
+	            ps.setInt(9, newStage.getStageID());
 	
 	            success = ps.executeUpdate();
         	}
@@ -642,7 +654,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	List<Integer> adminIDList = userGetAdminIDs(cn);
         	
-        	String baseStatement = "SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (";
+        	String baseStatement = "SELECT * FROM stage WHERE stage_is_template=1 AND stage_user_id_fk in (";
         	
         	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, " LIMIT 0, 10000");
         	/*StringBuilder sqlBuilder = new StringBuilder("SELECT * FROM `cggcodin_doitright`.`stage` WHERE `stage_user_id_fk` in (");
@@ -888,7 +900,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	List<Integer> adminIDList = userGetAdminIDs(cn);
         	
-        	String baseStatement = "SELECT * FROM task_generic WHERE task_generic_user_id_fk in (";
+        	String baseStatement = "SELECT * FROM task_generic WHERE task_is_template=1 AND task_generic_user_id_fk in (";
         	
         	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, null);
         	
@@ -1037,7 +1049,11 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	            ps = cn.prepareStatement(sql);
 	            
 	            ps.setInt(1, taskToUpdate.getTaskTypeID());
-	            ps.setInt(2, taskToUpdate.getStageID());
+	            if(taskToUpdate.isTemplate()){
+	            	ps.setNull(2, java.sql.Types.INTEGER);
+	            }else{
+	            	ps.setInt(2, taskToUpdate.getStageID());
+	            }
 	            ps.setInt(3, taskToUpdate.getUserID());
 	            ps.setInt(4, taskToUpdate.getParentTaskID());
 	            ps.setString(5, taskToUpdate.getTitle().trim());
@@ -1065,7 +1081,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return success == 1;
 	}
 	
-	public Task taskTemplateValidateAndCreate(Task newTask) throws DatabaseException, ValidationException{
+	@Override
+	public Task taskValidateAndCreate(Task newTask) throws DatabaseException, ValidationException{
 		Connection cn = null;
 
         try {
@@ -1144,7 +1161,11 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             ps.setInt(1, newTask.getTaskTypeID());
-            ps.setInt(2, newTask.getStageID());
+            if(newTask.isTemplate()){
+            	ps.setNull(2, java.sql.Types.INTEGER);
+            }else{
+            	ps.setInt(2, newTask.getStageID());
+            }
             ps.setInt(3, newTask.getUserID());
             ps.setInt(4, newTask.getParentTaskID());
             ps.setString(5, newTask.getTitle().trim());

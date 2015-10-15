@@ -20,7 +20,7 @@ public class TreatmentIssue implements DatabaseModel{
     public TreatmentIssue(int treatmentIssueID, String treatmentIssueName) {
         this.treatmentIssueID = treatmentIssueID;
         this.treatmentIssueName = treatmentIssueName;
-        this.userID = -1;
+        this.userID = 0;
     }
     
     public TreatmentIssue(int treatmentIssueID, String treatmentIssueName, int userID) {
@@ -30,7 +30,7 @@ public class TreatmentIssue implements DatabaseModel{
     }
     
     public TreatmentIssue( String treatmentIssueName, int userID) {
-        this.treatmentIssueID = -1;
+        this.treatmentIssueID = 0;
         this.treatmentIssueName = treatmentIssueName;
         this.userID = userID;
     }

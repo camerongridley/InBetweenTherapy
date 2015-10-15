@@ -112,7 +112,11 @@
         
         
 
-        <label for="stageList" class="control-label">Stages</label>
+        <label for="stageList" class="control-label">Stages
+        			<a role="button" href="./CreateStage?requestedAction=addStageToTreatmentPlan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}" class="btn btn-default btn-xs" title="Add a stage to this treatment plan.">
+					  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+					</a>
+		</label>
 			<c:forEach items="${treatmentPlan.stages }" var="stage">
 				<div class="panel panel-default panel-task" id="stageList" title="Click the stage title to expand and see the stage details.">
 				  <div class="panel-heading">
@@ -121,18 +125,18 @@
 					<a role="button" data-toggle="collapse" href="#collapse${stage.stageID }" aria-expanded="true" aria-controls="collapse${stage.stageID }">
 			          <span class="">${stage.title }</span>
 			        </a>
-			        <a role="button" href="./EditStage?requestedAction=editStage&path=editingPlan&treatmentPlanID=${treatmentPlan.treatmentPlanID }&stageID=${stage.stageID}" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
+			        <a role="button" href="./EditStage?requestedAction=editStage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 					  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 					</a>
 				  </div>
-				  <div id="collapse${stage.stageID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${stage.stageID }">
+				  <div id="collapse${stage.stageID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${stage.stageID}">
 					  <div class="panel-body">
 					    ${stage.description } 
 					  </div>
 					  	<c:forEach items="${stage.tasks }" var="task">
 				  			<div class="panel-body">
 								&nbsp;&nbsp;&nbsp;Task: <c:out value="${task.title }"></c:out>
-								<a role="button" href="./EditTask?requestedAction=editStage&path=editingPlan&treatmentPlanID=${treatmentPlan.treatmentPlanID }&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
+								<a role="button" href="./EditTask?requestedAction=editStage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit this task">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
 							</div>
