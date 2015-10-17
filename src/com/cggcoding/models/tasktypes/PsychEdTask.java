@@ -78,5 +78,11 @@ public class PsychEdTask extends Task implements DatabaseModel{
 		return null;
 	}
 
+	@Override
+	protected void saveNewAdditionalData() throws DatabaseException, ValidationException {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 }

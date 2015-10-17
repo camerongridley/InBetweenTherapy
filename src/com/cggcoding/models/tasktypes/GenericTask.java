@@ -71,7 +71,7 @@ public class GenericTask extends Task implements DatabaseModel{
 	@Override
 	public void saveNew() throws DatabaseException, ValidationException{
 		super.saveNewGeneralDataInDatabase();
-		updateAdditionalData(); //this does nothing here but just putting in place for sake of consistency with other task types
+		saveNewAdditionalData(); //this does nothing here but just putting in place for sake of consistency with other task types
 	}
 	
 	@Override
@@ -100,6 +100,12 @@ public class GenericTask extends Task implements DatabaseModel{
 	@Override
 	protected void loadAdditionalData() {
 		//there is no additional data to load for GenericTask
+	}
+
+	@Override
+	protected void saveNewAdditionalData() throws DatabaseException, ValidationException {
+		//there is no additional data to save for GenericTask
+		
 	}
 	
 	

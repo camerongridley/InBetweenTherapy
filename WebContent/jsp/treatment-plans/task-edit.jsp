@@ -87,11 +87,11 @@
     </form>
 	
 	<script>
-	$(function() {
-	    $('#defaultTaskListID').change(function() {
-	    	this.form.submit();
-	    });
-	});
+		$(function() {
+		    $('#defaultTaskListID').change(function() {
+		    	this.form.submit();
+		    });
+		});
 	</script>
 
 <c:import url="/jsp/footer.jsp" />

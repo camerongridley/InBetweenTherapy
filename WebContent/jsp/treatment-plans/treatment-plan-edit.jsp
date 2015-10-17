@@ -25,7 +25,7 @@
     <form class="form-horizontal" action="./EditTreatmentPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="plan-edit-select-plan">
 		<input type="hidden" name="path" value="${path }" >
-		<c:if test="${path=='editingPlan' }">
+		<c:if test="${path=='editingPlan' || path=='editingPlanTemplate' }">
 			<div class="form-group">
 				<label for="selectedDefaultTreatmentPlanID" class="col-sm-2 control-label">Select Default Treatment Plan to Edit</label>
 		        <div class="col-sm-5">
@@ -125,9 +125,15 @@
 					<a role="button" data-toggle="collapse" href="#collapse${stage.stageID }" aria-expanded="true" aria-controls="collapse${stage.stageID }">
 			          <span class="">${stage.title }</span>
 			        </a>
+			        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+			        <a role="button" href="http://www.google.com" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
+					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+					</a>
+					
 			        <a role="button" href="./EditStage?requestedAction=editStage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 					  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 					</a>
+					
 				  </div>
 				  <div id="collapse${stage.stageID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${stage.stageID}">
 					  <div class="panel-body">
@@ -135,7 +141,7 @@
 					  </div>
 					  	<c:forEach items="${stage.tasks }" var="task">
 				  			<div class="panel-body">
-								&nbsp;&nbsp;&nbsp;Task: <c:out value="${task.title }"></c:out>
+								&nbsp;&nbsp;&nbsp;Task: <c:out value="${task.title }"></c:out><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 								<a role="button" href="./EditTask?requestedAction=editStage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit this task">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
@@ -156,7 +162,7 @@
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Next Step >></button>
+                <button type="submit" class="btn btn-default">Save</button>
             </div>
         </div>
     </form>

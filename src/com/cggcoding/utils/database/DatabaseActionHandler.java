@@ -14,6 +14,7 @@ import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.GenericTask;
+import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
 
 public interface DatabaseActionHandler {
 
@@ -44,6 +45,8 @@ public interface DatabaseActionHandler {
 	 * @throws DatabaseException
 	 */
 	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException;
+	
+	void treatmentPlanValidateAndUpdate(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException;
 
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
@@ -71,9 +74,11 @@ public interface DatabaseActionHandler {
 	
 	StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException;
 	
-	Map<Integer, Integer> stageGetTaskIDTypeMap(int stageID) throws DatabaseException;
+	List<Integer> stageGetTaskIDs(int stageID) throws DatabaseException;
 	
 	List<StageGoal> stageLoadGoals(int stageID) throws DatabaseException;
+	
+	void stageDelete(int stageID) throws DatabaseException;
 
 	//**************************************************************************************************
 	//*************************************** Treatment Issue Methods **********************************
@@ -102,6 +107,8 @@ public interface DatabaseActionHandler {
 	
 	Task taskTwoTextBoxesLoad(int taskID) throws DatabaseException;
 	
+	void taskTwoTextBoxesSaveNewAdditionalData(TwoTextBoxesTask twoTextBoxesTask) throws DatabaseException, ValidationException;
+	
 	/**Updates task with new data.  If taskToUpdate.isTemplate == true, then stageID foreign key is set to null before inserting
 	 * @param taskToUpdate
 	 * @return
@@ -111,6 +118,10 @@ public interface DatabaseActionHandler {
 	boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException;
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
+
+	
+
+	
 	
 
 }

@@ -40,18 +40,7 @@ public class DefaultDatabaseCalls {
 	public static List<Task> getDefaultTasks() throws DatabaseException{
 		return databaseActionHandler.taskGetDefaults();
 	}
-	
-	public static TreatmentPlan getDefaultTreatmentPlanByID(int selectedTreatmentPlanID) throws DatabaseException{
-		return databaseActionHandler.treatmentPlanLoadWithEmpyLists(selectedTreatmentPlanID);
-	}
-	
-	public static Stage getDefaultStageByID(int selectedDefaultStageID) throws DatabaseException, ValidationException {
-		return databaseActionHandler.stageLoadWithEmplyLists(selectedDefaultStageID);
-	}
-	
-	public static Task getTaskByID(int taskID) throws DatabaseException{
-		return databaseActionHandler.taskGenericLoad(taskID);
-	}
+
 
 	public static Map<Integer, String> getTaskTypeMap() throws DatabaseException {
 		return databaseActionHandler.taskTypesLoad();

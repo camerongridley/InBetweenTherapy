@@ -13,6 +13,7 @@ import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.GenericTask;
+import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
@@ -48,7 +49,7 @@ public class EditTask extends HttpServlet {
 		String forwardTo = "/index.jsp";
 		
 		//performed here to get parameters for all tasks run below
-		Task tempTask = ParameterUtils.getTaskParametersFromRequest(request, userID);
+		Task tempTask = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
 		
 		//get and maintain value of creatingTemplate, which indicates if this is for creating/editing templates vs data tied to specific user
 		/*String creatingTemplate = request.getParameter("isTemplate");
@@ -75,7 +76,7 @@ public class EditTask extends HttpServlet {
 						throw new ValidationException(ErrorMessages.TASK_INVALID_ID);
 					}
 					
-					request.setAttribute("task", DefaultDatabaseCalls.getTaskByID(selectedTaskID));
+					request.setAttribute("task", Task.load(selectedTaskID));
 					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-update"):
@@ -93,7 +94,6 @@ public class EditTask extends HttpServlet {
 		} catch (DatabaseException | ValidationException e) {
 			//put in temporary task object so values can be saved in inputs after error
 			request.setAttribute("task", tempTask);
-			//request.setAttribute("hasSubtasks", hasSubtasks);
 			request.setAttribute("errorMessage", e.getMessage());
 
 			forwardTo = "/jsp/treatment-plans/task-edit.jsp";

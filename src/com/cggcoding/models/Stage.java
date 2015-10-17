@@ -113,7 +113,6 @@ public class Stage implements Completable, DatabaseModel {
 	 */
 	public static Stage getInstanceWithoutID(int treatmentPlanID, int userID, String title, String description, int stageOrder, boolean template) {
 		Stage stage = new Stage(treatmentPlanID, userID, title, description, stageOrder, template);
-		stage.template = true;
 		return stage;
 	}
 
@@ -133,10 +132,10 @@ public class Stage implements Completable, DatabaseModel {
 	}
 	
 	public void loadTasks() throws DatabaseException{
-		HashMap<Integer, Integer> taskIDTaskTypeMap = (HashMap<Integer, Integer>)databaseActionHandler.stageGetTaskIDTypeMap(stageID);
+		List<Integer> taskIDs = databaseActionHandler.stageGetTaskIDs(stageID);
 		
-		for(Map.Entry<Integer, Integer> entry : taskIDTaskTypeMap.entrySet()){
-			addTask(Task.load(entry.getKey(), entry.getValue()));
+		for(int taskID : taskIDs){
+			addTask(Task.load(taskID));
 		}
 	}
 	
@@ -415,7 +414,7 @@ public class Stage implements Completable, DatabaseModel {
 	}
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		// TODO implement method
+		databaseActionHandler.stageDelete(this.stageID);
 		
 	}
 

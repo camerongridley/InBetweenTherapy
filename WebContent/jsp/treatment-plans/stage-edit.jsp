@@ -15,27 +15,34 @@
 	
 	<form class="form-horizontal" action="./EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-select-stage">
+		<input type="hidden" name="path" value="${path }">
 		
-		<div class="form-group">
-			<label for="selectedDefaultStageID" class="col-sm-2 control-label">Select Default Stage to Edit</label>
-	        <div class="col-sm-5">
-	            <select class="form-control" id="selectedDefaultStageID" name="selectedDefaultStageID">
-	                <option  value="">Select a stage to edit.</option>
-	                <c:forEach var="defaultStage" items="${defaultStageList }">
-	                    <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == stage.stageID }">selected</c:if> >${defaultStage.title}</option>
-	                </c:forEach>
-	            </select>
-	             
-	        </div>
-
-		</div>
+		<c:if test="${path=='editingStageTemplate'}">
+			<div class="form-group">
+				<label for="selectedDefaultStageID" class="col-sm-2 control-label">Select Default Stage to Edit</label>
+		        <div class="col-sm-5">
+		            <select class="form-control" id="selectedDefaultStageID" name="selectedDefaultStageID">
+		                <option  value="">Select a stage to edit.</option>
+		                <c:forEach var="defaultStage" items="${defaultStageList }">
+		                    <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == stage.stageID }">selected</c:if> >${defaultStage.title}</option>
+		                </c:forEach>
+		            </select>
+		             
+		        </div>
+	
+			</div>
+		</c:if>
+		
+		
 	</form>
 	
 	<hr>
 	
 	<form class="form-horizontal" action="./EditStage" method="POST">
-		<input type="hidden" name="requestedAction" value="stage-edit-name">	
+		<input type="hidden" name="requestedAction" value="stage-edit-name">
+		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >	
+		
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
             <div class="col-sm-10">
@@ -51,7 +58,7 @@
 
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Add Goals >></button>
+                <button type="submit" class="btn btn-default">Save</button>
             </div>
         </div>
     </form>

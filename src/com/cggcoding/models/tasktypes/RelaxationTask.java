@@ -86,4 +86,10 @@ public class RelaxationTask extends Task implements DatabaseModel{
 		return null;
 	}
 
+	@Override
+	protected void saveNewAdditionalData() throws DatabaseException, ValidationException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

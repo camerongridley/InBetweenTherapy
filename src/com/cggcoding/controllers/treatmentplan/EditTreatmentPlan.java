@@ -20,6 +20,7 @@ import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
+import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
  * Servlet implementation class EditTreatmentPlan
@@ -120,7 +121,8 @@ public class EditTreatmentPlan extends HttpServlet {
 		                treatmentPlan.update();
 		
 		                request.setAttribute("treatmentPlan", treatmentPlan);
-		                forwardTo = "/jsp/treatment-plans/stage-create.jsp";
+		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
 		            	break;
 		            case "plan-edit-select-plan":
 		        		int selectedDefaultTreatmentPlanID = ParameterUtils.parseIntParameter(request, "selectedDefaultTreatmentPlanID");

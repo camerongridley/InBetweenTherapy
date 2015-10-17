@@ -14,6 +14,9 @@ import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.GenericTask;
+import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
+import com.cggcoding.utils.CommonServletFunctions;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 
 /**
@@ -47,35 +50,49 @@ public class CreateTask extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String forwardTo = "/index.jsp";
 		
-		//performed here to get parameters for all tasks run below
-		Task tempGeneralDataTask = ParameterUtils.getTaskParametersFromRequest(request, userID);
+		//performed here to get parameters for all tasks run below depending on what type of task is selected
+		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
 
 		try {
-			//put user-independent attributes acquired from database in the request
+			//put user-independent (i.e. default) lists acquired from database in the request
 			request.setAttribute("taskTypeMap", DefaultDatabaseCalls.getTaskTypeMap());
 			
 			if(user.hasRole("admin")){
 				switch(requestedAction){
 				case ("create-task-start"):
-					tempGeneralDataTask.setTemplate(true);
+					taskToCreate.setTemplate(true);//TODO change this to be set based on path?
 					//set tempTask in request so page knows value of isTemplate
-					request.setAttribute("task", tempGeneralDataTask);
+					request.setAttribute("task", taskToCreate);
 					forwardTo = "/jsp/treatment-plans/task-create.jsp";
 					break;
-				case ("task-add-info"):
-					if(tempGeneralDataTask.isTemplate()==true){
-						tempGeneralDataTask = ParameterUtils.getTaskParametersFromRequest(request, userID);
-						GenericTask genericTask = GenericTask.getTemplateInstance(user.getUserID(), tempGeneralDataTask.getTaskTypeID(), tempGeneralDataTask.getTitle(), tempGeneralDataTask.getInstructions(), tempGeneralDataTask.getResourceLink(), tempGeneralDataTask.isExtraTask());//TODO confirm this is the best set of parameters for this factory method
-						genericTask.saveNew();
+				case "task-type-select":
+					request.setAttribute("task", taskToCreate);
+
+					forwardTo = "/jsp/treatment-plans/task-create.jsp";
+					break;
+				case ("task-save"):
+					if(taskToCreate.isTemplate()==true){
+
+						switch(taskToCreate.getTaskTypeID()){
+							case Constants.TASK_TYPE_ID_GENERIC_TASK:
+								GenericTask genericTask = (GenericTask)taskToCreate;
+								genericTask.saveNew();
+								break;
+							case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+								TwoTextBoxesTask twoTextTask = (TwoTextBoxesTask)taskToCreate;
+								twoTextTask.saveNew();
+								break;
+						}
+
 						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
 					}else{
 						//code for non-template/clientTask creation and editing
 					}
 					break;
 				case ("edit-task-template-start"):
-					tempGeneralDataTask.setTemplate(true);
+					taskToCreate.setTemplate(true);
 					//set tempTask in request so page knows value of isTemplate
-					request.setAttribute("task", tempGeneralDataTask);
+					request.setAttribute("task", taskToCreate);
 					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				}
@@ -83,8 +100,7 @@ public class CreateTask extends HttpServlet {
 			
 		} catch (DatabaseException | ValidationException e) {
 			//put in temporary task object so values can be saved in inputs after error
-			request.setAttribute("task", tempGeneralDataTask);
-			//request.setAttribute("hasSubtasks", hasSubtasks);
+			request.setAttribute("task", taskToCreate);
 			request.setAttribute("errorMessage", e.getMessage());
 
 			forwardTo = "/jsp/treatment-plans/task-create.jsp";

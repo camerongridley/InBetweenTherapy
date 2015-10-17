@@ -12,10 +12,12 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Stage;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
+import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
  * Servlet implementation class EditStage
@@ -39,13 +41,22 @@ public class EditStage extends HttpServlet {
 		User user = (User)request.getSession().getAttribute("user");
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
+		request.setAttribute("path", path);
+		
 		if(user.hasRole("admin")){
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 			int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 			int taskID = ParameterUtils.parseIntParameter(request, "taskID");
 			
-			Stage stage;
+			Stage stage = null;
 			try {
+				switch(requestedAction){
+					case "editStage":
+						break;
+					case "deleteStage":
+						break;
+					
+				}
 				stage = Stage.load(stageID);
 				request.setAttribute("stage", stage);
 			} catch (DatabaseException | ValidationException e) {
@@ -66,9 +77,12 @@ public class EditStage extends HttpServlet {
 		User user = (User)session.getAttribute("user");
 		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
 		String stageIDAsString = request.getParameter("stageID");
 		String stageTitle = request.getParameter("stageTitle");
 		String stageDescription = request.getParameter("stageDescription");
+		Stage editedStage = null;
 		
 		
 		try{
@@ -83,7 +97,7 @@ public class EditStage extends HttpServlet {
 		            	break;
 		            case "stage-edit-select-stage" :
 		            	int selectedDefaultStageID = Integer.parseInt(request.getParameter("selectedDefaultStageID"));
-		            	request.setAttribute("stage", DefaultDatabaseCalls.getDefaultStageByID(selectedDefaultStageID));
+		            	request.setAttribute("stage", Stage.load(selectedDefaultStageID));
 		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-name" :
@@ -91,14 +105,21 @@ public class EditStage extends HttpServlet {
 		            		throw new ValidationException(ErrorMessages.STAGE_UPDATE_NO_SELECTION);
 		            	}else{
 			            	int stageID = Integer.parseInt(stageIDAsString);
-			            	Stage stage = DefaultDatabaseCalls.getDefaultStageByID(stageID);
-			            	stage.setTitle(stageTitle);
-			            	stage.setDescription(stageDescription);
-			            	stage.update();
+			            	editedStage = Stage.load(stageID);
+			            	editedStage.setTitle(stageTitle);
+			            	editedStage.setDescription(stageDescription);
+			            	editedStage.update();
 			            	
-			            	request.setAttribute("stage", stage);
+			            	request.setAttribute("stage", editedStage);
+			            	if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate")){
+			            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
+			            		request.setAttribute("treatmentPlan", TreatmentPlan.load(editedStage.getTreatmentPlanID()));
+			            		forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+			            	}else{
+			            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
+			            		forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+			            	}
 			            	
-			            	forwardTo = "/jsp/treatment-plans/stage-edit-goals.jsp";
 		            	}
 
 		            	break;
@@ -116,6 +137,8 @@ public class EditStage extends HttpServlet {
 		} catch (ValidationException | DatabaseException e){
 			//in case of error and user is sent back to page - re-populate the forms
 			request.setAttribute("errorMessage", e.getMessage());
+			
+			request.setAttribute("stage", editedStage);
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
             forwardTo = "/jsp/treatment-plans/stage-edit.jsp";

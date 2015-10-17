@@ -38,7 +38,25 @@ public class CreateStage extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		User user = (User)request.getSession().getAttribute("user");
+		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
 		
+		if(user.hasRole("admin")){
+			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+
+			try {
+				;
+				request.setAttribute("treatmentPlan", TreatmentPlan.load(treatmentPlanID));
+			} catch (DatabaseException | ValidationException e) {
+				request.setAttribute("errorMessage", e.getMessage());
+				e.printStackTrace();
+			}
+			
+			
+			request.getRequestDispatcher("/jsp/treatment-plans/stage-create.jsp").forward(request, response);
+		}
 	}
 
 	/**
@@ -49,12 +67,14 @@ public class CreateStage extends HttpServlet {
 		HttpSession session = request.getSession();
 		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
+		
 		String stageIDAsString = request.getParameter("stageID");
 		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 		String stageTitle = request.getParameter("stageTitle");
     	String stageDescription = request.getParameter("stageDescription");
     	int stageOrder = ParameterUtils.parseIntParameter(request, "stageOrder");
-    	boolean template = ParameterUtils.getBooleanParameter(request, "template");
     	String newStageGoal =request.getParameter("newStageGoal");
 		
 		
@@ -74,16 +94,26 @@ public class CreateStage extends HttpServlet {
 		                loadTreatmentPlanFromDatabaseIntoRequest(request, treatmentPlanID);
 		                
 		                if(stageTitle.isEmpty() || stageDescription.isEmpty()){
-		                	throw new ValidationException("You must enter a stage name and description.");
+		                	throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
 		                }
-
+		                
+		                boolean template = path.equals("creatingStageTemplate");
+		                
 		                Stage newStageTemplate = Stage.getInstanceWithoutID(treatmentPlanID, user.getUserID(), stageTitle, stageDescription, stageOrder, template);
 		                newStageTemplate.setTreatmentPlanID(ParameterUtils.parseIntParameter(request, "treatmentPlanID"));
 		                newStageTemplate.saveNew();
 
 		                request.setAttribute("stage", newStageTemplate);
-		                request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
-		                forwardTo = "/jsp/treatment-plans/task-create.jsp";
+		                
+		                if(path.equals("editingPlanTemplate")){
+		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
+		                	request.setAttribute("treatmentPlan", TreatmentPlan.load(treatmentPlanID));
+		                	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		                }else{
+		                	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
+		                	forwardTo = "/jsp/treatment-plans/task-create.jsp";
+		                }
+		                
 		                break;
 		            case "stage-add-goal":
 		            	//Stage stageWithNewGoal = new Stage()

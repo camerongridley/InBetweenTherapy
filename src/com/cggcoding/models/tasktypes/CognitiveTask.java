@@ -128,4 +128,10 @@ public class CognitiveTask extends Task implements DatabaseModel{
 		
 	}
 
+	@Override
+	protected void saveNewAdditionalData() throws DatabaseException, ValidationException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

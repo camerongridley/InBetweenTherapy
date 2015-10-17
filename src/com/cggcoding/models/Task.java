@@ -6,6 +6,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.tasktypes.GenericTask;
 import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -166,12 +167,13 @@ public abstract class Task implements Completable{
 		this.template = template;
 	}
 	
-	public static Task load(int taskID, int taskTypeID) throws DatabaseException{
-		switch(taskTypeID){
-		case 1: //taskTypeID for GenericTask 
-			return GenericTask.load(taskID);
+	public static Task load(int taskID) throws DatabaseException{
+		Task genericTask = GenericTask.load(taskID);
+		switch(genericTask.getTaskTypeID()){
+		case Constants.TASK_TYPE_ID_GENERIC_TASK:
+			return genericTask;
 
-		case 2: //taskTypeID for TwoTextBoxesTask
+		case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
 			return TwoTextBoxesTask.load(taskID);
 		}
 		
@@ -199,7 +201,8 @@ public abstract class Task implements Completable{
 	protected Task saveNewGeneralDataInDatabase() throws DatabaseException, ValidationException{
 		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);
 		this.taskID = savedTask.getTaskID();
-		return savedTask;
+		
+		return this;
 	}
 	
 	protected void updateDataInDatabase() throws DatabaseException, ValidationException{
@@ -207,7 +210,8 @@ public abstract class Task implements Completable{
 		updateAdditionalData();
 	}
 	
-
+	protected abstract void saveNewAdditionalData() throws DatabaseException, ValidationException;
+	
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
 	 * @param taskWithNewData
 	 * @return true if update successful, false if error

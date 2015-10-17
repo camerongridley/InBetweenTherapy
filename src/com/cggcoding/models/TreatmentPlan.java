@@ -176,6 +176,14 @@ public class TreatmentPlan implements DatabaseModel{
 		this.isTemplate = isTemplate;
 	}
 
+	public boolean isCompleted() {
+		return completed;
+	}
+
+	public void setCompleted(boolean completed) {
+		this.completed = completed;
+	}
+
 	public int getNumberOfStages(){
 		return stages.size();
 	}
@@ -219,7 +227,7 @@ public class TreatmentPlan implements DatabaseModel{
 
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		// TODO implement method
+		databaseActionHandler.treatmentPlanValidateAndUpdate(this);
 		
 	}
 

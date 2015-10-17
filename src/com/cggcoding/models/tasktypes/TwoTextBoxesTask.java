@@ -19,7 +19,7 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 	
 
-	public TwoTextBoxesTask(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,
+	private TwoTextBoxesTask(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,
 			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,
 			boolean extraTask, boolean template,
 			String extraTextLabel1, String extraTextValue1,
@@ -43,6 +43,14 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 			extraTask, template,
 			extraTextLabel1, extraTextValue1,
 			extraTextLabel2, extraTextValue2);
+	}
+	
+	public static TwoTextBoxesTask addDataToGenericTask(GenericTask genericTask, String extraTextLabel1, String extraTextValue1,String extraTextLabel2, String extraTextValue2){
+		return new TwoTextBoxesTask(genericTask.getTaskID(), genericTask.getStageID(), genericTask.getUserID(), genericTask.getTaskTypeID(), genericTask.getParentTaskID(), genericTask.getTitle(),
+				genericTask.getInstructions(), genericTask.getResourceLink(), genericTask.isCompleted(), genericTask.getDateCompleted(), genericTask.getTaskOrder(),
+				genericTask.isExtraTask(), genericTask.isTemplate(),
+				extraTextLabel1, extraTextValue1,
+				extraTextLabel2, extraTextValue2);
 	}
 	
 	public String getExtraTextLabel1() {
@@ -82,6 +90,11 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 	}
 	
 	@Override
+	protected void saveNewAdditionalData() throws DatabaseException, ValidationException{
+		databaseActionHandler.taskTwoTextBoxesSaveNewAdditionalData(this);
+	}
+	
+	@Override
 	protected boolean updateAdditionalData() {
 		// TODO Auto-generated method stub
 		return false;
@@ -95,7 +108,8 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 
 	@Override
 	public void saveNew() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
+		super.saveNewGeneralDataInDatabase();
+		saveNewAdditionalData();
 		
 	}
 
