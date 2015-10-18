@@ -215,8 +215,10 @@ public abstract class Task implements Completable{
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
 	 * @param taskWithNewData
 	 * @return true if update successful, false if error
+	 * @throws ValidationException 
+	 * @throws DatabaseException 
 	 */
-	protected abstract boolean updateAdditionalData();
+	protected abstract boolean updateAdditionalData() throws DatabaseException, ValidationException;
 	
 	protected abstract void loadAdditionalData();
 	

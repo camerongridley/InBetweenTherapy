@@ -27,10 +27,10 @@
 		                    <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == stage.stageID }">selected</c:if> >${defaultStage.title}</option>
 		                </c:forEach>
 		            </select>
-		             
 		        </div>
-	
 			</div>
+			
+			
 		</c:if>
 		
 		

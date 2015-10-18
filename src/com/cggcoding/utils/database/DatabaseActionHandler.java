@@ -109,6 +109,8 @@ public interface DatabaseActionHandler {
 	
 	void taskTwoTextBoxesSaveNewAdditionalData(TwoTextBoxesTask twoTextBoxesTask) throws DatabaseException, ValidationException;
 	
+	boolean taskTwoTextBoxesUpdateAdditionalData(TwoTextBoxesTask twoTextBoxesTask) throws DatabaseException, ValidationException;
+	
 	/**Updates task with new data.  If taskToUpdate.isTemplate == true, then stageID foreign key is set to null before inserting
 	 * @param taskToUpdate
 	 * @return
@@ -118,6 +120,8 @@ public interface DatabaseActionHandler {
 	boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException;
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
+
+	
 
 	
 

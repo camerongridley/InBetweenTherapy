@@ -13,7 +13,9 @@ import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.GenericTask;
+import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
 import com.cggcoding.utils.CommonServletFunctions;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
@@ -36,7 +38,9 @@ public class EditTask extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
 	}
 
 	/**
@@ -46,6 +50,8 @@ public class EditTask extends HttpServlet {
 		User user = (User)request.getSession().getAttribute("user");
 		userID =  user.getUserID();
 		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
 		String forwardTo = "/index.jsp";
 		
 		//performed here to get parameters for all tasks run below
@@ -72,18 +78,43 @@ public class EditTask extends HttpServlet {
 					break;
 				case ("edit-task-select-task"):
 					int selectedTaskID = ParameterUtils.parseIntParameter(request, "defaultTaskListID");
-					if(selectedTaskID == 0){
-						throw new ValidationException(ErrorMessages.TASK_INVALID_ID);
+					if(selectedTaskID != 0){
+						request.setAttribute("task", Task.load(selectedTaskID));
 					}
+
+					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
+					break;
+				case ("edit-task-select-task-type"):
+					/*selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
+					int newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
+					Task taskWithNewType = Task.load(selectedTaskID);
+					taskWithNewType.setTaskTypeID(newTaskTypeID);
+					if(selectedTaskID != 0){
+						switch(newTaskTypeID){
+							case (Constants.TASK_TYPE_ID_GENERIC_TASK):
+								GenericTask genericTask = (GenericTask)taskWithNewType;
+								request.setAttribute("task", genericTask);
+								break;
+							case(Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK):
+								TwoTextBoxesTask twoTextBoxesTask = (TwoTextBoxesTask)taskWithNewType;
+								request.setAttribute("task", twoTextBoxesTask);
+								break;
+						}
+						
+					}*/
 					
-					request.setAttribute("task", Task.load(selectedTaskID));
 					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-update"):
-					switch(tempTask.getTaskTypeName()){
-					case ("GenericTask"):
-						GenericTask genericTask = (GenericTask)tempTask;
-						genericTask.update();
+					switch(tempTask.getTaskTypeID()){
+						case (Constants.TASK_TYPE_ID_GENERIC_TASK):
+							GenericTask genericTask = (GenericTask)tempTask;
+							genericTask.update();
+							break;
+						case(Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK):
+							TwoTextBoxesTask twoTextBoxesTask = (TwoTextBoxesTask)tempTask;
+							twoTextBoxesTask.update();
+							break;
 					}
 					
 					break;

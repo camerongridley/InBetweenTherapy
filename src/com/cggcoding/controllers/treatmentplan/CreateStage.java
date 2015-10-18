@@ -47,8 +47,14 @@ public class CreateStage extends HttpServlet {
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 
 			try {
-				;
-				request.setAttribute("treatmentPlan", TreatmentPlan.load(treatmentPlanID));
+				switch(requestedAction){
+				case("addStageToTreatmentPlan"):
+					//set all user-independent lists into request
+					request.setAttribute("defaultStages", DefaultDatabaseCalls.getDefaultStages());
+					request.setAttribute("treatmentPlan", TreatmentPlan.load(treatmentPlanID));
+					break;
+				}
+				
 			} catch (DatabaseException | ValidationException e) {
 				request.setAttribute("errorMessage", e.getMessage());
 				e.printStackTrace();
@@ -79,6 +85,7 @@ public class CreateStage extends HttpServlet {
 		
 		
 		try{
+			
 			if(user.hasRole("admin")){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								

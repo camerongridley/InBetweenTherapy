@@ -38,7 +38,9 @@ public class CreateTask extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
 	}
 
 	/**
@@ -48,6 +50,8 @@ public class CreateTask extends HttpServlet {
 		User user = (User)request.getSession().getAttribute("user");
 		userID =  user.getUserID();
 		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
 		String forwardTo = "/index.jsp";
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected

@@ -1142,6 +1142,38 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
 
 	}
+
+	@Override
+	public boolean taskTwoTextBoxesUpdateAdditionalData(TwoTextBoxesTask twoTextBoxesTask) throws DatabaseException, ValidationException {
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        int success = 0;
+        
+        try {
+        	cn = getConnection();
+        	
+    		String sql = "UPDATE task_two_textboxes SET`extra_text_label_1=?, extra_text_value_1=?, extra_text_label_2=?, extra_text_value_2=? WHERE task_generic_id=?";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setString(1, twoTextBoxesTask.getExtraTextLabel1().trim());
+            ps.setString(2, twoTextBoxesTask.getExtraTextValue1().trim());
+            ps.setString(3, twoTextBoxesTask.getExtraTextLabel2().trim());
+            ps.setString(4, twoTextBoxesTask.getExtraTextValue2().trim());
+            ps.setInt(5, twoTextBoxesTask.getTaskID()); 
+
+            success = ps.executeUpdate();   	
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return success == 1;
+	}
 	
 	@Override
 	public Task taskTwoTextBoxesLoad(int taskID) throws DatabaseException {
@@ -1515,6 +1547,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         return issues;
     }
+
 
 
 

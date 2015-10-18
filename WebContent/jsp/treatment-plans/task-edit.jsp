@@ -15,6 +15,7 @@
 
 <form class="form-horizontal" action="./EditTask" method="POST">
 	<input type="hidden" name="requestedAction" value="edit-task-select-task">
+	<input type="hidden" name="path" value="${path }">
 
 	<div class="form-group">
 		<label for="defaultTaskListID" class="col-sm-2 control-label">Select Task</label>
@@ -29,9 +30,29 @@
 	</div>	
 <hr>
 </form>
+
+<form class="form-horizontal" action="./EditTask" method="POST">
+	<input type="hidden" name="requestedAction" value="edit-task-select-task-type">
+	<input type="hidden" name="path" value="${path }">
+	<input type="hidden" name="taskID" value="${task.taskID }">
+	
+	<div class="form-group">
+	    <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
+	    <div class="col-sm-10">
+	        <select class="form-control" id="taskTypeID" name="taskTypeID">
+	            <option  value="">Select a default treatment issue.</option>
+	            <c:forEach items="${taskTypeMap}" var="taskType">
+	                <option value="${taskType.key}" <c:if test="${taskType.key == task.taskTypeID}">selected</c:if> >${fn:escapeXml(taskType.value)}</option>
+	            </c:forEach>
+	        </select>
+	    </div>
+	</div>
+</form>
 	
 <form class="form-horizontal" action="./EditTask" method="POST">
 		<input type="hidden" name="requestedAction" value="edit-task-update">
+		<input type="hidden" name="path" value="${path }">
+		<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">
 		<input type="hidden" name="taskID" value="${task.taskID }">
 		<input type="hidden" name="stageID" value="${task.stageID }">
 		<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
@@ -39,17 +60,7 @@
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
 		
 		
-		<div class="form-group">
-            <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
-            <div class="col-sm-10">
-                <select class="form-control" id="taskTypeID" name="taskTypeID">
-                    <option  value="">Select a default treatment issue.</option>
-                    <c:forEach items="${taskTypeMap}" var="taskType">
-                        <option value="${taskType.key}" <c:if test="${taskType.key == task.taskTypeID}">selected</c:if> >${fn:escapeXml(taskType.value)}</option>
-                    </c:forEach>
-                </select>
-            </div>
-        </div>		
+				
         <div class="form-group">
             <label for="taskTitle" class="col-sm-2 control-label">Task Name</label>
             <div class="col-sm-10">
@@ -68,16 +79,32 @@
                 <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${fn:escapeXml(task.resourceLink) }"/>" placeholder="Add a link to related resources for this task.">
             </div>
         </div>
-        <div class="form-group">
-		  <div class="col-sm-offset-2 col-sm-10">
-		    <div class="checkbox">
-		      <label>
-		        <input type="checkbox" id="hasSubtasks" name="hasSubtasks" <c:if test="${hasSubtasks.equals('on')}">checked</c:if>> Does this task have subtasks?
-		        
-		      </label>
-		    </div>
-		  </div>
-		</div>
+        <c:if test="${task.taskTypeID==2 }">
+			<div class="form-group">
+	            <label for="extraTextLabel1" class="col-sm-2 control-label">Extra TextBox 1 Label</label>
+	            <div class="col-sm-10">
+	                <input type="text" class="form-control" id="extraTextLabel1" name="extraTextLabel1" value="<c:out value="${fn:escapeXml(task.extraTextLabel1) }"/>" placeholder="Enter a name for the label of the first extra textbox.">
+	            </div>
+	        </div>
+	        <div class="form-group">
+	            <label for="extraTextValue1" class="col-sm-2 control-label">Extra TextBox 1 Value</label>
+	            <div class="col-sm-10">
+	                <input type="text" class="form-control" id="extraTextValue1" name="extraTextValue1" value="<c:out value="${fn:escapeXml(task.extraTextValue1) }"/>" placeholder="Enter a value for the first extra textbox. Leave empty if this for a client entry.">
+	            </div>
+	        </div>
+	        <div class="form-group">
+	            <label for="extraTextLabel2" class="col-sm-2 control-label">Extra TextBox 2 Label</label>
+	            <div class="col-sm-10">
+	                <input type="text" class="form-control" id="extraTextLabel2" name="extraTextLabel2" value="<c:out value="${fn:escapeXml(task.extraTextLabel2) }"/>" placeholder="Enter a name for the label of the first extra textbox.">
+	            </div>
+	        </div>
+	        <div class="form-group">
+	            <label for="extraTextValue2" class="col-sm-2 control-label">Extra TextBox 2 Value</label>
+	            <div class="col-sm-10">
+	                <input type="text" class="form-control" id="extraTextValue2" name="extraTextValue2" value="<c:out value="${fn:escapeXml(task.extraTextValue2) }"/>" placeholder="Enter a value for the second extra textbox. Leave empty if this for a client entry.">
+	            </div>
+	        </div>
+		</c:if>
         
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
@@ -90,6 +117,11 @@
 		$(function() {
 		    $('#defaultTaskListID').change(function() {
 		    	this.form.submit();
+		    });
+		    $('#taskTypeID').change(function() {
+		    	//alert("Caution: Changing the task type will delete all non-generic data.")
+		    	this.form.submit();
+		    	
 		    });
 		});
 	</script>

@@ -95,9 +95,8 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 	}
 	
 	@Override
-	protected boolean updateAdditionalData() {
-		// TODO Auto-generated method stub
-		return false;
+	protected boolean updateAdditionalData() throws DatabaseException, ValidationException {
+		return databaseActionHandler.taskTwoTextBoxesUpdateAdditionalData(this);
 	}
 
 	@Override
@@ -115,7 +114,8 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
+		super.updateDataInDatabase();
+		updateAdditionalData();
 		
 	}
 
