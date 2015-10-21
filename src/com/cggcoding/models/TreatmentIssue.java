@@ -56,9 +56,10 @@ public class TreatmentIssue implements DatabaseModel{
 	}
 
 	@Override
-	public void saveNew() throws ValidationException, DatabaseException {
+	public Object saveNew() throws ValidationException, DatabaseException {
 		TreatmentIssue savedIssue = databaseActionHandler.treatmentIssueValidateAndCreate(this, userID);
 		this.treatmentIssueID = savedIssue.getTreatmentIssueID();
+		return savedIssue;
 		
 	}
 
@@ -76,7 +77,7 @@ public class TreatmentIssue implements DatabaseModel{
 
 	@Override
 	@Deprecated
-	public List<Object> copy(Object o, int numberOfCopies) {
+	public List<Object> copy(int numberOfCopies) {
 		//not applicable for this object
 		return null;
 	}

@@ -17,18 +17,20 @@
 	<input type="hidden" name="requestedAction" value="edit-task-select-task">
 	<input type="hidden" name="path" value="${path }">
 
-	<div class="form-group">
-		<label for="defaultTaskListID" class="col-sm-2 control-label">Select Task</label>
-		<div class="col-sm-8">
-			<select class="form-control" id="defaultTaskListID" name="defaultTaskListID">
-			    <option  value="">Select a default task.</option>
-			    	<c:forEach items="${taskTemplateList}" var="taskTemplate">
-						<option value="${taskTemplate.taskID}" <c:if test="${taskTemplate.taskID == task.taskID }">selected</c:if> >${fn:escapeXml(taskTemplate.title)}</option>
-					</c:forEach>
-			</select>
-		</div>
-	</div>	
-<hr>
+	<c:if test="${path=='editingTaskTemplate'}">
+		<div class="form-group">
+			<label for="defaultTaskListID" class="col-sm-2 control-label">Select Task</label>
+			<div class="col-sm-8">
+				<select class="form-control" id="defaultTaskListID" name="taskID">
+				    <option  value="">Select a default task.</option>
+				    	<c:forEach items="${taskTemplateList}" var="taskTemplate">
+							<option value="${taskTemplate.taskID}" <c:if test="${taskTemplate.taskID == task.taskID }">selected</c:if> >${fn:escapeXml(taskTemplate.title)}</option>
+						</c:forEach>
+				</select>
+			</div>
+		</div>	
+	<hr>
+	</c:if>
 </form>
 
 <form class="form-horizontal" action="./EditTask" method="POST">

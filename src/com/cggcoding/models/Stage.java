@@ -125,13 +125,14 @@ public class Stage implements Completable, DatabaseModel {
 	
 	public static Stage load(int stageID) throws DatabaseException, ValidationException{
 		Stage stage = databaseActionHandler.stageLoadWithEmplyLists(stageID);
-		stage.loadTasks();
-		stage.loadGoals();
-		
+		if(stage != null){
+			stage.loadTasks();
+			stage.loadGoals();
+		}
 		return stage;
 	}
 	
-	public void loadTasks() throws DatabaseException{
+	public void loadTasks() throws DatabaseException, ValidationException{
 		List<Integer> taskIDs = databaseActionHandler.stageGetTaskIDs(stageID);
 		
 		for(int taskID : taskIDs){
@@ -139,7 +140,7 @@ public class Stage implements Completable, DatabaseModel {
 		}
 	}
 	
-	public void loadGoals() throws DatabaseException{
+	public void loadGoals() throws DatabaseException, ValidationException{
 		setGoals(databaseActionHandler.stageLoadGoals(stageID));
 	}
 	
@@ -399,16 +400,17 @@ public class Stage implements Completable, DatabaseModel {
 	}
 
 	@Override
-	public void saveNew() throws ValidationException, DatabaseException{
+	public Object saveNew() throws ValidationException, DatabaseException{
 		Stage savedStage = databaseActionHandler.stageValidateAndCreate(this);
 		this.stageID = savedStage.getStageID();
+		return savedStage;
 	}
 
 	
 	@Override
 	public void update()  throws ValidationException, DatabaseException {
 		//if(this.validateForDatabase()){
-			databaseActionHandler.stageUpdate(this);
+			databaseActionHandler.stageUpdate(this);//TODO should this be stageValidateAndUpdate() - be consistent with how validating in MySQLActionHandler whether it's contained within Update/Create or if is a separate method - separateMethods I think is preferable
 		//}
 		
 	}
@@ -419,8 +421,21 @@ public class Stage implements Completable, DatabaseModel {
 	}
 
 	@Override
-	public List<Object> copy(Object o, int numberOfCopies) {
+	public List<Object> copy(int numberOfCopies) {
 		// TODO  implement method
 		return null;
+	}
+	
+	/**Creates a copy of the Stage into a new TreatmentPlan and User.
+	 * @param treatmentPlanIDToCopy - treatmentPlanID the Stage is being copied into
+	 * @param userIDToCopy - userID of the User that owns the TreatmentPlan the Stage is being copied into
+	 * @param copyAsTemplate - Designates whether this Stage should be copied as a template or not. Set "true" if it is to be a template in the TreatmentPlan it is being copied into, and "false" if it is not a template.
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	public Stage copyIntoTreatmentPlan(int treatmentPlanIDToCopy, int userIDToCopy, boolean copyAsTemplate) throws ValidationException, DatabaseException{
+		Stage copiedStage = getInstanceWithoutID(treatmentPlanIDToCopy, userIDToCopy, this.title, this.description, this.stageOrder, copyAsTemplate);
+		return (Stage)copiedStage.saveNew();
 	}
 }

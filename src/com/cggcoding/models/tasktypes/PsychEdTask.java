@@ -55,8 +55,9 @@ public class PsychEdTask extends Task implements DatabaseModel{
 	}
 	
 	@Override
-	public void saveNew() throws ValidationException, DatabaseException {
+	public Object saveNew() throws ValidationException, DatabaseException {
 		// TODO Auto-generated method stub
+		return null;
 		
 	}
 
@@ -73,7 +74,7 @@ public class PsychEdTask extends Task implements DatabaseModel{
 	}
 
 	@Override
-	public List<Object> copy(Object o, int numberOfCopies) {
+	public List<Object> copy(int numberOfCopies) {
 		// TODO Auto-generated method stub
 		return null;
 	}

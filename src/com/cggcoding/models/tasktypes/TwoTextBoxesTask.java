@@ -106,10 +106,10 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 	}
 
 	@Override
-	public void saveNew() throws ValidationException, DatabaseException {
-		super.saveNewGeneralDataInDatabase();
+	public Object saveNew() throws ValidationException, DatabaseException {
+		Task savedTask = super.saveNewGeneralDataInDatabase();
 		saveNewAdditionalData();
-		
+		return savedTask;
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 	}
 
 	@Override
-	public List<Object> copy(Object o, int numberOfCopies) {
+	public List<Object> copy(int numberOfCopies) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -69,9 +69,10 @@ public class GenericTask extends Task implements DatabaseModel{
 	}
 	
 	@Override
-	public void saveNew() throws DatabaseException, ValidationException{
-		super.saveNewGeneralDataInDatabase();
+	public Object saveNew() throws DatabaseException, ValidationException{
+		Task savedTask = super.saveNewGeneralDataInDatabase();
 		saveNewAdditionalData(); //this does nothing here but just putting in place for sake of consistency with other task types
+		return savedTask;
 	}
 	
 	@Override
@@ -87,7 +88,7 @@ public class GenericTask extends Task implements DatabaseModel{
 	}
 
 	@Override
-	public List<Object> copy(Object o, int numberOfCopies) {
+	public List<Object> copy(int numberOfCopies) {
 		// TODO  implement method
 		return null;
 	}

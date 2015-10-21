@@ -220,9 +220,10 @@ public class TreatmentPlan implements DatabaseModel{
 	}
 	
 	@Override
-	public void saveNew() throws ValidationException, DatabaseException{
+	public Object saveNew() throws ValidationException, DatabaseException{
 		 TreatmentPlan savedPlan = databaseActionHandler.treatmentPlanValidateAndCreateBasic(this);
 		 this.treatmentPlanID = savedPlan.getTreatmentPlanID();
+		 return savedPlan;
 	}
 
 	@Override
@@ -238,15 +239,17 @@ public class TreatmentPlan implements DatabaseModel{
 	}
 
 	@Override
-	public List<Object> copy(Object o, int numberOfCopies) {
+	public List<Object> copy(int numberOfCopies) {
 		// TODO implement method
 		return null;
 	}
 
 	public static TreatmentPlan load(int treatmentPlanID) throws DatabaseException, ValidationException{
 		TreatmentPlan plan = databaseActionHandler.treatmentPlanLoadWithEmpyLists(treatmentPlanID);
-		plan.loadStages();
-
+		if(plan != null){
+			plan.loadStages();
+		}
+		
 		return plan;
 	}
 	
@@ -257,8 +260,17 @@ public class TreatmentPlan implements DatabaseModel{
 		}
 	}
 	
-	//TODO delete this method?
-	public static TreatmentPlan loadWithEmptyLists(int treatmentPlanID) throws DatabaseException{
+	public static TreatmentPlan loadWithEmptyLists(int treatmentPlanID) throws DatabaseException, ValidationException{
 		return databaseActionHandler.treatmentPlanLoadWithEmpyLists(treatmentPlanID);
+	}
+	
+	public void deleteStage(int stageID) throws ValidationException, DatabaseException {
+		for(int i=0; i < this.stages.size(); i++){
+			if(stages.get(i).getStageID()==stageID){
+				stages.remove(i);
+			}
+		}
+
+		databaseActionHandler.stageDelete(stageID);
 	}
 }

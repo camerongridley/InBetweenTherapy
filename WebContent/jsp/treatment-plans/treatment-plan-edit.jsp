@@ -113,9 +113,11 @@
         
 
         <label for="stageList" class="control-label">Stages
-        			<a role="button" href="./CreateStage?requestedAction=addStageToTreatmentPlan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}" class="btn btn-default btn-xs" title="Add a stage to this treatment plan.">
-					  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-					</a>
+
+       			<a role="button" href="./CreateStage?requestedAction=addStageToTreatmentPlan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}" class="btn btn-default btn-xs" title="Add a stage to this treatment plan." >
+				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				</a>
+
 		</label>
 			<c:forEach items="${treatmentPlan.stages }" var="stage">
 				<div class="panel panel-default panel-task" id="stageList" title="Click the stage title to expand and see the stage details.">
@@ -126,11 +128,11 @@
 			          <span class="">${stage.title }</span>
 			        </a>
 			        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-			        <a role="button" href="http://www.google.com" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
+			        <a role="button" href="./EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs pull-right" title="Delete this stage.">
 					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 					</a>
 					
-			        <a role="button" href="./EditStage?requestedAction=editStage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
+			        <a role="button" href="./EditStage?requestedAction=stage-edit&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 					  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 					</a>
 					
@@ -142,7 +144,7 @@
 					  	<c:forEach items="${stage.tasks }" var="task">
 				  			<div class="panel-body">
 								&nbsp;&nbsp;&nbsp;Task: <c:out value="${task.title }"></c:out><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-								<a role="button" href="./EditTask?requestedAction=editStage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit this task">
+								<a role="button" href="./EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit this task">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
 							</div>

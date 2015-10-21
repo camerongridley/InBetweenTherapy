@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.helpers.DefaultDatabaseCalls;
+import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -40,7 +41,41 @@ public class EditTreatmentPlan extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		/*--Common Servlet variables that should be in every controller--*/
+		HttpSession session = request.getSession();
+		User user = (User)session.getAttribute("user");
+		String forwardTo = "index.jsp";
+		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
+		
+		if(user.hasRole("admin")){
+			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+			int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+			int taskID = ParameterUtils.parseIntParameter(request, "taskID");
+			
+			Stage stage = null;
+			try {
+				switch(requestedAction){
+					case "stage-delete":
+						TreatmentPlan treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+						treatmentPlan.deleteStage(stageID);
+				    	request.setAttribute("treatmentPlan", treatmentPlan);
+						
+						forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+						break;
+					
+				}
+				
+			} catch (DatabaseException | ValidationException e) {
+				request.setAttribute("errorMessage", e.getMessage());
+				e.printStackTrace();
+			}
+			
+			
+			request.getRequestDispatcher(forwardTo).forward(request, response);
+		}
 	}
 
 	/**
@@ -48,13 +83,15 @@ public class EditTreatmentPlan extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		/*--Common Servlet variables that should be in every controller--*/
+		HttpSession session = request.getSession();
+		User user = (User)session.getAttribute("user");
+		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("requestedAction");
-    	String path = request.getParameter("path");
-    	request.setAttribute("path", path);
-		
-    	HttpSession session = request.getSession();
-    	User user = (User)session.getAttribute("user");
-    	String forwardTo = "index.jsp";
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
+
     	int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
     	String planTitle = request.getParameter("planTitle");
     	String planDescription = request.getParameter("planDescription");
@@ -126,8 +163,11 @@ public class EditTreatmentPlan extends HttpServlet {
 		            	break;
 		            case "plan-edit-select-plan":
 		        		int selectedDefaultTreatmentPlanID = ParameterUtils.parseIntParameter(request, "selectedDefaultTreatmentPlanID");
-		            	loadSelectedTreatmentPlanInRequest(request, selectedDefaultTreatmentPlanID);
-
+		        		if(selectedDefaultTreatmentPlanID != 0){
+		        			loadSelectedTreatmentPlanInRequest(request, selectedDefaultTreatmentPlanID);
+		        		} else {
+		        			request.setAttribute("treatmentPlan", null);
+		        		}
 		            	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            case "create-default-treatment-issue":
@@ -168,10 +208,11 @@ public class EditTreatmentPlan extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request,response);
 	}
 	
-	private void loadSelectedTreatmentPlanInRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException, ValidationException{
+	private TreatmentPlan loadSelectedTreatmentPlanInRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException, ValidationException{
 
     	TreatmentPlan treatmentPlan = TreatmentPlan.load(treatmentPlanID);
     	request.setAttribute("treatmentPlan", treatmentPlan);
+    	return treatmentPlan;
 	}
 	
 	/**

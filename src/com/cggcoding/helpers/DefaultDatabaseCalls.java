@@ -29,11 +29,11 @@ public class DefaultDatabaseCalls {
 	}
 	
 	//TODO this could be a static method that really should go somewhere else like User?
-	public static List<TreatmentPlan> getDefaultTreatmentPlans() throws DatabaseException {
+	public static List<TreatmentPlan> getDefaultTreatmentPlans() throws DatabaseException, ValidationException {
 		return databaseActionHandler.treatmentPlanGetDefaults();
 	}
 	
-	public static List<Stage> getDefaultStages() throws DatabaseException{
+	public static List<Stage> getDefaultStages() throws DatabaseException, ValidationException{
 		return databaseActionHandler.stagesGetDefaults();
 	}
 	

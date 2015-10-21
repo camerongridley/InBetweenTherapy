@@ -75,7 +75,18 @@ public abstract class User {
 		return treatmentPlanList.get(treatmentPlanID);
 	}
 	
-
+	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID){
+		return true;
+	}
+	
+	public boolean isAuthorizedForStage(int stageID){
+		return true;
+	}
+	
+	public boolean isAuthorizedForTask(int taskID){
+		return true;
+	}
+	
 	@Override
 	public String toString(){
 		return "User id:" + email + ", User email: " + email;

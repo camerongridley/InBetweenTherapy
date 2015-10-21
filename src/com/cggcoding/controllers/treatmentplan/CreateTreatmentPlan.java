@@ -36,17 +36,26 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
     
     
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+    	/*--Common Servlet variables that should be in every controller--*/
+		HttpSession session = request.getSession();
+		User user = (User)session.getAttribute("user");
+		String forwardTo = "index.jsp";
+		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
     }
     
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String requestedAction = request.getParameter("requestedAction");
-    	String path = request.getParameter("path");
-    	request.setAttribute("path", path);
-		
+		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
-    	User user = (User)session.getAttribute("user");
-    	String forwardTo = "index.jsp";
+		User user = (User)session.getAttribute("user");
+		String forwardTo = "index.jsp";
+		String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
+		
     	String planTitle = request.getParameter("planTitle");
     	String planDescription = request.getParameter("planDescription");
     	int selectedDefaultIssueID = ParameterUtils.parseIntParameter(request, "defaultTreatmentIssue");

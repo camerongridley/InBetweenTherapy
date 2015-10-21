@@ -6,6 +6,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -38,21 +39,64 @@ public class EditTask extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		processRequest(request, response);
+		
+		/*--Common Servlet variables that should be in every controller--*/
+		/*HttpSession session = request.getSession();
+		User user = (User)session.getAttribute("user");
+		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
-		request.setAttribute("path", path);
+		request.setAttribute("path", path);*/
+		/*-----------End Common Servlet variables---------------*/
+		
+		/*int taskID = ParameterUtils.parseIntParameter(request, "taskID");
+		
+		try {
+			if(user.isAuthorizedForTask(taskID)){
+				if(user.hasRole("admin")){
+					switch(requestedAction){
+					case ("edit-task-select-task"):
+						int selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
+	
+						
+							Task tempTask = Task.load(selectedTaskID);
+							request.setAttribute("task", tempTask);
+						
+						forwardTo = "/jsp/treatment-plans/task-edit.jsp";
+						break;
+					}
+				}
+			}
+		} catch (DatabaseException e) {
+			//request.setAttribute("task", tempTask);
+			request.setAttribute("errorMessage", e.getMessage());
+
+			forwardTo = "/jsp/treatment-plans/task-edit.jsp";
+		}
+		
+		request.getRequestDispatcher(forwardTo).forward(request, response);*/
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		User user = (User)request.getSession().getAttribute("user");
-		userID =  user.getUserID();
+		processRequest(request, response);
+	}
+	
+	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+		/*--Common Servlet variables that should be in every controller--*/
+		HttpSession session = request.getSession();
+		User user = (User)session.getAttribute("user");
+		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
-		String forwardTo = "/index.jsp";
+		/*-----------End Common Servlet variables---------------*/
+		
+		userID =  user.getUserID();
 		
 		//performed here to get parameters for all tasks run below
 		Task tempTask = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
@@ -77,10 +121,10 @@ public class EditTask extends HttpServlet {
 					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-select-task"):
-					int selectedTaskID = ParameterUtils.parseIntParameter(request, "defaultTaskListID");
-					if(selectedTaskID != 0){
+					int selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
+					//if(selectedTaskID != 0){
 						request.setAttribute("task", Task.load(selectedTaskID));
-					}
+					//}
 
 					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
@@ -132,5 +176,7 @@ public class EditTask extends HttpServlet {
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 	}
+	
+	
 
 }

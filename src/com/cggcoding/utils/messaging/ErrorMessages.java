@@ -5,6 +5,11 @@ public final class ErrorMessages {
 	//Database errors
 		public static final String GENERAL_DB_ERROR = "There seems to be a problem accessing your information from the database.  Please try again later.";
 		
+	//General Validation errors
+		public static final String GENERAL_VALIDATION_ERROR = "There was an error validating your request.  Please try againg or contact customer support.";
+		public static final String DEFAULTS_HOLDER_ID_SELECTED = "It appears you are trying to access invalid data.  Please be sure to make a valid selection and try again.";
+		public static final String OBJECT_IS_NULL = "It appears there is no database record for what you are looking for.  Please be sure to make a valid selection and try again.  If you have further problems please contact customer support.";
+		
 	//Log in
 	public static final String INVALID_USERNAME_OR_PASSWORD = "Login failed.  The email and password combination is not found in our records.  Please try again.";
 

@@ -13,17 +13,17 @@ public class StageGoal {
 	
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 	
-	private StageGoal(int stageGoalID, String description){
-		this.stageGoalID = stageGoalID;
+	private StageGoal(int stageID, String description){
+		this.stageGoalID = 0;
 		this.description = description;
-		this.stageID = 0;
+		this.stageID = stageID;
 		this.associatedTaskID = 0;
 	}
 	
-	private StageGoal(int stageGoalID, int stageID, String goal) {
+	private StageGoal(int stageGoalID, int stageID, String description) {
 		this.stageGoalID = stageGoalID;
 		this.stageID = stageID;
-		this.description = goal;
+		this.description = description;
 		this.associatedTaskID = 0;
 	}
 	
@@ -34,15 +34,15 @@ public class StageGoal {
 		this.associatedTaskID = associatedTaskID;
 	}
 	
-	public static StageGoal getInstance(int stageGoalID, int stageID, String goal){
-		return new StageGoal(stageGoalID, stageID, goal);
+	public static StageGoal getInstance(int stageGoalID, int stageID, String description){
+		return new StageGoal(stageGoalID, stageID, description);
 	}
 	
-	/*public static StageGoal getInstanceFromDatabase(int stageGoalID){
-		return null;
-	}*/
+	public static StageGoal getInstanceWithoutID(int stageID, String description){
+		return new StageGoal(stageID, description);
+	}
 	
-	public static StageGoal saveNewInDatabase(int stageID, String description) throws DatabaseException{
+	public static StageGoal saveNewInDatabase(int stageID, String description) throws DatabaseException, ValidationException{
 		return databaseActionHandler.stageGoalValidateAndCreate(new StageGoal(stageID, description));
 	}
 	

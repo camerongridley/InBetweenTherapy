@@ -1,6 +1,7 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -38,10 +39,14 @@ public class CreateStage extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		User user = (User)request.getSession().getAttribute("user");
+		/*--Common Servlet variables that should be in every controller--*/
+		HttpSession session = request.getSession();
+		User user = (User)session.getAttribute("user");
+		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
 		
 		if(user.hasRole("admin")){
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
@@ -69,98 +74,74 @@ public class CreateStage extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		User user = (User)request.getSession().getAttribute("user");
+		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
+		User user = (User)session.getAttribute("user");
 		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
 		
-		String stageIDAsString = request.getParameter("stageID");
+		int selectedDefaultStageID = ParameterUtils.parseIntParameter(request, "defaultStageID");
 		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 		String stageTitle = request.getParameter("stageTitle");
     	String stageDescription = request.getParameter("stageDescription");
     	int stageOrder = ParameterUtils.parseIntParameter(request, "stageOrder");
     	String newStageGoal =request.getParameter("newStageGoal");
-		
+		TreatmentPlan treatmentPlan = null;
+		List<Stage> defaultStages = null;
 		
 		try{
+			treatmentPlan = TreatmentPlan.loadWithEmptyLists(treatmentPlanID);
+			defaultStages = DefaultDatabaseCalls.getDefaultStages();
 			
 			if(user.hasRole("admin")){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								
 				switch (requestedAction){
 					case "stage-create-start":
-						//get the TreatmentPlan for this stage and put in request
-		                loadTreatmentPlanFromDatabaseIntoRequest(request, treatmentPlanID);
-		                
+
 						forwardTo = "/jsp/treatment-plans/stage-create.jsp";
 						break;
+					case "stage-add-default":
+		            	Stage defaultStage = Stage.load(selectedDefaultStageID);
+		            	defaultStage.copyIntoTreatmentPlan(treatmentPlanID, user.getUserID(), false);
+		            	if(path.equals("editingPlanTemplate")){
+		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
+		                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		                	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		                }
+		            	break;
 		            case "stage-create-title":
-		            	//get the TreatmentPlan for this stage and put in request
-		                loadTreatmentPlanFromDatabaseIntoRequest(request, treatmentPlanID);
-		                
+
 		                if(stageTitle.isEmpty() || stageDescription.isEmpty()){
 		                	throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
 		                }
 		                
 		                boolean template = path.equals("creatingStageTemplate");
 		                
-		                Stage newStageTemplate = Stage.getInstanceWithoutID(treatmentPlanID, user.getUserID(), stageTitle, stageDescription, stageOrder, template);
-		                newStageTemplate.setTreatmentPlanID(ParameterUtils.parseIntParameter(request, "treatmentPlanID"));
-		                newStageTemplate.saveNew();
+		                Stage newStage = Stage.getInstanceWithoutID(treatmentPlanID, user.getUserID(), stageTitle, stageDescription, stageOrder, template);
+		                newStage.setTreatmentPlanID(ParameterUtils.parseIntParameter(request, "treatmentPlanID"));
+		                newStage.saveNew();
 
-		                request.setAttribute("stage", newStageTemplate);
+		                request.setAttribute("stage", newStage);
+		                treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 		                
 		                if(path.equals("editingPlanTemplate")){
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
-		                	request.setAttribute("treatmentPlan", TreatmentPlan.load(treatmentPlanID));
-		                	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
 		                }else{
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
-		                	forwardTo = "/jsp/treatment-plans/task-create.jsp";
 		                }
-		                
+		                forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 		                break;
-		            case "stage-add-goal":
-		            	//Stage stageWithNewGoal = new Stage()
-		            	Stage stage = (Stage)request.getAttribute("stage");//dbActionHandler.getStageTemplate(user.getUserID(), Integer.parseInt(request.getParameter("stageID")));
-		            	request.setAttribute("stage", stage);
-
-		                forwardTo = "/jsp/treatment-plans/stage-create-details.jsp";
-		            	break;
-		            case "stage-add-tasks":
-		            	
-		            	break;
-		            /*case "stage-edit-start" :
-		            	session.setAttribute("defaultStageList", DefaultDatabaseCalls.getDefaultStages());
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
-		            	break;
-		            case "stage-edit-select-stage" :
-		            	int selectedDefaultStageID = Integer.parseInt(request.getParameter("selectedDefaultStageID"));
-		            	request.setAttribute("selectedDefaultStage", DefaultDatabaseCalls.getDefaultStageByID(selectedDefaultStageID));
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
-		            	break;
-		            case "stage-edit-name" :
-		            	if(stageIDAsString.isEmpty()){
-		            		throw new ValidationException(ErrorMessages.STAGE_UPDATE_NO_SELECTION);
-		            	}else{
-			            	int stageID = Integer.parseInt(stageIDAsString);
-			            	Stage stageToUpdate = DefaultDatabaseCalls.getDefaultStageByID(stageID);
-			            	stageToUpdate.setTitle(stageTitle);
-			            	stageToUpdate.setDescription(stageDescription);
-			            	stageToUpdate.updateInDatabase();
-			            	
-			            	request.setAttribute("selectedDefaultStage", stageToUpdate);
-			            	
-			            	forwardTo = "/jsp/treatment-plans/stage-edit-goals.jsp";
-		            	}
-
-		            	break;*/
 		            default:
 
 		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+		                break;
 				}
+				
+				request.setAttribute("treatmentPlan", treatmentPlan);
 
 			}
 			
@@ -171,6 +152,8 @@ public class CreateStage extends HttpServlet {
 			request.setAttribute("stageDescription", stageDescription);
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("newStageGoal", newStageGoal);
+			request.setAttribute("treatmentPlan", treatmentPlan);
+			request.setAttribute("defaultStages", defaultStages);
 			
             forwardTo = "/jsp/treatment-plans/stage-create.jsp";
 		}
@@ -178,10 +161,6 @@ public class CreateStage extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 		
 	}
-	
-	private void loadTreatmentPlanFromDatabaseIntoRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException{
-		TreatmentPlan treatmentPlan = TreatmentPlan.loadWithEmptyLists(treatmentPlanID);
-        request.setAttribute("treatmentPlan", treatmentPlan);
-	}
+
 
 }

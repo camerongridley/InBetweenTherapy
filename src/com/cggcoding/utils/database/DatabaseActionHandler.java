@@ -34,17 +34,24 @@ public interface DatabaseActionHandler {
 
 	TreatmentPlan treatmentPlanValidateAndCreateBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
 	
-	TreatmentPlan treatmentPlanLoadWithEmpyLists(int treatmentPlanID) throws DatabaseException;
+	/**Gets basic TreatmentPlan based on treatmentPlanID with none of it's lists (stages, etc.) populated.  If treatmentPlanID=1, return null because the TreatmentPlan.treatmentPlanID=1 is the TreatmentPlan that holds all Stage templates and should not ever be loaded.
+	 * @param treatmentPlanID
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ValidationException 
+	 */
+	TreatmentPlan treatmentPlanLoadWithEmpyLists(int treatmentPlanID) throws DatabaseException, ValidationException;
 	
-	List<Integer> treatmentPlanGetStageIDs(int treatmentPlanID) throws DatabaseException;
+	List<Integer> treatmentPlanGetStageIDs(int treatmentPlanID) throws DatabaseException, ValidationException;
 	
 	/**Gets all of the "default" TreatmentPlans, which means it returns all the the TreatmentPlans that have been created by an Admin user and can be copied for use by Therapist and Client users.
 	 * It returns all TreatmentPlans that are owned by users of type Admin and have isTemplate as true.  It specifically excludes TreatmentPlan with id=0 since that TreatmentPlan is designated
 	 * as a holder for all default Stages and is not eligible for copying or use by other user types.
 	 * @return
 	 * @throws DatabaseException
+	 * @throws ValidationException 
 	 */
-	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException;
+	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException;
 	
 	void treatmentPlanValidateAndUpdate(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException;
 
@@ -62,6 +69,12 @@ public interface DatabaseActionHandler {
 	
 	boolean stageUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException;
 	
+	/**Gets basic Stage based on stageID with none of it's lists (goals, tasks, etc.) populated.  If stageID=1, return null because the Stage.stageID=1 is the Stage that holds all Task templates and should not ever be loaded. 
+	 * @param stageID
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
 	Stage stageLoadWithEmplyLists(int stageID) throws DatabaseException, ValidationException;
 	
 	/**Gets all of the "default" Stages, which means it returns all the the Stages that have been created by an Admin user and can be copied for use by Therapist and Client users.
@@ -69,16 +82,17 @@ public interface DatabaseActionHandler {
 	 * as a holder for all default Tasks and is not eligible for copying or use by other user types.
 	 * @return
 	 * @throws DatabaseException
+	 * @throws ValidationException 
 	 */
-	List<Stage> stagesGetDefaults() throws DatabaseException;
+	List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException;
 	
-	StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException;
+	StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException, ValidationException;
 	
-	List<Integer> stageGetTaskIDs(int stageID) throws DatabaseException;
+	List<Integer> stageGetTaskIDs(int stageID) throws DatabaseException, ValidationException;
 	
-	List<StageGoal> stageLoadGoals(int stageID) throws DatabaseException;
+	List<StageGoal> stageLoadGoals(int stageID) throws DatabaseException, ValidationException;
 	
-	void stageDelete(int stageID) throws DatabaseException;
+	void stageDelete(int stageID) throws DatabaseException, ValidationException;
 
 	//**************************************************************************************************
 	//*************************************** Treatment Issue Methods **********************************

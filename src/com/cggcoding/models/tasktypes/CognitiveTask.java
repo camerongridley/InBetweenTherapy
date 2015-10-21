@@ -99,8 +99,9 @@ public class CognitiveTask extends Task implements DatabaseModel{
 	}
 
 	@Override
-	public void saveNew() throws ValidationException, DatabaseException {
+	public Object saveNew() throws ValidationException, DatabaseException {
 		// TODO implement method
+		return null;
 		
 	}
 
@@ -117,7 +118,7 @@ public class CognitiveTask extends Task implements DatabaseModel{
 	}
 
 	@Override
-	public List<Object> copy(Object o, int numberOfCopies) {
+	public List<Object> copy(int numberOfCopies) {
 		// TODO implement method
 		return null;
 	}

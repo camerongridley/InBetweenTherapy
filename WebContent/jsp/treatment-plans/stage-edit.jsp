@@ -56,12 +56,86 @@
             </div>
         </div>
 
+		<div class="form-group">
+			<div class="col-sm-12">
+				<label for="stageGoalList" class="control-label">Stage Goals
+					<button type="button" class="btn btn-default btn-xs" aria-label="Left Align" data-toggle="modal" data-target="#newStageGoalModal" title="Add a goal to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
+					
+					  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+					</button>
+					
+				</label>
+				<c:forEach items="${stage.goals }" var="goal">
+		            <p>
+		                <input type="text" class="form-control" id="stageGoalDescription" name="stageGoalDescription" value="${goal.description }" placeholder="Describe the goal.">
+		            </p>
+				</c:forEach>
+				</div>
+		</div>
+		
+		<label for="stageList" class="control-label">Tasks
+
+       			<a role="button" href="./CreateTask?requestedAction=addTaskToStage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}" class="btn btn-default btn-xs" title="Add a task to this stage." >
+				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				</a>
+
+		</label>
+			<c:forEach items="${stage.tasks }" var="task">
+				<div class="panel panel-default panel-task" id="stageList" title="Click the task title to expand and see details.">
+				  <div class="panel-heading">
+				  	<input type="hidden" name="taskID" value="${task.taskID}"/>
+				  	<input type="hidden" name="taskTitle" value="${task.title}"/>
+					<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
+			          <span class="">${task.title }</span>
+			        </a>
+			        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+			        <a role="button" href="./EditStage?requestedAction=delete-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete this task">
+					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+					</a>
+					
+			        <a role="button" href="./EditTask?requestedAction=edit-task-select-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit this task.">
+					  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+					</a>
+					
+				  </div>
+				  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID}">
+					  <div class="panel-body">
+					    ${task.instructions } 
+					  </div>
+				  </div>
+				</div>
+			</c:forEach>
+
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-default">Save</button>
             </div>
         </div>
     </form>
+	
+	<!-- New Stage Goal Modal -->
+	<div class="modal fade" id="newStageGoalModal" tabindex="-1" role="dialog" aria-labelledby="newStageGoalModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+		    <form class="form-horizontal" action="./EditStage" method="POST">
+		    <input type="hidden" name="requestedAction" value="stage-edit-add-goal">
+		    <input type="hidden" name="path" value="${path }" >
+		    <input type="hidden" name="stageID" value="${stage.stageID}" >
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="newStageGoalModalLabel">Enter a new stage goal.</h4>
+		      </div>
+		      <div class="modal-body">
+		        <input type="text" class="form-control" id="newStageGoalDescription" name="newStageGoalDescription" value="" placeholder="Enter a new stage goal.">
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <button type="submit" class="btn btn-primary">Save</button>
+		      </div>
+		    </form>  
+	    </div>
+	  </div>
+	</div>
 	
 	<script>
 		$(function() {
