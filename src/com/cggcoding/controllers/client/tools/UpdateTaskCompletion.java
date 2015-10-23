@@ -17,6 +17,7 @@ import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.CognitiveTask;
+import com.cggcoding.models.tasktypes.GenericTask;
 import com.cggcoding.models.tasktypes.PsychEdTask;
 import com.cggcoding.models.tasktypes.RelaxationTask;
 
@@ -45,14 +46,14 @@ public class UpdateTaskCompletion extends HttpServlet {
 		TreatmentPlan treatmentPlan = user.getTreatmentPlan(treatmentPlanID);
 		Stage activeStage = treatmentPlan.getActiveViewStage();
 
-		//get checked values from the request and convery to List<Integer>
+		//get checked values from the request and convert to List<Integer>
 		List<Integer> checkedTaskIDs = convertStringArrayToInt(request.getParameterValues("taskChkBx[]"));
 
 		//get all Task ids from hidden field so we can get at unchecked values
 		List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
 
 		//build maps containing new data to pass back to service layer for updating
-		Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(checkedTaskIDs, allTaskIDs, request);
+		Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(user, checkedTaskIDs, allTaskIDs, request);
 
 		//call to service layer to save and process the new task data and return an updated Stage
 		Stage updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
@@ -65,7 +66,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		request.setAttribute("treatmentPlan", treatmentPlan);
 		request.setAttribute("currentStage", updatedStage);
 
-		request.getRequestDispatcher("taskReview.jsp").forward(request, response);
+		request.getRequestDispatcher("/jsp/task-review.jsp").forward(request, response);
 		
 	}
 
@@ -73,7 +74,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 	* Marks these data holder tasks as completed if checked and incomplete if not in the list of checked tasks.
 	* Then the service layer can use this temporary task's isCompleted to determine determine logic for updating completion and progress states in the persistant task.
 	* */
-	private Map<Integer, Task> buildNewInfoOnlyTaskMap(List<Integer> checkedTaskIDs, List<Integer> allTasksIDs, HttpServletRequest request){
+	private Map<Integer, Task> buildNewInfoOnlyTaskMap(User user, List<Integer> checkedTaskIDs, List<Integer> allTasksIDs, HttpServletRequest request){
 
 		Map<Integer, Task> newInfoTaskMap = new HashMap<>();
 
@@ -87,9 +88,15 @@ public class UpdateTaskCompletion extends HttpServlet {
 
 			//TODO Do I use a static factory method here or just stick with contructors?
 			switch (taskTypeName) {
+				case "GenericTask":
+					System.out.println("Updating Generic Task.");
+					GenericTask genTask = GenericTask.getInstanceByID(currentTaskID, user.getUserID());
+
+					updatedTask =  genTask;
+					break;
 				case "CognitiveTask":
 					System.out.println("Updating Cognitive Task");
-					CognitiveTask cogTask = new CognitiveTask(currentTaskID);
+					CognitiveTask cogTask = new CognitiveTask(currentTaskID, user.getUserID());
 					String autoThought = (String)request.getParameter("automaticThought" + cogTask.getTaskID());
 					cogTask.setAutomaticThought(autoThought);
 					String altThought = (String) request.getParameter("alternativeThought" + cogTask.getTaskID());
@@ -99,13 +106,13 @@ public class UpdateTaskCompletion extends HttpServlet {
 					break;
 				case "RelaxationTask":
 					System.out.println("Updating Relaxation Task.");
-					RelaxationTask relaxTask = new RelaxationTask(currentTaskID);
+					RelaxationTask relaxTask = new RelaxationTask(currentTaskID, user.getUserID());
 
 					updatedTask =  relaxTask;
 					break;
 				case "PsychEdTask":
 					System.out.println("Updating PsychEdTask");
-					PsychEdTask psychEdTask = new PsychEdTask(currentTaskID);
+					PsychEdTask psychEdTask = new PsychEdTask(currentTaskID, user.getUserID());
 
 					updatedTask = psychEdTask;
 					break;
@@ -131,6 +138,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 				try{
 					taskIDsConvertedToInts.add(Integer.parseInt(taskIDsStrings[i]));
 				} catch (NumberFormatException ex){
+					//TODO handle this exception differently?
 					System.out.println("Illegal value for a task checkbox.  Detected a non-integer value.");
 					ex.printStackTrace();
 				}

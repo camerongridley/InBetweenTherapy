@@ -21,7 +21,7 @@ public class TaskSet implements Completable{
     }
 
     private TaskSet(int stageID, int repetitions) {
-        this.taskSetID = -1;
+        this.taskSetID = 0;
         this.stageID = stageID;
         this.repetitions = repetitions;
         this.repetitionsCompleted = 0;
