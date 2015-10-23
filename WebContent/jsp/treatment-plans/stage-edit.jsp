@@ -75,7 +75,7 @@
 		
 		<label for="stageList" class="control-label">Tasks
 
-       			<a role="button" href="./CreateTask?requestedAction=addTaskToStage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}" class="btn btn-default btn-xs" title="Add a task to this stage." >
+       			<a role="button" href="./CreateTask?requestedAction=create-task-start&path=${path}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</a>
 

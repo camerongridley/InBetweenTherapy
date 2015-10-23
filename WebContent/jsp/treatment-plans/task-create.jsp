@@ -16,6 +16,7 @@
 
 	 <form class="form-horizontal" action="./CreateTask" method="POST">
 		<input type="hidden" name="requestedAction" value="task-type-select">
+		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="taskID" value="${task.taskID }">
 		<input type="hidden" name="stageID" value="${stage.stageID }">
 		<input type="hidden" name="isTemplate" value="${task.template }">
@@ -35,6 +36,7 @@
         
     <form class="form-horizontal" action="./CreateTask" method="POST">
 		<input type="hidden" name="requestedAction" value="task-save">
+		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="taskID" value="${task.taskID }">
 		<input type="hidden" name="stageID" value="${stage.stageID }">
 		<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">

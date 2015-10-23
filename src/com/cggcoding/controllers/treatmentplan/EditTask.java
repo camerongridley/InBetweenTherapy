@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.helpers.DefaultDatabaseCalls;
+import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.User;
 import com.cggcoding.models.tasktypes.GenericTask;
@@ -118,6 +119,7 @@ public class EditTask extends HttpServlet {
 					tempTask.setTemplate(true);
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", tempTask);
+					
 					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-select-task"):
@@ -154,13 +156,22 @@ public class EditTask extends HttpServlet {
 						case (Constants.TASK_TYPE_ID_GENERIC_TASK):
 							GenericTask genericTask = (GenericTask)tempTask;
 							genericTask.update();
+							tempTask = genericTask;
 							break;
 						case(Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK):
 							TwoTextBoxesTask twoTextBoxesTask = (TwoTextBoxesTask)tempTask;
 							twoTextBoxesTask.update();
+							tempTask = twoTextBoxesTask;
 							break;
 					}
 					
+					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
+						request.setAttribute("stage", Stage.load(tempTask.getStageID()));
+						forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+					}else{
+						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+					}
+				
 					break;
 				}
 			}
