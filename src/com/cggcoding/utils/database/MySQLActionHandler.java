@@ -1327,9 +1327,11 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        
         try {
         	cn= getConnection();
-			ps = cn.prepareStatement("SELECT COUNT(*) FROM task_generic WHERE ((task_generic.task_title=?) AND (task_generic_stage_id_fk=?))");
+
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM task_generic WHERE (task_generic.task_title=? AND task_generic_stage_id_fk=? AND task_generic_id!=?)");
 			ps.setString(1, newTask.getTitle().trim());
 			ps.setInt(2, newTask.getStageID());
+			ps.setInt(3, newTask.getTaskID());
 
 			stageCount = ps.executeQuery();
 

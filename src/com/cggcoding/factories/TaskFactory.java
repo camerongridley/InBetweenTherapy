@@ -1,9 +1,6 @@
 package com.cggcoding.factories;
 
 import com.cggcoding.models.Task;
-import com.cggcoding.models.tasktypes.CognitiveTask;
-import com.cggcoding.models.tasktypes.PsychEdTask;
-import com.cggcoding.models.tasktypes.RelaxationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +59,7 @@ public class TaskFactory {
         List<Task> taskCopies = new ArrayList<>();
         for(int i = 0; i < numberOfCopies; i++){
             switch (task.getTaskTypeName()){
-                case "CognitiveTask":
+                /*case "CognitiveTask":
                     CognitiveTask cogTask = (CognitiveTask)task;
                     taskCopies.add(new CognitiveTask(cogTask.getTaskID(), cogTask.getUserID(), cogTask.getParentTaskID(), cogTask.getTitle(), cogTask.getInstructions(), cogTask.getAutomaticThought(), cogTask.getAlternativeThought(), cogTask.getPreSUDS(), cogTask.getPostSUDS()));
                     break;
@@ -73,7 +70,7 @@ public class TaskFactory {
                 case "RelaxationTask":
                     RelaxationTask relaxTask = (RelaxationTask)task;
                     taskCopies.add(new RelaxationTask(relaxTask.getTaskID(), relaxTask.getUserID(), relaxTask.getParentTaskID(), relaxTask.getTitle(), relaxTask.getInstructions(), relaxTask.getDurationInMinutes()));
-                    break;
+                    break;*/
 
             }
         }

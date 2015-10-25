@@ -10,7 +10,7 @@ import com.cggcoding.models.Task;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class TwoTextBoxesTask extends Task implements DatabaseModel{
+public class TwoTextBoxesTask extends Task{
 	private String extraTextLabel1;
 	private String extraTextValue1;
 	private String extraTextLabel2;
@@ -87,6 +87,8 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 
 	public static Task load(int taskID) throws DatabaseException {
 		return databaseActionHandler.taskTwoTextBoxesLoad(taskID);
+		//this method currently uses a SQL query that joins the generic and two-textbox table so can do in one call.  
+		//If wanted to break it up into separate calls then would probably load general data here and then call loadAdditionalData() 
 	}
 	
 	@Override
@@ -105,7 +107,7 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 
 	}
 
-	@Override
+/*	@Override
 	public Object saveNew() throws ValidationException, DatabaseException {
 		Task savedTask = super.saveNewGeneralDataInDatabase();
 		saveNewAdditionalData();
@@ -129,6 +131,6 @@ public class TwoTextBoxesTask extends Task implements DatabaseModel{
 	public List<Object> copy(int numberOfCopies) {
 		// TODO Auto-generated method stub
 		return null;
-	}
+	}*/
 
 }

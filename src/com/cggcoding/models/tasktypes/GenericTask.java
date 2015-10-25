@@ -10,7 +10,7 @@ import com.cggcoding.models.Task;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class GenericTask extends Task implements DatabaseModel{
+public class GenericTask extends Task{
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
 	
 	private GenericTask(int taskID, int userID) {
@@ -68,7 +68,7 @@ public class GenericTask extends Task implements DatabaseModel{
 		return databaseActionHandler.taskGenericLoad(taskID);
 	}
 	
-	@Override
+	/*@Override
 	public Object saveNew() throws DatabaseException, ValidationException{
 		Task savedTask = super.saveNewGeneralDataInDatabase();
 		saveNewAdditionalData(); //this does nothing here but just putting in place for sake of consistency with other task types
@@ -92,7 +92,7 @@ public class GenericTask extends Task implements DatabaseModel{
 		// TODO  implement method
 		return null;
 	}
-	
+	*/
 	@Override
 	protected boolean updateAdditionalData () {
 		return true;//there is no additional data in GenericTask to update

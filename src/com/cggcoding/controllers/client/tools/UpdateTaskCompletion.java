@@ -16,10 +16,7 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
-import com.cggcoding.models.tasktypes.CognitiveTask;
 import com.cggcoding.models.tasktypes.GenericTask;
-import com.cggcoding.models.tasktypes.PsychEdTask;
-import com.cggcoding.models.tasktypes.RelaxationTask;
 
 /**
  * Servlet implementation class UpdateTaskCompletion
@@ -94,7 +91,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 
 					updatedTask =  genTask;
 					break;
-				case "CognitiveTask":
+				/*case "CognitiveTask":
 					System.out.println("Updating Cognitive Task");
 					CognitiveTask cogTask = new CognitiveTask(currentTaskID, user.getUserID());
 					String autoThought = (String)request.getParameter("automaticThought" + cogTask.getTaskID());
@@ -115,7 +112,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 					PsychEdTask psychEdTask = new PsychEdTask(currentTaskID, user.getUserID());
 
 					updatedTask = psychEdTask;
-					break;
+					break;*/
 			}
 
 			//if a taskID is in the checkedTaskIDs list, then mark completed in the data holder task - all others are therefore unchecked and are marked incomplete

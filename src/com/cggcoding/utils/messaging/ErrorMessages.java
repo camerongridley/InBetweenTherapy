@@ -32,6 +32,9 @@ public final class ErrorMessages {
 	public static final String TASK_INVALID_ID = "There appears to be a problem with your task.  Please email customer support with a detailed explanation of what happened.";
 	public static final String TASK_TITLE_EXISTS_FOR_STAGE = "That task title already exists for this stage.  Please choose a different title.";
 	
+	//Other
+	public static final String CLONE_NOT_SUPPORTED = "There was a problem copying the data.  Please try again or contact customer support.";
+	
 	
 	
 }

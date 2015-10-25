@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.swing.text.DefaultEditorKit.DefaultKeyTypedAction;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -20,6 +21,7 @@ import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
  * Servlet implementation class CreateTask
@@ -79,37 +81,27 @@ public class CreateTask extends HttpServlet {
 			//put user-independent (i.e. default) lists acquired from database in the request
 			request.setAttribute("taskTypeMap", DefaultDatabaseCalls.getTaskTypeMap());
 			
+			if(path.equals("creatingTaskTemplate")){
+				taskToCreate.setTemplate(true);
+			}
+			
 			if(user.hasRole("admin")){
 				switch(requestedAction){
 				case ("create-task-start"):
 					stage = getStageAndPutInRequest(request, taskToCreate.getStageID());
 					
-					taskToCreate.setTemplate(true);//TODO change this to be set based on path?
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", taskToCreate);
+					request.setAttribute("defaultTasks", DefaultDatabaseCalls.getDefaultTasks());
 					forwardTo = "/jsp/treatment-plans/task-create.jsp";
 					break;
-				case "task-type-select":
-					request.setAttribute("task", taskToCreate);
-					stage = getStageAndPutInRequest(request, taskToCreate.getStageID());
-					
-					forwardTo = "/jsp/treatment-plans/task-create.jsp";
-					break;
-				case ("task-save"):
-					if(taskToCreate.isTemplate()==true){
-
-						switch(taskToCreate.getTaskTypeID()){
-							case Constants.TASK_TYPE_ID_GENERIC_TASK:
-								GenericTask genericTask = (GenericTask)taskToCreate;
-								genericTask.saveNew();
-								taskToCreate = genericTask;
-								break;
-							case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-								TwoTextBoxesTask twoTextTask = (TwoTextBoxesTask)taskToCreate;
-								twoTextTask.saveNew();
-								taskToCreate = twoTextTask;
-								break;
-						}
+				case "task-add-default" :
+					//int defaultTaskID = ParameterUtils.parseIntParameter(request, "taskID");
+					if(taskToCreate.getTaskID() != 0){
+						taskToCreate = Task.load(taskToCreate.getTaskID());
+						int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+						taskToCreate = taskToCreate.copy(stageID, user.getUserID());
+						taskToCreate.saveNew();
 						
 						if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
 							request.setAttribute("stage", Stage.load(taskToCreate.getStageID()));
@@ -117,16 +109,41 @@ public class CreateTask extends HttpServlet {
 						}else{
 							forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
 						}
-						
-					}else{
-						//code for non-template/clientTask creation and editing
 					}
+					
 					break;
-				case ("edit-task-template-start"):
-					taskToCreate.setTemplate(true);
-					//set tempTask in request so page knows value of isTemplate
+				case "task-type-select":
 					request.setAttribute("task", taskToCreate);
-					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
+					stage = getStageAndPutInRequest(request, taskToCreate.getStageID());
+					
+					request.setAttribute("defaultTasks", DefaultDatabaseCalls.getDefaultTasks());
+					forwardTo = "/jsp/treatment-plans/task-create.jsp";
+					break;
+				case ("task-save"):
+					if(taskToCreate.isTemplate()==true){
+						taskToCreate.setStageID(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID);
+					}
+
+					switch(taskToCreate.getTaskTypeID()){
+						case Constants.TASK_TYPE_ID_GENERIC_TASK:
+							GenericTask genericTask = (GenericTask)taskToCreate;
+							genericTask.saveNew();
+							taskToCreate = genericTask;
+							break;
+						case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+							TwoTextBoxesTask twoTextTask = (TwoTextBoxesTask)taskToCreate;
+							twoTextTask.saveNew();
+							taskToCreate = twoTextTask;
+							break;
+					}
+					
+					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
+						request.setAttribute("stage", Stage.load(taskToCreate.getStageID()));
+						forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+					}else{
+						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+					}
+						
 					break;
 				}
 			}

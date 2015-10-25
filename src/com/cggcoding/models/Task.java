@@ -1,6 +1,8 @@
 package com.cggcoding.models;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -11,7 +13,7 @@ import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
 
-public abstract class Task implements Completable{
+public abstract class Task implements Completable, DatabaseModel{
 	private int taskID;
 	private int stageID;
 	private int userID;
@@ -170,16 +172,52 @@ public abstract class Task implements Completable{
 	public static Task load(int taskID) throws DatabaseException{
 		Task genericTask = GenericTask.load(taskID);
 		switch(genericTask.getTaskTypeID()){
-		case Constants.TASK_TYPE_ID_GENERIC_TASK:
-			return genericTask;
-
-		case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-			return TwoTextBoxesTask.load(taskID);
+			case Constants.TASK_TYPE_ID_GENERIC_TASK:
+				return genericTask;
+	
+			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+				return TwoTextBoxesTask.load(taskID);
 		}
 		
 		return null;
 	}
 	
+	protected abstract void loadAdditionalData();
+	
+	@Override
+	public Task saveNew()throws DatabaseException, ValidationException{
+		saveNewGeneralDataInDatabase();
+		
+		switch(getTaskTypeID()){
+			case Constants.TASK_TYPE_ID_GENERIC_TASK:
+				saveNewAdditionalData();
+	
+			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+				TwoTextBoxesTask twoTextTask = (TwoTextBoxesTask)this;
+				twoTextTask.saveNewAdditionalData();
+		}
+		
+		return this;
+	}
+	
+	@Override
+	public void update() throws ValidationException, DatabaseException {
+		updateDataInDatabase();
+		//updateAdditionalData(); - moved to updateDataInDatabase()
+		
+	}
+
+	@Override
+	public void delete() throws ValidationException, DatabaseException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Object> copy(int numberOfCopies) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
 	 * @param taskID
 	 * @param stageID
@@ -205,13 +243,12 @@ public abstract class Task implements Completable{
 		return this;
 	}
 	
+	protected abstract void saveNewAdditionalData() throws DatabaseException, ValidationException;
+	
 	protected void updateDataInDatabase() throws DatabaseException, ValidationException{
 		databaseActionHandler.taskGenericUpdate(this);
 		updateAdditionalData();
 	}
-	
-	protected abstract void saveNewAdditionalData() throws DatabaseException, ValidationException;
-	
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
 	 * @param taskWithNewData
 	 * @return true if update successful, false if error
@@ -219,8 +256,28 @@ public abstract class Task implements Completable{
 	 * @throws DatabaseException 
 	 */
 	protected abstract boolean updateAdditionalData() throws DatabaseException, ValidationException;
+
 	
-	protected abstract void loadAdditionalData();
+	/**Copies the task, setting the taskID to 0 and replacing stageID and userID with supplied arguments.
+	 * @param stageID
+	 * @param userID
+	 * @return
+	 */
+	public Task copy(int stageID, int userID){
+		Task taskToCopy = GenericTask.getInstanceFull(0, stageID, userID, this.taskTypeID, this.parentTaskID, this.title, this.instructions, this.resourceLink, 
+				this.completed, this.dateCompleted, this.taskOrder, this.extraTask, this.template);;
+		
+		return taskToCopy;
+	}
+	
+	public List<Task> copyMultiple(int stageID, int userID, int numberOfCopies) throws CloneNotSupportedException{
+		List<Task> listOfCopiedTasks = new ArrayList<>();
+		for(int i = 0; i < numberOfCopies; i++){
+			listOfCopiedTasks.add(copy(stageID, userID));
+		}
+		
+		return listOfCopiedTasks;
+	}
 	
 	public int getTaskID(){
 		return taskID;
