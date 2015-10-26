@@ -12,11 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
-import com.cggcoding.models.tasktypes.GenericTask;
 
 /**
  * Servlet implementation class UpdateTaskCompletion
@@ -87,7 +87,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 			switch (taskTypeName) {
 				case "GenericTask":
 					System.out.println("Updating Generic Task.");
-					GenericTask genTask = GenericTask.getInstanceByID(currentTaskID, user.getUserID());
+					TaskGeneric genTask = TaskGeneric.getInstanceByID(currentTaskID, user.getUserID());
 
 					updatedTask =  genTask;
 					break;

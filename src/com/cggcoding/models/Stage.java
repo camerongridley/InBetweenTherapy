@@ -3,10 +3,10 @@ package com.cggcoding.models;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.factories.TaskFactory;
-import com.cggcoding.models.tasktypes.GenericTask;
-import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 import java.util.*;
 
@@ -434,8 +434,19 @@ public class Stage implements Completable, DatabaseModel {
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	public Stage copyIntoTreatmentPlan(int treatmentPlanIDToCopy, int userIDToCopy, boolean copyAsTemplate) throws ValidationException, DatabaseException{
+	public Stage copy(int treatmentPlanIDToCopy, int userIDToCopy, boolean copyAsTemplate) throws ValidationException, DatabaseException{
 		Stage copiedStage = getInstanceWithoutID(treatmentPlanIDToCopy, userIDToCopy, this.title, this.description, this.stageOrder, copyAsTemplate);
-		return (Stage)copiedStage.saveNew();
+		copiedStage = (Stage)copiedStage.saveNew();
+		for(StageGoal goal : this.goals){
+			goal.setStageID(copiedStage.getStageID());
+			copiedStage.addGoal(databaseActionHandler.stageGoalValidateAndCreate(goal));
+		}
+		
+		for(Task task : this.tasks){
+			task = task.copy(copiedStage.getStageID(), copiedStage.getUserID());
+			copiedStage.addTask(task.saveNew());
+		}
+		
+		return copiedStage;
 	}
 }

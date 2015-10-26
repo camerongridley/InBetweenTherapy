@@ -6,8 +6,6 @@ import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.models.tasktypes.GenericTask;
-import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
@@ -170,13 +168,13 @@ public abstract class Task implements Completable, DatabaseModel{
 	}
 	
 	public static Task load(int taskID) throws DatabaseException{
-		Task genericTask = GenericTask.load(taskID);
+		Task genericTask = TaskGeneric.load(taskID);
 		switch(genericTask.getTaskTypeID()){
 			case Constants.TASK_TYPE_ID_GENERIC_TASK:
 				return genericTask;
 	
 			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-				return TwoTextBoxesTask.load(taskID);
+				return TaskTwoTextBoxes.load(taskID);
 		}
 		
 		return null;
@@ -191,10 +189,13 @@ public abstract class Task implements Completable, DatabaseModel{
 		switch(getTaskTypeID()){
 			case Constants.TASK_TYPE_ID_GENERIC_TASK:
 				saveNewAdditionalData();
-	
+				
+				break;	
 			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-				TwoTextBoxesTask twoTextTask = (TwoTextBoxesTask)this;
+				TaskTwoTextBoxes twoTextTask = (TaskTwoTextBoxes)this;
 				twoTextTask.saveNewAdditionalData();
+				
+				break;
 		}
 		
 		return this;
@@ -202,9 +203,8 @@ public abstract class Task implements Completable, DatabaseModel{
 	
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		updateDataInDatabase();
-		//updateAdditionalData(); - moved to updateDataInDatabase()
-		
+		databaseActionHandler.taskGenericUpdate(this);
+		updateAdditionalData();
 	}
 
 	@Override
@@ -245,10 +245,6 @@ public abstract class Task implements Completable, DatabaseModel{
 	
 	protected abstract void saveNewAdditionalData() throws DatabaseException, ValidationException;
 	
-	protected void updateDataInDatabase() throws DatabaseException, ValidationException{
-		databaseActionHandler.taskGenericUpdate(this);
-		updateAdditionalData();
-	}
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
 	 * @param taskWithNewData
 	 * @return true if update successful, false if error
@@ -258,19 +254,14 @@ public abstract class Task implements Completable, DatabaseModel{
 	protected abstract boolean updateAdditionalData() throws DatabaseException, ValidationException;
 
 	
-	/**Copies the task, setting the taskID to 0 and replacing stageID and userID with supplied arguments.
+	/**Copies the task, setting the taskID to 0 and replacing stageID and userID with supplied arguments. Also sets template=false since templates are unique.
 	 * @param stageID
 	 * @param userID
 	 * @return
 	 */
-	public Task copy(int stageID, int userID){
-		Task taskToCopy = GenericTask.getInstanceFull(0, stageID, userID, this.taskTypeID, this.parentTaskID, this.title, this.instructions, this.resourceLink, 
-				this.completed, this.dateCompleted, this.taskOrder, this.extraTask, this.template);;
-		
-		return taskToCopy;
-	}
+	public abstract Task copy(int stageID, int userID) throws DatabaseException, ValidationException;
 	
-	public List<Task> copyMultiple(int stageID, int userID, int numberOfCopies) throws CloneNotSupportedException{
+	public List<Task> copyMultiple(int stageID, int userID, int numberOfCopies) throws CloneNotSupportedException, DatabaseException, ValidationException{
 		List<Task> listOfCopiedTasks = new ArrayList<>();
 		for(int i = 0; i < numberOfCopies; i++){
 			listOfCopiedTasks.add(copy(stageID, userID));

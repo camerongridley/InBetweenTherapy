@@ -1,49 +1,47 @@
-package com.cggcoding.models.tasktypes;
+package com.cggcoding.models;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.models.DatabaseModel;
-import com.cggcoding.models.Task;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class GenericTask extends Task{
+public class TaskGeneric extends Task{
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
 	
-	private GenericTask(int taskID, int userID) {
+	private TaskGeneric(int taskID, int userID) {
 		super(taskID, userID);
 	}
 
 	//constructor without taskID - for Tasks objects that haven't been saved to database and don't have a taskID yet
-	private GenericTask(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+	private TaskGeneric(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			int taskOrder, boolean extraTask, boolean template) {
 		//super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
 		super(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
 	}
 	
 	//full constructor
-	private GenericTask(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+	private TaskGeneric(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template) {
 		//super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
 		super(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed, dateCompleted, taskOrder, extraTask, template);
 	}
 	
 	//Static Factory Methods
-	public static GenericTask getInstanceByID(int taskID, int userID){
-		return new GenericTask(taskID, userID);
+	public static TaskGeneric getInstanceByID(int taskID, int userID){
+		return new TaskGeneric(taskID, userID);
 	}
 	
-	public static GenericTask getInstanceWithoutTaskID(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+	public static TaskGeneric getInstanceWithoutTaskID(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			int taskOrder, boolean extraTask, boolean template){
-		return new GenericTask(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
+		return new TaskGeneric(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
 	}
 	
-	public static GenericTask getInstanceFull(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+	public static TaskGeneric getInstanceFull(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template){
-		return new GenericTask(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed, dateCompleted, taskOrder, extraTask, template);
+		return new TaskGeneric(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed, dateCompleted, taskOrder, extraTask, template);
 	}	
 	
 
@@ -58,9 +56,9 @@ public class GenericTask extends Task{
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
-	public static GenericTask getTemplateInstance(int userID, int taskTypeID, String title, String instructions, 
+	public static TaskGeneric getTemplateInstance(int userID, int taskTypeID, String title, String instructions, 
 			String resourceLink, boolean extraTask){
-		return new GenericTask(0, 0, userID, taskTypeID, 0, 
+		return new TaskGeneric(0, 0, userID, taskTypeID, 0, 
 				title, instructions, resourceLink, false, null, 0, extraTask, true);
 	}
 	
@@ -107,6 +105,15 @@ public class GenericTask extends Task{
 	protected void saveNewAdditionalData() throws DatabaseException, ValidationException {
 		//there is no additional data to save for GenericTask
 		
+	}
+
+	@Override
+	public Task copy(int stageID, int userID) throws DatabaseException, ValidationException {
+		TaskGeneric gTask = getInstanceFull(0, stageID, userID, getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
+					isCompleted(), getDateCompleted(), getTaskOrder(), isExtraTask(), false);
+		
+		return gTask.saveNew();
+
 	}
 	
 	

@@ -5,10 +5,10 @@ import javax.servlet.http.HttpServletRequest;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.helpers.DefaultDatabaseCalls;
+import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
-import com.cggcoding.models.tasktypes.GenericTask;
-import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
+import com.cggcoding.models.TaskTwoTextBoxes;
 
 public class CommonServletFunctions {
 
@@ -45,7 +45,7 @@ public class CommonServletFunctions {
 		boolean extraTask = ParameterUtils.getBooleanParameter(request, "isExtraTask"); 
 		boolean template = ParameterUtils.getBooleanParameter(request, "isTemplate"); 
 		
-		GenericTask genericTask = GenericTask.getInstanceWithoutTaskID(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
+		TaskGeneric genericTask = TaskGeneric.getInstanceWithoutTaskID(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
 		genericTask.setTaskID(taskID);
 		
 		switch(taskTypeID){
@@ -58,7 +58,7 @@ public class CommonServletFunctions {
 				String extraTextLabel2 = request.getParameter("extraTextLabel2");
 				String extraTextValue2 = request.getParameter("extraTextValue2");
 				
-				TwoTextBoxesTask twoTextTask = TwoTextBoxesTask.addDataToGenericTask(genericTask, extraTextLabel1, extraTextValue1, extraTextLabel2, extraTextValue2);
+				TaskTwoTextBoxes twoTextTask = TaskTwoTextBoxes.addDataToGenericTask(genericTask, extraTextLabel1, extraTextValue1, extraTextLabel2, extraTextValue2);
 				
 				task = twoTextTask;
 				break;

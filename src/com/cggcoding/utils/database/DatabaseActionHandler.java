@@ -7,14 +7,14 @@ import java.util.Map;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
+import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.models.User;
-import com.cggcoding.models.tasktypes.GenericTask;
-import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
 
 public interface DatabaseActionHandler {
 
@@ -121,9 +121,9 @@ public interface DatabaseActionHandler {
 	
 	Task taskTwoTextBoxesLoad(int taskID) throws DatabaseException;
 	
-	void taskTwoTextBoxesSaveNewAdditionalData(TwoTextBoxesTask twoTextBoxesTask) throws DatabaseException, ValidationException;
+	void taskTwoTextBoxesSaveNewAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException;
 	
-	boolean taskTwoTextBoxesUpdateAdditionalData(TwoTextBoxesTask twoTextBoxesTask) throws DatabaseException, ValidationException;
+	boolean taskTwoTextBoxesUpdateAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException;
 	
 	/**Updates task with new data.  If taskToUpdate.isTemplate == true, then stageID foreign key is set to null before inserting
 	 * @param taskToUpdate

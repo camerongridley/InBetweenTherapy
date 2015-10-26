@@ -11,11 +11,11 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.helpers.DefaultDatabaseCalls;
+import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
+import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.models.User;
-import com.cggcoding.models.tasktypes.GenericTask;
-import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
@@ -154,12 +154,12 @@ public class EditTask extends HttpServlet {
 				case ("edit-task-update"):
 					switch(tempTask.getTaskTypeID()){
 						case (Constants.TASK_TYPE_ID_GENERIC_TASK):
-							GenericTask genericTask = (GenericTask)tempTask;
+							TaskGeneric genericTask = (TaskGeneric)tempTask;
 							genericTask.update();
 							tempTask = genericTask;
 							break;
 						case(Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK):
-							TwoTextBoxesTask twoTextBoxesTask = (TwoTextBoxesTask)tempTask;
+							TaskTwoTextBoxes twoTextBoxesTask = (TaskTwoTextBoxes)tempTask;
 							twoTextBoxesTask.update();
 							tempTask = twoTextBoxesTask;
 							break;

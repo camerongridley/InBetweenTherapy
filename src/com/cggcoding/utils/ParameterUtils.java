@@ -2,8 +2,8 @@ package com.cggcoding.utils;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Task;
-import com.cggcoding.models.tasktypes.GenericTask;
 
 public class ParameterUtils {
 

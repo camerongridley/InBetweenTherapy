@@ -273,4 +273,10 @@ public class TreatmentPlan implements DatabaseModel{
 
 		databaseActionHandler.stageDelete(stageID);
 	}
+	
+	/*public TreatmentPlan copy(int userID){
+		TreatmentPlan copiedPlan = null;
+		
+		return copiedPlan;
+	}*/
 }

@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cggcoding.models.*;
-import com.cggcoding.models.tasktypes.GenericTask;
 
 
 /**

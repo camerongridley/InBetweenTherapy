@@ -13,17 +13,17 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
+import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
-import com.cggcoding.models.tasktypes.GenericTask;
-import com.cggcoding.models.tasktypes.TwoTextBoxesTask;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.SqlBuilders;
 import com.cggcoding.utils.messaging.ErrorMessages;
@@ -83,8 +83,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
             ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE email=? AND password=?");
-            ps.setString(1, email.trim());
-            ps.setString(2, password.trim());
+            ps.setString(1, email);
+            ps.setString(2, password);
 
             userInfo = ps.executeQuery();
 
@@ -124,8 +124,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
             ps = cn.prepareStatement("SELECT user.user_id, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?) AND ((user.password)=?))");
-            ps.setString(1, email.trim());
-            ps.setString(2, password.trim());
+            ps.setString(1, email);
+            ps.setString(2, password);
 
             userInfo = ps.executeQuery();
             
@@ -499,7 +499,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setInt(1, treatmentPlan.getUserID());
             ps.setInt(2, treatmentPlan.getTreatmentIssueID());
             ps.setString(3, treatmentPlan.getTitle().trim());
-            ps.setString(4, treatmentPlan.getDescription().trim());
+            ps.setString(4, treatmentPlan.getDescription());
             ps.setInt(5, treatmentPlan.getCurrentStageIndex());
             ps.setInt(6, treatmentPlan.getActiveViewStageIndex());
             ps.setBoolean(7, treatmentPlan.isInProgress());
@@ -541,7 +541,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setInt(1, treatmentPlan.getUserID());
             ps.setInt(2, treatmentPlan.getTreatmentIssueID());
             ps.setString(3, treatmentPlan.getTitle().trim());
-            ps.setString(4, treatmentPlan.getDescription().trim());
+            ps.setString(4, treatmentPlan.getDescription());
             ps.setInt(5, treatmentPlan.getCurrentStageIndex());
             ps.setInt(6, treatmentPlan.getActiveViewStageIndex());
             ps.setBoolean(7, treatmentPlan.isInProgress());
@@ -652,11 +652,12 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        
         try {
         	cn= getConnection();
-			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE stage.stage_title = ? AND stage.stage_id != ? AND stage.stage_user_id_fk = ? AND stage_is_template=?");
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE stage.stage_title = ? AND stage.stage_treatment_plan_id_fk= ?  AND stage.stage_id != ? AND stage.stage_user_id_fk = ? AND stage_is_template=?");
 			ps.setString(1, newStage.getTitle().trim());
-			ps.setInt(2, newStage.getStageID());
-			ps.setInt(3, newStage.getUserID());
-			ps.setBoolean(4, newStage.isTemplate());
+			ps.setInt(2, newStage.getTreatmentPlanID());
+			ps.setInt(3, newStage.getStageID());
+			ps.setInt(4, newStage.getUserID());
+			ps.setBoolean(5, newStage.isTemplate());
 
 			stageCount = ps.executeQuery();
 
@@ -693,7 +694,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setInt(1, newStage.getUserID());
             ps.setInt(2, newStage.getTreatmentPlanID());
             ps.setString(3, newStage.getTitle().trim());
-            ps.setString(4, newStage.getDescription().trim());
+            ps.setString(4, newStage.getDescription());
             ps.setBoolean(5,  newStage.isCompleted());
             ps.setInt(6, newStage.getStageOrder());
             ps.setInt(7, newStage.getPercentComplete());
@@ -742,7 +743,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	            ps.setInt(1, newStage.getTreatmentPlanID());
 	            ps.setInt(2, newStage.getUserID());
 	            ps.setString(3, newStage.getTitle().trim());
-	            ps.setString(4, newStage.getDescription().trim());
+	            ps.setString(4, newStage.getDescription());
 	            ps.setBoolean(5, newStage.isCompleted());
 	            ps.setInt(6, newStage.getStageOrder());
 	            ps.setInt(7, newStage.getPercentComplete());
@@ -1121,7 +1122,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
    
             while (rs.next()){
             	//TODO ADD GETTING DATE COMPLETED - just setting and returning it to null now
-            	task = GenericTask.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), null/*rs.getDate("task_date_completed")*/, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"));
+            	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), null/*rs.getDate("task_date_completed")*/, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"));
             }
         	
 
@@ -1137,7 +1138,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return task;
 	}
 	
-	public void taskTwoTextBoxesSaveNewAdditionalData(TwoTextBoxesTask twoTextBoxesTask) throws DatabaseException, ValidationException{
+	public void taskTwoTextBoxesSaveNewAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException{
 		Connection cn = null;
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
@@ -1151,10 +1152,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             ps.setInt(1, twoTextBoxesTask.getTaskID());
-            ps.setString(2, twoTextBoxesTask.getExtraTextLabel1().trim());
-            ps.setString(3, twoTextBoxesTask.getExtraTextValue1().trim());
-            ps.setString(4, twoTextBoxesTask.getExtraTextLabel2().trim());
-            ps.setString(5, twoTextBoxesTask.getExtraTextValue2().trim());
+            ps.setString(2, twoTextBoxesTask.getExtraTextLabel1());
+            ps.setString(3, twoTextBoxesTask.getExtraTextValue1());
+            ps.setString(4, twoTextBoxesTask.getExtraTextLabel2());
+            ps.setString(5, twoTextBoxesTask.getExtraTextValue2());
 
 
             int success = ps.executeUpdate();
@@ -1179,7 +1180,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 
 	@Override
-	public boolean taskTwoTextBoxesUpdateAdditionalData(TwoTextBoxesTask twoTextBoxesTask) throws DatabaseException, ValidationException {
+	public boolean taskTwoTextBoxesUpdateAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException {
 		Connection cn = null;
     	PreparedStatement ps = null;
         int success = 0;
@@ -1191,10 +1192,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
             ps = cn.prepareStatement(sql);
             
-            ps.setString(1, twoTextBoxesTask.getExtraTextLabel1().trim());
-            ps.setString(2, twoTextBoxesTask.getExtraTextValue1().trim());
-            ps.setString(3, twoTextBoxesTask.getExtraTextLabel2().trim());
-            ps.setString(4, twoTextBoxesTask.getExtraTextValue2().trim());
+            ps.setString(1, twoTextBoxesTask.getExtraTextLabel1());
+            ps.setString(2, twoTextBoxesTask.getExtraTextValue1());
+            ps.setString(3, twoTextBoxesTask.getExtraTextLabel2());
+            ps.setString(4, twoTextBoxesTask.getExtraTextValue2());
             ps.setInt(5, twoTextBoxesTask.getTaskID()); 
 
             success = ps.executeUpdate();   	
@@ -1230,7 +1231,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	task = TwoTextBoxesTask.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
+            	task = TaskTwoTextBoxes.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
             			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
             			null/*rs.getDate("task_date_completed")*/, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"),
             			rs.getString("extra_text_label_1"), rs.getString("extra_text_value_1"), rs.getString("extra_text_label_2"), rs.getString("extra_text_value_2"));
@@ -1270,8 +1271,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	            ps.setInt(3, taskToUpdate.getUserID());
 	            ps.setInt(4, taskToUpdate.getParentTaskID());
 	            ps.setString(5, taskToUpdate.getTitle().trim());
-	            ps.setString(6,  taskToUpdate.getInstructions().trim());
-	            ps.setString(7, taskToUpdate.getResourceLink().trim());
+	            ps.setString(6,  taskToUpdate.getInstructions());
+	            ps.setString(7, taskToUpdate.getResourceLink());
 	            ps.setBoolean(8, taskToUpdate.isCompleted());
 	            ps.setDate(9, null);//taskToUpdate.getDateCompleted() == null ? null : Date.valueOf(taskToUpdate.getDateCompleted()));//TODO ACTUALLY UPDATE THE DATE COMPLETED! Just setting to null now.
 	            ps.setInt(10, taskToUpdate.getTaskOrder());
@@ -1379,8 +1380,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setInt(3, newTask.getUserID());
             ps.setInt(4, newTask.getParentTaskID());
             ps.setString(5, newTask.getTitle().trim());
-            ps.setString(6, newTask.getInstructions().trim());
-            ps.setString(7, newTask.getResourceLink().trim());
+            ps.setString(6, newTask.getInstructions());
+            ps.setString(7, newTask.getResourceLink());
             ps.setBoolean(8, newTask.isCompleted());
             Date dateCompleted = null;//newTask.getDateCompleted()==null ? null : Date.valueOf(newTask.getDateCompleted()); //TODO ACTUALLY SET THE DATE COMPLETED> just setting to null now.
             ps.setDate(9, dateCompleted);

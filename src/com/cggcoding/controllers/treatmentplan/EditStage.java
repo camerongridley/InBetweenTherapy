@@ -124,6 +124,7 @@ public class EditStage extends HttpServlet {
 		            	if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate")){
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
 		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(editedStage.getTreatmentPlanID()));
+		            		request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());
 		            		forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	}else{
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);

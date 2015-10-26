@@ -17,6 +17,7 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
@@ -93,7 +94,7 @@ public class CreateStage extends HttpServlet {
 		List<Stage> defaultStages = null;
 		
 		try{
-			treatmentPlan = TreatmentPlan.loadWithEmptyLists(treatmentPlanID);
+			
 			defaultStages = DefaultDatabaseCalls.getDefaultStages();
 			
 			if(user.hasRole("admin")){
@@ -106,7 +107,7 @@ public class CreateStage extends HttpServlet {
 						break;
 					case "stage-add-default":
 		            	Stage defaultStage = Stage.load(selectedDefaultStageID);
-		            	defaultStage.copyIntoTreatmentPlan(treatmentPlanID, user.getUserID(), false);
+		            	defaultStage.copy(treatmentPlanID, user.getUserID(), false);
 		            	if(path.equals("editingPlanTemplate")){
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 		                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
@@ -119,16 +120,22 @@ public class CreateStage extends HttpServlet {
 		                	throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
 		                }
 		                
-		                boolean template = path.equals("creatingStageTemplate");
+		                boolean template = false;
+		                if(path.equals("creatingStageTemplate")){
+		                	template = true;
+		                	treatmentPlanID = Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID;
+		                } else {
+		                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		                }
 		                
 		                Stage newStage = Stage.getInstanceWithoutID(treatmentPlanID, user.getUserID(), stageTitle, stageDescription, stageOrder, template);
-		                newStage.setTreatmentPlanID(ParameterUtils.parseIntParameter(request, "treatmentPlanID"));
 		                newStage.saveNew();
 
 		                request.setAttribute("stage", newStage);
-		                treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		                
 		                
 		                if(path.equals("editingPlanTemplate")){
+		                	
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 		                }else{
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
