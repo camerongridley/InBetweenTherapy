@@ -191,6 +191,47 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return adminIDList;
     }
     
+    @Override
+    public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException{
+    	Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<Integer, UserClient> clients = new HashMap<>();
+        
+        try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT therapist_user_id_client_user_id_maps.therapist_user_id, "
+            		+ "therapist_user_id_client_user_id_maps.client_user_id, user.email, user.password, "
+            		+ "user.user_user_role_id_fk, user.active_treatment_plan_id, user_role.role "
+            		+ "FROM user_role INNER JOIN ((user) INNER JOIN therapist_user_id_client_user_id_maps "
+            		+ "ON user.user_id = therapist_user_id_client_user_id_maps.client_user_id) "
+            		+ "ON user_role.user_role_id = user.user_user_role_id_fk "
+            		+ "WHERE (((therapist_user_id_client_user_id_maps.therapist_user_id)=?))");
+
+            ps.setInt(1, therapistID);
+
+
+            rs = ps.executeQuery();
+
+
+            while (rs.next()){
+            	UserClient client = new UserClient(rs.getInt("client_user_id"), rs.getString("email"));
+            	client.setRoleID(rs.getInt("user_user_role_id_fk"));
+            	client.addRole(rs.getString("role"));
+                clients.put(client.getUserID(), client);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+		}
+        return clients;
+    }
+    
 
 	@Override
 	public List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException {

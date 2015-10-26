@@ -13,6 +13,7 @@ import com.cggcoding.utils.database.MySQLActionHandler;
 public abstract class User {
 	private int userID;
 	private String email;
+	private int roleID;
 	private List<String> roles;
 	String role;
 	private List<TreatmentPlan> treatmentPlanList;
@@ -21,16 +22,33 @@ public abstract class User {
 	public User (int userID, String email){
 		this.userID = userID;
 		this.email = email;
+		this.roleID = 0;
 		roles = new ArrayList<>();
 		this.treatmentPlanList = new ArrayList<>();
 	}
-
+	
+	public void setUserID(int userID) {
+		this.userID = userID;
+	}
+	
 	public int getUserID(){
 		return userID;
 	}
-
+	
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
 	public String getEmail() {
 		return email;
+	}
+	
+	public int getRoleID() {
+		return roleID;
+	}
+
+	public void setRoleID(int roleID) {
+		this.roleID = roleID;
 	}
 
 	public List<String> getRoles(){

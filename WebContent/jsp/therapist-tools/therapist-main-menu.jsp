@@ -30,9 +30,10 @@
   </p>
 
   <p>
-    <form class="form-inline" action="./LoadData" method="POST">
+    <form class="form-inline" action="./AssignTreatmentPlan" method="POST">
       <div><button type="submit" class="btn btn-primary">Assign Plan to Client</button></div>
-      <input type="hidden" name="requestedAction" value="assignplan">
+      <input type="hidden" name="requestedAction" value="assign-treatment-plan-start">
+      <input type="hidden" name="path" value="assignClientTreatmentPlan">
     </form>
   </p>
 

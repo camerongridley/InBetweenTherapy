@@ -15,6 +15,7 @@ import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserClient;
 
 public interface DatabaseActionHandler {
 
@@ -27,6 +28,11 @@ public interface DatabaseActionHandler {
 	boolean userValidate(String email, String password) throws DatabaseException;
 
 	User userLoadInfo(String email, String password) throws DatabaseException;
+	
+	//**************************************************
+	// *************** User Methods *******************
+	//**************************************************
+	public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException;
 
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
