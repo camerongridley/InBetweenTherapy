@@ -30,11 +30,27 @@
             </div>
         </div>
         <div class="form-group">
-        <div class="col-sm-offset-2 col-sm-10">
-        <p>Preview of selected client plans.</p>
-        </div>
+	        <div class="col-sm-offset-2 col-sm-10">
+	        <p>Preview of selected client plans.</p>
+	        </div>
         </div>
 
+		<div class="form-group">
+			<label for="selectedDefaultTreatmentPlanID" class="col-sm-2 control-label">Select Default Treatment Plan</label>
+	        <div class="col-sm-5">
+	            <select class="form-control" id="selectedDefaultTreatmentPlanID" name="selectedDefaultTreatmentPlanID">
+	                <option  value="">Select a treatment plan to edit.</option>
+	                <c:forEach var="defaultPlan" items="${defaultTreatmentPlanList }">
+	                    <option value="${defaultPlan.treatmentPlanID}" <c:if test="${defaultPlan.treatmentPlanID == treatmentPlan.treatmentPlanID }">selected</c:if> >${defaultPlan.title}</option>
+	                </c:forEach>
+	            </select>
+	        </div>
+		</div>
+		<div class="form-group">
+	        <div class="col-sm-offset-2 col-sm-10">
+	        <p>Preview of selected default treatment plans.</p>
+	        </div>
+        </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-default">Save</button>
