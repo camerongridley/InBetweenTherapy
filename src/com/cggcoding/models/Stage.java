@@ -124,15 +124,16 @@ public class Stage implements Completable, DatabaseModel {
 	}*/
 	
 	public static Stage load(int stageID) throws DatabaseException, ValidationException{
-		Stage stage = databaseActionHandler.stageLoadWithEmplyLists(stageID);
-		if(stage != null){
-			stage.loadTasks();
-			stage.loadGoals();
-		}
+		
+		Stage stage = databaseActionHandler.stageLoad(stageID);//stageLoadWithEmplyLists(stageID);
+		//if(stage != null){
+		//	stage.loadTasks();
+		//	stage.loadGoals();
+		//}
 		return stage;
 	}
 	
-	public void loadTasks() throws DatabaseException, ValidationException{
+/*	public void loadTasks() throws DatabaseException, ValidationException{
 		List<Integer> taskIDs = databaseActionHandler.stageGetTaskIDs(stageID);
 		
 		for(int taskID : taskIDs){
@@ -143,7 +144,7 @@ public class Stage implements Completable, DatabaseModel {
 	public void loadGoals() throws DatabaseException, ValidationException{
 		setGoals(databaseActionHandler.stageLoadGoals(stageID));
 	}
-	
+	*/
 	public int getStageID() {
 		return stageID;
 	}

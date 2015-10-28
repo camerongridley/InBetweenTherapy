@@ -65,6 +65,8 @@ public interface DatabaseActionHandler {
 	//****************************************** Stage Methods *****************************************
 	//**************************************************************************************************
 	
+	Stage stageLoad(int stageID) throws DatabaseException, ValidationException;
+	
 	/**Validates and if passes, creates stage.  If the Stage.isTemplate=true, then the treatmentPlanID foreign key is set to null before inserting into the database.
 	 * @param stage
 	 * @return
@@ -94,9 +96,9 @@ public interface DatabaseActionHandler {
 	
 	StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException, ValidationException;
 	
-	List<Integer> stageGetTaskIDs(int stageID) throws DatabaseException, ValidationException;
+	//List<Integer> stageGetTaskIDs(int stageID) throws DatabaseException, ValidationException;
 	
-	List<StageGoal> stageLoadGoals(int stageID) throws DatabaseException, ValidationException;
+	//List<StageGoal> stageLoadGoals(int stageID) throws DatabaseException, ValidationException;
 	
 	void stageDelete(int stageID) throws DatabaseException, ValidationException;
 
@@ -123,9 +125,7 @@ public interface DatabaseActionHandler {
 	 */
 	Task taskValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
 	
-	Task taskGenericLoad(int taskID) throws DatabaseException;
-	
-	Task taskTwoTextBoxesLoad(int taskID) throws DatabaseException;
+	Task taskLoad(int taskID) throws DatabaseException;
 	
 	void taskTwoTextBoxesSaveNewAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException;
 	

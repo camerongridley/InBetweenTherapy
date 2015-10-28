@@ -81,11 +81,11 @@ public class TaskTwoTextBoxes extends Task{
 		this.extraTextValue2 = extraTextValue2;
 	}
 
-	public static Task load(int taskID) throws DatabaseException {
+	/*public static Task load(int taskID) throws DatabaseException {
 		return databaseActionHandler.taskTwoTextBoxesLoad(taskID);
 		//this method currently uses a SQL query that joins the generic and two-textbox table so can do in one call.  
 		//If wanted to break it up into separate calls then would probably load general data here and then call loadAdditionalData() 
-	}
+	}*/
 	
 	@Override
 	protected void saveNewAdditionalData() throws DatabaseException, ValidationException{

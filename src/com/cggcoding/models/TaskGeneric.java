@@ -62,9 +62,9 @@ public class TaskGeneric extends Task{
 				title, instructions, resourceLink, false, null, 0, extraTask, true);
 	}
 	
-	public static Task load(int taskID) throws DatabaseException{
+	/*public static Task load(int taskID) throws DatabaseException{
 		return databaseActionHandler.taskGenericLoad(taskID);
-	}
+	}*/
 	
 	/*@Override
 	public Object saveNew() throws DatabaseException, ValidationException{
