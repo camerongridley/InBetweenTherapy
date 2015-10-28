@@ -87,9 +87,10 @@ public class TaskTwoTextBoxes extends Task{
 		//If wanted to break it up into separate calls then would probably load general data here and then call loadAdditionalData() 
 	}*/
 	
+	//TODO remove saveNewAdditionalData as abstract method?
 	@Override
 	protected void saveNewAdditionalData() throws DatabaseException, ValidationException{
-		databaseActionHandler.taskTwoTextBoxesSaveNewAdditionalData(this);
+		//databaseActionHandler.taskTwoTextBoxesSaveNewAdditionalData(this);
 	}
 	
 	@Override

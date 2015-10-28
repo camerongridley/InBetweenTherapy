@@ -649,7 +649,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         	try {
 
-	        	cn= getConnection();
 				ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE stage_title=? AND stage_treatment_plan_id_fk=? AND stage_user_id_fk=? AND stage_is_template=?");
 				ps.setString(1, newStage.getTitle().trim());
 				ps.setInt(2, newStage.getTreatmentPlanID());
@@ -694,7 +693,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         int comboExists = 0;
 	        
         try {
-        	cn= getConnection();
 			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage WHERE stage.stage_title = ? AND stage.stage_treatment_plan_id_fk= ?  AND stage.stage_id != ? AND stage.stage_user_id_fk = ? AND stage_is_template=?");
 			ps.setString(1, newStage.getTitle().trim());
 			ps.setInt(2, newStage.getTreatmentPlanID());
@@ -902,8 +900,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         throwValidationExceptionIfTemplateHolderID(stageID);
         
         try {
-        	cn = getConnection();
-
     		String sql = "SELECT * FROM stage WHERE stage.stage_id =?";
         	
             ps = cn.prepareStatement(sql);
@@ -950,6 +946,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         throwValidationExceptionIfTemplateHolderID(stageID);
         
         try {
+        	cn= getConnection();
         	stage = stageLoadBasic(cn, stageID);
 
         } finally {
@@ -969,7 +966,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         //throwValidationExceptionIfTemplateHolderID(stageID);
         
         try {
-        	cn = getConnection();
             ps = cn.prepareStatement("SELECT task_generic_id, task_generic_task_type_id_fk, task_order FROM task_generic WHERE task_generic_stage_id_fk=? ORDER BY task_order");
             ps.setInt(1, stageID);
             
@@ -1031,7 +1027,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         throwValidationExceptionIfTemplateHolderID(stageID);
         
         try {
-        	cn = getConnection();
             ps = cn.prepareStatement("SELECT * FROM stage_goal WHERE stage_goal_stage_id_fk=?");
             ps.setInt(1, stageID);
 
@@ -1252,8 +1247,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         Task task = null;
         
         try {
-        	cn = getConnection();
-
     		String sql = "SELECT * FROM task_generic WHERE task_generic_id =?";
         	
             ps = cn.prepareStatement(sql);
@@ -1279,14 +1272,11 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return task;
 	}
 	
-	public void taskTwoTextBoxesSaveNewAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException{
-		Connection cn = null;
+	private void taskTwoTextBoxesCreateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException{
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
         try {
-        	cn = getConnection();
-
         	String sql = "INSERT INTO task_two_textboxes (task_generic_id, extra_text_label_1, extra_text_value_1, extra_text_label_2, extra_text_value_2) "
         			+ "VALUES (?, ?, ?, ?, ?)";
         	
@@ -1309,12 +1299,17 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
 
         } catch (SQLException e) {
+        	try {
+				cn.rollback();
+				System.out.println("The SQL transaction is being rolled back.");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
             e.printStackTrace();
             throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(generatedKeys);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
 		
 
@@ -1358,8 +1353,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         Task task = null;
         
         try {
-        	cn = getConnection();
-
     		String sql = "SELECT task_generic.*, task_two_textboxes.extra_text_label_1, task_two_textboxes.extra_text_value_1, task_two_textboxes.extra_text_label_2, task_two_textboxes.extra_text_value_2 "
     				+ "FROM task_generic INNER JOIN task_two_textboxes ON task_generic.task_generic_id = task_two_textboxes.task_generic_id WHERE task_two_textboxes.task_generic_id =?";
         	
@@ -1433,6 +1426,46 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return success == 1;
 	}
 	
+	private Task taskCreate(Connection cn, Task newTask) throws DatabaseException, ValidationException{
+		Task createdTask = null;
+
+		try {
+        	cn.setAutoCommit(false);
+
+        	createdTask = taskGenericCreate(cn, newTask);
+    		
+        	//save any additional data associated with non-generic tasks. For future task types, will need to add associated cases
+    		switch(newTask.getTaskTypeID()){
+    			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+    				TaskTwoTextBoxes twoTextTask = (TaskTwoTextBoxes)createdTask;
+    				taskTwoTextBoxesCreateAdditionalData(cn, twoTextTask);
+    				
+    				break;
+    		}
+
+        	cn.commit();
+        } catch (SQLException e) {
+        	try {
+				cn.rollback();
+				System.out.println("The SQL transaction is being rolled back.");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+        }
+		
+		return createdTask;
+		
+	}
+	
 	@Override
 	public Task taskValidateAndCreate(Task newTask) throws DatabaseException, ValidationException{
 		Connection cn = null;
@@ -1440,7 +1473,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn= getConnection();
 			if(taskValidate(cn, newTask)){
-				return taskGenericCreate(cn, newTask);
+				return taskCreate(cn, newTask);
 			}
 			
         } finally {
@@ -1465,8 +1498,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         int comboExists = 0;
 	        
         try {
-        	cn= getConnection();
-
 			ps = cn.prepareStatement("SELECT COUNT(*) FROM task_generic WHERE (task_generic.task_title=? AND task_generic_stage_id_fk=? AND task_generic_id!=?)");
 			ps.setString(1, newTask.getTitle().trim());
 			ps.setInt(2, newTask.getStageID());
@@ -1537,6 +1568,12 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
 
         } catch (SQLException e) {
+        	try {
+				cn.rollback();
+				System.out.println("The SQL transaction is being rolled back.");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
             e.printStackTrace();
             throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {

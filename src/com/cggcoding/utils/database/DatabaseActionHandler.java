@@ -127,8 +127,6 @@ public interface DatabaseActionHandler {
 	
 	Task taskLoad(int taskID) throws DatabaseException;
 	
-	void taskTwoTextBoxesSaveNewAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException;
-	
 	boolean taskTwoTextBoxesUpdateAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException;
 	
 	/**Updates task with new data.  If taskToUpdate.isTemplate == true, then stageID foreign key is set to null before inserting
