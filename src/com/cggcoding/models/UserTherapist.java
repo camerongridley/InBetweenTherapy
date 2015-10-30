@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -39,5 +40,9 @@ public class UserTherapist extends User{
     public Map<Integer, UserClient> loadClients() throws DatabaseException{
     	this.clientMap = databaseActionHandler.userGetClientsByTherapistID(this.getUserID());
     	return clientMap;
+    }
+    
+    public TreatmentPlan copyTreatmentPlanForClient(int clientUserID, int treatmentPlanID) throws ValidationException, DatabaseException{
+    	return databaseActionHandler.treatmentPlanCopy(clientUserID, treatmentPlanID);
     }
 }

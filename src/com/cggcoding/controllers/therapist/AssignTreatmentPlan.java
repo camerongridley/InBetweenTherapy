@@ -14,6 +14,7 @@ import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
+import com.cggcoding.utils.ParameterUtils;
 
 /**
  * Servlet implementation class AssignTreatmentPlan
@@ -50,21 +51,42 @@ public class AssignTreatmentPlan extends HttpServlet {
 		/*-----------End Common Servlet variables---------------*/
 		
 		
+		
 		try {
-		if(user.hasRole(Constants.USER_THERAPIST)){
-			UserTherapist therapistUser = (UserTherapist)user;
-			switch(requestedAction){
-				case "assign-treatment-plan-start":
-					//get list of clients for the therapist who is logged in and put that list in the request
-					request.setAttribute("clientMap", therapistUser.loadClients());
-					
-					//set the default treatment plans and the custom plans for this therapist into the request
-					request.setAttribute("defaultTreatmentPlanList", DefaultDatabaseCalls.getDefaultTreatmentPlans());
-					
-					forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
-				break;
+			if(user.hasRole(Constants.USER_THERAPIST)){
+				UserTherapist therapistUser = (UserTherapist)user;
+				int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
+				int defaultTreatmentPlanID = ParameterUtils.parseIntParameter(request, "defaultTreatmentPlanID");
+				
+				//get list of clients for the therapist who is logged in and put that list in the request
+				request.setAttribute("clientMap", therapistUser.loadClients());
+						
+				//set the default treatment plans and the custom plans for this therapist into the request
+				request.setAttribute("defaultTreatmentPlanList", DefaultDatabaseCalls.getDefaultTreatmentPlans());
+				switch(requestedAction){
+					case "assign-treatment-plan-start":
+
+						forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+						break;
+					case "select-client":
+						
+						forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+						break;
+					case "select-treatment-plan":
+
+						forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+						break;
+					case "copy-plan-to-client":
+						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID);
+						
+						forwardTo = "index.jsp";
+						break;
+				}
+				
+				//put these back in the request so other forms can maintain selections of other forms as well as display selected items of the dropdown boxes
+				request.setAttribute("clientUserID", clientUserID);
+				request.setAttribute("defaultTreatmentPlanID", defaultTreatmentPlanID);
 			}
-		}
 		
 		}catch(DatabaseException | ValidationException e){
 			request.setAttribute("errorMessage", e.getMessage());

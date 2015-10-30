@@ -282,9 +282,60 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return defaultPlanList;
 	}
 	
-    @Override
+	@Override
+    public TreatmentPlan treatmentPlanLoad(int treatmentPlanID) throws DatabaseException, ValidationException{
+    	Connection cn = null;
+        TreatmentPlan plan = null;
+        
+        throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
+        
+        try {
+        	cn = getConnection();
+        	cn.setAutoCommit(false);
+        	
+            plan = treatmentPlanLoadBasic(cn, treatmentPlanID);
+            
+            plan.setStages(treatmentPlanGetStages(cn, treatmentPlanID));
+            
+            cn.commit();
+        } catch (SQLException e) {
+			try {
+				System.out.println("Rolling back SQL Transaction.");
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println("Error rolling back SQL transaction.");
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			DbUtils.closeQuietly(cn);
+        }
+
+        throwValidationExceptionIfNull(plan);
+        
+        return plan;
+    }
+	
+	@Override
     public TreatmentPlan treatmentPlanLoadWithEmpyLists(int treatmentPlanID) throws DatabaseException, ValidationException{
     	Connection cn = null;
+        TreatmentPlan plan = null;
+        
+        throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
+        
+        try {
+        	cn = getConnection();
+            plan = treatmentPlanLoadBasic(cn, treatmentPlanID);
+        } finally {
+			DbUtils.closeQuietly(cn);
+        }
+
+        throwValidationExceptionIfNull(plan);
+        
+        return plan;
+    }
+	
+    private TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws DatabaseException, ValidationException{
     	PreparedStatement ps = null;
         ResultSet planInfo = null;
         TreatmentPlan plan = null;
@@ -314,7 +365,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         } finally {
         	DbUtils.closeQuietly(planInfo);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
 
         throwValidationExceptionIfNull(plan);
@@ -322,9 +372,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return plan;
     }
     
-    @Override
-    public List<Integer> treatmentPlanGetStageIDs(int treatmentPlanID) throws DatabaseException, ValidationException {
-    	Connection cn = null;
+/*TODO delete method?
+    private List<Integer> treatmentPlanGetStageIDs(Connection cn, int treatmentPlanID) throws DatabaseException, ValidationException {
     	PreparedStatement ps = null;
         ResultSet rs = null;
         List<Integer> stageIDs = new ArrayList<>();
@@ -332,7 +381,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
         
         try {
-        	cn = getConnection();
         	ps = cn.prepareStatement("SELECT stage_id FROM stage WHERE stage_treatment_plan_id_fk=?");
             ps.setInt(1, treatmentPlanID);
 
@@ -342,19 +390,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             while (rs.next()){
             	stageIDs.add(rs.getInt("stage_id"));
             }
-            /*The code below was for when this method returned a list of Stages instead of a list of stageIDs
-             * ps = cn.prepareStatement("SELECT stage.*, stage_goal.* FROM stage INNER JOIN stage_goal ON stage.stage_id = stage_goal.stage_goal_stage_id_fk WHERE stage_id=?");
-            ps.setInt(1, treatmentPlanID);
-
-
-            rs = ps.executeQuery();
-
-            while (rs.next()){
-            	stages.add(Stage.getInstance(rs.getInt("stage_id"), rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage_user_id_fk"), rs.getString("stage_title"), 
-            			rs.getString("stage_description"), rs.getInt("stage_order"), new ArrayList<Task>(), new ArrayList<Task>(), rs.getBoolean("stage_completed"), rs.getInt("percent_complete"),
-            			new ArrayList<StageGoal>(), rs.getBoolean("stage_is_template"))	);
-            }*/
-            
 
         } catch (SQLException e) {
         	e.printStackTrace();
@@ -362,80 +397,77 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
 
         return stageIDs;
-    }
+    }*/
     
-    //TODO delete method?
-    public TreatmentPlan treatmentPlanLoadWithStageAndTaskCoreData(int treatmentPlanID) throws DatabaseException, ValidationException{
-    	Connection cn = null;
+    private List<Stage> treatmentPlanGetStages(Connection cn, int treatmentPlanID) throws DatabaseException, ValidationException {
     	PreparedStatement ps = null;
-        ResultSet planInfo = null;
-        TreatmentPlan plan = null;
-        int stageID = 0;
-        int taskID = 0;
+        ResultSet rs = null;
+        List<Stage> stages = new ArrayList<>();
         
         throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
         
         try {
-        	cn = getConnection();
-            ps = cn.prepareStatement("SELECT treatment_plan.treatment_plan_id, treatment_plan.*, treatment_issue.issue, stage.*, task_generic.*, task_type.task_type "
-            + "FROM (treatment_issue INNER JOIN treatment_plan ON treatment_issue.treatment_issue_id = treatment_plan.treatment_plan_treatment_issue_id_fk) "
-            + "LEFT JOIN (task_type RIGHT JOIN (stage LEFT JOIN task_generic ON stage.stage_id = task_generic.task_generic_stage_id_fk) "
-            + "ON task_type.task_type_id = task_generic.task_generic_task_type_id_fk) ON treatment_plan.treatment_plan_id = stage.stage_treatment_plan_id_fk "
-            + "WHERE (((treatment_plan.treatment_plan_id)=?))");
-            
+        	ps = cn.prepareStatement("SELECT stage_id FROM stage WHERE stage_treatment_plan_id_fk=?");
             ps.setInt(1, treatmentPlanID);
 
 
-            planInfo = ps.executeQuery();
+            rs = ps.executeQuery();
 
-            while (planInfo.next()){
-            	if(planInfo.isFirst()){
-            		plan = TreatmentPlan.getInstanceBasic(planInfo.getInt("treatment_plan_id"), planInfo.getInt("treatment_plan_user_id_fk"), 
-                			planInfo.getString("treatment_plan_title"), planInfo.getString("treatment_plan_description"), planInfo.getInt("treatment_plan_treatment_issue_id_fk"),
-                			planInfo.getBoolean("in_progress"), planInfo.getBoolean("treatment_plan_is_template"), planInfo.getBoolean("treatment_plan_completed")
-                			);
-            		
-            		//need to initialize these variables
-            		stageID = planInfo.getInt("stage_id");
-                	taskID = planInfo.getInt("task_generic_id");
-            	}
-            	
-            	stageID = planInfo.getInt("stage_id");
-            	taskID = planInfo.getInt("task_generic_id");
-            	
-            	
-            	
+            while (rs.next()){
+            	stages.add(stageLoad(rs.getInt("stage_id")));
             }
-            
 
         } catch (SQLException e) {
         	e.printStackTrace();
         	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
-        	DbUtils.closeQuietly(planInfo);
+        	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
 
-        throwValidationExceptionIfNull(plan);
-        
-        return plan;
+        return stages;
     }
     
     @Override
-    public TreatmentPlan treatmentPlanValidateAndCreateBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException{
+    public TreatmentPlan treatmentPlanValidateAndCreate(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException{
     	Connection cn = null;
         
         try {
         	cn = getConnection();
+        	cn.setAutoCommit(false);
+        	
         	if(treatmentPlanValidateNewTitle(cn, treatmentPlan.getUserID(), treatmentPlan.getTitle())){
         		treatmentPlan = treatmentPlanCreateBasic(cn, treatmentPlan);
         	}
-        } finally {
+        	
+        	for(Stage stage : treatmentPlan.getStages()){
+        		if(stageValidateNewTitle(cn, stage)){
+        			//set the new treatmentPlanID generated by the creation of the copy
+        			stage.setTreatmentPlanID(treatmentPlan.getTreatmentPlanID());
+        			treatmentPlan.addStage(stageCreate(cn, stage));
+        		}
+        		
+        	}
+        	
+        	cn.commit();
+        } catch (SQLException e) {
+			try {
+				System.out.println("Rolling back SQL transaction.");
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println("Error rolling back SQL transaction.");
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			DbUtils.closeQuietly(cn);
         }
         
@@ -459,6 +491,23 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         }
 		
 	}
+    
+    @Override
+    public TreatmentPlan treatmentPlanCopy(int userID, int treatmentPlanID) throws ValidationException, DatabaseException{
+    	TreatmentPlan planToCopy = treatmentPlanLoad(treatmentPlanID);
+    	
+    	planToCopy.setUserID(userID);
+    	//loop through and change all the userIDs to the userID supplied by the method argument
+    	for(Stage stage : planToCopy.getStages()){
+    		stage.setUserID(userID);
+    		for(Task task : stage.getTasks()){
+    			task.setUserID(userID);
+    		}
+    	}
+    	
+    	//save the plan
+    	return treatmentPlanValidateAndCreate(planToCopy);
+    }
 
 	private boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle) throws ValidationException, DatabaseException{
     	PreparedStatement ps = null;
@@ -617,11 +666,30 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
         try {
         	cn= getConnection();
+        	
+        	cn.setAutoCommit(false);
+        	
 			if(stageValidateNewTitle(cn, newStage)){
-				stage = stageCreateBasic(cn, newStage);
+				stage = stageCreate(cn, newStage);
 			}
 			
-        } finally {
+			cn.commit();
+			
+        } catch (SQLException e) {
+			try {
+				System.out.println("Rolling back SQL Transaction.");
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println("Error rolling back SQL Transaction.");
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			DbUtils.closeQuietly(cn);
 		}
         
@@ -722,7 +790,29 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		}
 	}
 	
-	private Stage stageCreateBasic(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
+	private Stage stageCreate(Connection cn, Stage newStage) throws ValidationException, SQLException, DatabaseException{
+		Stage createdStage = null;
+		
+		throwValidationExceptionIfTemplateHolderID(newStage.getStageID());
+		
+		createdStage = stageCreateBasic(cn, newStage);
+		
+		for(StageGoal goal : newStage.getGoals()){
+			if(stageGoalValidate(goal)){
+				createdStage.addGoal(stageGoalCreate(cn, goal));
+			}
+		}
+		
+		for(Task task : newStage.getTasks()){
+			createdStage.addTask(taskCreate(cn, task));
+		}
+        
+        throwValidationExceptionIfNull(createdStage);
+        
+        return createdStage;
+	}
+	
+	private Stage stageCreateBasic(Connection cn, Stage newStage) throws ValidationException, SQLException{
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
@@ -749,10 +839,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             	newStage.setStageID(generatedKeys.getInt(1));
             }
         	
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(generatedKeys);
 			DbUtils.closeQuietly(ps);
@@ -761,9 +847,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return newStage;
 	}
 
-	
 	@Override
-	public boolean stageUpdate(Stage newStage) throws ValidationException, DatabaseException{
+	public boolean stageUpdateBasic(Stage newStage) throws ValidationException, DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         int success = 0;
@@ -1057,6 +1142,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	        	cn = getConnection();
 	        	stageGoalCreate(cn, stageGoal);
         	}
+        } catch (SQLException e){
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         }finally {
 			DbUtils.closeQuietly(cn);
         }
@@ -1074,7 +1162,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
 	}
 	
-	public List<StageGoal> copyGoalsIntoNewStage(List<StageGoal> stageGoals, int stageID) throws DatabaseException, ValidationException {
+	/*public List<StageGoal> copyGoalsIntoNewStage(List<StageGoal> stageGoals, int stageID) throws DatabaseException, ValidationException {
 		Connection cn = null;
         List<StageGoal> copiedStageGoals = new ArrayList<>();
         
@@ -1092,9 +1180,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         }
         
         return copiedStageGoals;
-	}
+	}*/
 	
-	private StageGoal stageGoalCreate(Connection cn, StageGoal stageGoal) throws DatabaseException, ValidationException {
+	private StageGoal stageGoalCreate(Connection cn, StageGoal stageGoal) throws SQLException, ValidationException {
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
@@ -1119,9 +1207,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	            
 	            stageGoal.setStageGoalID(goalID);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(generatedKeys);
 			DbUtils.closeQuietly(ps);
@@ -1272,7 +1357,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return task;
 	}
 	
-	private void taskTwoTextBoxesCreateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException{
+	private void taskTwoTextBoxesCreateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws SQLException{
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
@@ -1296,17 +1381,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             while (generatedKeys.next()){
             	twoTextBoxesTask.setTaskID(generatedKeys.getInt(1));
             }
-        	
 
-        } catch (SQLException e) {
-        	try {
-				cn.rollback();
-				System.out.println("The SQL transaction is being rolled back.");
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(generatedKeys);
 			DbUtils.closeQuietly(ps);
@@ -1426,41 +1501,19 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return success == 1;
 	}
 	
-	private Task taskCreate(Connection cn, Task newTask) throws DatabaseException, ValidationException{
+	private Task taskCreate(Connection cn, Task newTask) throws DatabaseException, SQLException{
 		Task createdTask = null;
 
-		try {
-        	cn.setAutoCommit(false);
-
-        	createdTask = taskGenericCreate(cn, newTask);
-    		
-        	//save any additional data associated with non-generic tasks. For future task types, will need to add associated cases
-    		switch(newTask.getTaskTypeID()){
-    			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-    				TaskTwoTextBoxes twoTextTask = (TaskTwoTextBoxes)createdTask;
-    				taskTwoTextBoxesCreateAdditionalData(cn, twoTextTask);
-    				
-    				break;
-    		}
-
-        	cn.commit();
-        } catch (SQLException e) {
-        	try {
-				cn.rollback();
-				System.out.println("The SQL transaction is being rolled back.");
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-        } finally {
-			try {
-				cn.setAutoCommit(true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			DbUtils.closeQuietly(cn);
-        }
+    	createdTask = taskGenericCreate(cn, newTask);
+		
+    	//save any additional data associated with non-generic tasks. For future task types, will need to add associated cases
+		switch(newTask.getTaskTypeID()){
+			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+				TaskTwoTextBoxes twoTextTask = (TaskTwoTextBoxes)createdTask;
+				taskTwoTextBoxesCreateAdditionalData(cn, twoTextTask);
+				
+				break;
+		}
 		
 		return createdTask;
 		
@@ -1472,11 +1525,30 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
         try {
         	cn= getConnection();
+        	cn.setAutoCommit(false);
+
 			if(taskValidate(cn, newTask)){
 				return taskCreate(cn, newTask);
 			}
 			
-        } finally {
+			cn.commit();
+			
+        } catch (SQLException e) {
+        	try {
+				cn.rollback();
+				System.out.println("The SQL transaction is being rolled back.");
+			} catch (SQLException e1) {
+				System.out.println("Error rolling back SQL transaction.");
+				e1.printStackTrace();
+			}
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			DbUtils.closeQuietly(cn);
 		}
         
@@ -1532,7 +1604,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private Task taskGenericCreate(Connection cn, Task newTask) throws DatabaseException{
+	private Task taskGenericCreate(Connection cn, Task newTask) throws SQLException{
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
@@ -1566,16 +1638,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             	newTask.setTaskID(generatedKeys.getInt(1));
             }
         	
-
-        } catch (SQLException e) {
-        	try {
-				cn.rollback();
-				System.out.println("The SQL transaction is being rolled back.");
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(generatedKeys);
 			DbUtils.closeQuietly(ps);

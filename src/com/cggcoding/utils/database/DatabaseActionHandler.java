@@ -38,7 +38,9 @@ public interface DatabaseActionHandler {
 	//****************************** Treatment Plan Methods *************************************
 	//**************************************************************************************************
 
-	TreatmentPlan treatmentPlanValidateAndCreateBasic(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
+	TreatmentPlan treatmentPlanValidateAndCreate(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
+	
+	public TreatmentPlan treatmentPlanLoad(int treatmentPlanID) throws DatabaseException, ValidationException;
 	
 	/**Gets basic TreatmentPlan based on treatmentPlanID with none of it's lists (stages, etc.) populated.  If treatmentPlanID=1, return null because the TreatmentPlan.treatmentPlanID=1 is the TreatmentPlan that holds all Stage templates and should not ever be loaded.
 	 * @param treatmentPlanID
@@ -48,7 +50,7 @@ public interface DatabaseActionHandler {
 	 */
 	TreatmentPlan treatmentPlanLoadWithEmpyLists(int treatmentPlanID) throws DatabaseException, ValidationException;
 	
-	List<Integer> treatmentPlanGetStageIDs(int treatmentPlanID) throws DatabaseException, ValidationException;
+	public TreatmentPlan treatmentPlanCopy(int userID, int treatmentPlanID) throws ValidationException, DatabaseException;
 	
 	/**Gets all of the "default" TreatmentPlans, which means it returns all the the TreatmentPlans that have been created by an Admin user and can be copied for use by Therapist and Client users.
 	 * It returns all TreatmentPlans that are owned by users of type Admin and have isTemplate as true.  It specifically excludes TreatmentPlan with id=0 since that TreatmentPlan is designated
@@ -75,7 +77,7 @@ public interface DatabaseActionHandler {
 	 */
 	Stage stageValidateAndCreate(Stage stage) throws ValidationException, DatabaseException;
 	
-	boolean stageUpdate(Stage newStageTemplate) throws ValidationException, DatabaseException;
+	boolean stageUpdateBasic(Stage newStageTemplate) throws ValidationException, DatabaseException;
 	
 	/**Gets basic Stage based on stageID with none of it's lists (goals, tasks, etc.) populated.  If stageID=1, return null because the Stage.stageID=1 is the Stage that holds all Task templates and should not ever be loaded. 
 	 * @param stageID

@@ -411,7 +411,7 @@ public class Stage implements Completable, DatabaseModel {
 	@Override
 	public void update()  throws ValidationException, DatabaseException {
 		//if(this.validateForDatabase()){
-			databaseActionHandler.stageUpdate(this);//TODO should this be stageValidateAndUpdate() - be consistent with how validating in MySQLActionHandler whether it's contained within Update/Create or if is a separate method - separateMethods I think is preferable
+			databaseActionHandler.stageUpdateBasic(this);//TODO should this be stageValidateAndUpdate() - be consistent with how validating in MySQLActionHandler whether it's contained within Update/Create or if is a separate method - separateMethods I think is preferable
 		//}
 		
 	}

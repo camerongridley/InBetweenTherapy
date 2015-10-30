@@ -94,6 +94,10 @@ public class TreatmentPlan implements DatabaseModel{
 		return userID;
 	}
 	
+	public void setUserID(int userID) {
+		this.userID = userID;
+	}
+
 	public void setTitle(String title){
 		this.title = title;
 	}
@@ -221,7 +225,7 @@ public class TreatmentPlan implements DatabaseModel{
 	
 	@Override
 	public Object saveNew() throws ValidationException, DatabaseException{
-		 TreatmentPlan savedPlan = databaseActionHandler.treatmentPlanValidateAndCreateBasic(this);
+		 TreatmentPlan savedPlan = databaseActionHandler.treatmentPlanValidateAndCreate(this);
 		 this.treatmentPlanID = savedPlan.getTreatmentPlanID();
 		 return savedPlan;
 	}
@@ -245,20 +249,20 @@ public class TreatmentPlan implements DatabaseModel{
 	}
 
 	public static TreatmentPlan load(int treatmentPlanID) throws DatabaseException, ValidationException{
-		TreatmentPlan plan = databaseActionHandler.treatmentPlanLoadWithEmpyLists(treatmentPlanID);
-		if(plan != null){
+		TreatmentPlan plan = databaseActionHandler.treatmentPlanLoad(treatmentPlanID);
+		/*if(plan != null){
 			plan.loadStages();
-		}
+		}*/
 		
 		return plan;
 	}
 	
-	public void loadStages() throws DatabaseException, ValidationException{
+	/*public void loadStages() throws DatabaseException, ValidationException{
 		List<Integer> stageIDs = databaseActionHandler.treatmentPlanGetStageIDs(this.treatmentPlanID);
 		for(int stageID : stageIDs){
 			addStage(Stage.load(stageID));
 		}
-	}
+	}*/
 	
 	public static TreatmentPlan loadWithEmptyLists(int treatmentPlanID) throws DatabaseException, ValidationException{
 		return databaseActionHandler.treatmentPlanLoadWithEmpyLists(treatmentPlanID);
