@@ -361,7 +361,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
         	cn = getConnection();
             plan = treatmentPlanLoadBasic(cn, treatmentPlanID);
-        } finally {
+        } catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
 			DbUtils.closeQuietly(cn);
         }
 
@@ -370,7 +373,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return plan;
     }
 	
-    private TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws DatabaseException, ValidationException{
+    private TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException{
     	PreparedStatement ps = null;
         ResultSet planInfo = null;
         TreatmentPlan plan = null;
@@ -393,10 +396,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             	
             }
             
-
-        } catch (SQLException e) {
-        	e.printStackTrace();
-        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(planInfo);
 			DbUtils.closeQuietly(ps);
@@ -407,37 +406,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return plan;
     }
     
-/*TODO delete method?
-    private List<Integer> treatmentPlanGetStageIDs(Connection cn, int treatmentPlanID) throws DatabaseException, ValidationException {
-    	PreparedStatement ps = null;
-        ResultSet rs = null;
-        List<Integer> stageIDs = new ArrayList<>();
-        
-        throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
-        
-        try {
-        	ps = cn.prepareStatement("SELECT stage_id FROM stage WHERE stage_treatment_plan_id_fk=?");
-            ps.setInt(1, treatmentPlanID);
-
-
-            rs = ps.executeQuery();
-
-            while (rs.next()){
-            	stageIDs.add(rs.getInt("stage_id"));
-            }
-
-        } catch (SQLException e) {
-        	e.printStackTrace();
-        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-        } finally {
-        	DbUtils.closeQuietly(rs);
-			DbUtils.closeQuietly(ps);
-        }
-
-        return stageIDs;
-    }*/
-    
-    private List<Stage> treatmentPlanGetStages(Connection cn, int treatmentPlanID) throws DatabaseException, ValidationException {
+    private List<Stage> treatmentPlanGetStages(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
     	PreparedStatement ps = null;
         ResultSet rs = null;
         List<Stage> stages = new ArrayList<>();
@@ -452,12 +421,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
 
             while (rs.next()){
-            	stages.add(stageLoad(rs.getInt("stage_id")));
+            	stages.add(stageLoad(cn, rs.getInt("stage_id")));
             }
 
-        } catch (SQLException e) {
-        	e.printStackTrace();
-        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
@@ -541,7 +507,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	if(treatmentPlanValidateUpdatedTitle(cn, treatmentPlan)){
         		treatmentPlanUpdate(cn, treatmentPlan);
         	}
-        } finally {
+        } catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
 			DbUtils.closeQuietly(cn);
         }
 		
@@ -595,7 +564,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
 	}
 	
-	private boolean treatmentPlanValidateUpdatedTitle(Connection cn, TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException{
+	private boolean treatmentPlanValidateUpdatedTitle(Connection cn, TreatmentPlan treatmentPlan) throws ValidationException, SQLException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
@@ -614,9 +583,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
                 comboExists = issueCount.getInt("COUNT(*)");
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
 			DbUtils.closeQuietly(issueCount);
 			DbUtils.closeQuietly(ps);
@@ -667,7 +633,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	
-	private void treatmentPlanUpdate(Connection cn, TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException {
+	private void treatmentPlanUpdate(Connection cn, TreatmentPlan treatmentPlan) throws SQLException, ValidationException {
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
@@ -698,9 +664,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             	treatmentPlan.setTreatmentPlanID(generatedKeys.getInt(1));;
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(generatedKeys);
 			DbUtils.closeQuietly(ps);
@@ -800,7 +763,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	private boolean stageValidateUpdatedTitle(Connection cn, Stage newStage) throws ValidationException, DatabaseException{
+	private boolean stageValidateUpdatedTitle(Connection cn, Stage newStage) throws ValidationException, SQLException{
 		//Connection cn = null;
 		PreparedStatement ps = null;
         ResultSet stageCount = null;
@@ -820,9 +783,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 			    comboExists = stageCount.getInt("COUNT(*)");
 			}
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
 			DbUtils.closeQuietly(stageCount);
 			DbUtils.closeQuietly(ps);
@@ -985,6 +945,25 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	@Override
 	public Stage stageLoad(int stageID) throws DatabaseException, ValidationException {
 		Connection cn = null;
+		Stage stage = null;
+
+		try{
+			cn = getConnection();
+
+			stage = stageLoad(cn, stageID);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+
+		return stage;
+	}
+	
+
+	private Stage stageLoad(Connection cn, int stageID) throws SQLException, ValidationException {
     	PreparedStatement ps = null;
         ResultSet rs = null;
         Stage stage = null;
@@ -992,33 +971,14 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         throwValidationExceptionIfTemplateHolderID(stageID);
         
         try {
-        	cn = getConnection();
-        	//TODO delete line - cn.setAutoCommit(false);
         	
         	stage = stageLoadBasic(cn, stageID);
         	stage.setGoals(stageLoadGoals(cn, stage.getStageID()));
     		stage.setTasks(stageLoadTasks(cn, stage.getStageID()));
 
-        	//TODO delete line -cn.commit();
-        /*} catch (SQLException e) {
-        	try {
-				cn.rollback();
-			} catch (SQLException e1) {
-				System.out.println("The SQL transaction is being rolled back.");
-				e1.printStackTrace();
-			}
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);*/
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
-			//TODO - delete this try-catch block
-			/*try {
-				cn.setAutoCommit(true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}*/
-			DbUtils.closeQuietly(cn);
         }
         
         throwValidationExceptionIfNull(stage);
@@ -1026,7 +986,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return stage;
 	}
 	
-	private Stage stageLoadBasic(Connection cn, int stageID) throws DatabaseException, ValidationException{
+	private Stage stageLoadBasic(Connection cn, int stageID) throws SQLException, ValidationException{
 		//Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
@@ -1057,11 +1017,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             	
             	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order"), tasks, extraTasks, rs.getBoolean("stage_completed"), rs.getInt("percent_complete"), goals, rs.getBoolean("stage_is_template"));
             }
-        	
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
@@ -1084,7 +1040,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	cn= getConnection();
         	stage = stageLoadBasic(cn, stageID);
 
-        } finally {
+        } catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
 			DbUtils.closeQuietly(cn);
         }
         
@@ -1093,7 +1052,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return stage;
 	}
 	
-	private List<Task> stageLoadTasks(Connection cn, int stageID) throws DatabaseException {
+	private List<Task> stageLoadTasks(Connection cn, int stageID) throws SQLException {
 		PreparedStatement ps = null;
         ResultSet rs = null;
         List<Task> tasks = new ArrayList<>();
@@ -1114,11 +1073,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), null, rs.getInt("task_order"), 
             			rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_tempalte")));*/
             }
-            
 
-        } catch (SQLException e) {
-        	e.printStackTrace();
-        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
@@ -1154,7 +1109,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	
 	}
 	
-	private List<StageGoal> stageLoadGoals(Connection cn, int stageID) throws DatabaseException, ValidationException{
+	private List<StageGoal> stageLoadGoals(Connection cn, int stageID) throws SQLException, ValidationException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         List<StageGoal> goals = new ArrayList<>();
@@ -1170,10 +1125,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             while (rs.next()){
             	goals.add(StageGoal.getInstance(rs.getInt("stage_goal_id"), rs.getInt("stage_goal_stage_id_fk"), rs.getString("stage_goal_description")));
             }
-            
-        } catch (SQLException e) {
-        	e.printStackTrace();
-        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
@@ -1305,35 +1257,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return defaultTaskList;
 	}
 	
-	/*
-	public Task taskLoad(int taskID) throws DatabaseException {
-		Connection cn = null;
-        Task task = null;
-
-        try {
-        	cn = getConnection();
-        	
-        	GenericTask genericTask = (GenericTask)taskGenericLoad(cn, taskID);
-        	
-    		
-    		switch(genericTask.getTaskTypeID()){
-    			case 1:
-    				task = genericTask;
-    				break;
-    			case 2:
-    				task = taskTwoTextBoxesLoad(cn, taskID);
-    		}
-        	
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-        } finally {
-			DbUtils.closeQuietly(cn);
-        }
-        
-        return task;
-	}*/
-	
 	public Task taskLoad(int taskID) throws DatabaseException {
 		Connection cn = null;
 		Task task = null;
@@ -1343,6 +1266,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
 			task = taskLoad(cn, taskID);
 			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
 		} finally {
 			DbUtils.closeQuietly(cn);
 	    }
@@ -1350,7 +1276,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		return task;
 	}
 	
-	private Task taskLoad(Connection cn, int taskID) throws DatabaseException {
+	private Task taskLoad(Connection cn, int taskID) throws SQLException {
 
 		Task task = null;
 
@@ -1368,7 +1294,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 
-	private Task taskGenericLoad(Connection cn, int taskID) throws DatabaseException{
+	private Task taskGenericLoad(Connection cn, int taskID) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         Task task = null;
@@ -1386,11 +1312,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             	//TODO ADD GETTING DATE COMPLETED - just setting and returning it to null now
             	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), null/*rs.getDate("task_date_completed")*/, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"));
             }
-        	
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
@@ -1464,7 +1386,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return success == 1;
 	}
 	
-	private Task taskTwoTextBoxesLoad(Connection cn, int taskID) throws DatabaseException {
+	private Task taskTwoTextBoxesLoad(Connection cn, int taskID) throws SQLException {
 		PreparedStatement ps = null;
         ResultSet rs = null;
         Task task = null;
@@ -1486,9 +1408,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             			rs.getString("extra_text_label_1"), rs.getString("extra_text_value_1"), rs.getString("extra_text_label_2"), rs.getString("extra_text_value_2"));
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
@@ -1599,7 +1518,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	//TODO - bug fix - either create different validate method for updates so doesn't throw TaskTitleExists exception when updating fields of a task without changing the title or add logic in method below to do this
-	private boolean taskValidate(Connection cn, Task newTask) throws ValidationException, DatabaseException{
+	private boolean taskValidate(Connection cn, Task newTask) throws ValidationException, SQLException{
 
 		if(newTask.getTitle() == null || newTask.getTitle().isEmpty() || 
 				newTask.getInstructions() == null || newTask.getInstructions().isEmpty() ||
@@ -1623,9 +1542,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 			    comboExists = stageCount.getInt("COUNT(*)");
 			}
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
 			DbUtils.closeQuietly(stageCount);
 			DbUtils.closeQuietly(ps);
@@ -1766,7 +1682,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @throws ValidationException 
 	 * @throws DatabaseException
 	 */
-	private boolean treatmentIssueValidateNewName(Connection cn, String issueName, int userID) throws ValidationException, DatabaseException{
+	private boolean treatmentIssueValidateNewName(Connection cn, String issueName, int userID) throws ValidationException, SQLException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
@@ -1788,9 +1704,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
                 comboExists = issueCount.getInt("COUNT(*)");
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
 			DbUtils.closeQuietly(issueCount);
 			DbUtils.closeQuietly(ps);
