@@ -34,6 +34,8 @@ public interface DatabaseActionHandler {
 	//**************************************************
 	public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException;
 
+	List<TreatmentPlan> userGetAssignedClientTreatmentPlans(int clientUserID) throws DatabaseException, ValidationException;
+
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
 	//**************************************************************************************************
@@ -140,6 +142,7 @@ public interface DatabaseActionHandler {
 	boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException;
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
+
 
 	
 

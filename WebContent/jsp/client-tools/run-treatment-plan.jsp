@@ -3,10 +3,13 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="header.jsp" />
+<c:import url="/jsp/header.jsp" />
 	
 	
 	<h1>Treatment Issue: ${treatmentPlan.title }</h1>
+	
+	<c:import url="/jsp/message-modal.jsp"/>
+	
 	<div class="row">
 		<div class="col-md-12">
 			
@@ -131,7 +134,7 @@
 							<!---------------------------------------------------------
 							 Generic Task Detail
 							 ---------------------------------------------------------->
-							  <c:if test="${task.taskTypeName == 'GenericTask' }">
+							  <c:if test="${task.taskTypeName == 'TaskGeneric' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 									  <div class="panel-body panel-body-task">
 										${task.instructions }
@@ -141,10 +144,16 @@
 							<!---------------------------------------------------------
 							 PsychEd Task Detail
 							 ---------------------------------------------------------->
-							  <c:if test="${task.taskTypeName == 'PsychEdTask' }">
+							  <c:if test="${task.taskTypeName == 'TaskTwoTextBoxes' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 									  <div class="panel-body panel-body-task">
 										${task.instructions }
+									  </div>
+									  <div class="panel-body panel-body-task">
+										${task.extraTextLabel1 }<input type="text" class="form-control" placeholder="${task.extraTextLabel1 }" name="automaticThought${task.taskID }" value="${task.extraTextValue1 }">
+									  </div>
+									  <div class="panel-body panel-body-task">
+										${task.extraTextLabel2 }<input type="text" class="form-control" placeholder="${task.extraTextLabel2 }" name="automaticThought${task.taskID }" value="${task.extraTextValue2 }">
 									  </div>
 								  </div>
 							  </c:if>
@@ -198,7 +207,7 @@
 							  <div class="panel-body panel-body-task">
 							    ${task.instructions }
 							  </div>
-							  <c:if test="${task.taskTypeName == 'CognitiveTask'}">
+							  <c:if test="${task.taskTypeName == 'TaskTwoTextBoxes'}">
 								  <div class="panel-body panel-body-task">
 									  <input type="text" class="form-control" placeholder="Enter your automatic thought." name="automaticThought${task.taskID }" value="${task.automaticThought }">
 								  </div>
@@ -242,4 +251,4 @@
 		</div>
 	</div>
 		
-<c:import url="footer.jsp" />
+<c:import url="/jsp/footer.jsp" />

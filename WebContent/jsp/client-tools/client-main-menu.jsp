@@ -23,9 +23,9 @@
     </p>
 
     <p>
-    <form class="form-inline" action="../LoadData" method="POST">
+    <form class="form-inline" action="./ClientSelectPlan" method="POST">
         <div><button type="submit" class="btn btn-primary">Start New Plan</button></div>
-        <input type="hidden" name="requestedAction" value="newplan">
+        <input type="hidden" name="requestedAction" value="select-plan-start">
     </form>
     </p>
 

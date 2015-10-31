@@ -7,7 +7,7 @@ public class Constants {
 	}
 	
 	public static final String USER_ADMIN = "admin";
-	public static final String USER_CLIENT = "clients";
+	public static final String USER_CLIENT = "client";
 	public static final String USER_THERAPIST = "therapist";
 	
 	//The template holder id is the primary key value for any database models that are responsible for holding templates of child classes.
