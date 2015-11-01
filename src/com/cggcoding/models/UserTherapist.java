@@ -43,6 +43,6 @@ public class UserTherapist extends User{
     }
     
     public TreatmentPlan copyTreatmentPlanForClient(int clientUserID, int treatmentPlanID) throws ValidationException, DatabaseException{
-    	return databaseActionHandler.treatmentPlanCopy(clientUserID, treatmentPlanID);
+    	return databaseActionHandler.treatmentPlanCopy(clientUserID, treatmentPlanID, false);
     }
 }

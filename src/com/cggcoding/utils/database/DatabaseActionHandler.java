@@ -52,7 +52,7 @@ public interface DatabaseActionHandler {
 	 */
 	TreatmentPlan treatmentPlanLoadWithEmpyLists(int treatmentPlanID) throws DatabaseException, ValidationException;
 	
-	public TreatmentPlan treatmentPlanCopy(int userID, int treatmentPlanID) throws ValidationException, DatabaseException;
+	public TreatmentPlan treatmentPlanCopy(int userID, int treatmentPlanID, boolean isTemplate) throws ValidationException, DatabaseException;
 	
 	/**Gets all of the "default" TreatmentPlans, which means it returns all the the TreatmentPlans that have been created by an Admin user and can be copied for use by Therapist and Client users.
 	 * It returns all TreatmentPlans that are owned by users of type Admin and have isTemplate as true.  It specifically excludes TreatmentPlan with id=0 since that TreatmentPlan is designated
@@ -64,6 +64,8 @@ public interface DatabaseActionHandler {
 	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException;
 	
 	void treatmentPlanValidateAndUpdate(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException;
+	
+	void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException;
 
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
@@ -79,7 +81,7 @@ public interface DatabaseActionHandler {
 	 */
 	Stage stageValidateAndCreate(Stage stage) throws ValidationException, DatabaseException;
 	
-	boolean stageUpdateBasic(Stage newStageTemplate) throws ValidationException, DatabaseException;
+	boolean stageValidateAndUpdateBasic(Stage newStageTemplate) throws ValidationException, DatabaseException;
 	
 	/**Gets basic Stage based on stageID with none of it's lists (goals, tasks, etc.) populated.  If stageID=1, return null because the Stage.stageID=1 is the Stage that holds all Task templates and should not ever be loaded. 
 	 * @param stageID
@@ -142,6 +144,7 @@ public interface DatabaseActionHandler {
 	boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException;
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
+
 
 
 	

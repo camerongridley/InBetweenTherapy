@@ -116,12 +116,13 @@ public class Stage implements Completable, DatabaseModel {
 		return stage;
 	}
 
-	//TODO delete this method after finishing transition to database
-	/*public static Stage getInstanceAndCreateID(int userID, int treatmentPlanID, String title, String description, int stageOrder){
-		int stageID = Math.abs(new Random().nextInt(10000));
-		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder);
+	public static Stage createTemplate(int userID, String title, String description) throws ValidationException, DatabaseException{
+		Stage stageTemplate = new Stage(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, title, description, Constants.TEMPLATE_ORDER_NUMBER, true);
 		
-	}*/
+		stageTemplate = databaseActionHandler.stageValidateAndCreate(stageTemplate);
+		
+		return stageTemplate;
+	}
 	
 	public static Stage load(int stageID) throws DatabaseException, ValidationException{
 		
@@ -230,6 +231,14 @@ public class Stage implements Completable, DatabaseModel {
 	//sets the order of the stage in the treatment plan if relevant
 	public void setStageOrder(int stageOrder) {
 		this.stageOrder = stageOrder;
+	}
+	
+	/**Since stageOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
+	 *the order values start with 1.
+	 * @return
+	 */
+	public int getStageOrderForUserDisplay(){
+		return this.stageOrder + 1;
 	}
 
 	public boolean isTemplate() {
@@ -411,7 +420,7 @@ public class Stage implements Completable, DatabaseModel {
 	@Override
 	public void update()  throws ValidationException, DatabaseException {
 		//if(this.validateForDatabase()){
-			databaseActionHandler.stageUpdateBasic(this);//TODO should this be stageValidateAndUpdate() - be consistent with how validating in MySQLActionHandler whether it's contained within Update/Create or if is a separate method - separateMethods I think is preferable
+			databaseActionHandler.stageValidateAndUpdateBasic(this);//TODO should this be stageValidateAndUpdate() - be consistent with how validating in MySQLActionHandler whether it's contained within Update/Create or if is a separate method - separateMethods I think is preferable
 		//}
 		
 	}
@@ -427,16 +436,18 @@ public class Stage implements Completable, DatabaseModel {
 		return null;
 	}
 	
+	
+	//TODO DELETE? Moved to --> May want to move this functionality into TreamentPlan so that more information is available, in particular determining what stageOrder value to use
 	/**Creates a copy of the Stage into a new TreatmentPlan and User.
 	 * @param treatmentPlanIDToCopy - treatmentPlanID the Stage is being copied into
 	 * @param userIDToCopy - userID of the User that owns the TreatmentPlan the Stage is being copied into
-	 * @param copyAsTemplate - Designates whether this Stage should be copied as a template or not. Set "true" if it is to be a template in the TreatmentPlan it is being copied into, and "false" if it is not a template.
+	 * @param isTemplate - Designates whether this Stage should be copied as a template or not. Set "true" if it is to be a template in the TreatmentPlan it is being copied into, and "false" if it is not a template.
 	 * @return
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	public Stage copy(int treatmentPlanIDToCopy, int userIDToCopy, boolean copyAsTemplate) throws ValidationException, DatabaseException{
-		Stage copiedStage = getInstanceWithoutID(treatmentPlanIDToCopy, userIDToCopy, this.title, this.description, this.stageOrder, copyAsTemplate);
+	/*public Stage copy(int treatmentPlanIDToCopy, int userIDToCopy, boolean isTemplate) throws ValidationException, DatabaseException{
+		Stage copiedStage = getInstanceWithoutID(treatmentPlanIDToCopy, userIDToCopy, this.title, this.description, this.stageOrder, isTemplate);
 		copiedStage = (Stage)copiedStage.saveNew();
 		for(StageGoal goal : this.goals){
 			goal.setStageID(copiedStage.getStageID());
@@ -449,5 +460,5 @@ public class Stage implements Completable, DatabaseModel {
 		}
 		
 		return copiedStage;
-	}
+	}*/
 }

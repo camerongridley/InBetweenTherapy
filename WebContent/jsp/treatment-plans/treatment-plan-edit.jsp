@@ -114,7 +114,7 @@
 
         <label for="stageList" class="control-label">Stages
 
-       			<a role="button" href="./CreateStage?requestedAction=addStageToTreatmentPlan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}" class="btn btn-default btn-xs" title="Add a stage to this treatment plan." >
+       			<a role="button" href="./CreateStage?requestedAction=add-stage-to-treatment-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}" class="btn btn-default btn-xs" title="Add a stage to this treatment plan." >
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</a>
 
@@ -125,7 +125,7 @@
 				  	<input type="hidden" name="stageID" value="${stage.stageID}"/>
 				  	<input type="hidden" name="stageTitle${stage.stageID}" value="${stage.title}"/>
 					<a role="button" data-toggle="collapse" href="#collapse${stage.stageID }" aria-expanded="true" aria-controls="collapse${stage.stageID }">
-			          <span class="">${stage.title }</span>
+			          ${stage.stageOrderForUserDisplay } - <span class="">${stage.title }</span>
 			        </a>
 			        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 			        <a role="button" href="./EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs pull-right" title="Delete this stage.">

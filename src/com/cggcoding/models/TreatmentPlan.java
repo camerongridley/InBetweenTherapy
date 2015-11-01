@@ -274,8 +274,12 @@ public class TreatmentPlan implements DatabaseModel{
 				stages.remove(i);
 			}
 		}
-
-		databaseActionHandler.stageDelete(stageID);
+		
+		for(int i=0; i < this.stages.size(); i++){
+			stages.get(i).setStageOrder(i);
+		}
+		
+		databaseActionHandler.treatmentPlanDeleteStage(stageID, stages);
 	}
 	
 	/*public TreatmentPlan copy(int userID){
@@ -283,4 +287,52 @@ public class TreatmentPlan implements DatabaseModel{
 		
 		return copiedPlan;
 	}*/
+	
+	/**Copies a pre-existing Stage into a TreatmentPlan.  This methods gets the existing Stage, updated the treatmentPlanID and the userID associated with the new TreatmentPlan that the
+	 * Stage is being copies into.  It also sets the copied Stages's isTemplate to false and determines the stageOrder it will have initially.
+	 * Then the copied Stage is sent the DAO to be saved in the database.  The DAO is responsible for getting the auto-generated id for the new Stage and setting it for the Stage and 
+	 * all children of the Stage before returning it to this method.
+	 * , and adds it the the TreatmentPlan's list of Stages.
+	 * Then it 
+	 * @param stageIDBeingCopied
+	 * @param userIDCopiedInto
+	 * @return A Stage with updated userID, treatmentPlanID and a new stageID
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	public Stage copyStageIntoTreatmentPlan(int stageIDBeingCopied) throws DatabaseException, ValidationException{
+		Stage stageBeingCopied = Stage.load(stageIDBeingCopied);
+		stageBeingCopied.setTemplate(false);
+		stageBeingCopied.setUserID(this.userID);
+		stageBeingCopied.setTreatmentPlanID(this.treatmentPlanID);
+		
+		//set stageID in all children to -1 in case there is an error so nothings accidentally gets inserted into other users information - SQL rollback should prevent this but doing this adds another layer of data protection
+		stageBeingCopied.setStageID(-1);
+		for(StageGoal goal : stageBeingCopied.getGoals()){
+			goal.setStageID(-1);
+		}
+		
+		for(Task task : stageBeingCopied.getTasks()){
+			task.setStageID(-1);
+		}
+		
+		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
+		stageBeingCopied.setStageOrder(this.getNumberOfStages());
+		
+		databaseActionHandler.stageValidateAndCreate(stageBeingCopied);
+		
+		this.addStage(stageBeingCopied);
+		
+		return stageBeingCopied;
+	}
+	
+	public Stage createNewStage(int userID, String title, String description) throws ValidationException, DatabaseException{
+		
+		Stage newStage = Stage.getInstanceWithoutID(this.treatmentPlanID, userID, title, description, this.getNumberOfStages(), false);
+		newStage.saveNew();
+		
+		this.addStage(newStage);
+		
+		return newStage;
+	}
 }

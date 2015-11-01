@@ -63,10 +63,12 @@ public class ClientSelectPlan extends HttpServlet {
 					break;
 				case "select-plan-load":
 					int assignedTreatmentPlanID = ParameterUtils.parseIntParameter(request, "assignedTreatmentPlanID");
+					TreatmentPlan selectedPlan = TreatmentPlan.load(assignedTreatmentPlanID);
+					client.addTreatmentPlan(selectedPlan);
 					client.setActiveTreatmentPlanId(assignedTreatmentPlanID);
 					
 					//TODO switch to using Request instead of Session
-					session.setAttribute("treatmentPlan", TreatmentPlan.load(assignedTreatmentPlanID));
+					session.setAttribute("treatmentPlan", selectedPlan);
 					forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
 					break;
 				}
