@@ -167,10 +167,22 @@ public abstract class Task implements Completable, DatabaseModel{
 		this.template = template;
 	}
 	
+	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
+		//TODO delete this line once method working as desired - int userID, String title, String instructions, int taskTypeID, int parentTaskID, String resourceLink, boolean extraTask
+		//Task taskTemplate = new TaskGeneric(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, Constants.TEMPLATE_ORDER_NUMBER, extraTask, true);
+		taskTemplate.setStageID(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID);
+		taskTemplate.setTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
+		taskTemplate.setTemplate(true);
+		
+		taskTemplate.saveNew();
+		
+		return taskTemplate;
+	}
+	
 	public static Task load(int taskID) throws DatabaseException{
 		return databaseActionHandler.taskLoad(taskID);
 		
-		/*moved this logic to DataBaseActionHandler - TODO delete if keeping in databaseActionHandler
+		/*moved this logic to DataBaseActionHandler so SQL transactions were easier - TODO delete if keeping in databaseActionHandler
 		 * Task genericTask = TaskGeneric.load(taskID);
 		switch(genericTask.getTaskTypeID()){
 			case Constants.TASK_TYPE_ID_GENERIC_TASK:
@@ -185,6 +197,7 @@ public abstract class Task implements Completable, DatabaseModel{
 	}
 	
 	protected abstract void loadAdditionalData();
+	
 	
 	@Override
 	public Task saveNew()throws DatabaseException, ValidationException{
@@ -217,11 +230,6 @@ public abstract class Task implements Completable, DatabaseModel{
 		
 	}
 
-	@Override
-	public List<Object> copy(int numberOfCopies) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
 	 * @param taskID
 	 * @param stageID
@@ -352,6 +360,14 @@ public abstract class Task implements Completable, DatabaseModel{
 
 	public void setTaskOrder(int taskOrder) {
 		this.taskOrder = taskOrder;
+	}
+	
+	/**Since taskOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
+	 *the order values start with 1.
+	 * @return
+	 */
+	public int getTaskOrderForUserDisplay(){
+		return taskOrder + 1;
 	}
 
 	public boolean isTemplate() {

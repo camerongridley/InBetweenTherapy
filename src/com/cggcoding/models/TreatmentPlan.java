@@ -223,6 +223,10 @@ public class TreatmentPlan implements DatabaseModel{
 		return getStageOrder(activeViewStageIndex);
 	}
 	
+	private int getStageOrderDefaultValue(){
+		return this.stages.size();
+	}
+	
 	@Override
 	public Object saveNew() throws ValidationException, DatabaseException{
 		 TreatmentPlan savedPlan = databaseActionHandler.treatmentPlanValidateAndCreate(this);
@@ -240,12 +244,6 @@ public class TreatmentPlan implements DatabaseModel{
 	public void delete() throws ValidationException, DatabaseException {
 		// TODO implement method
 		
-	}
-
-	@Override
-	public List<Object> copy(int numberOfCopies) {
-		// TODO implement method
-		return null;
 	}
 
 	public static TreatmentPlan load(int treatmentPlanID) throws DatabaseException, ValidationException{
@@ -319,7 +317,7 @@ public class TreatmentPlan implements DatabaseModel{
 		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
 		stageBeingCopied.setStageOrder(this.getNumberOfStages());
 		
-		databaseActionHandler.stageValidateAndCreate(stageBeingCopied);
+		stageBeingCopied.saveNew();
 		
 		this.addStage(stageBeingCopied);
 		
@@ -328,7 +326,7 @@ public class TreatmentPlan implements DatabaseModel{
 	
 	public Stage createNewStage(int userID, String title, String description) throws ValidationException, DatabaseException{
 		
-		Stage newStage = Stage.getInstanceWithoutID(this.treatmentPlanID, userID, title, description, this.getNumberOfStages(), false);
+		Stage newStage = Stage.getInstanceWithoutID(this.treatmentPlanID, userID, title, description, this.getStageOrderDefaultValue(), false);
 		newStage.saveNew();
 		
 		this.addStage(newStage);

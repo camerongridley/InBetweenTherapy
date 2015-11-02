@@ -119,7 +119,7 @@ public class Stage implements Completable, DatabaseModel {
 	public static Stage createTemplate(int userID, String title, String description) throws ValidationException, DatabaseException{
 		Stage stageTemplate = new Stage(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, title, description, Constants.TEMPLATE_ORDER_NUMBER, true);
 		
-		stageTemplate = databaseActionHandler.stageValidateAndCreate(stageTemplate);
+		stageTemplate.saveNew();// = databaseActionHandler.stageValidateAndCreate(stageTemplate);
 		
 		return stageTemplate;
 	}
@@ -302,6 +302,11 @@ public class Stage implements Completable, DatabaseModel {
 	public int getTotalNumberOfTasks() {
 		return tasks.size();
 	}
+	
+	
+	private int getTaskOrderDefaultValue(){
+		return tasks.size();
+	}
 
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
 	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap){
@@ -429,13 +434,27 @@ public class Stage implements Completable, DatabaseModel {
 		databaseActionHandler.stageDelete(this.stageID);
 		
 	}
-
-	@Override
-	public List<Object> copy(int numberOfCopies) {
-		// TODO  implement method
-		return null;
+	
+	public Task copyTaskIntoStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
+		Task task = Task.load(taskIDBeingCopied);
+		task.setTemplate(false);
+		task.setUserID(this.userID);
+		task.setStageID(this.stageID);
+		task.setTaskOrder(this.getTaskOrderDefaultValue());
+		
+		task.saveNew();
+		this.addTask(task);
+		
+		return task;
 	}
 	
+	public Task createNewTask(Task taskBeingCopied) throws DatabaseException, ValidationException{
+		taskBeingCopied.setUserID(this.userID);
+		taskBeingCopied.setStageID(this.stageID);
+		taskBeingCopied.setTaskOrder(this.getTaskOrderDefaultValue());
+		
+		return taskBeingCopied.saveNew();
+	}
 	
 	//TODO DELETE? Moved to --> May want to move this functionality into TreamentPlan so that more information is available, in particular determining what stageOrder value to use
 	/**Creates a copy of the Stage into a new TreatmentPlan and User.

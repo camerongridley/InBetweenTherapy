@@ -16,7 +16,7 @@ public class TaskGeneric extends Task{
 	}
 
 	//constructor without taskID - for Tasks objects that haven't been saved to database and don't have a taskID yet
-	private TaskGeneric(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+	protected TaskGeneric(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			int taskOrder, boolean extraTask, boolean template) {
 		//super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
 		super(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);

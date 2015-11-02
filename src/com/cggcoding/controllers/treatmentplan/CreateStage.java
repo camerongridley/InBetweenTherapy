@@ -113,15 +113,17 @@ public class CreateStage extends HttpServlet {
 						break;
 					case "stage-add-default": //default stage can never be a template, so it will always call treatmentPlan.copyStageIntoPlan()
 						
-						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-						treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
-
-		            	if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate")){
-		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
-		                	
-		                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
-		                	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
-		                }
+						if(selectedDefaultStageID != 0){
+							treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+							treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
+	
+			            	if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate")){
+			                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
+			                	
+			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
+			                	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+			                }
+						}
 		            	break;
 		            case "stage-create-title":
 		            	
@@ -132,7 +134,6 @@ public class CreateStage extends HttpServlet {
 		                Stage newStage = null;
 		                if(path.equals("creatingStageTemplate")){
 		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
-
 		                } else {
 		                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 		                	newStage = treatmentPlan.createNewStage(userAdmin.getUserID(), stageTitle, stageDescription);

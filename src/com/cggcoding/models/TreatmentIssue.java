@@ -74,13 +74,6 @@ public class TreatmentIssue implements DatabaseModel{
 		// TODO implement method
 		
 	}
-
-	@Override
-	@Deprecated
-	public List<Object> copy(int numberOfCopies) {
-		//not applicable for this object
-		return null;
-	}
     
     
 }

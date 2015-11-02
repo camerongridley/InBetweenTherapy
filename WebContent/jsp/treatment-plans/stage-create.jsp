@@ -13,42 +13,45 @@
     
 	<c:import url="/jsp/message-modal.jsp"/>
 
-	<div class="well well-sm">
-		<form class="form-horizontal" action="./CreateStage" method="POST">
-			<input type="hidden" name="requestedAction" value="stage-add-default">
-			<input type="hidden" name="path" value="${path }">
-			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
-			
-			<div>
-				<h3>Add a Predefined Stage</h3>
-			</div>
-			
-	        <div class="form-group">
-	            <label for="defaultStage" class="col-sm-2 control-label">Default Stages</label>
-	            <div class="col-sm-10">
-	                <select class="form-control" id="defaultStageID" name="defaultStageID">
-	                    <option  value="">Select a default stage.</option>
-	                    <c:forEach items="${defaultStages}" var="defaultStage">
-	                        <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == defaultStageID}">selected</c:if>>${defaultStage.title}</option>
-	                    </c:forEach>
-	                </select>
-	            </div>
-	        </div>
-	        <div class="form-group">
-	        <div class="col-sm-offset-2 col-sm-10">
-	        <p>Preview of selected stage goes here.</p>
-	        </div>
-	        </div>
+	<c:if test="${path != 'creatingStageTemplate' }">
+		<div class="well well-sm">
+			<form class="form-horizontal" action="./CreateStage" method="POST">
+				<input type="hidden" name="requestedAction" value="stage-add-default">
+				<input type="hidden" name="path" value="${path }">
+				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				
+				<div>
+					<h3>Add a Predefined Stage</h3>
+				</div>
+				
+		        <div class="form-group">
+		            <label for="defaultStage" class="col-sm-2 control-label">Default Stages</label>
+		            <div class="col-sm-10">
+		                <select class="form-control" id="defaultStageID" name="defaultStageID">
+		                    <option  value="">Select a default stage.</option>
+		                    <c:forEach items="${defaultStages}" var="defaultStage">
+		                        <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == defaultStageID}">selected</c:if>>${defaultStage.title}</option>
+		                    </c:forEach>
+		                </select>
+		            </div>
+		        </div>
+		        <div class="form-group">
+		        <div class="col-sm-offset-2 col-sm-10">
+		        <p>Preview of selected stage goes here.</p>
+		        </div>
+		        </div>
+		
+		        <div class="form-group">
+		            <div class="col-sm-offset-2 col-sm-10">
+		                <button type="submit" class="btn btn-default">Save</button>
+		            </div>
+		        </div>
+		    </form>
+		</div>
+		
+		<h2>Or</h2>	
+	</c:if>
 	
-	        <div class="form-group">
-	            <div class="col-sm-offset-2 col-sm-10">
-	                <button type="submit" class="btn btn-default">Save</button>
-	            </div>
-	        </div>
-	    </form>
-	</div>
-	
-	<h2>Or</h2>
 	
 	<div class="well well-sm">
 		<form class="form-horizontal" action="./CreateStage" method="POST">
