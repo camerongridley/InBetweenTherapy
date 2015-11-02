@@ -20,6 +20,7 @@ public class SqlBuilders {
     	sqlBuilder.append(")");
     	
     	if(suffix != null){
+    		sqlBuilder.append(" ");
     		sqlBuilder.append(suffix);
     	}
     	

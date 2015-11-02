@@ -284,7 +284,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	String baseStatement = "SELECT * FROM treatment_plan WHERE treatment_plan_is_template=? AND treatment_plan_user_id_fk in (";
         	
-        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, null);
+        	String orderByClause = "ORDER BY treatment_plan_title";
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, orderByClause);
         	
     		ps = cn.prepareStatement(sql);
     		
@@ -1002,7 +1004,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	String baseStatement = "SELECT * FROM stage WHERE stage_is_template=1 AND stage_user_id_fk in (";
         	
-        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, null);
+        	String orderByClause = "ORDER BY stage_title";
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, orderByClause);
 
     		ps = cn.prepareStatement(sql);
     		
@@ -1328,7 +1332,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	String baseStatement = "SELECT * FROM task_generic WHERE task_is_template=1 AND task_generic_user_id_fk in (";
         	
-        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, null);
+        	String orderByClause = "ORDER BY task_title";
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, orderByClause);
         	
     		ps = cn.prepareStatement(sql);
     		
@@ -1877,7 +1883,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	
         	String sql = "SELECT treatment_issue.treatment_issue_id, treatment_issue.issue, user.user_id "
             		+ "FROM user INNER JOIN treatment_issue ON user.user_id = treatment_issue.treatment_issue_user_id_fk "
-            		+ "WHERE user.user_id=?";
+            		+ "WHERE user.user_id=? ORDER BY issue";
         	
             ps = cn.prepareStatement(sql);
             ps.setInt(1, userID);
