@@ -150,10 +150,10 @@
 										${task.instructions }
 									  </div>
 									  <div class="panel-body panel-body-task">
-										${task.extraTextLabel1 }<input type="text" class="form-control" placeholder="${task.extraTextLabel1 }" name="extraTextLabel1${task.taskID }" value="${task.extraTextValue1 }">
+										${task.extraTextLabel1 }<input type="text" class="form-control" placeholder="${task.extraTextLabel1 }" name="extraTextValue1${task.taskID }" value="${task.extraTextValue1 }">
 									  </div>
 									  <div class="panel-body panel-body-task">
-										${task.extraTextLabel2 }<input type="text" class="form-control" placeholder="${task.extraTextLabel2 }" name="extraTextLabel2${task.taskID }" value="${task.extraTextValue2 }">
+										${task.extraTextLabel2 }<input type="text" class="form-control" placeholder="${task.extraTextLabel2 }" name="extraTextValue2${task.taskID }" value="${task.extraTextValue2 }">
 									  </div>
 								  </div>
 							  </c:if>
@@ -181,10 +181,10 @@
 							  </div>
 							  <c:if test="${task.taskTypeName == 'TaskTwoTextBoxes'}">
 								  <div class="panel-body panel-body-task">
-										${task.extraTextLabel1 }<input type="text" class="form-control" placeholder="${task.extraTextLabel1 }" name="extraTextLabel1${task.taskID }" value="${task.extraTextValue1 }">
+										${task.extraTextLabel1 }<input type="text" class="form-control" placeholder="${task.extraTextLabel1 }" name="extraTextValue1${task.taskID }" value="${task.extraTextValue1 }">
 								  </div>
 								  <div class="panel-body panel-body-task">
-									${task.extraTextLabel2 }<input type="text" class="form-control" placeholder="${task.extraTextLabel2 }" name="extraTextLabel2${task.taskID }" value="${task.extraTextValue2 }">
+									${task.extraTextLabel2 }<input type="text" class="form-control" placeholder="${task.extraTextLabel2 }" name="extraTextValue2${task.taskID }" value="${task.extraTextValue2 }">
 								  </div>
 							  </c:if>
 						  </div>

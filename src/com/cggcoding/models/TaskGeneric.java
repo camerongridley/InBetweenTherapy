@@ -11,6 +11,10 @@ import com.cggcoding.utils.database.MySQLActionHandler;
 public class TaskGeneric extends Task{
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
 	
+	public TaskGeneric(){
+		super();
+	}
+	
 	private TaskGeneric(int taskID, int userID) {
 		super(taskID, userID);
 	}

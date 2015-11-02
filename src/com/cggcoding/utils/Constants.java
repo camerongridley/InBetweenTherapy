@@ -1,6 +1,9 @@
 package com.cggcoding.utils;
 
-public class Constants {
+import com.cggcoding.models.TaskGeneric;
+import com.cggcoding.models.TaskTwoTextBoxes;
+
+public final class Constants {
 
 	public Constants() {
 		
@@ -20,5 +23,18 @@ public class Constants {
 	//Task Type IDs - This should list all of the task types and their primary key values
 	public static final int TASK_TYPE_ID_GENERIC_TASK = 1;
 	public static final int TASK_TYPE_ID_TWO_TEXTBOXES_TASK = 2;
+	
+	private static final String TASK_TYPE_NAME_TASK_GENERIC = new TaskGeneric().getTaskTypeName();
+	private static final String TASK_TYPE_NAME_TASK_TWO_TEXTBOXES = new TaskTwoTextBoxes().getTaskTypeName();
+	
+	//These methods allow access to these values via JSTL when this class is put into the context
+	public static String getTaskTypeNameTaskGeneric() {
+		return TASK_TYPE_NAME_TASK_GENERIC;
+	}
+	public static String getTaskTypeNameTaskTwoTextboxes() {
+		return TASK_TYPE_NAME_TASK_TWO_TEXTBOXES;
+	}
+
+	
 	
 }

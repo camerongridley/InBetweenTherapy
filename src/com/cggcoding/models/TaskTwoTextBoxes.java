@@ -16,7 +16,10 @@ public class TaskTwoTextBoxes extends Task{
 	
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 	
-
+	public TaskTwoTextBoxes(){
+		super();
+	}
+	
 	private TaskTwoTextBoxes(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,
 			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,
 			boolean extraTask, boolean template,
@@ -29,7 +32,7 @@ public class TaskTwoTextBoxes extends Task{
 		this.extraTextLabel2 = extraTextLabel2;
 		this.extraTextValue2 = extraTextValue2;
 	}
-
+	
 	public static TaskTwoTextBoxes getInstanceFull(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,	String instructions, 
 			String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,boolean extraTask, boolean template,
 			String extraTextLabel1, String extraTextValue1,

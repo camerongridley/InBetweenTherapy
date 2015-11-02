@@ -125,28 +125,6 @@ public class UpdateTaskCompletion extends HttpServlet {
 
 					updatedTask = twoTextTask;
 					break;
-				/*case "CognitiveTask":
-					System.out.println("Updating Cognitive Task");
-					CognitiveTask cogTask = new CognitiveTask(currentTaskID, user.getUserID());
-					String autoThought = (String)request.getParameter("automaticThought" + cogTask.getTaskID());
-					cogTask.setAutomaticThought(autoThought);
-					String altThought = (String) request.getParameter("alternativeThought" + cogTask.getTaskID());
-					cogTask.setAlternativeThought(altThought);
-
-					updatedTask = cogTask;
-					break;
-				case "RelaxationTask":
-					System.out.println("Updating Relaxation Task.");
-					RelaxationTask relaxTask = new RelaxationTask(currentTaskID, user.getUserID());
-
-					updatedTask =  relaxTask;
-					break;
-				case "PsychEdTask":
-					System.out.println("Updating PsychEdTask");
-					PsychEdTask psychEdTask = new PsychEdTask(currentTaskID, user.getUserID());
-
-					updatedTask = psychEdTask;
-					break;*/
 			}
 
 			//if a taskID is in the checkedTaskIDs list, then mark completed in the data holder task - all others are therefore unchecked and are marked incomplete

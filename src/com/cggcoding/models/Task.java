@@ -31,7 +31,6 @@ public abstract class Task implements Completable, DatabaseModel{
 	//TODO see if I can eliminate some of these constructors! Once done with temp LoadData.java and actually load client data from database, look at GenericTask and prune to use only constructors needed for it
 	//empty constructor necessary to allow static factory methods in subclasses
 	public Task(){
-		
 	}
 	
 	//basic parent Task that sets properties to defaults
