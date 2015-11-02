@@ -421,14 +421,31 @@ public abstract class Task implements Completable, DatabaseModel{
 		//return (int)(((double)repetitionsCompleted/(double)repetitions) * 100);
 	}
 
-	//TODO redo this to get name from the database table
 	public String getTaskTypeName(){
 		return this.getClass().getSimpleName();
 	}
 
-	//TODO DELETE after done integrating db - a remnant of Updateable interface
-	public boolean updateData(Task taskWithNewData) {
-		return false;
+	public void updateData(Task taskWithNewData) throws ValidationException, DatabaseException {
+		//update all universal properties that can be modified by user
+		this.setCompleted(taskWithNewData.isCompleted());
+		this.setDateCompleted(taskWithNewData.getDateCompleted());
+
+		//update case-specific properties
+		switch (getTaskTypeID()) {
+			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK :
+				TaskTwoTextBoxes twoTask = (TaskTwoTextBoxes)this;
+				TaskTwoTextBoxes newData = (TaskTwoTextBoxes)taskWithNewData;
+
+				twoTask.setExtraTextLabel1(newData.getExtraTextLabel1());
+				twoTask.setExtraTextValue1(newData.getExtraTextValue1());
+				twoTask.setExtraTextLabel2(newData.getExtraTextLabel2());
+				twoTask.setExtraTextValue2(newData.getExtraTextValue2());
+
+				break;
+		}
+
+		update();
+				
 	}
 	
 	

@@ -309,7 +309,7 @@ public class Stage implements Completable, DatabaseModel {
 	}
 
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
-	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap){
+	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap) throws ValidationException, DatabaseException{
 		//iterate through task map to update with info from updatedTasks list
 		for(Task persistentTask : this.tasks){
 			Task taskWithNewInfo = updatedTasksMap.get(persistentTask.getTaskID());

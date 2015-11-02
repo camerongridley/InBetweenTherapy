@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
@@ -80,6 +81,9 @@ public class UpdateTaskCompletion extends HttpServlet {
 		} catch (DatabaseException e){
 			e.printStackTrace();
 			request.setAttribute("errorMessage", ErrorMessages.GENERAL_DB_ERROR);
+		} catch (ValidationException e) {
+			request.setAttribute("errorMessage", ErrorMessages.VALIDATION_ERROR_UPDATING_DATA);
+			e.printStackTrace();
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

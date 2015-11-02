@@ -142,7 +142,7 @@
 								  </div>
 							  </c:if>
 							<!---------------------------------------------------------
-							 PsychEd Task Detail
+							 TwoTextBoxes Task Detail
 							 ---------------------------------------------------------->
 							  <c:if test="${task.taskTypeName == 'TaskTwoTextBoxes' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
@@ -150,42 +150,14 @@
 										${task.instructions }
 									  </div>
 									  <div class="panel-body panel-body-task">
-										${task.extraTextLabel1 }<input type="text" class="form-control" placeholder="${task.extraTextLabel1 }" name="automaticThought${task.taskID }" value="${task.extraTextValue1 }">
+										${task.extraTextLabel1 }<input type="text" class="form-control" placeholder="${task.extraTextLabel1 }" name="extraTextLabel1${task.taskID }" value="${task.extraTextValue1 }">
 									  </div>
 									  <div class="panel-body panel-body-task">
-										${task.extraTextLabel2 }<input type="text" class="form-control" placeholder="${task.extraTextLabel2 }" name="automaticThought${task.taskID }" value="${task.extraTextValue2 }">
+										${task.extraTextLabel2 }<input type="text" class="form-control" placeholder="${task.extraTextLabel2 }" name="extraTextLabel2${task.taskID }" value="${task.extraTextValue2 }">
 									  </div>
 								  </div>
 							  </c:if>
-							<!---------------------------------------------------------
-							 Relaxation Task Detail
-							 ---------------------------------------------------------->
-							  <c:if test="${task.taskTypeName == 'RelaxationTask' }">
-								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
-									  <div class="panel-body panel-body-task">
-										${task.instructions }
-									  </div>
-									  <div class="panel-body panel-body-task">
-										Duration: ${task.durationInMinutes }
-									  </div>
-								  </div>
-							  </c:if>
-							<!---------------------------------------------------------
-							 Cognitive Task Detail
-							 ---------------------------------------------------------->
-							  <c:if test="${task.taskTypeName == 'CognitiveTask' }">
-								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
-									  <div class="panel-body panel-body-task">
-										${task.instructions }
-									  </div>
-									  <div class="panel-body panel-body-task">
-										<input type="text" class="form-control" placeholder="Enter your automatic thought." name="automaticThought${task.taskID }" value="${task.automaticThought }">
-									  </div>
-									  <div class="panel-body panel-body-task">
-										 <input type="text" class="form-control" placeholder="Enter your balanced or alternative thought." name="alternativeThought${task.taskID }" value="${task.alternativeThought }">
-									  </div>
-								  </div>
-							  </c:if>
+							
 						</div>
 				</c:forEach>
 
@@ -209,10 +181,10 @@
 							  </div>
 							  <c:if test="${task.taskTypeName == 'TaskTwoTextBoxes'}">
 								  <div class="panel-body panel-body-task">
-									  <input type="text" class="form-control" placeholder="Enter your automatic thought." name="automaticThought${task.taskID }" value="${task.automaticThought }">
+										${task.extraTextLabel1 }<input type="text" class="form-control" placeholder="${task.extraTextLabel1 }" name="extraTextLabel1${task.taskID }" value="${task.extraTextValue1 }">
 								  </div>
 								  <div class="panel-body panel-body-task">
-									  <input type="text" class="form-control" placeholder="Enter your balanced or alternative thought." name="alternativeThought${task.taskID }" value="${task.alternativeThought }">
+									${task.extraTextLabel2 }<input type="text" class="form-control" placeholder="${task.extraTextLabel2 }" name="extraTextLabel2${task.taskID }" value="${task.extraTextValue2 }">
 								  </div>
 							  </c:if>
 						  </div>
