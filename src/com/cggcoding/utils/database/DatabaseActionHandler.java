@@ -63,7 +63,7 @@ public interface DatabaseActionHandler {
 	 */
 	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException;
 	
-	void treatmentPlanValidateAndUpdate(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException;
+	void treatmentPlanValidateAndUpdateBasic(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException;
 	
 	void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException;
 

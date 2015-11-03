@@ -420,9 +420,9 @@ public abstract class Task implements Completable, DatabaseModel{
 	}
 
 	@Override
-	public int getPercentComplete() {
+	public double getPercentComplete() {
 		if (isCompleted()) {
-			return 100;
+			return 1;
 		} else {
 			return 0;
 		}

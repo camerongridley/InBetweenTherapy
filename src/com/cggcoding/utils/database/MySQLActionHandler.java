@@ -400,8 +400,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             while (planInfo.next()){
             	plan = TreatmentPlan.getInstanceBasic(planInfo.getInt("treatment_plan_id"), planInfo.getInt("treatment_plan_user_id_fk"), 
             			planInfo.getString("treatment_plan_title"), planInfo.getString("treatment_plan_description"), planInfo.getInt("treatment_plan_treatment_issue_id_fk"),
-            			planInfo.getBoolean("in_progress"), planInfo.getBoolean("treatment_plan_is_template"), planInfo.getBoolean("treatment_plan_completed")
-            			);
+            			planInfo.getBoolean("in_progress"), planInfo.getBoolean("treatment_plan_is_template"), planInfo.getBoolean("treatment_plan_completed"),
+            			planInfo.getInt("current_stage_index"), planInfo.getInt("active_view_stage_index"));
             	
             }
             
@@ -511,7 +511,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         ResultSet generatedKeys = null;
         
         try {
-        	String sql = "INSERT INTO treatment_plan (treatment_plan_user_id_fk, treatment_plan_treatment_issue_id_fk, treatment_plan_title, treatment_plan_description, current_stage_index, active_view_stage_index, in_progress, treatment_plan_is_template) "
+        	String sql = "INSERT INTO treatment_plan (treatment_plan_user_id_fk, treatment_plan_treatment_issue_id_fk, treatment_plan_title, treatment_plan_description, "
+        			+ "current_stage_index, active_view_stage_index, in_progress, treatment_plan_is_template) "
             		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -543,7 +544,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
     
     @Override
-	public void treatmentPlanValidateAndUpdate(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException {
+	public void treatmentPlanValidateAndUpdateBasic(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException {
 		
 		Connection cn = null;
         
@@ -882,8 +883,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         ResultSet generatedKeys = null;
         
         try {
-    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, stage_title, stage_description, stage_completed, stage_order, percent_complete, stage_is_template) "
-            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, stage_title, stage_description, stage_completed, stage_order, percent_complete, stage_in_progress, stage_is_template) "
+            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
@@ -893,8 +894,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setString(4, newStage.getDescription());
             ps.setBoolean(5,  newStage.isCompleted());
             ps.setInt(6, newStage.getStageOrder());
-            ps.setInt(7, newStage.getPercentComplete());
-            ps.setBoolean(8, newStage.isTemplate());
+            ps.setDouble(7, newStage.getPercentComplete());
+            ps.setBoolean(8, newStage.isInProgress());
+            ps.setBoolean(9, newStage.isTemplate());
 
             int success = ps.executeUpdate();
             
@@ -962,7 +964,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         try {
         		
-    		String sql = "UPDATE stage SET stage_treatment_plan_id_fk=?, stage_user_id_fk=?, stage_title=?, stage_description=?, stage_completed=?, `stage_order`=?, percent_complete=?, stage_is_template=? WHERE stage_id=?";
+    		String sql = "UPDATE stage SET stage_treatment_plan_id_fk=?, stage_user_id_fk=?, stage_title=?, stage_description=?, stage_completed=?, `stage_order`=?, percent_complete=?, stage_in_progress=?, stage_is_template=? WHERE stage_id=?";
         	
             ps = cn.prepareStatement(sql);
 
@@ -972,9 +974,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setString(4, stage.getDescription());
             ps.setBoolean(5, stage.isCompleted());
             ps.setInt(6, stage.getStageOrder());
-            ps.setInt(7, stage.getPercentComplete());
-            ps.setBoolean(8, stage.isTemplate());
-            ps.setInt(9, stage.getStageID());
+            ps.setDouble(7, stage.getPercentComplete());
+            ps.setBoolean(8, stage.isInProgress());
+            ps.setBoolean(9, stage.isTemplate());
+            ps.setInt(10, stage.getStageID());
 
             success = ps.executeUpdate();
         	
@@ -1095,18 +1098,15 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	//TODO load tasks
             	List<Task> tasks = new ArrayList<>();
-            	//TODO load extra tasks
             	List<Task> extraTasks = new ArrayList<>();
-            	//TODO load goals
             	List<StageGoal> goals = new ArrayList<>();
             	
             	//boolean completed = rs.getInt("stage_completed") == 1;
             	//boolean inProgress = rs.getInt("") == 1;
             	//boolean isTemplate = rs.getInt("stage_is_template") == 1;
             	
-            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order"), tasks, extraTasks, rs.getBoolean("stage_completed"), rs.getInt("percent_complete"), goals, rs.getBoolean("stage_is_template"));
+            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order"), tasks, extraTasks, rs.getBoolean("stage_completed"), rs.getDouble("percent_complete"), goals, rs.getBoolean("stage_in_progress"), rs.getBoolean("stage_is_template"));
             }
 
         } finally {

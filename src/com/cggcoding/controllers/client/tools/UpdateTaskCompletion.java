@@ -23,6 +23,7 @@ import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.temp.TestConstants;
 import com.cggcoding.utils.messaging.ErrorMessages;
+import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
  * Servlet implementation class UpdateTaskCompletion
@@ -74,6 +75,10 @@ public class UpdateTaskCompletion extends HttpServlet {
 			//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
 			if(updatedStage.isCompleted()){
 				updatedStage = treatmentPlan.nextStage();
+			}
+			
+			if(treatmentPlan.isCompleted()){
+				request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COMPLETED);
 			}
 			
 			request.setAttribute("constantsTest", new TestConstants());

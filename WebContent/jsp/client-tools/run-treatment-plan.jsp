@@ -71,7 +71,7 @@
 					<!----------------------------------------------------
 					For stage that is inaccssible at this time (disabled)
 					----------------------------------------------------->
-					<c:if test="${stage.stageOrder != treatmentPlan.activeViewStageIndex && stage.stageOrder > treatmentPlan.currentStageIndex}">
+					<c:if test="${!stage.inProgress}">
 						<div class="progress-bar progress-bar-info progress-stage-disabled" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
 								${stage.title }<input type="hidden" name="stageIndex" value=${stage.stageOrder } />
 						</div>
@@ -111,10 +111,11 @@
 
 			<form action="./UpdateTaskCompletion" method="post" class="form-inline">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-			<strong>Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${treatmentPlan.activeViewStage.percentComplete }% Complete</strong>
+			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
+			<strong>Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${activeViewStagePercentComplete}% Complete</strong>
 			<div class="progress">
-			  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${treatmentPlan.activeViewStage.percentComplete }%;">
-			    <strong>${treatmentPlan.activeViewStage.percentComplete }%</strong>
+			  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${activeViewStagePercentComplete }%;">
+			    <strong>${activeViewStagePercentComplete }%</strong>
 			  </div>
 			</div>
 				<!---------------------------------------------------------

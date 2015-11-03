@@ -52,15 +52,16 @@ public class TreatmentPlan implements DatabaseModel{
 		this.completed = false;
 	}
 
-	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, boolean isTemplate, boolean completed){
+	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
+			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex){
 		this.treatmentPlanID = treatmentPlanID;
 		this.title = title;
 		this.description = description;
 		this.treatmentIssueID = txIssueID;
 		this.userID = userID;
 		this.stages = new ArrayList<>();
-		this.currentStageIndex = 0;
-		this.activeViewStageIndex = 0;
+		this.currentStageIndex = currentStageIndex;
+		this.activeViewStageIndex = activeViewStageIndex;
 		this.inProgress = inProgress;
 		this.isTemplate = isTemplate;
 		this.completed = completed;
@@ -70,14 +71,13 @@ public class TreatmentPlan implements DatabaseModel{
 		return new TreatmentPlan(userID, title, description, treatmentPlanID);
 	}
 	
-	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, boolean isTemplate, boolean completed){
-		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed);
+	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
+			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex){
+		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed, currentStageIndex, activeViewStageIndex);
 	}
 
-	//TODO update with proper logic once app is connected to database
-	//- set these variables based on the stage that is in progress
-	//- done either dynamically by looping through all the plan's stages and checking inProgress status or by saving currentStage in database
 	public void initialize(){
+		stages.get(0).setInProgress(true);
 		//currentStageIndex = stages.get(0).getStageID();
 		//activeViewStageIndex = currentStageIndex;
 	}
@@ -192,18 +192,26 @@ public class TreatmentPlan implements DatabaseModel{
 		return stages.size();
 	}
 	
-	public Stage nextStage(){
-		
-		
+	public Stage nextStage() throws DatabaseException, ValidationException{
 
 		if(activeViewStageIndex == currentStageIndex){
 			if(currentStageIndex < getNumberOfStages()-1){
 				currentStageIndex++;
 				activeViewStageIndex = currentStageIndex;
+				this.setCompleted(false);
+			} else {
+				this.setCompleted(true);
+				
 			}
 		}
 		
-		return stages.get(activeViewStageIndex);
+		Stage nextStage = stages.get(activeViewStageIndex);
+		nextStage.setInProgress(true);
+		
+		databaseActionHandler.treatmentPlanValidateAndUpdateBasic(this);
+		databaseActionHandler.stageValidateAndUpdateBasic(nextStage);
+		
+		return nextStage;
 	}
 
 	public int getStageOrder(int stageID){
@@ -238,7 +246,7 @@ public class TreatmentPlan implements DatabaseModel{
 
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		databaseActionHandler.treatmentPlanValidateAndUpdate(this);
+		databaseActionHandler.treatmentPlanValidateAndUpdateBasic(this);
 		
 	}
 

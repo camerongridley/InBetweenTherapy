@@ -2,11 +2,9 @@ package com.cggcoding.models;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.factories.TaskFactory;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
-import com.cggcoding.utils.messaging.ErrorMessages;
 
 import java.util.*;
 
@@ -28,23 +26,6 @@ public class Stage implements Completable, DatabaseModel {
 	
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 
-/*	//TODO Delete?
- * 	private Stage (int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder){
-		this.stageID = stageID;
-		this.treatmentPlanID = treatmentPlanID;
-		this.userID = userID;
-		this.title = title;
-		this.description = description;
-		this.stageOrder = stageOrder;
-		this.tasks = new ArrayList<>();
-		this.extraTasks = new ArrayList<>();
-		this.completed = false;
-		this.percentComplete = 0;
-		this.goals = new ArrayList<>();
-		//this.inProgress = false;
-		this.template = false;
-	}*/
-
 	private Stage (int treatmentPlanID, int userID, String title, String description, int stageOrder, boolean template){
 		this.stageID = 0;
 		this.treatmentPlanID = treatmentPlanID;
@@ -57,14 +38,14 @@ public class Stage implements Completable, DatabaseModel {
 		this.completed = false;
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
-		//this.inProgress = false;
+		this.inProgress = false;
 		this.template = template;
 	}
 	
 	//Full constructor - asks for every argument stage has
 	private Stage(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals,
-			boolean template) {
+			boolean inProgress, boolean template) {
 		this.stageID = stageID;
 		this.treatmentPlanID = treatmentPlanID;
 		this.userID = userID;
@@ -76,7 +57,7 @@ public class Stage implements Completable, DatabaseModel {
 		this.completed = completed;
 		this.percentComplete = percentComplete;
 		this.goals = goals;
-		//this.inProgress = inProgress;  TODO - delete from constructor if this property isn't in the database model so maybe remove as a class member and just make as a dynamic method
+		this.inProgress = inProgress;
 		this.template = template;
 	}
 
@@ -96,8 +77,8 @@ public class Stage implements Completable, DatabaseModel {
 	 * @return Stage object
 	 */
 	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
-			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean template){
-		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, template);
+			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean inProgress, boolean template){
+		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, inProgress, template);
 	}
 	
 	/**For use when creating a new Stage. As such, these are the only parameters that could be available for saving to the database.  
@@ -122,6 +103,10 @@ public class Stage implements Completable, DatabaseModel {
 		stageTemplate.saveNew();// = databaseActionHandler.stageValidateAndCreate(stageTemplate);
 		
 		return stageTemplate;
+	}
+	
+	public static Stage createTemplate(Stage templateStage) throws ValidationException, DatabaseException{
+		return createTemplate(templateStage.getUserID(), templateStage.getTitle(), templateStage.getDescription());
 	}
 	
 	public static Stage load(int stageID) throws DatabaseException, ValidationException{
@@ -240,6 +225,14 @@ public class Stage implements Completable, DatabaseModel {
 	public int getStageOrderForUserDisplay(){
 		return this.stageOrder + 1;
 	}
+	
+	public boolean isInProgress() {
+		return inProgress;
+	}
+
+	public void setInProgress(boolean inProgress) {
+		this.inProgress = inProgress;
+	}
 
 	public boolean isTemplate() {
 		return template;
@@ -284,8 +277,14 @@ public class Stage implements Completable, DatabaseModel {
 
 	//returns a double digit number representing percentage of stage completion
 	@Override
-	public int getPercentComplete(){
-		return (int)(percentComplete * 100);
+	public double getPercentComplete(){
+		double roundedPercent = 0;
+		
+		if(!tasks.isEmpty()){
+			roundedPercent = Math.floor(percentComplete * 100) / 100;
+		}
+		
+		return (roundedPercent);
 	}
 
 	public int getNumberOfTasksCompleted() {
@@ -355,7 +354,7 @@ public class Stage implements Completable, DatabaseModel {
 		
 		percentComplete = ((double)getNumberOfTasksCompleted()/(double)getTotalNumberOfTasks());
 		
-		if(getPercentComplete()==100){
+		if(getPercentComplete()==1){
 			this.markComplete();
 		} else {
 			this.markIncomplete();
@@ -462,8 +461,7 @@ public class Stage implements Completable, DatabaseModel {
 		return taskBeingCopied.saveNew();
 	}
 	
-	//TODO DELETE? Moved to --> May want to move this functionality into TreamentPlan so that more information is available, in particular determining what stageOrder value to use
-	/**Creates a copy of the Stage into a new TreatmentPlan and User.
+	/**Creates a copy of the Stage and sets the copy's stageID to 0.
 	 * @param treatmentPlanIDToCopy - treatmentPlanID the Stage is being copied into
 	 * @param userIDToCopy - userID of the User that owns the TreatmentPlan the Stage is being copied into
 	 * @param isTemplate - Designates whether this Stage should be copied as a template or not. Set "true" if it is to be a template in the TreatmentPlan it is being copied into, and "false" if it is not a template.
@@ -471,19 +469,19 @@ public class Stage implements Completable, DatabaseModel {
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	/*public Stage copy(int treatmentPlanIDToCopy, int userIDToCopy, boolean isTemplate) throws ValidationException, DatabaseException{
-		Stage copiedStage = getInstanceWithoutID(treatmentPlanIDToCopy, userIDToCopy, this.title, this.description, this.stageOrder, isTemplate);
-		copiedStage = (Stage)copiedStage.saveNew();
+	public Stage copy(){
+		boolean falseForTemplate = false;
+		Stage copiedStage = getInstanceWithoutID(this.treatmentPlanID, this.userID, this.title, this.description, this.stageOrder, falseForTemplate);
+
 		for(StageGoal goal : this.goals){
-			goal.setStageID(copiedStage.getStageID());
-			copiedStage.addGoal(databaseActionHandler.stageGoalValidateAndCreate(goal));
+			copiedStage.addGoal(goal.copy());
 		}
 		
 		for(Task task : this.tasks){
-			task = task.copy(copiedStage.getStageID(), copiedStage.getUserID());
-			copiedStage.addTask(task.saveNew());
+			task = task.copy();
+			copiedStage.addTask(task.copy());
 		}
 		
 		return copiedStage;
-	}*/
+	}
 }

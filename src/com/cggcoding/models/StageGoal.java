@@ -78,6 +78,9 @@ public class StageGoal {
 		this.associatedTaskID = associatedTaskID;
 	}
 
+	public StageGoal copy(){
+		return new StageGoal(0, this.stageID, this.getDescription(), this.associatedTaskID);
+	}
 
 
 }

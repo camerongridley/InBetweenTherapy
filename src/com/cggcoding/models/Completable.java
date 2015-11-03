@@ -9,5 +9,5 @@ public interface Completable {
 	
 	boolean isCompleted();
 
-	int getPercentComplete();
+	double getPercentComplete();
 }
