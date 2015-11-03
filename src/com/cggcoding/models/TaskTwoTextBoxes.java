@@ -108,9 +108,16 @@ public class TaskTwoTextBoxes extends Task{
 	}
 
 	@Override
-	public Task copy(int stageID, int userID) throws DatabaseException, ValidationException {
-		TaskTwoTextBoxes task =  getInstanceFull(0, stageID, userID, getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
+	public Task copy(){
+		TaskTwoTextBoxes task =  getInstanceFull(0, getStageID(), getUserID(), getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
 					isCompleted(), getDateCompleted(), getTaskOrder(), isExtraTask(), false, extraTextLabel1, extraTextValue1, extraTextLabel2, extraTextValue2);
+		
+		return task;
+	}
+	
+	@Override
+	public Task copyAndSave(int stageID, int userID) throws DatabaseException, ValidationException {
+		TaskTwoTextBoxes task =  (TaskTwoTextBoxes)copy();
 		
 		return task.saveNew();
 	}

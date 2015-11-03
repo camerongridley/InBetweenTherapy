@@ -112,12 +112,21 @@ public class TaskGeneric extends Task{
 	}
 
 	@Override
-	public Task copy(int stageID, int userID) throws DatabaseException, ValidationException {
-		TaskGeneric gTask = getInstanceFull(0, stageID, userID, getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
+	public Task copy(){
+		TaskGeneric gTask = getInstanceFull(0, getStageID(), getUserID(), getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
 					isCompleted(), getDateCompleted(), getTaskOrder(), isExtraTask(), false);
 		
-		return gTask.saveNew();
+		return gTask;
 
+	}
+	
+	@Override
+	public Task copyAndSave(int stageID, int userID)throws DatabaseException, ValidationException {
+		TaskGeneric copy = (TaskGeneric) copy();
+		copy.setStageID(stageID);
+		copy.setUserID(userID);
+		
+		return copy.saveNew();
 	}
 	
 	

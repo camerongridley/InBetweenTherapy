@@ -265,17 +265,26 @@ public abstract class Task implements Completable, DatabaseModel{
 	protected abstract boolean updateAdditionalData() throws DatabaseException, ValidationException;
 
 	
-	/**Copies the task, setting the taskID to 0 and replacing stageID and userID with supplied arguments. Also sets template=false since templates are unique.
+	/**Copies the task, setting the taskID to 0 and template=false since templates are unique.
 	 * @param stageID
 	 * @param userID
 	 * @return
 	 */
-	public abstract Task copy(int stageID, int userID) throws DatabaseException, ValidationException;
+	public abstract Task copy();
+	
+	/**Copies the task and then saves it in the database.  Sets the taskID to 0 and replaces stageID and userID with supplied arguments. Also sets template=false since templates are unique.
+	 * @param stageID
+	 * @param userID
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	public abstract Task copyAndSave(int stageID, int userID) throws DatabaseException, ValidationException;
 	
 	public List<Task> copyMultiple(int stageID, int userID, int numberOfCopies) throws CloneNotSupportedException, DatabaseException, ValidationException{
 		List<Task> listOfCopiedTasks = new ArrayList<>();
 		for(int i = 0; i < numberOfCopies; i++){
-			listOfCopiedTasks.add(copy(stageID, userID));
+			listOfCopiedTasks.add(copyAndSave(stageID, userID));
 		}
 		
 		return listOfCopiedTasks;

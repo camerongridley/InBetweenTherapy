@@ -21,6 +21,7 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.temp.TestConstants;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
@@ -75,6 +76,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 				updatedStage = treatmentPlan.nextStage();
 			}
 			
+			request.setAttribute("constantsTest", new TestConstants());
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("currentStage", updatedStage);
 			

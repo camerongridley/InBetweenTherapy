@@ -18,6 +18,7 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
@@ -74,6 +75,7 @@ public class CreateTask extends HttpServlet {
 		userID =  user.getUserID();
 		int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		Stage stage = null;
+		String[] copyAsTemplate = request.getParameterValues("copyAsTemplate");
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
 		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
@@ -84,6 +86,7 @@ public class CreateTask extends HttpServlet {
 			request.setAttribute("defaultTasks", DefaultDatabaseCalls.getDefaultTasks());
 	
 			if(user.hasRole("admin")){
+				UserAdmin admin = (UserAdmin)user;
 				switch(requestedAction){
 				case ("create-task-start"):
 					//set tempTask in request so page knows value of isTemplate
@@ -95,9 +98,6 @@ public class CreateTask extends HttpServlet {
 					if(taskToCreate.getTaskID() != 0){
 						stage = Stage.load(stageID);
 						stage.copyTaskIntoStage(taskToCreate.getTaskID());
-						
-						/*taskToCreate = Task.load(taskToCreate.getTaskID());
-						taskToCreate = taskToCreate.copy(stageID, user.getUserID());*/
 						
 						if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
 							request.setAttribute("stage", stage);
@@ -120,7 +120,12 @@ public class CreateTask extends HttpServlet {
 						stage = Stage.load(stageID);
 						stage.createNewTask(taskToCreate);
 						
-						request.setAttribute("stage", Stage.load(taskToCreate.getStageID()));
+						if(copyAsTemplate[0].equals("yes")){
+							Task templateCopy = taskToCreate.copy();
+							Task.createTemplate(templateCopy);
+						}
+						
+						request.setAttribute("stage", Stage.load(stageID));
 					}
 										
 					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
@@ -128,7 +133,7 @@ public class CreateTask extends HttpServlet {
 					}else{
 						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
 					}
-						
+
 					break;
 				}
 				
@@ -136,7 +141,7 @@ public class CreateTask extends HttpServlet {
 				if(path.equals("creatingTaskTemplate")){
 					
 				}else{
-					stage = getStageAndPutInRequest(request, taskToCreate.getStageID());
+					stage = getStageAndPutInRequest(request, stageID);
 				}
 
 			}

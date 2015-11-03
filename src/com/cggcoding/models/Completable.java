@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+
 public interface Completable {
 	
 	void markComplete();

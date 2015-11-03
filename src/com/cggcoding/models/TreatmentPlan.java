@@ -193,6 +193,8 @@ public class TreatmentPlan implements DatabaseModel{
 	}
 	
 	public Stage nextStage(){
+		
+		
 
 		if(activeViewStageIndex == currentStageIndex){
 			if(currentStageIndex < getNumberOfStages()-1){
@@ -248,9 +250,6 @@ public class TreatmentPlan implements DatabaseModel{
 
 	public static TreatmentPlan load(int treatmentPlanID) throws DatabaseException, ValidationException{
 		TreatmentPlan plan = databaseActionHandler.treatmentPlanLoad(treatmentPlanID);
-		/*if(plan != null){
-			plan.loadStages();
-		}*/
 		
 		return plan;
 	}

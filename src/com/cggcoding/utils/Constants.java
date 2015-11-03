@@ -3,7 +3,7 @@ package com.cggcoding.utils;
 import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.TaskTwoTextBoxes;
 
-public final class Constants {
+public class Constants {
 
 	public Constants() {
 		

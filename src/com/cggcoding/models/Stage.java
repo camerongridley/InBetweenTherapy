@@ -273,7 +273,7 @@ public class Stage implements Completable, DatabaseModel {
 	}
 
 	@Override
-	public void markComplete() {
+	public void markComplete(){
 		completed = true;
 	}
 
@@ -346,16 +346,22 @@ public class Stage implements Completable, DatabaseModel {
 		return persistentTask;
 	}*/
 
-	// TODO - should progress update be called by the controller or handled all on the service side?
-	//once a task is completed this is called to update the progress meter and associated metrics
-	public void updateProgress(){
+	
+	/**Once a task is completed this is called to update the progress meter and associated metrics
+	 * @throws DatabaseException 
+	 * @throws ValidationException 
+	 */
+	public void updateProgress() throws ValidationException, DatabaseException{
 		
 		percentComplete = ((double)getNumberOfTasksCompleted()/(double)getTotalNumberOfTasks());
 		
 		if(getPercentComplete()==100){
 			this.markComplete();
+		} else {
+			this.markIncomplete();
 		}
 		
+		databaseActionHandler.stageValidateAndUpdateBasic(this);
 	}
 	
 	

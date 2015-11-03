@@ -128,12 +128,18 @@
 		            </div>
 		        </div>
 			</c:if>
-	        
-	        <div class="form-group">
-	            <div class="col-sm-offset-2 col-sm-10">
-	                <button type="submit" class="btn btn-default">Submit</button>
-	            </div>
+			
+			<div class="form-group">
+				<div class="checkbox col-sm-offset-2">
+				  <label>
+				    <input type="checkbox" value="yes" name="copyAsTemplate" id="copyAsTemplate">
+				    Copy For Use as a Default Task?
+				  </label>
+				</div>
 	        </div>
+
+	        <button type="submit" class="btn btn-default col-sm-offset-2">Submit</button>
+
 	    </form>
     </div>
 	
