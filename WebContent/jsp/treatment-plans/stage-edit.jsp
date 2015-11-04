@@ -8,7 +8,6 @@
 
 <div class="page-header">
 	<h1>Edit a Stage</h1>
-	<h2>Name and Description</h2>
 </div>
   
 <c:import url="/jsp/message-modal.jsp"/>
@@ -35,8 +34,6 @@
 		
 		
 	</form>
-	
-	<hr>
 	
 	<form class="form-horizontal" action="./EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-name">
@@ -86,7 +83,7 @@
 				  	<input type="hidden" name="taskID" value="${task.taskID}"/>
 				  	<input type="hidden" name="taskTitle" value="${task.title}"/>
 					<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
-			          <span class="">${task.title }</span>
+			          ${task.taskOrderForUserDisplay } - <span class="">${task.title }</span>
 			        </a>
 			        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 			        <a role="button" href="./EditStage?requestedAction=delete-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete this task">

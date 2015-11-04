@@ -90,7 +90,22 @@ public abstract class User {
 	}
 
 	public TreatmentPlan getTreatmentPlan(int treatmentPlanID){
-		return treatmentPlanList.get(treatmentPlanID);
+		TreatmentPlan planFound = null;
+		for(TreatmentPlan plan : treatmentPlanList){
+			if(plan.getTreatmentPlanID()==treatmentPlanID){
+				planFound = plan;
+			}
+		}
+		
+		if(planFound == null){
+			try {
+				throw new Exception("There was an error loading your treatment plan. (User.getTreamentPlan())");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return planFound;
+ 
 	}
 	
 	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID){

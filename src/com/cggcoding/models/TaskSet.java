@@ -6,7 +6,7 @@ import java.util.Random;
 /**
  * Created by cgrid_000 on 8/19/2015.
  */
-public class TaskSet implements Completable{
+public class TaskSet{
     private int taskSetID;
     private int stageID;
     private int repetitions;
@@ -92,23 +92,5 @@ public class TaskSet implements Completable{
         }
     }
 
-    @Override
-    public void markComplete() {
-        completed = true;
-    }
-
-    @Override
-    public void markIncomplete() {
-        completed = false;
-    }
-
-    @Override
-    public boolean isCompleted() {
-        return completed;
-    }
-
-    @Override
-    public int getPercentComplete() {
-        return (int)((double)repetitionsCompleted/(double)repetitions);//TODO make sure this works as intended or if there is a better method
-    }
+    
 }

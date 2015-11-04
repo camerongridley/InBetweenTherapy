@@ -30,11 +30,5 @@ public interface DatabaseModel {
 	 * @throws DatabaseException
 	 */
 	void delete() throws ValidationException, DatabaseException;
-	
 
-	/**Copies the object the specified number of times
-	 * @param numberOfCopies Number of copies desired of the model
-	 * @return A list of the copied object
-	 */
-	List<Object> copy(int numberOfCopies);
 }

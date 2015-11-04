@@ -96,7 +96,7 @@
 			<p>
 			<form class="form-inline" action="" method="POST">
 				<div>
-					<button type="submit" class="btn btn-primary" >Manage Lists</button>
+					<button type="submit" class="btn btn-primary" disabled>Manage Lists</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="manage-lists">
 			</form>

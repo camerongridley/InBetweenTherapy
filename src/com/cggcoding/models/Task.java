@@ -31,7 +31,6 @@ public abstract class Task implements Completable, DatabaseModel{
 	//TODO see if I can eliminate some of these constructors! Once done with temp LoadData.java and actually load client data from database, look at GenericTask and prune to use only constructors needed for it
 	//empty constructor necessary to allow static factory methods in subclasses
 	public Task(){
-		
 	}
 	
 	//basic parent Task that sets properties to defaults
@@ -167,20 +166,37 @@ public abstract class Task implements Completable, DatabaseModel{
 		this.template = template;
 	}
 	
+	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
+		//TODO delete this line once method working as desired - int userID, String title, String instructions, int taskTypeID, int parentTaskID, String resourceLink, boolean extraTask
+		//Task taskTemplate = new TaskGeneric(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, Constants.TEMPLATE_ORDER_NUMBER, extraTask, true);
+		taskTemplate.setStageID(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID);
+		taskTemplate.setTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
+		taskTemplate.setTemplate(true);
+		
+		taskTemplate.saveNew();
+		
+		return taskTemplate;
+	}
+	
 	public static Task load(int taskID) throws DatabaseException{
-		Task genericTask = TaskGeneric.load(taskID);
+		return databaseActionHandler.taskLoad(taskID);
+		
+		/*moved this logic to DataBaseActionHandler so SQL transactions were easier - TODO delete if keeping in databaseActionHandler
+		 * Task genericTask = TaskGeneric.load(taskID);
 		switch(genericTask.getTaskTypeID()){
 			case Constants.TASK_TYPE_ID_GENERIC_TASK:
 				return genericTask;
-	
+				break;
 			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
 				return TaskTwoTextBoxes.load(taskID);
+				break;
 		}
 		
-		return null;
+		return null;*/
 	}
 	
 	protected abstract void loadAdditionalData();
+	
 	
 	@Override
 	public Task saveNew()throws DatabaseException, ValidationException{
@@ -213,11 +229,6 @@ public abstract class Task implements Completable, DatabaseModel{
 		
 	}
 
-	@Override
-	public List<Object> copy(int numberOfCopies) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
 	 * @param taskID
 	 * @param stageID
@@ -254,17 +265,26 @@ public abstract class Task implements Completable, DatabaseModel{
 	protected abstract boolean updateAdditionalData() throws DatabaseException, ValidationException;
 
 	
-	/**Copies the task, setting the taskID to 0 and replacing stageID and userID with supplied arguments. Also sets template=false since templates are unique.
+	/**Copies the task, setting the taskID to 0 and template=false since templates are unique.
 	 * @param stageID
 	 * @param userID
 	 * @return
 	 */
-	public abstract Task copy(int stageID, int userID) throws DatabaseException, ValidationException;
+	public abstract Task copy();
+	
+	/**Copies the task and then saves it in the database.  Sets the taskID to 0 and replaces stageID and userID with supplied arguments. Also sets template=false since templates are unique.
+	 * @param stageID
+	 * @param userID
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	public abstract Task copyAndSave(int stageID, int userID) throws DatabaseException, ValidationException;
 	
 	public List<Task> copyMultiple(int stageID, int userID, int numberOfCopies) throws CloneNotSupportedException, DatabaseException, ValidationException{
 		List<Task> listOfCopiedTasks = new ArrayList<>();
 		for(int i = 0; i < numberOfCopies; i++){
-			listOfCopiedTasks.add(copy(stageID, userID));
+			listOfCopiedTasks.add(copyAndSave(stageID, userID));
 		}
 		
 		return listOfCopiedTasks;
@@ -349,6 +369,14 @@ public abstract class Task implements Completable, DatabaseModel{
 	public void setTaskOrder(int taskOrder) {
 		this.taskOrder = taskOrder;
 	}
+	
+	/**Since taskOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
+	 *the order values start with 1.
+	 * @return
+	 */
+	public int getTaskOrderForUserDisplay(){
+		return taskOrder + 1;
+	}
 
 	public boolean isTemplate() {
 		return template;
@@ -392,23 +420,40 @@ public abstract class Task implements Completable, DatabaseModel{
 	}
 
 	@Override
-	public int getPercentComplete() {
+	public double getPercentComplete() {
 		if (isCompleted()) {
-			return 100;
+			return 1;
 		} else {
 			return 0;
 		}
 		//return (int)(((double)repetitionsCompleted/(double)repetitions) * 100);
 	}
 
-	//TODO redo this to get name from the database table
 	public String getTaskTypeName(){
 		return this.getClass().getSimpleName();
 	}
 
-	//TODO DELETE after done integrating db - a remnant of Updateable interface
-	public boolean updateData(Task taskWithNewData) {
-		return false;
+	public void updateData(Task taskWithNewData) throws ValidationException, DatabaseException {
+		//update all universal properties that can be modified by user
+		this.setCompleted(taskWithNewData.isCompleted());
+		this.setDateCompleted(taskWithNewData.getDateCompleted());
+
+		//update case-specific properties
+		switch (getTaskTypeID()) {
+			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK :
+				TaskTwoTextBoxes twoTask = (TaskTwoTextBoxes)this;
+				TaskTwoTextBoxes newData = (TaskTwoTextBoxes)taskWithNewData;
+
+				twoTask.setExtraTextLabel1(newData.getExtraTextLabel1());
+				twoTask.setExtraTextValue1(newData.getExtraTextValue1());
+				twoTask.setExtraTextLabel2(newData.getExtraTextLabel2());
+				twoTask.setExtraTextValue2(newData.getExtraTextValue2());
+
+				break;
+		}
+
+		update();
+				
 	}
 	
 	

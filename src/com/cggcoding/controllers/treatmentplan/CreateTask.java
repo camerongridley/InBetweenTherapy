@@ -18,6 +18,7 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
@@ -72,7 +73,9 @@ public class CreateTask extends HttpServlet {
 		/*-----------End Common Servlet variables---------------*/
 
 		userID =  user.getUserID();
+		int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		Stage stage = null;
+		String[] copyAsTemplate = request.getParameterValues("copyAsTemplate");
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
 		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
@@ -81,31 +84,23 @@ public class CreateTask extends HttpServlet {
 			//put user-independent (i.e. default) lists acquired from database in the request
 			request.setAttribute("taskTypeMap", DefaultDatabaseCalls.getTaskTypeMap());
 			request.setAttribute("defaultTasks", DefaultDatabaseCalls.getDefaultTasks());
-			
-			if(path.equals("creatingTaskTemplate")){
-				taskToCreate.setTemplate(true);
-			}else{
-				stage = getStageAndPutInRequest(request, taskToCreate.getStageID());
-			}
-			
+	
 			if(user.hasRole("admin")){
+				UserAdmin admin = (UserAdmin)user;
 				switch(requestedAction){
 				case ("create-task-start"):
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", taskToCreate);
-					
 					forwardTo = "/jsp/treatment-plans/task-create.jsp";
 					break;
 				case "task-add-default" :
-					//int defaultTaskID = ParameterUtils.parseIntParameter(request, "taskID");
+
 					if(taskToCreate.getTaskID() != 0){
-						taskToCreate = Task.load(taskToCreate.getTaskID());
-						int stageID = ParameterUtils.parseIntParameter(request, "stageID");
-						taskToCreate = taskToCreate.copy(stageID, user.getUserID());
-						//taskToCreate = createTask(taskToCreate);
+						stage = Stage.load(stageID);
+						stage.copyTaskIntoStage(taskToCreate.getTaskID());
 						
 						if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
-							request.setAttribute("stage", Stage.load(taskToCreate.getStageID()));
+							request.setAttribute("stage", stage);
 							forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 						}else{
 							forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
@@ -119,20 +114,26 @@ public class CreateTask extends HttpServlet {
 					forwardTo = "/jsp/treatment-plans/task-create.jsp";
 					break;
 				case ("task-save"):
-					if(taskToCreate.isTemplate()==true){
-						taskToCreate.setStageID(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID);
+					if(path.equals("creatingTaskTemplate")){
+						Task.createTemplate(taskToCreate);
 					} else{
-						request.setAttribute("stage", Stage.load(taskToCreate.getStageID()));
+						stage = Stage.load(stageID);
+						stage.createNewTask(taskToCreate);
+						
+						if(copyAsTemplate[0].equals("yes")){
+							Task templateCopy = taskToCreate.copy();
+							Task.createTemplate(templateCopy);
+						}
+						
+						request.setAttribute("stage", Stage.load(stageID));
 					}
-
-					taskToCreate = taskToCreate.saveNew();//createTask(taskToCreate);
 										
 					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
 						forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 					}else{
 						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
 					}
-						
+
 					break;
 				}
 				
@@ -140,7 +141,7 @@ public class CreateTask extends HttpServlet {
 				if(path.equals("creatingTaskTemplate")){
 					
 				}else{
-					stage = getStageAndPutInRequest(request, taskToCreate.getStageID());
+					stage = getStageAndPutInRequest(request, stageID);
 				}
 
 			}
@@ -166,7 +167,8 @@ public class CreateTask extends HttpServlet {
 		return stage;
 	}
 	
-	private Task createTask(Task taskToCreate) throws ValidationException, DatabaseException{
+	//TODO delete method
+	/*private Task createTask(Task taskToCreate) throws ValidationException, DatabaseException{
 		switch(taskToCreate.getTaskTypeID()){
 			case 0:
 				throw new ValidationException(ErrorMessages.TASK_MISSING_INFO);
@@ -183,6 +185,6 @@ public class CreateTask extends HttpServlet {
 		}
 		
 		return taskToCreate;
-	}
+	}*/
 
 }

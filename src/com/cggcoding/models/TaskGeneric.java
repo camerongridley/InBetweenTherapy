@@ -11,12 +11,16 @@ import com.cggcoding.utils.database.MySQLActionHandler;
 public class TaskGeneric extends Task{
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
 	
+	public TaskGeneric(){
+		super();
+	}
+	
 	private TaskGeneric(int taskID, int userID) {
 		super(taskID, userID);
 	}
 
 	//constructor without taskID - for Tasks objects that haven't been saved to database and don't have a taskID yet
-	private TaskGeneric(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
+	protected TaskGeneric(int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			int taskOrder, boolean extraTask, boolean template) {
 		//super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
 		super(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
@@ -62,9 +66,9 @@ public class TaskGeneric extends Task{
 				title, instructions, resourceLink, false, null, 0, extraTask, true);
 	}
 	
-	public static Task load(int taskID) throws DatabaseException{
+	/*public static Task load(int taskID) throws DatabaseException{
 		return databaseActionHandler.taskGenericLoad(taskID);
-	}
+	}*/
 	
 	/*@Override
 	public Object saveNew() throws DatabaseException, ValidationException{
@@ -108,12 +112,21 @@ public class TaskGeneric extends Task{
 	}
 
 	@Override
-	public Task copy(int stageID, int userID) throws DatabaseException, ValidationException {
-		TaskGeneric gTask = getInstanceFull(0, stageID, userID, getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
+	public Task copy(){
+		TaskGeneric gTask = getInstanceFull(0, getStageID(), getUserID(), getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
 					isCompleted(), getDateCompleted(), getTaskOrder(), isExtraTask(), false);
 		
-		return gTask.saveNew();
+		return gTask;
 
+	}
+	
+	@Override
+	public Task copyAndSave(int stageID, int userID)throws DatabaseException, ValidationException {
+		TaskGeneric copy = (TaskGeneric) copy();
+		copy.setStageID(stageID);
+		copy.setUserID(userID);
+		
+		return copy.saveNew();
 	}
 	
 	

@@ -7,7 +7,8 @@ public final class ErrorMessages {
 		
 	//General Validation errors
 		public static final String GENERAL_VALIDATION_ERROR = "There was an error validating your request.  Please try againg or contact customer support.";
-		public static final String DEFAULTS_HOLDER_ID_SELECTED = "It appears you are trying to access invalid data.  Please be sure to make a valid selection and try again.";
+		public static final String VALIDATION_ERROR_UPDATING_DATA = "The data you are trying to update contains invalid information.  Please try again.";
+		public static final String DEFAULTS_HOLDER_ID_SELECTED = "It appears you are trying to access restricted data.  Please be sure to make a valid selection and try again.";
 		public static final String OBJECT_IS_NULL = "It appears there is no database record for what you are looking for.  Please be sure to make a valid selection and try again.  If you have further problems please contact customer support.";
 		
 	//Log in

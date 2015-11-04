@@ -3,10 +3,13 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="header.jsp" />
+<c:import url="/jsp/header.jsp" />
 	
 	
 	<h1>Treatment Issue: ${treatmentPlan.title }</h1>
+	
+	<c:import url="/jsp/message-modal.jsp"/>
+	
 	<div class="row">
 		<div class="col-md-12">
 			
@@ -68,7 +71,7 @@
 					<!----------------------------------------------------
 					For stage that is inaccssible at this time (disabled)
 					----------------------------------------------------->
-					<c:if test="${stage.stageOrder != treatmentPlan.activeViewStageIndex && stage.stageOrder > treatmentPlan.currentStageIndex}">
+					<c:if test="${!stage.inProgress}">
 						<div class="progress-bar progress-bar-info progress-stage-disabled" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
 								${stage.title }<input type="hidden" name="stageIndex" value=${stage.stageOrder } />
 						</div>
@@ -108,10 +111,11 @@
 
 			<form action="./UpdateTaskCompletion" method="post" class="form-inline">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-			<strong>Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${treatmentPlan.activeViewStage.percentComplete }% Complete</strong>
+			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
+			<strong>Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${activeViewStagePercentComplete}% Complete</strong>
 			<div class="progress">
-			  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${treatmentPlan.activeViewStage.percentComplete }%;">
-			    <strong>${treatmentPlan.activeViewStage.percentComplete }%</strong>
+			  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: ${activeViewStagePercentComplete }%;">
+			    <strong>${activeViewStagePercentComplete }%</strong>
 			  </div>
 			</div>
 				<!---------------------------------------------------------
@@ -131,7 +135,7 @@
 							<!---------------------------------------------------------
 							 Generic Task Detail
 							 ---------------------------------------------------------->
-							  <c:if test="${task.taskTypeName == 'GenericTask' }">
+							  <c:if test="${task.taskTypeName == 'TaskGeneric' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 									  <div class="panel-body panel-body-task">
 										${task.instructions }
@@ -139,44 +143,22 @@
 								  </div>
 							  </c:if>
 							<!---------------------------------------------------------
-							 PsychEd Task Detail
+							 TwoTextBoxes Task Detail
 							 ---------------------------------------------------------->
-							  <c:if test="${task.taskTypeName == 'PsychEdTask' }">
-								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
-									  <div class="panel-body panel-body-task">
-										${task.instructions }
-									  </div>
-								  </div>
-							  </c:if>
-							<!---------------------------------------------------------
-							 Relaxation Task Detail
-							 ---------------------------------------------------------->
-							  <c:if test="${task.taskTypeName == 'RelaxationTask' }">
+							  <c:if test="${task.taskTypeName == 'TaskTwoTextBoxes' }">
 								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 									  <div class="panel-body panel-body-task">
 										${task.instructions }
 									  </div>
 									  <div class="panel-body panel-body-task">
-										Duration: ${task.durationInMinutes }
+										${task.extraTextLabel1 }<input type="text" class="form-control" placeholder="${task.extraTextLabel1 }" name="extraTextValue1${task.taskID }" value="${task.extraTextValue1 }">
+									  </div>
+									  <div class="panel-body panel-body-task">
+										${task.extraTextLabel2 }<input type="text" class="form-control" placeholder="${task.extraTextLabel2 }" name="extraTextValue2${task.taskID }" value="${task.extraTextValue2 }">
 									  </div>
 								  </div>
 							  </c:if>
-							<!---------------------------------------------------------
-							 Cognitive Task Detail
-							 ---------------------------------------------------------->
-							  <c:if test="${task.taskTypeName == 'CognitiveTask' }">
-								  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
-									  <div class="panel-body panel-body-task">
-										${task.instructions }
-									  </div>
-									  <div class="panel-body panel-body-task">
-										<input type="text" class="form-control" placeholder="Enter your automatic thought." name="automaticThought${task.taskID }" value="${task.automaticThought }">
-									  </div>
-									  <div class="panel-body panel-body-task">
-										 <input type="text" class="form-control" placeholder="Enter your balanced or alternative thought." name="alternativeThought${task.taskID }" value="${task.alternativeThought }">
-									  </div>
-								  </div>
-							  </c:if>
+							
 						</div>
 				</c:forEach>
 
@@ -198,12 +180,12 @@
 							  <div class="panel-body panel-body-task">
 							    ${task.instructions }
 							  </div>
-							  <c:if test="${task.taskTypeName == 'CognitiveTask'}">
+							  <c:if test="${task.taskTypeName == 'TaskTwoTextBoxes'}">
 								  <div class="panel-body panel-body-task">
-									  <input type="text" class="form-control" placeholder="Enter your automatic thought." name="automaticThought${task.taskID }" value="${task.automaticThought }">
+										${task.extraTextLabel1 }<input type="text" class="form-control" placeholder="${task.extraTextLabel1 }" name="extraTextValue1${task.taskID }" value="${task.extraTextValue1 }">
 								  </div>
 								  <div class="panel-body panel-body-task">
-									  <input type="text" class="form-control" placeholder="Enter your balanced or alternative thought." name="alternativeThought${task.taskID }" value="${task.alternativeThought }">
+									${task.extraTextLabel2 }<input type="text" class="form-control" placeholder="${task.extraTextLabel2 }" name="extraTextValue2${task.taskID }" value="${task.extraTextValue2 }">
 								  </div>
 							  </c:if>
 						  </div>
@@ -242,4 +224,4 @@
 		</div>
 	</div>
 		
-<c:import url="footer.jsp" />
+<c:import url="/jsp/footer.jsp" />

@@ -17,14 +17,14 @@
   </div>
   <p>
     <form class="form-inline" action="./LoadData" method="POST">
-      <div><button type="submit" class="btn btn-primary">Create Treatment Plan</button></div>
+      <div><button type="submit" class="btn btn-primary" disabled>Create Treatment Plan</button></div>
       <input type="hidden" name="requestedAction" value="createplan">
     </form>
   </p>
 
   <p>
     <form class="form-inline" action="./LoadData" method="POST">
-      <div><button type="submit" class="btn btn-primary">Edit Treatment Plans</button></div>
+      <div><button type="submit" class="btn btn-primary" disabled>Edit Treatment Plans</button></div>
       <input type="hidden" name="requestedAction" value="editplan">
     </form>
   </p>
@@ -39,7 +39,7 @@
 
   <p>
     <form class="form-inline" action="./LoadData" method="POST">
-      <div><button type="submit" class="btn btn-primary">View Client Progress</button></div>
+      <div><button type="submit" class="btn btn-primary" disabled>View Client Progress</button></div>
       <input type="hidden" name="requestedAction" value="viewclient">
     </form>
   </p>

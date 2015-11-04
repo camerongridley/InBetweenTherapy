@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+
 public interface Completable {
 	
 	void markComplete();
@@ -8,5 +9,5 @@ public interface Completable {
 	
 	boolean isCompleted();
 
-	int getPercentComplete();
+	double getPercentComplete();
 }

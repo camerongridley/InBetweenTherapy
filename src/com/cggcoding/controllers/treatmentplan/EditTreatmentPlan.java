@@ -41,14 +41,16 @@ public class EditTreatmentPlan extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		processRequest(request, response);
+		//TODO delete commeneted out code
 		/*--Common Servlet variables that should be in every controller--*/
-		HttpSession session = request.getSession();
+		/*HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
 		String forwardTo = "index.jsp";
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
-		/*-----------End Common Servlet variables---------------*/
+		-----------End Common Servlet variables---------------
 		
 		if(user.hasRole("admin")){
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
@@ -75,13 +77,17 @@ public class EditTreatmentPlan extends HttpServlet {
 			
 			
 			request.getRequestDispatcher(forwardTo).forward(request, response);
-		}
+		}*/
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		processRequest(request, response);
+	}
+	
+	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
@@ -93,12 +99,15 @@ public class EditTreatmentPlan extends HttpServlet {
 		/*-----------End Common Servlet variables---------------*/
 
     	int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+    	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
     	String planTitle = request.getParameter("planTitle");
     	String planDescription = request.getParameter("planDescription");
     	int defaultIssueID = ParameterUtils.parseIntParameter(request, "defaultTreatmentIssue");
     	int customIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
 
     	TreatmentPlan treatmentPlan = null;
+    	Stage stage = null;
     	
     	try {
     		//set default lists in the request
@@ -148,12 +157,14 @@ public class EditTreatmentPlan extends HttpServlet {
 		                if(defaultIssueID <= 0 && customIssueID > 0){
 		                	treatmentIssueID = customIssueID;
 		                }
-
+		                
+		                //TODO  just loadWithEmptyLists here?
 		                treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 		                
 		                treatmentPlan.setTitle(planTitle);
 		                treatmentPlan.setDescription(planDescription);
 		                treatmentPlan.setTreatmentIssueID(treatmentIssueID);
+		                
 		                
 		                treatmentPlan.update();
 		
@@ -180,24 +191,23 @@ public class EditTreatmentPlan extends HttpServlet {
 
 						forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
-		            case "plan-create-stages":
-
-		            	//forwardTo = "";
-	            	break;
+		            case "stage-delete":
+						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+						treatmentPlan.deleteStage(stageID);
+				    	request.setAttribute("treatmentPlan", treatmentPlan);
+						
+						forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+						break;
 				}
-
 			}
 			
 			
     	} catch (ValidationException | DatabaseException e) {
     		request.setAttribute("errorMessage", e.getMessage());
     		
-    		treatmentPlan = TreatmentPlan.getInstanceBasic(ParameterUtils.parseIntParameter(request, "treatmentPlanID"), user.getUserID(), request.getParameter("planTitle"), request.getParameter("planDescription"), 0, false, false, false);
     		//create a temporary treatmentPlan to hold info for plan that is in the process of creation
-    		/*
-    		request.setAttribute("treatmentPlanID", treatmentPlanID);
-    		request.setAttribute("planTitle", planTitle);
-    		request.setAttribute("planDescription", planDescription);*/
+    		treatmentPlan = TreatmentPlan.getInstanceBasic(ParameterUtils.parseIntParameter(request, "treatmentPlanID"), user.getUserID(), request.getParameter("planTitle"), request.getParameter("planDescription"), 0, false, false, false,0,0);
+    		request.setAttribute("treatmentPlan", treatmentPlan);
     		request.setAttribute("defaultTreatmentIssue", defaultIssueID);
     		request.setAttribute("existingCustomTreatmentIssue", customIssueID);
     		

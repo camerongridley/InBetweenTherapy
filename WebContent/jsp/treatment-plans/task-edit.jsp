@@ -8,7 +8,6 @@
 
 <div class="page-header">
 	<h1>Edit A Task</h1>
-	<h2>Subheading</h2>
 </div>
   
 <c:import url="/jsp/message-modal.jsp"/>

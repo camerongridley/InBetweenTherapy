@@ -52,15 +52,16 @@ public class TreatmentPlan implements DatabaseModel{
 		this.completed = false;
 	}
 
-	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, boolean isTemplate, boolean completed){
+	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
+			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex){
 		this.treatmentPlanID = treatmentPlanID;
 		this.title = title;
 		this.description = description;
 		this.treatmentIssueID = txIssueID;
 		this.userID = userID;
 		this.stages = new ArrayList<>();
-		this.currentStageIndex = 0;
-		this.activeViewStageIndex = 0;
+		this.currentStageIndex = currentStageIndex;
+		this.activeViewStageIndex = activeViewStageIndex;
 		this.inProgress = inProgress;
 		this.isTemplate = isTemplate;
 		this.completed = completed;
@@ -70,14 +71,13 @@ public class TreatmentPlan implements DatabaseModel{
 		return new TreatmentPlan(userID, title, description, treatmentPlanID);
 	}
 	
-	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, boolean isTemplate, boolean completed){
-		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed);
+	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
+			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex){
+		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed, currentStageIndex, activeViewStageIndex);
 	}
 
-	//TODO update with proper logic once app is connected to database
-	//- set these variables based on the stage that is in progress
-	//- done either dynamically by looping through all the plan's stages and checking inProgress status or by saving currentStage in database
 	public void initialize(){
+		stages.get(0).setInProgress(true);
 		//currentStageIndex = stages.get(0).getStageID();
 		//activeViewStageIndex = currentStageIndex;
 	}
@@ -94,6 +94,10 @@ public class TreatmentPlan implements DatabaseModel{
 		return userID;
 	}
 	
+	public void setUserID(int userID) {
+		this.userID = userID;
+	}
+
 	public void setTitle(String title){
 		this.title = title;
 	}
@@ -188,16 +192,26 @@ public class TreatmentPlan implements DatabaseModel{
 		return stages.size();
 	}
 	
-	public Stage nextStage(){
+	public Stage nextStage() throws DatabaseException, ValidationException{
 
 		if(activeViewStageIndex == currentStageIndex){
 			if(currentStageIndex < getNumberOfStages()-1){
 				currentStageIndex++;
 				activeViewStageIndex = currentStageIndex;
+				this.setCompleted(false);
+			} else {
+				this.setCompleted(true);
+				
 			}
 		}
 		
-		return stages.get(activeViewStageIndex);
+		Stage nextStage = stages.get(activeViewStageIndex);
+		nextStage.setInProgress(true);
+		
+		databaseActionHandler.treatmentPlanValidateAndUpdateBasic(this);
+		databaseActionHandler.stageValidateAndUpdateBasic(nextStage);
+		
+		return nextStage;
 	}
 
 	public int getStageOrder(int stageID){
@@ -219,16 +233,20 @@ public class TreatmentPlan implements DatabaseModel{
 		return getStageOrder(activeViewStageIndex);
 	}
 	
+	private int getStageOrderDefaultValue(){
+		return this.stages.size();
+	}
+	
 	@Override
 	public Object saveNew() throws ValidationException, DatabaseException{
-		 TreatmentPlan savedPlan = databaseActionHandler.treatmentPlanValidateAndCreateBasic(this);
+		 TreatmentPlan savedPlan = databaseActionHandler.treatmentPlanValidateAndCreate(this);
 		 this.treatmentPlanID = savedPlan.getTreatmentPlanID();
 		 return savedPlan;
 	}
 
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		databaseActionHandler.treatmentPlanValidateAndUpdate(this);
+		databaseActionHandler.treatmentPlanValidateAndUpdateBasic(this);
 		
 	}
 
@@ -238,27 +256,18 @@ public class TreatmentPlan implements DatabaseModel{
 		
 	}
 
-	@Override
-	public List<Object> copy(int numberOfCopies) {
-		// TODO implement method
-		return null;
-	}
-
 	public static TreatmentPlan load(int treatmentPlanID) throws DatabaseException, ValidationException{
-		TreatmentPlan plan = databaseActionHandler.treatmentPlanLoadWithEmpyLists(treatmentPlanID);
-		if(plan != null){
-			plan.loadStages();
-		}
+		TreatmentPlan plan = databaseActionHandler.treatmentPlanLoad(treatmentPlanID);
 		
 		return plan;
 	}
 	
-	public void loadStages() throws DatabaseException, ValidationException{
+	/*public void loadStages() throws DatabaseException, ValidationException{
 		List<Integer> stageIDs = databaseActionHandler.treatmentPlanGetStageIDs(this.treatmentPlanID);
 		for(int stageID : stageIDs){
 			addStage(Stage.load(stageID));
 		}
-	}
+	}*/
 	
 	public static TreatmentPlan loadWithEmptyLists(int treatmentPlanID) throws DatabaseException, ValidationException{
 		return databaseActionHandler.treatmentPlanLoadWithEmpyLists(treatmentPlanID);
@@ -270,8 +279,12 @@ public class TreatmentPlan implements DatabaseModel{
 				stages.remove(i);
 			}
 		}
-
-		databaseActionHandler.stageDelete(stageID);
+		
+		for(int i=0; i < this.stages.size(); i++){
+			stages.get(i).setStageOrder(i);
+		}
+		
+		databaseActionHandler.treatmentPlanDeleteStage(stageID, stages);
 	}
 	
 	/*public TreatmentPlan copy(int userID){
@@ -279,4 +292,52 @@ public class TreatmentPlan implements DatabaseModel{
 		
 		return copiedPlan;
 	}*/
+	
+	/**Copies a pre-existing Stage into a TreatmentPlan.  This methods gets the existing Stage, updated the treatmentPlanID and the userID associated with the new TreatmentPlan that the
+	 * Stage is being copies into.  It also sets the copied Stages's isTemplate to false and determines the stageOrder it will have initially.
+	 * Then the copied Stage is sent the DAO to be saved in the database.  The DAO is responsible for getting the auto-generated id for the new Stage and setting it for the Stage and 
+	 * all children of the Stage before returning it to this method.
+	 * , and adds it the the TreatmentPlan's list of Stages.
+	 * Then it 
+	 * @param stageIDBeingCopied
+	 * @param userIDCopiedInto
+	 * @return A Stage with updated userID, treatmentPlanID and a new stageID
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	public Stage copyStageIntoTreatmentPlan(int stageIDBeingCopied) throws DatabaseException, ValidationException{
+		Stage stageBeingCopied = Stage.load(stageIDBeingCopied);
+		stageBeingCopied.setTemplate(false);
+		stageBeingCopied.setUserID(this.userID);
+		stageBeingCopied.setTreatmentPlanID(this.treatmentPlanID);
+		
+		//set stageID in all children to -1 in case there is an error so nothings accidentally gets inserted into other users information - SQL rollback should prevent this but doing this adds another layer of data protection
+		stageBeingCopied.setStageID(-1);
+		for(StageGoal goal : stageBeingCopied.getGoals()){
+			goal.setStageID(-1);
+		}
+		
+		for(Task task : stageBeingCopied.getTasks()){
+			task.setStageID(-1);
+		}
+		
+		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
+		stageBeingCopied.setStageOrder(this.getNumberOfStages());
+		
+		stageBeingCopied.saveNew();
+		
+		this.addStage(stageBeingCopied);
+		
+		return stageBeingCopied;
+	}
+	
+	public Stage createNewStage(int userID, String title, String description) throws ValidationException, DatabaseException{
+		
+		Stage newStage = Stage.getInstanceWithoutID(this.treatmentPlanID, userID, title, description, this.getStageOrderDefaultValue(), false);
+		newStage.saveNew();
+		
+		this.addStage(newStage);
+		
+		return newStage;
+	}
 }

@@ -7,8 +7,8 @@
 <c:import url="/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Create A Task</h1>
-	<h2>Stage: ${stage.title}</h2>
+	<c:if test="${path=='creatingTaskTemplate' }"><h1>Create A Task Template</h1></c:if>
+	<c:if test="${path!='creatingTaskTemplate' }"><h1>Create a Task for the Stage: ${stage.title}</h1></c:if>
 </div>
   
 <c:import url="/jsp/message-modal.jsp"/>
@@ -65,7 +65,7 @@
 	            <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
 	            <div class="col-sm-10">
 	                <select class="form-control" id="taskTypeID" name="taskTypeID">
-	                    <option  value="">Select a default treatment issue.</option>
+	                    <option  value="">Select a task type.</option>
 	                    <c:forEach items="${taskTypeMap}" var="taskType">
 	                        <option value="${taskType.key}" <c:if test="${taskType.key == task.taskTypeID}">selected</c:if> >${fn:escapeXml(taskType.value)}</option>
 	                    </c:forEach>
@@ -128,12 +128,18 @@
 		            </div>
 		        </div>
 			</c:if>
-	        
-	        <div class="form-group">
-	            <div class="col-sm-offset-2 col-sm-10">
-	                <button type="submit" class="btn btn-default">Submit</button>
-	            </div>
+			
+			<div class="form-group">
+				<div class="checkbox col-sm-offset-2">
+				  <label>
+				    <input type="checkbox" value="yes" name="copyAsTemplate" id="copyAsTemplate">
+				    Make a copy for use as a default Task?
+				  </label>
+				</div>
 	        </div>
+
+	        <button type="submit" class="btn btn-default col-sm-offset-2">Submit</button>
+
 	    </form>
     </div>
 	

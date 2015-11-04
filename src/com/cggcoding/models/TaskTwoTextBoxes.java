@@ -16,7 +16,10 @@ public class TaskTwoTextBoxes extends Task{
 	
 	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 	
-
+	public TaskTwoTextBoxes(){
+		super();
+	}
+	
 	private TaskTwoTextBoxes(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,
 			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,
 			boolean extraTask, boolean template,
@@ -29,7 +32,7 @@ public class TaskTwoTextBoxes extends Task{
 		this.extraTextLabel2 = extraTextLabel2;
 		this.extraTextValue2 = extraTextValue2;
 	}
-
+	
 	public static TaskTwoTextBoxes getInstanceFull(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,	String instructions, 
 			String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,boolean extraTask, boolean template,
 			String extraTextLabel1, String extraTextValue1,
@@ -81,15 +84,16 @@ public class TaskTwoTextBoxes extends Task{
 		this.extraTextValue2 = extraTextValue2;
 	}
 
-	public static Task load(int taskID) throws DatabaseException {
+	/*public static Task load(int taskID) throws DatabaseException {
 		return databaseActionHandler.taskTwoTextBoxesLoad(taskID);
 		//this method currently uses a SQL query that joins the generic and two-textbox table so can do in one call.  
 		//If wanted to break it up into separate calls then would probably load general data here and then call loadAdditionalData() 
-	}
+	}*/
 	
+	//TODO remove saveNewAdditionalData as abstract method?
 	@Override
 	protected void saveNewAdditionalData() throws DatabaseException, ValidationException{
-		databaseActionHandler.taskTwoTextBoxesSaveNewAdditionalData(this);
+		//databaseActionHandler.taskTwoTextBoxesSaveNewAdditionalData(this);
 	}
 	
 	@Override
@@ -104,9 +108,16 @@ public class TaskTwoTextBoxes extends Task{
 	}
 
 	@Override
-	public Task copy(int stageID, int userID) throws DatabaseException, ValidationException {
-		TaskTwoTextBoxes task =  getInstanceFull(0, stageID, userID, getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
+	public Task copy(){
+		TaskTwoTextBoxes task =  getInstanceFull(0, getStageID(), getUserID(), getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
 					isCompleted(), getDateCompleted(), getTaskOrder(), isExtraTask(), false, extraTextLabel1, extraTextValue1, extraTextLabel2, extraTextValue2);
+		
+		return task;
+	}
+	
+	@Override
+	public Task copyAndSave(int stageID, int userID) throws DatabaseException, ValidationException {
+		TaskTwoTextBoxes task =  (TaskTwoTextBoxes)copy();
 		
 		return task.saveNew();
 	}

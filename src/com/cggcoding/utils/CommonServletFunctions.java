@@ -24,7 +24,7 @@ public class CommonServletFunctions {
 		request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());
 	}
 	
-	/**Gets all the parameter values from request, except user info which isn't in the request and is set in doPost(), and creates a Task object with them
+	/**Gets all the parameter values from request, except user info which isn't in the request and is set in doPost(), and creates a Task object of the correct taskType with them
 	 * @param request  HttpServletRequest
 	 * @param userID id for the current user
 	 * @return Task object populated with parameter values obtained from request.
