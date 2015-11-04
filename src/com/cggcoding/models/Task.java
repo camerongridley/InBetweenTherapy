@@ -225,7 +225,7 @@ public abstract class Task implements Completable, DatabaseModel{
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

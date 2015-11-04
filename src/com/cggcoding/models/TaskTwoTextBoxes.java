@@ -103,7 +103,7 @@ public class TaskTwoTextBoxes extends Task{
 
 	@Override
 	protected void loadAdditionalData() {
-		// TODO Auto-generated method stub
+		
 
 	}
 
@@ -138,13 +138,13 @@ public class TaskTwoTextBoxes extends Task{
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
 	@Override
 	public List<Object> copy(int numberOfCopies) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}*/
 
