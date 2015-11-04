@@ -8,7 +8,6 @@
 
 <div class="page-header">
 	<h1>Edit a Stage</h1>
-	<h2>Name and Description</h2>
 </div>
   
 <c:import url="/jsp/message-modal.jsp"/>
@@ -35,8 +34,6 @@
 		
 		
 	</form>
-	
-	<hr>
 	
 	<form class="form-horizontal" action="./EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-name">

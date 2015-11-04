@@ -7,8 +7,9 @@
 <c:import url="/jsp/header.jsp" />
 
     <div class="page-header">
-        <h1>Manage Stages</h1>
-        <h2>Treatment Plan: ${treatmentPlan.title} (${treatmentPlan.treatmentPlanID })</h2>
+    
+        <c:if test="${path == 'creatingStageTemplate' }"><h1>Create a Stage Template</h1></c:if>
+        <c:if test="${path != 'creatingStageTemplate' }"><h2>Add a Stage to: ${treatmentPlan.title} (${treatmentPlan.treatmentPlanID })</h2></c:if>
     </div>
     
 	<c:import url="/jsp/message-modal.jsp"/>
