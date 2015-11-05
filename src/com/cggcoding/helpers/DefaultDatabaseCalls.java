@@ -28,7 +28,6 @@ public class DefaultDatabaseCalls {
 
 	}
 	
-	//TODO this could be a static method that really should go somewhere else like User?
 	public static List<TreatmentPlan> getDefaultTreatmentPlans() throws DatabaseException, ValidationException {
 		return databaseActionHandler.treatmentPlanGetDefaults();
 	}

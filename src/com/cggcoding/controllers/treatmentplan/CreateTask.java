@@ -120,7 +120,7 @@ public class CreateTask extends HttpServlet {
 						stage = Stage.load(stageID);
 						stage.createNewTask(taskToCreate);
 						
-						if(copyAsTemplate[0].equals("yes")){
+						if(copyAsTemplate[0].equals("yes")){//TODO check for null or add method to ParameterUtils to check and handle for null
 							Task templateCopy = taskToCreate.copy();
 							Task.createTemplate(templateCopy);
 						}
@@ -166,25 +166,5 @@ public class CreateTask extends HttpServlet {
 		
 		return stage;
 	}
-	
-	//TODO delete method
-	/*private Task createTask(Task taskToCreate) throws ValidationException, DatabaseException{
-		switch(taskToCreate.getTaskTypeID()){
-			case 0:
-				throw new ValidationException(ErrorMessages.TASK_MISSING_INFO);
-			case Constants.TASK_TYPE_ID_GENERIC_TASK:
-				TaskGeneric genericTask = (TaskGeneric)taskToCreate;
-				genericTask.saveNew();
-				taskToCreate = genericTask;
-				break;
-			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-				TaskTwoTextBoxes twoTextTask = (TaskTwoTextBoxes)taskToCreate;
-				twoTextTask.saveNew();
-				taskToCreate = twoTextTask;
-				break;
-		}
-		
-		return taskToCreate;
-	}*/
 
 }

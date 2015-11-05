@@ -42,42 +42,7 @@ public class EditTreatmentPlan extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		processRequest(request, response);
-		//TODO delete commeneted out code
-		/*--Common Servlet variables that should be in every controller--*/
-		/*HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
-		String requestedAction = request.getParameter("requestedAction");
-		String path = request.getParameter("path");
-		request.setAttribute("path", path);
-		-----------End Common Servlet variables---------------
 		
-		if(user.hasRole("admin")){
-			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
-			int stageID = ParameterUtils.parseIntParameter(request, "stageID");
-			int taskID = ParameterUtils.parseIntParameter(request, "taskID");
-			
-			Stage stage = null;
-			try {
-				switch(requestedAction){
-					case "stage-delete":
-						TreatmentPlan treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-						treatmentPlan.deleteStage(stageID);
-				    	request.setAttribute("treatmentPlan", treatmentPlan);
-						
-						forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
-						break;
-					
-				}
-				
-			} catch (DatabaseException | ValidationException e) {
-				request.setAttribute("errorMessage", e.getMessage());
-				e.printStackTrace();
-			}
-			
-			
-			request.getRequestDispatcher(forwardTo).forward(request, response);
-		}*/
 	}
 
 	/**

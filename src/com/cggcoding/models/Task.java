@@ -180,19 +180,7 @@ public abstract class Task implements Completable, DatabaseModel{
 	
 	public static Task load(int taskID) throws DatabaseException{
 		return databaseActionHandler.taskLoad(taskID);
-		
-		/*moved this logic to DataBaseActionHandler so SQL transactions were easier - TODO delete if keeping in databaseActionHandler
-		 * Task genericTask = TaskGeneric.load(taskID);
-		switch(genericTask.getTaskTypeID()){
-			case Constants.TASK_TYPE_ID_GENERIC_TASK:
-				return genericTask;
-				break;
-			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-				return TaskTwoTextBoxes.load(taskID);
-				break;
-		}
-		
-		return null;*/
+
 	}
 	
 	protected abstract void loadAdditionalData();
