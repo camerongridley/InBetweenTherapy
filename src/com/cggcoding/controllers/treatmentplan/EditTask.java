@@ -131,28 +131,15 @@ public class EditTask extends HttpServlet {
 					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-select-task-type"):
-					/*selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
-					int newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
-					Task taskWithNewType = Task.load(selectedTaskID);
-					taskWithNewType.setTaskTypeID(newTaskTypeID);
-					if(selectedTaskID != 0){
-						switch(newTaskTypeID){
-							case (Constants.TASK_TYPE_ID_GENERIC_TASK):
-								GenericTask genericTask = (GenericTask)taskWithNewType;
-								request.setAttribute("task", genericTask);
-								break;
-							case(Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK):
-								TwoTextBoxesTask twoTextBoxesTask = (TwoTextBoxesTask)taskWithNewType;
-								request.setAttribute("task", twoTextBoxesTask);
-								break;
-						}
-						
-					}*/
+					// most of the work for this case was moved to CommonServletFunctions.getTaskParametersFromRequest, so now it just needs to set forwardTo
 					
 					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-update"):
-					switch(tempTask.getTaskTypeID()){
+					
+					tempTask.update();
+					/*//TODO confirm replacing the code below with tempTask.update() consistently works before deleting
+					 * switch(tempTask.getTaskTypeID()){
 						case (Constants.TASK_TYPE_ID_GENERIC_TASK):
 							TaskGeneric genericTask = (TaskGeneric)tempTask;
 							genericTask.update();
@@ -163,7 +150,7 @@ public class EditTask extends HttpServlet {
 							twoTextBoxesTask.update();
 							tempTask = twoTextBoxesTask;
 							break;
-					}
+					}*/
 					
 					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
 						request.setAttribute("stage", Stage.load(tempTask.getStageID()));

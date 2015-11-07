@@ -130,7 +130,7 @@
 							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 					          ${task.title } - Task Type: ${task.taskTypeName }
 					        </a>
-							  <!-- TODO task set/repetition info goes here -->
+							
 						  </div>
 							<!---------------------------------------------------------
 							 Generic Task Detail
@@ -140,6 +140,11 @@
 									  <div class="panel-body panel-body-task">
 										${task.instructions }
 									  </div>
+									  <c:if test="${task.resourceLink != '' }">
+									  <div class="panel-body panel-body-task">
+										<a href="${task.resourceLink }" target="_blank">Resource Link</a>
+									  </div>
+									  </c:if>
 								  </div>
 							  </c:if>
 							<!---------------------------------------------------------

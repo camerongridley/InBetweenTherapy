@@ -75,7 +75,6 @@ public class CreateTask extends HttpServlet {
 		userID =  user.getUserID();
 		int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		Stage stage = null;
-		String[] copyAsTemplate = request.getParameterValues("copyAsTemplate");
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
 		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
@@ -120,7 +119,7 @@ public class CreateTask extends HttpServlet {
 						stage = Stage.load(stageID);
 						stage.createNewTask(taskToCreate);
 						
-						if(copyAsTemplate[0].equals("yes")){//TODO check for null or add method to ParameterUtils to check and handle for null
+						if(ParameterUtils.singleCheckboxIsOn(request, "copyAsTemplate")){
 							Task templateCopy = taskToCreate.copy();
 							Task.createTemplate(templateCopy);
 						}
@@ -148,6 +147,7 @@ public class CreateTask extends HttpServlet {
 			
 		} catch (DatabaseException | ValidationException e) {
 			//put in temporary task object so values can be saved in inputs after error
+			request.setAttribute("stage", stage);
 			request.setAttribute("task", taskToCreate);
 			request.setAttribute("errorMessage", e.getMessage());
 
