@@ -23,7 +23,6 @@
 	<Resource name="jdbc/DoItRight" 
 		auth="Container" 
 		type="javax.sql.DataSource"
-		factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
 		maxTotal="100" 
 		maxIdle="30" 
 		maxWaitMillis="10000" 

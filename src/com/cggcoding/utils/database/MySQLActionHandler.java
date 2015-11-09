@@ -37,7 +37,6 @@ import com.cggcoding.utils.messaging.ErrorMessages;
  */
 public class MySQLActionHandler implements DatabaseActionHandler{
 	DatabaseConnection mysqlConn;
-	private static final int ADMIN_ROLE_ID = 1;
 
     public MySQLActionHandler(){
     	this.mysqlConn = new MySQLConnection();
@@ -82,16 +81,21 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         try {
         	cn = getConnection();
-            ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE email=? AND password=?");
-            ps.setString(1, email);
-            ps.setString(2, password);
+        	if(cn != null){//TODO either delete this null check, add it to all methods, or move it to the getConnection() method
+        		ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE email=? AND password=?");
+                ps.setString(1, email);
+                ps.setString(2, password);
 
-            userInfo = ps.executeQuery();
+                userInfo = ps.executeQuery();
 
 
-            while (userInfo.next()){
-                userExists = userInfo.getInt("COUNT(*)");
-            }
+                while (userInfo.next()){
+                    userExists = userInfo.getInt("COUNT(*)");
+                }
+        	}else{
+        		throw new DatabaseException(ErrorMessages.CONNECTION_IS_NULL);
+        	}
+            
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -169,7 +173,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         List<Integer> adminIDList = new ArrayList<>();
         
         try {
-    		String sql = "SELECT user.user_id FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user_role.user_role_id)=" + ADMIN_ROLE_ID + "))";    	
+    		String sql = "SELECT user.user_id FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user_role.user_role_id)=" + Constants.ADMIN_ROLE_ID + "))";    	
 
     		ps = cn.prepareStatement(sql);
     		

@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
 <c:import url="/jsp/header.jsp" />
@@ -21,7 +22,7 @@
 					For stage that is currently being viewed (enabled-active)
 					---------------------------------------------------------->
 					<c:if test="${stage.stageOrder == treatmentPlan.activeViewStageIndex }">
-						<div class="progress-bar progress-bar-primary progress-stage-enabled-active" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
+						<div class="progress-bar progress-bar-primary progress-stage-enabled-active col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
 							<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex }"><form action="./ChangeStage" method="POST"></c:if>
 							${stage.title }
 								<a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal">
@@ -62,7 +63,7 @@
 					For stage that is accessible but NOT the active view (enabled-inactive)
 					---------------------------------------------------------------------->
 					<c:if test="${stage.stageOrder != treatmentPlan.activeViewStageIndex && stage.stageOrder <= treatmentPlan.currentStageIndex}">
-						<div class="progress-bar progress-bar-info progress-stage-enabled-inactive" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
+						<div class="progress-bar progress-bar-info progress-stage-enabled-inactive col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
 							<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }"><form action="./ChangeStage" method="POST"><a href='#' onclick='this.parentNode.submit(); return false;'></c:if>
 							${stage.title }<input type="hidden" name="stageIndex" value=${stage.stageOrder } /><input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
 							<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }"></a></form></c:if>
@@ -72,7 +73,7 @@
 					For stage that is inaccssible at this time (disabled)
 					----------------------------------------------------->
 					<c:if test="${!stage.inProgress}">
-						<div class="progress-bar progress-bar-info progress-stage-disabled" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
+						<div class="progress-bar progress-bar-info progress-stage-disabled col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}" style="width: ${(100-(treatmentPlan.numberOfStages-1)*separatorWidth)/treatmentPlan.numberOfStages}%">
 								${stage.title }<input type="hidden" name="stageIndex" value=${stage.stageOrder } />
 						</div>
 					</c:if>

@@ -23,6 +23,17 @@
       Error Code: ${pageContext.errorData.statusCode} : ${pageContext.errorData.servletName}
     </div>
   </div>
+  
+  
+  <h2>
+        Error: ${pageContext.exception}  <br/>
+    </h2>
+ 
+    Exception stack trace:<br/>
+     
+    <c:forEach var="trace" items="${pageContext.exception.stackTrace}">
+        ${trace}<br/>
+    </c:forEach> 
 
 
 <c:import url="footer.jsp" />
