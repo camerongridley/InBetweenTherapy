@@ -416,6 +416,19 @@ public class Stage implements Completable, DatabaseModel {
 		return taskBeingCopied.saveNew();
 	}
 	
+	public Stage deleteTask(int taskToDeleteID) throws ValidationException, DatabaseException{
+		for(int i = 0; i < tasks.size(); i++){
+			Task task = tasks.get(i);
+			if(task.getTaskID() == taskToDeleteID){
+				tasks.remove(i);
+				task.delete();
+				break;
+			}
+		}
+		
+		return this;
+	}
+	
 	/**Creates a copy of the Stage and sets the copy's stageID to 0.
 	 * @param treatmentPlanIDToCopy - treatmentPlanID the Stage is being copied into
 	 * @param userIDToCopy - userID of the User that owns the TreatmentPlan the Stage is being copied into

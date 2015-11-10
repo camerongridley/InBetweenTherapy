@@ -1741,6 +1741,28 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		return newTask;
 	}
 	
+	@Override
+	public void taskDelete(int taskID) throws DatabaseException, ValidationException {
+		Connection cn = null;
+		PreparedStatement ps = null;
+
+		try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("DELETE FROM task_generic WHERE task_generic_id=?");
+            ps.setInt(1, taskID);
+
+            ps.executeUpdate();
+            
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+	    }
+
+	}
+	
 	public Map<Integer, String> taskTypesLoad() throws DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;

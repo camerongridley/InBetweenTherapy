@@ -145,6 +145,8 @@ public interface DatabaseActionHandler {
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
 
+	void taskDelete(int taskID) throws DatabaseException, ValidationException;
+
 
 
 	
