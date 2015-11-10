@@ -81,7 +81,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 			}
 			
 			request.setAttribute("treatmentPlan", treatmentPlan);
-			request.setAttribute("currentStage", updatedStage);
+			request.setAttribute("activeStage", updatedStage);
 			
 		} catch (DatabaseException e){
 			e.printStackTrace();

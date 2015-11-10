@@ -41,7 +41,8 @@ body {
 
 .progress-stage {
 	margin-bottom: 5px;
-	border: solid;
+	border-style: solid;
+	border-width:thin;
     border-color: darkgray;
     border-radius: 4px;
 	text-align: center;
@@ -71,6 +72,10 @@ body {
 
 .progress-bar-separator {
 	background-color: black;
+}
+
+.progress-stage-detail{
+	margin-top:10px;
 }
 
 .task-repetition {

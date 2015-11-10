@@ -83,13 +83,13 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="stageInfoModalLabel">${stage.title} Overview and Goals</h4>
+				<h4 class="modal-title" id="stageInfoModalLabel">${activeStage.title} Overview and Goals</h4>
 			</div>
 			<div class="modal-body">
-				<p>${stage.description}</p>
+				<p>${activeStage.description}</p>
 				<div class="well well-sm">
 					Goals:
-					<c:forEach items="${stage.goals}" var="goal">
+					<c:forEach items="${activeStage.goals}" var="goal">
 						<ul>
 							<li>
 								${goal.description}
@@ -115,10 +115,11 @@
 				value="${treatmentPlan.treatmentPlanID}" />
 			<c:set var="activeViewStagePercentComplete"
 				value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
-			<strong>Stage: <c:out
-					value="${treatmentPlan.activeViewStage.title }" /> -
-				${activeViewStagePercentComplete}% Complete
-			</strong>
+			<div class="progress-stage-detail">
+				<strong>
+					Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${activeViewStagePercentComplete}% Complete
+				</strong>
+			</div>
 			<div class="progress">
 				<div class="progress-bar progress-bar-success" role="progressbar"
 					aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
