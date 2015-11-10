@@ -115,13 +115,11 @@ public class UpdateTaskCompletion extends HttpServlet {
 			//TODO Do I use a static factory method here or just stick with contructors?
 			switch (taskTypeName) {
 				case "TaskGeneric":
-					System.out.println("Updating Generic Task.");
 					TaskGeneric genTask = TaskGeneric.getInstanceByID(currentTaskID, user.getUserID());
 
 					updatedTask =  genTask;
 					break;
 				case "TaskTwoTextBoxes":
-					System.out.println("Updating TwoTextBoxes Task");
 					TaskTwoTextBoxes twoTextTask = (TaskTwoTextBoxes)TaskTwoTextBoxes.load(currentTaskID);
 					String extraTextValue1 = (String)request.getParameter("extraTextValue1" + currentTaskID);
 					String extraTextValue2 = (String) request.getParameter("extraTextValue2" + currentTaskID);

@@ -38,45 +38,17 @@ public class EditStage extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*--Common Servlet variables that should be in every controller--*/
-		HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
-		String requestedAction = request.getParameter("requestedAction");
-		String path = request.getParameter("path");
-		request.setAttribute("path", path);
-		/*-----------End Common Servlet variables---------------*/
-		
-		if(user.hasRole("admin")){
-			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
-			int stageID = ParameterUtils.parseIntParameter(request, "stageID");
-			int taskID = ParameterUtils.parseIntParameter(request, "taskID");
-			
-			Stage stage = null;
-			try {
-				switch(requestedAction){
-					case "stage-edit":
-						stage = Stage.load(stageID);
-						request.setAttribute("stage", stage);
-						forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
-						break;
-					
-				}
-				
-			} catch (DatabaseException | ValidationException e) {
-				request.setAttribute("errorMessage", e.getMessage());
-				e.printStackTrace();
-			}
-			
-			
-			request.getRequestDispatcher(forwardTo).forward(request, response);
-		}
+		processRequest(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		processRequest(request, response);
+	}
+	
+	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
@@ -137,6 +109,22 @@ public class EditStage extends HttpServlet {
 		            	request.setAttribute("stage", Stage.load(stageID));
 		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
+		            	
+		            case "stage-edit":
+						editedStage = Stage.load(stageID);
+						request.setAttribute("stage", editedStage);
+						forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+						break;	
+						
+					case("delete-task"):
+						editedStage = Stage.load(stageID);
+						int taskToDeleteID = ParameterUtils.parseIntParameter(request, "taskID");
+						editedStage.deleteTask(taskToDeleteID);
+						
+						request.setAttribute("stage", editedStage);
+		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+						break;
+					
 		            default:
 
 		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";

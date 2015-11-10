@@ -160,7 +160,7 @@ public abstract class Task implements Completable, DatabaseModel{
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		
+		databaseActionHandler.taskDelete(this.taskID);
 		
 	}
 
