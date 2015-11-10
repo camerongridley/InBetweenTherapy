@@ -101,8 +101,9 @@ public class TaskGeneric extends Task{
 	}
 
 	@Override
-	protected void loadAdditionalData() {
+	protected Task loadAdditionalData() {
 		//there is no additional data to load for GenericTask
+		return this;
 	}
 
 	@Override

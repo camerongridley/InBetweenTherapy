@@ -64,6 +64,8 @@ public interface DatabaseActionHandler {
 	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException;
 	
 	void treatmentPlanValidateAndUpdateBasic(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException;
+
+	void treatmentPlanDelete(int treatmentPlanID) throws DatabaseException, ValidationException;
 	
 	void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException;
 
@@ -146,6 +148,7 @@ public interface DatabaseActionHandler {
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
 
 	void taskDelete(int taskID) throws DatabaseException, ValidationException;
+
 
 
 

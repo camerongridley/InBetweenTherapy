@@ -703,6 +703,27 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
 	}
 	
+	@Override
+	public void treatmentPlanDelete(int treatmentPlanID) throws DatabaseException, ValidationException {
+		Connection cn = null;
+		PreparedStatement ps = null;
+
+		try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("DELETE FROM treatment_plan WHERE treatment_plan_id=?");
+            ps.setInt(1, treatmentPlanID);
+
+            ps.executeUpdate();
+            
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+	    }
+
+	}
 
 	@Override
 	public void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException {

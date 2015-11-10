@@ -124,11 +124,13 @@ public abstract class Task implements Completable, DatabaseModel{
 	}
 	
 	public static Task load(int taskID) throws DatabaseException{
-		return databaseActionHandler.taskLoad(taskID);
+		Task task =  databaseActionHandler.taskLoad(taskID);
+		//task = task.loadAdditionalData();
+		return task;
 
 	}
 	
-	protected abstract void loadAdditionalData();
+	protected abstract Task loadAdditionalData();
 	
 	
 	@Override

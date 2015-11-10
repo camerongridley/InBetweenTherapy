@@ -252,7 +252,7 @@ public class TreatmentPlan implements DatabaseModel{
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		// TODO implement method
+		databaseActionHandler.treatmentPlanDelete(this.treatmentPlanID);
 		
 	}
 
