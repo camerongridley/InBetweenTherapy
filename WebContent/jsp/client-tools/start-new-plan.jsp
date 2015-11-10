@@ -28,7 +28,7 @@
         <div class="form-group">
             <label for="assignedTreatmentPlanID" class="col-sm-2 control-label">Assigned Plans:</label>
             <div class="col-sm-10">
-                <select class="form-control" id="assignedTreatmentPlanID" name="assignedTreatmentPlanID">
+                <select class="form-control" id="selectedPlanID" name="selectedPlanID">
                     <option  value="">Select a plan.</option>
                     <c:forEach items="${assignedPlansList}" var="assignedPlan">
                         <option value="${assignedPlan.treatmentPlanID}" >${assignedPlan.title}</option>

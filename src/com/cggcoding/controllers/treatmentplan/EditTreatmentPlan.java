@@ -76,8 +76,8 @@ public class EditTreatmentPlan extends HttpServlet {
     	
     	try {
     		//set default lists in the request
-    		request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());
-    		request.setAttribute("defaultTreatmentPlanList", DefaultDatabaseCalls.getDefaultTreatmentPlans());
+    		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
+    		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
     		if(treatmentPlanID != 0) {
     			loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
     		}
@@ -148,11 +148,6 @@ public class EditTreatmentPlan extends HttpServlet {
 		            	break;
 		            case "create-default-treatment-issue":
 		            	CommonServletFunctions.createDefaultTreatmentIssue(request, user.getUserID());
-		            	/*String newIssueName = request.getParameter("newDefaultTreatmentIssue");
-		            	TreatmentIssue issue = new TreatmentIssue(newIssueName, user.getUserID());
-						issue.saveNew();
-						
-						request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());*/
 
 						forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
@@ -163,6 +158,22 @@ public class EditTreatmentPlan extends HttpServlet {
 						
 						forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
 						break;
+						
+		            case "delete-plan":
+		            	if(treatmentPlanID == 0){
+		            		throw new ValidationException("There is no treatment plan selected to delete.");
+		            	}else{
+			            	TreatmentPlan.delete(treatmentPlanID);
+			            	request.removeAttribute("treatmentPlan");
+			            	request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_DELETED);
+			            	
+			            	//reload default options so dropdown list is properly updated
+			            	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+		            	}
+		            	
+		            	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	break;
+		            
 				}
 			}
 			
@@ -189,6 +200,8 @@ public class EditTreatmentPlan extends HttpServlet {
     	request.setAttribute("treatmentPlan", treatmentPlan);
     	return treatmentPlan;
 	}
+	
+	
 	
 	/**
      * Gets the appropriate treatment issue id in the process of creating falsa new Treatment Plan.

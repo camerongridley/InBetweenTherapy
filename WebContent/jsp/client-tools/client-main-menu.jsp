@@ -15,32 +15,87 @@
     <div class="page-header">
         <h1>Main Menu</h1>
     </div>
-    <p>
-    <form class="form-inline" action="./LoadData" method="POST">
-        <div><button type="submit" class="btn btn-primary">Continue Plan In Progress</button></div>
-        <input type="hidden" name="requestedAction" value="continue">
-    </form>
-    </p>
+    <c:import url="/jsp/message-modal.jsp"/>
 
-    <p>
-    <form class="form-inline" action="./ClientSelectPlan" method="POST">
-        <div><button type="submit" class="btn btn-primary">Start New Plan</button></div>
-        <input type="hidden" name="requestedAction" value="select-plan-start">
-    </form>
-    </p>
+	<h3>Continue a plan.</h3>
+	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+		<input type="hidden" name="requestedAction" value="select-plan-load">
+		<input type="hidden" name="path" value="client-execute-plan">
 
-    <%--<p>
-    <form class="form-inline" action="../" method="POST">
-        <div><button type="submit" class="btn btn-primary">Assign Plan to Client</button></div>
-    </form>
-    </p>
+		
+        <div class="form-group">
+            <label for="selectedPlanID" class="col-sm-3 control-label">Plans in Progress:</label>
+            <div class="col-sm-8">
+                <select class="form-control" id="selectedPlanID" name="selectedPlanID">
+                    <option  value="">Select a plan.</option>
+                    <c:forEach items="${inProgressPlansList}" var="inProgressPlan">
+                        <option value="${inProgressPlan.treatmentPlanID}" >${inProgressPlan.title}</option>
+                    </c:forEach>
+                </select>
+            </div>
+            <div class="col-sm-1">
+            	<button type="submit" class="btn btn-primary">Go!</button>
+            </div>
+        </div>
+        <div class="form-group">
+	        <div class="col-sm-offset-2 col-sm-10">
+	        <p>Preview of selected client plans.</p>
+	        </div>
+        </div>
+	</form>
 
-    <p>
-    <form class="form-inline" action="../" method="POST">
-        <div><button type="submit" class="btn btn-primary">View Client Progress</button></div>
-    </form>
-    </p>--%>
+	<h3>Start a new plan.</h3>
+	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+		<input type="hidden" name="requestedAction" value="select-plan-load">
+		<input type="hidden" name="path" value="client-execute-plan">
 
+		
+        <div class="form-group">
+            <label for="selectedPlanID" class="col-sm-3 control-label">Assigned Plans:</label>
+            <div class="col-sm-8">
+                <select class="form-control" id="selectedPlanID" name="selectedPlanID">
+                    <option  value="">Select a plan.</option>
+                    <c:forEach items="${assignedPlansList}" var="assignedPlan">
+                        <option value="${assignedPlan.treatmentPlanID}" >${assignedPlan.title}</option>
+                    </c:forEach>
+                </select>
+            </div>
+            <div class="col-sm-1">
+            	<button type="submit" class="btn btn-primary">Go!</button>
+            </div>
+        </div>
+        <div class="form-group">
+	        <div class="col-sm-offset-2 col-sm-10">
+	        <p>Preview of selected client plans.</p>
+	        </div>
+        </div>
+	</form>
+	
+	<h3>View Completed Plans.</h3>
+	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+		<input type="hidden" name="requestedAction" value="select-plan-load">
+		<input type="hidden" name="path" value="client-execute-plan">
 
+		
+        <div class="form-group">
+            <label for="assignedTreatmentPlanID" class="col-sm-3 control-label">Assigned Plans:</label>
+            <div class="col-sm-8">
+                <select class="form-control" id="selectedPlanID" name="selectedPlanID">
+                    <option  value="">Select a plan.</option>
+                    <c:forEach items="${completedPlansList}" var="completedPlan">
+                        <option value="${completedPlan.treatmentPlanID}" >${completedPlan.title}</option>
+                    </c:forEach>
+                </select>
+            </div>
+            <div class="col-sm-1">
+            	<button type="submit" class="btn btn-primary">Go!</button>
+            </div>
+        </div>
+        <div class="form-group">
+	        <div class="col-sm-offset-2 col-sm-10">
+	        <p>Preview of selected client plans.</p>
+	        </div>
+        </div>
+	</form>
 
 <c:import url="/jsp/footer.jsp" />

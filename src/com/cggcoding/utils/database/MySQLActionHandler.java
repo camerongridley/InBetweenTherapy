@@ -237,7 +237,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
     }
     
     @Override
-	public List<TreatmentPlan> userGetAssignedClientTreatmentPlans(int clientUserID) throws DatabaseException, ValidationException {
+	public List<TreatmentPlan> userGetClientTreatmentPlans(int clientUserID, boolean inProgress, boolean isCompleted) throws DatabaseException, ValidationException {
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
@@ -245,12 +245,11 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         try {
         	cn = getConnection();
-  
-      
-        	
-    		ps = cn.prepareStatement("SELECT * FROM treatment_plan WHERE treatment_plan_user_id_fk = ?");
-    		
+
+    		ps = cn.prepareStatement("SELECT * FROM treatment_plan WHERE treatment_plan_user_id_fk = ? AND in_progress=? AND treatment_plan_completed=?");
     		ps.setInt(1, clientUserID);
+    		ps.setBoolean(2, inProgress);
+    		ps.setBoolean(3, isCompleted);
             
     		rs = ps.executeQuery();
    
@@ -273,7 +272,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return assignedTreatmentPlans;
 	}
     
-
 	@Override
 	public List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException {
 		Connection cn = null;

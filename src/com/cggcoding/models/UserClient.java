@@ -30,8 +30,24 @@ public class UserClient extends User{
 		return super.getTreatmentPlan(activeTreatmentPlanId);
 	}
 
-	public List<TreatmentPlan> getAssignedTreatmentPlanIDs() throws DatabaseException, ValidationException{
-		return databaseActionHandler.userGetAssignedClientTreatmentPlans(getUserID());
+	public List<TreatmentPlan> getAssignedTreatmentPlans() throws DatabaseException, ValidationException{
+		boolean inProgress = false;
+		boolean isCompleted = false;
+		
+		return databaseActionHandler.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
 	}
-
+	
+	public List<TreatmentPlan> getInProgressTreatmentPlans() throws DatabaseException, ValidationException{
+		boolean inProgress = true;
+		boolean isCompleted = false;
+		
+		return databaseActionHandler.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
+	}
+	
+	public List<TreatmentPlan> getCompletedTreatmentPlans() throws DatabaseException, ValidationException{
+		boolean inProgress = false;
+		boolean isCompleted = true;
+		
+		return databaseActionHandler.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
+	}
 }

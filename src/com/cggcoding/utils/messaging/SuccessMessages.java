@@ -12,6 +12,7 @@ public final class SuccessMessages {
 	public static final String TREATMENT_PLAN_TEMPLATE_CREATE = "The treatment plan template has been successfully added to your profile.";
 	public static final String TREATMENT_PLAN_UPDATED = "The treatment plan has been updated.";
 	public static final String TREATMENT_PLAN_COMPLETED = "Congratulations!  You have completed treamtment. You are free to go back and review or repeat any of the stages or tasks if desired.";
+	public static final String TREATMENT_PLAN_DELETED = "The treatment plan has been deleted.";
 	
 	//Stage Creation
 	public static final String STAGE_TEMPLATE_BASIC_CREATE = "The basic stage template has been successfully added to your profile.";

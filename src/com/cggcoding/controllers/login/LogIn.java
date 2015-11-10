@@ -59,13 +59,19 @@ public class LogIn extends HttpServlet {
 					} else if(user.hasRole("therapist")){
 				        request.getRequestDispatcher("/jsp/therapist-tools/therapist-main-menu.jsp").forward(request, response);
 					}if(user.hasRole("client")){
+						UserClient client = (UserClient)user;
+						
+						request.setAttribute("assignedPlansList", client.getAssignedTreatmentPlans());
+						request.setAttribute("inProgressPlansList", client.getInProgressTreatmentPlans());
+						request.setAttribute("completedPlansList", client.getCompletedTreatmentPlans());
+						
 				        request.getRequestDispatcher("/jsp/client-tools/client-main-menu.jsp").forward(request,response);
 					}
 					
 				} else {
 				    throw new DatabaseException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
 				}
-			} catch (DatabaseException e) {
+			} catch (DatabaseException | ValidationException e) {
 				e.printStackTrace();
 				request.setAttribute("errorMessage", e.getMessage());
 				//response.sendRedirect("index.jsp");

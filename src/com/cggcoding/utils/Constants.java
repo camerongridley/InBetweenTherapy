@@ -36,6 +36,8 @@ public class Constants {
 	public static String getTaskTypeNameTaskTwoTextboxes() {
 		return TASK_TYPE_NAME_TASK_TWO_TEXTBOXES;
 	}
+	
+	public static String PATH_CREATE_TREATMENT_PLAN = "creatingPlanTemplate";
 
 	
 	
