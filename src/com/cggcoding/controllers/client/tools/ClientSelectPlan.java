@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
@@ -68,7 +69,10 @@ public class ClientSelectPlan extends HttpServlet {
 					
 					client.addTreatmentPlan(selectedPlan);
 					client.setActiveTreatmentPlanId(assignedTreatmentPlanID);
-
+					
+					Stage activeStage = selectedPlan.getActiveViewStage();
+					
+					request.setAttribute("activeStage", activeStage);
 					request.setAttribute("treatmentPlan", selectedPlan);
 					forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
 					break;
