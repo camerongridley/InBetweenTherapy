@@ -1,14 +1,21 @@
 package com.cggcoding.models;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 
 public abstract class Task implements Completable, DatabaseModel{
@@ -135,7 +142,8 @@ public abstract class Task implements Completable, DatabaseModel{
 	
 	@Override
 	public Task saveNew()throws DatabaseException, ValidationException{
-		saveNewGeneralDataInDatabase();
+		Connection cn = databaseActionHandler.getConnection();
+		saveNewGeneralDataInDatabase(cn, true);
 		saveNewAdditionalData();
 		
 		/*switch(getTaskTypeID()){
@@ -167,6 +175,7 @@ public abstract class Task implements Completable, DatabaseModel{
 	}
 
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
+	 * @param cn TODO
 	 * @param taskID
 	 * @param stageID
 	 * @param userID
@@ -184,12 +193,39 @@ public abstract class Task implements Completable, DatabaseModel{
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
-	protected Task saveNewGeneralDataInDatabase() throws DatabaseException, ValidationException{
-		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);
+	protected Task saveNewGeneralDataInDatabase(Connection cn, boolean keepConnAlive) throws DatabaseException, ValidationException{
+		Task savedTask = null;
+		
+		if(cn == null){
+			cn = databaseActionHandler.getConnection();
+		}
+		
+		if(this.getTitle() == null || this.getTitle().isEmpty() || 
+				this.getInstructions() == null || this.getInstructions().isEmpty() ||
+				this.getTaskTypeID() == 0){
+			throw new ValidationException(ErrorMessages.TASK_MISSING_INFO);
+		}
+		
+        try {
+        	cn= databaseActionHandler.getConnection();
+
+			savedTask = databaseActionHandler.taskGenericCreate(cn, this);
+			
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			if(!keepConnAlive){
+				DbUtils.closeQuietly(cn);
+			}
+		}
+		
 		this.taskID = savedTask.getTaskID();
 		
 		return this;
 	}
+
 	
 	protected abstract void saveNewAdditionalData() throws DatabaseException, ValidationException;
 	

@@ -1618,7 +1618,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return success == 1;
 	}
 	
-	private Task taskCreate(Connection cn, Task newTask) throws SQLException{
+	private Task taskCreate(Connection cn, Task newTask) throws SQLException, ValidationException{
 		Task createdTask = null;
 
     	createdTask = taskGenericCreate(cn, newTask);
@@ -1674,13 +1674,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	//TODO - bug fix - either create different validate method for updates so doesn't throw TaskTitleExists exception when updating fields of a task without changing the title or add logic in method below to do this
-	private boolean taskValidate(Connection cn, Task newTask) throws ValidationException, SQLException{
-
-		if(newTask.getTitle() == null || newTask.getTitle().isEmpty() || 
-				newTask.getInstructions() == null || newTask.getInstructions().isEmpty() ||
-				newTask.getTaskTypeID() == 0){
-			throw new ValidationException(ErrorMessages.TASK_MISSING_INFO);
-		}
+	public boolean taskValidate(Connection cn, Task newTask) throws ValidationException, SQLException{
 		
 		PreparedStatement ps = null;
         ResultSet stageCount = null;
@@ -1716,45 +1710,70 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @param cn
 	 * @param newTask - Task object to be inserted.
 	 * @return
+	 * @throws ValidationException 
 	 * @throws DatabaseException
 	 */
-	private Task taskGenericCreate(Connection cn, Task newTask) throws SQLException{
-		PreparedStatement ps = null;
-        ResultSet generatedKeys = null;
+	public Task taskGenericCreate(Connection cn, Task newTask) throws SQLException, ValidationException{
+		int comboExists = 0;
+		PreparedStatement psValidate = null;
+		PreparedStatement psCreate = null;
+		ResultSet rsStageCount = null;
+        ResultSet rsGgeneratedKeys = null;
+        
+
         
         try {
+        	//validate the new task
+			psValidate = cn.prepareStatement("SELECT COUNT(*) FROM task_generic WHERE (task_generic.task_title=? AND task_generic_stage_id_fk=? AND task_generic_id!=?)");
+			psValidate.setString(1, newTask.getTitle().trim());
+			psValidate.setInt(2, newTask.getStageID());
+			psValidate.setInt(3, newTask.getTaskID());
+
+			rsStageCount = psValidate.executeQuery();
+
+			while (rsStageCount.next()){
+			    comboExists = rsStageCount.getInt("COUNT(*)");
+			}
+        
+			if(comboExists > 0){
+				throw new ValidationException(ErrorMessages.TASK_TITLE_EXISTS_FOR_STAGE);
+			}
+
+			//create the new generic task
         	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_stage_id_fk, task_generic_user_id_fk, "
         			+ "parent_task_id, task_title, instructions, resource_link, task_completed, task_date_completed, task_order, is_extra_task, task_is_template) "
     				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
-            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            psCreate = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
-            ps.setInt(1, newTask.getTaskTypeID());
+            psCreate.setInt(1, newTask.getTaskTypeID());
 
-            ps.setInt(2, newTask.getStageID());
-            ps.setInt(3, newTask.getUserID());
-            ps.setInt(4, newTask.getParentTaskID());
-            ps.setString(5, newTask.getTitle().trim());
-            ps.setString(6, newTask.getInstructions());
-            ps.setString(7, newTask.getResourceLink());
-            ps.setBoolean(8, newTask.isCompleted());
+            psCreate.setInt(2, newTask.getStageID());
+            psCreate.setInt(3, newTask.getUserID());
+            psCreate.setInt(4, newTask.getParentTaskID());
+            psCreate.setString(5, newTask.getTitle().trim());
+            psCreate.setString(6, newTask.getInstructions());
+            psCreate.setString(7, newTask.getResourceLink());
+            psCreate.setBoolean(8, newTask.isCompleted());
             Date dateCompleted = null;//newTask.getDateCompleted()==null ? null : Date.valueOf(newTask.getDateCompleted()); //TODO ACTUALLY SET THE DATE COMPLETED> just setting to null now.
-            ps.setDate(9, dateCompleted);
-            ps.setInt(10, newTask.getTaskOrder());
-            ps.setBoolean(11, newTask.isExtraTask());
-            ps.setBoolean(12, newTask.isTemplate());
+            psCreate.setDate(9, dateCompleted);
+            psCreate.setInt(10, newTask.getTaskOrder());
+            psCreate.setBoolean(11, newTask.isExtraTask());
+            psCreate.setBoolean(12, newTask.isTemplate());
 
-            int success = ps.executeUpdate();
+            psCreate.executeUpdate();
             
-            generatedKeys = ps.getGeneratedKeys();
+            rsGgeneratedKeys = psCreate.getGeneratedKeys();
    
-            while (generatedKeys.next()){
-            	newTask.setTaskID(generatedKeys.getInt(1));
+            while (rsGgeneratedKeys.next()){
+            	newTask.setTaskID(rsGgeneratedKeys.getInt(1));
             }
         	
         } finally {
-        	DbUtils.closeQuietly(generatedKeys);
-			DbUtils.closeQuietly(ps);
+        	DbUtils.closeQuietly(rsGgeneratedKeys);
+        	DbUtils.closeQuietly(rsStageCount);
+			DbUtils.closeQuietly(psValidate);
+			DbUtils.closeQuietly(psCreate);
         }
 		
 		return newTask;
@@ -1811,31 +1830,26 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 
 	@Override
-	public TreatmentIssue treatmentIssueValidateAndCreate(TreatmentIssue treatmentIssue, int userID) throws ValidationException, DatabaseException{
-		Connection cn = null;
+	public TreatmentIssue treatmentIssueCreate(Connection cn, TreatmentIssue treatmentIssue, int userID) throws ValidationException, DatabaseException{
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
-        try {
-        	cn = getConnection();
+        try { 	
+    		String sql = "INSERT INTO `cggcodin_doitright`.`treatment_issue` (`issue`, `treatment_issue_user_id_fk`) "
+            		+ "VALUES (?, ?)";
         	
-        	if(treatmentIssueValidateNewName(cn, treatmentIssue.getTreatmentIssueName(), userID)){
-        		String sql = "INSERT INTO `cggcodin_doitright`.`treatment_issue` (`issue`, `treatment_issue_user_id_fk`) "
-                		+ "VALUES (?, ?)";
-            	
-                ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                
-                ps.setString(1, treatmentIssue.getTreatmentIssueName().trim());
-                ps.setInt(2, treatmentIssue.getUserID());
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setString(1, treatmentIssue.getTreatmentIssueName().trim());
+            ps.setInt(2, treatmentIssue.getUserID());
 
-                int success = ps.executeUpdate();
-                
-                generatedKeys = ps.getGeneratedKeys();
-       
-                while (generatedKeys.next()){
-                	treatmentIssue.setTreatmentIssueID(generatedKeys.getInt(1));
-                }
-        	}
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	treatmentIssue.setTreatmentIssueID(generatedKeys.getInt(1));
+            }
         	
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1843,7 +1857,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         } finally {
         	DbUtils.closeQuietly(generatedKeys);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
         
         return treatmentIssue;
@@ -1860,16 +1873,13 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @throws ValidationException 
 	 * @throws DatabaseException
 	 */
-	private boolean treatmentIssueValidateNewName(Connection cn, String issueName, int userID) throws ValidationException, SQLException{
+	@Override
+	public boolean treatmentIssueValidateNewName(Connection cn, String issueName, int userID) throws DatabaseException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
         
         try {
-        	
-        	if(issueName.isEmpty() || issueName ==""){
-        		throw new ValidationException(ErrorMessages.ISSUE_NAME_MISSING);
-        	}
         	
             ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_issue WHERE (((treatment_issue.issue)=?) AND ((treatment_issue.treatment_issue_user_id_fk)=?))");
             ps.setString(1, issueName.trim());
@@ -1882,16 +1892,16 @@ public class MySQLActionHandler implements DatabaseActionHandler{
                 comboExists = issueCount.getInt("COUNT(*)");
             }
 
-        } finally {
+        } catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
 			DbUtils.closeQuietly(issueCount);
 			DbUtils.closeQuietly(ps);
 		}
 
-        if(comboExists > 0){
-        	throw new ValidationException(ErrorMessages.ISSUE_NAME_EXISTS);
-        } else {
-            return true;
-        }
+        return comboExists == 0;
+        
     }
 
 	//TODO - change to make sure this works with a List of adminIDs

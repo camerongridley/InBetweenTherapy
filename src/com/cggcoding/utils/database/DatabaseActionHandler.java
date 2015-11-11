@@ -1,6 +1,7 @@
 package com.cggcoding.utils.database;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -115,8 +116,10 @@ public interface DatabaseActionHandler {
 	//*************************************** Treatment Issue Methods **********************************
 	//**************************************************************************************************
 
-	TreatmentIssue treatmentIssueValidateAndCreate(TreatmentIssue treatmentIssue, int userID) throws ValidationException, DatabaseException;
-
+	TreatmentIssue treatmentIssueCreate(Connection cn, TreatmentIssue treatmentIssue, int userID) throws ValidationException, DatabaseException;
+	
+	boolean treatmentIssueValidateNewName(Connection cn, String issueName, int userID)
+			throws DatabaseException;
 	ArrayList<TreatmentIssue> treatmentIssueGetDefaults() throws DatabaseException;
 
 	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
@@ -134,6 +137,8 @@ public interface DatabaseActionHandler {
 	 */
 	Task taskValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
 	
+	Task taskGenericCreate(Connection cn, Task newTask) throws SQLException, ValidationException;
+	
 	Task taskLoad(int taskID) throws DatabaseException;
 	
 	boolean taskTwoTextBoxesUpdateAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException;
@@ -149,6 +154,8 @@ public interface DatabaseActionHandler {
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
 
 	void taskDelete(int taskID) throws DatabaseException, ValidationException;
+
+	
 
 	
 
