@@ -130,26 +130,26 @@ public abstract class Task implements Completable, DatabaseModel{
 
 	}
 	
-	protected abstract Task loadAdditionalData();
+	public abstract Task loadAdditionalData();
 	
+	
+	public static Task castToType(Task task){
+		switch(task.getTaskTypeID()){
+		case Constants.TASK_TYPE_ID_GENERIC_TASK:
+			task = (TaskGeneric)task;
+			break;
+		case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+			task = (TaskTwoTextBoxes)task;
+			break;
+		}
+		
+		return task;
+	}
 	
 	@Override
 	public Task saveNew()throws DatabaseException, ValidationException{
 		saveNewGeneralDataInDatabase();
 		saveNewAdditionalData();
-		
-		/*switch(getTaskTypeID()){
-			case Constants.TASK_TYPE_ID_GENERIC_TASK:
-				saveNewAdditionalData();
-				
-				break;	
-			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-				this.getClass().getSimpleName()
-				TaskTwoTextBoxes twoTextTask = (TaskTwoTextBoxes)this;
-				twoTextTask.saveNewAdditionalData();
-				
-				break;
-		}*/
 		
 		return this;
 	}
@@ -370,29 +370,18 @@ public abstract class Task implements Completable, DatabaseModel{
 		return this.getClass().getSimpleName();
 	}
 
-	public void updateData(Task taskWithNewData) throws ValidationException, DatabaseException {
+	public void transferGeneralData(Task taskWithNewData) throws ValidationException, DatabaseException {
 		//update all universal properties that can be modified by user
 		this.setCompleted(taskWithNewData.isCompleted());
 		this.setDateCompleted(taskWithNewData.getDateCompleted());
 
 		//update case-specific properties
-		switch (getTaskTypeID()) {
-			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK :
-				TaskTwoTextBoxes twoTask = (TaskTwoTextBoxes)this;
-				TaskTwoTextBoxes newData = (TaskTwoTextBoxes)taskWithNewData;
-
-				twoTask.setExtraTextLabel1(newData.getExtraTextLabel1());
-				twoTask.setExtraTextValue1(newData.getExtraTextValue1());
-				twoTask.setExtraTextLabel2(newData.getExtraTextLabel2());
-				twoTask.setExtraTextValue2(newData.getExtraTextValue2());
-
-				break;
-		}
-
-		update();
-				
+		transferAdditionalData(taskWithNewData);
+		
+		//update in database
+		update();		
 	}
 	
-	
+	public abstract void transferAdditionalData(Task taskWithNewData);
 
 }

@@ -59,6 +59,8 @@
 		</div>
 	</div>
 </div>
+
+<hr>
 </c:if>
 
 

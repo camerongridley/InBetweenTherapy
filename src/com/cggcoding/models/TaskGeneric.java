@@ -101,7 +101,7 @@ public class TaskGeneric extends Task{
 	}
 
 	@Override
-	protected Task loadAdditionalData() {
+	public Task loadAdditionalData() {
 		//there is no additional data to load for GenericTask
 		return this;
 	}
@@ -128,6 +128,12 @@ public class TaskGeneric extends Task{
 		copy.setUserID(userID);
 		
 		return copy.saveNew();
+	}
+
+	@Override
+	public void transferAdditionalData(Task taskWithNewData) {
+		//there is no additional data with this task
+		
 	}
 	
 	

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -102,12 +103,23 @@ public class TaskTwoTextBoxes extends Task{
 	}
 
 	@Override
-	protected Task loadAdditionalData() {
+	public Task loadAdditionalData() {
 		/*TODO - this is doing nothing now and is not ever called.  If I change the DAO so that the connection is passed 
 		 * around the models, then I will need to update this so there is a call to the TwoTextBoxes db table 
 		 * here and the load for this is a 2-step process vs being a one-step process using a join in the SQL*/
 		return this;
 
+	}
+	
+	@Override
+	public void transferAdditionalData(Task taskWithNewData) {
+			TaskTwoTextBoxes newData = (TaskTwoTextBoxes)taskWithNewData;
+
+			this.setExtraTextLabel1(newData.getExtraTextLabel1());
+			this.setExtraTextValue1(newData.getExtraTextValue1());
+			this.setExtraTextLabel2(newData.getExtraTextLabel2());
+			this.setExtraTextValue2(newData.getExtraTextValue2());
+		
 	}
 
 	@Override
@@ -124,6 +136,8 @@ public class TaskTwoTextBoxes extends Task{
 		
 		return task.saveNew();
 	}
+
+	
 
 /*	@Override
 	public Object saveNew() throws ValidationException, DatabaseException {

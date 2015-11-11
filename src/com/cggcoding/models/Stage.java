@@ -312,8 +312,7 @@ public class Stage implements Completable, DatabaseModel {
 		//iterate through task map to update with info from updatedTasks list
 		for(Task persistentTask : this.tasks){
 			Task taskWithNewInfo = updatedTasksMap.get(persistentTask.getTaskID());
-			persistentTask.updateData(taskWithNewInfo);//TODO replace this with task.update()
-			//updateTaskData(persistentTask, taskWithNewInfo);
+			persistentTask.transferGeneralData(taskWithNewInfo);
 		}
 
 		updateProgress();
