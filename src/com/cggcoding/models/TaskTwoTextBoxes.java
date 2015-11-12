@@ -1,5 +1,7 @@
 package com.cggcoding.models;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,6 +55,12 @@ public class TaskTwoTextBoxes extends Task{
 				extraTextLabel2, extraTextValue2);
 	}
 	
+	@Override
+	protected Task convertFromGeneric(TaskGeneric genericTask){
+		return TaskTwoTextBoxes.addDataToGenericTask(genericTask, null, null, null, null);
+
+	}
+	
 	public String getExtraTextLabel1() {
 		return extraTextLabel1;
 	}
@@ -103,12 +111,15 @@ public class TaskTwoTextBoxes extends Task{
 	}
 
 	@Override
-	public Task loadAdditionalData() {
+	public Task loadAdditionalData(Connection cn) throws SQLException {
 		/*TODO - this is doing nothing now and is not ever called.  If I change the DAO so that the connection is passed 
 		 * around the models, then I will need to update this so there is a call to the TwoTextBoxes db table 
 		 * here and the load for this is a 2-step process vs being a one-step process using a join in the SQL*/
+		
+		TaskTwoTextBoxes twoTask = (TaskTwoTextBoxes)databaseActionHandler.taskTwoTextBoxesLoad(cn, getTaskID());
+		transferAdditionalData(twoTask);
+		
 		return this;
-
 	}
 	
 	@Override
@@ -119,7 +130,6 @@ public class TaskTwoTextBoxes extends Task{
 			this.setExtraTextValue1(newData.getExtraTextValue1());
 			this.setExtraTextLabel2(newData.getExtraTextLabel2());
 			this.setExtraTextValue2(newData.getExtraTextValue2());
-		
 	}
 
 	@Override

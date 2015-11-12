@@ -1,5 +1,7 @@
 package com.cggcoding.models;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,7 +31,6 @@ public class TaskGeneric extends Task{
 	//full constructor
 	private TaskGeneric(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
 			boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template) {
-		//super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
 		super(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed, dateCompleted, taskOrder, extraTask, template);
 	}
 	
@@ -101,7 +102,7 @@ public class TaskGeneric extends Task{
 	}
 
 	@Override
-	public Task loadAdditionalData() {
+	public Task loadAdditionalData(Connection cn) throws SQLException {
 		//there is no additional data to load for GenericTask
 		return this;
 	}
@@ -134,6 +135,12 @@ public class TaskGeneric extends Task{
 	public void transferAdditionalData(Task taskWithNewData) {
 		//there is no additional data with this task
 		
+	}
+
+	@Override
+	protected Task convertFromGeneric(TaskGeneric genericTask) {
+		//there is nothing to do here for TaskGeneric
+		return this;
 	}
 	
 	

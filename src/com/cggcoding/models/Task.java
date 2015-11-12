@@ -1,14 +1,20 @@
 package com.cggcoding.models;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
+
 
 
 public abstract class Task implements Completable, DatabaseModel{
@@ -123,27 +129,61 @@ public abstract class Task implements Completable, DatabaseModel{
 		return taskTemplate;
 	}
 	
+	//XXX This way of loading is inconsistent with the rest of the data access model - doing this way to contain TaskType checks to Task.java and controllers.  More thorough solution have the connection get passed around for all models.
 	public static Task load(int taskID) throws DatabaseException{
-		Task task =  databaseActionHandler.taskLoad(taskID);
-		//task = task.loadAdditionalData();
+		
+		Connection cn = null;
+		Task task = null;
+
+		try{
+			cn = databaseActionHandler.getConnection();
+
+			task = load(cn, taskID);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+
 		return task;
+		
+		/*Task task =  databaseActionHandler.taskLoad(taskID);
+		//task = task.loadAdditionalData();
+		return task;*/
 
 	}
 	
-	public abstract Task loadAdditionalData();
+	//XXX see note for load(int taskID)
+	public static Task load(Connection cn, int taskID) throws SQLException{
+		TaskGeneric genericTask =  databaseActionHandler.taskGenericLoad(cn, taskID);
+		Task task = castToType(genericTask);
+		task = task.loadAdditionalData(cn);
+
+		return genericTask;
+
+	}
+	
+	protected abstract Task convertFromGeneric(TaskGeneric genericTask);
+	
+	public abstract Task loadAdditionalData(Connection cn) throws SQLException;
 	
 	
-	public static Task castToType(Task task){
-		switch(task.getTaskTypeID()){
-		case Constants.TASK_TYPE_ID_GENERIC_TASK:
-			task = (TaskGeneric)task;
-			break;
-		case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-			task = (TaskTwoTextBoxes)task;
-			break;
+	public static Task castToType(TaskGeneric genericTask){
+		Task convertedTask = null;
+		switch(genericTask.getTaskTypeID()){
+			case Constants.TASK_TYPE_ID_GENERIC_TASK:
+				convertedTask = (TaskGeneric)genericTask;
+				break;
+			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+				TaskTwoTextBoxes twoTask = new TaskTwoTextBoxes();
+				twoTask = (TaskTwoTextBoxes)twoTask.convertFromGeneric(genericTask);
+				convertedTask = twoTask;
+				break;
 		}
 		
-		return task;
+		return convertedTask;
 	}
 	
 	@Override

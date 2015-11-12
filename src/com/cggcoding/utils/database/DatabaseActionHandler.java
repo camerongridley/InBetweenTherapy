@@ -1,6 +1,7 @@
 package com.cggcoding.utils.database;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +135,9 @@ public interface DatabaseActionHandler {
 	 */
 	Task taskValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
 	
-	Task taskLoad(int taskID) throws DatabaseException;
+	TaskGeneric taskGenericLoad(Connection cn, int taskID) throws SQLException;
+	
+	Task taskTwoTextBoxesLoad(Connection cn, int taskID) throws SQLException;
 	
 	boolean taskTwoTextBoxesUpdateAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException;
 	
@@ -149,6 +152,7 @@ public interface DatabaseActionHandler {
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
 
 	void taskDelete(int taskID) throws DatabaseException, ValidationException;
+
 
 	
 

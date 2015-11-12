@@ -1181,10 +1181,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
             //TODO set date completed properly
             while (rs.next()){
-            	tasks.add(taskLoad(cn, rs.getInt("task_generic_id")));
-            	/*tasks.add(GenericTask.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"),
-            			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), null, rs.getInt("task_order"), 
-            			rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_tempalte")));*/
+            	tasks.add(Task.load(cn, rs.getInt("task_generic_id")));
             }
 
         } finally {
@@ -1383,7 +1380,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return defaultTaskList;
 	}
 	
-	public Task taskLoad(int taskID) throws DatabaseException {
+	//XXX Remnant from before moved data access for Task to the model. Consider deleting.
+	/*public Task taskLoad(int taskID) throws DatabaseException {
 		Connection cn = null;
 		Task task = null;
 
@@ -1407,6 +1405,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		Task task = null;
 
 		Task genericTask = taskGenericLoad(cn, taskID);
+		
 		switch(genericTask.getTaskTypeID()){
 			case Constants.TASK_TYPE_ID_GENERIC_TASK:
 				task = genericTask;
@@ -1417,13 +1416,14 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		}
 
 		return task;
-	}
+	}*/
 	
-
-	private Task taskGenericLoad(Connection cn, int taskID) throws SQLException{
+	//TODO this is the method task.load should call before loadAdditionaData
+	@Override
+	public TaskGeneric taskGenericLoad(Connection cn, int taskID) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        Task task = null;
+        TaskGeneric task = null;
         
         try {
     		String sql = "SELECT * FROM task_generic WHERE task_generic_id =?";
@@ -1528,7 +1528,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return success == 1;
 	}
 	
-	private Task taskTwoTextBoxesLoad(Connection cn, int taskID) throws SQLException {
+	@Override
+	public Task taskTwoTextBoxesLoad(Connection cn, int taskID) throws SQLException {
 		PreparedStatement ps = null;
         ResultSet rs = null;
         Task task = null;

@@ -120,7 +120,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 					updatedTask =  genTask;
 					break;
 				case "TaskTwoTextBoxes":
-					TaskTwoTextBoxes twoTextTask = (TaskTwoTextBoxes)TaskTwoTextBoxes.load(currentTaskID);
+					TaskTwoTextBoxes twoTextTask = (TaskTwoTextBoxes)TaskTwoTextBoxes.load(currentTaskID);//TODO why am I loading here?  Change so TaskTwoTextBoxes has constructor/static factory method that just takes taskID and userID.
 					String extraTextValue1 = (String)request.getParameter("extraTextValue1" + currentTaskID);
 					String extraTextValue2 = (String) request.getParameter("extraTextValue2" + currentTaskID);
 					twoTextTask.setExtraTextValue1(extraTextValue1);
