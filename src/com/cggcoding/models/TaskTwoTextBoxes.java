@@ -34,6 +34,18 @@ public class TaskTwoTextBoxes extends Task{
 		this.extraTextValue2 = extraTextValue2;
 	}
 	
+	private TaskTwoTextBoxes(int taskID, int userID){
+		super(taskID, userID);
+		this.extraTextLabel1 = "";
+		this.extraTextValue1 = "";
+		this.extraTextLabel2 = "";
+		this.extraTextValue2 = "";
+	}
+	
+	public static TaskTwoTextBoxes getInstanceBareBones(int taskID, int userID){
+		return new TaskTwoTextBoxes(taskID, userID);
+	}
+	
 	public static TaskTwoTextBoxes getInstanceFull(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,	String instructions, 
 			String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,boolean extraTask, boolean template,
 			String extraTextLabel1, String extraTextValue1,

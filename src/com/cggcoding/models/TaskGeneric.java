@@ -34,7 +34,7 @@ public class TaskGeneric extends Task{
 	}
 	
 	//Static Factory Methods
-	public static TaskGeneric getInstanceByID(int taskID, int userID){
+	public static TaskGeneric getInstanceBareBones(int taskID, int userID){
 		return new TaskGeneric(taskID, userID);
 	}
 	

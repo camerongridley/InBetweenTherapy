@@ -132,7 +132,7 @@ public abstract class Task implements Completable, DatabaseModel{
 	
 	public abstract Task loadAdditionalData();
 	
-	
+	/*
 	public static Task castToType(Task task){
 		switch(task.getTaskTypeID()){
 		case Constants.TASK_TYPE_ID_GENERIC_TASK:
@@ -144,7 +144,7 @@ public abstract class Task implements Completable, DatabaseModel{
 		}
 		
 		return task;
-	}
+	}*/
 	
 	@Override
 	public Task saveNew()throws DatabaseException, ValidationException{
@@ -372,8 +372,14 @@ public abstract class Task implements Completable, DatabaseModel{
 
 	public void transferGeneralData(Task taskWithNewData) throws ValidationException, DatabaseException {
 		//update all universal properties that can be modified by user
-		this.setCompleted(taskWithNewData.isCompleted());
-		this.setDateCompleted(taskWithNewData.getDateCompleted());
+		if(!this.isCompleted() && taskWithNewData.isCompleted()){
+			this.setCompleted(taskWithNewData.isCompleted());
+			this.setDateCompleted(taskWithNewData.getDateCompleted());
+		} else if(this.isCompleted() && !taskWithNewData.isCompleted()){
+			this.setCompleted(taskWithNewData.isCompleted());
+			this.setDateCompleted(null);
+		}
+		
 
 		//update case-specific properties
 		transferAdditionalData(taskWithNewData);

@@ -1435,8 +1435,12 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	//TODO ADD GETTING DATE COMPLETED - just setting and returning it to null now
-            	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), null/*rs.getDate("task_date_completed")*/, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"));
+            	Timestamp timestamp = rs.getTimestamp("task_date_completed");
+            	LocalDateTime dateCompleted = null;
+            	if(timestamp != null){
+            		dateCompleted = timestamp.toLocalDateTime();
+            	}
+            	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), dateCompleted, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"));
             }
 
         } finally {
@@ -1544,9 +1548,14 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
+            	Timestamp timestamp = rs.getTimestamp("task_date_completed");
+            	LocalDateTime dateCompleted = null;
+            	if(timestamp != null){
+            		dateCompleted = timestamp.toLocalDateTime();
+            	}
             	task = TaskTwoTextBoxes.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
             			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
-            			null/*rs.getDate("task_date_completed")*/, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"),
+            			dateCompleted, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"),
             			rs.getString("extra_text_label_1"), rs.getString("extra_text_value_1"), rs.getString("extra_text_label_2"), rs.getString("extra_text_value_2"));
             }
 
@@ -1587,6 +1596,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 
     	PreparedStatement ps = null;
         int success = 0;
+        Timestamp timeStamp = null;
+        if(taskToUpdate.getDateCompleted() != null){
+        	timeStamp = Timestamp.valueOf(taskToUpdate.getDateCompleted());
+        }
         
         try {
 
@@ -1603,7 +1616,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	            ps.setString(6,  taskToUpdate.getInstructions());
 	            ps.setString(7, taskToUpdate.getResourceLink());
 	            ps.setBoolean(8, taskToUpdate.isCompleted());
-	            ps.setDate(9, null);//taskToUpdate.getDateCompleted() == null ? null : Date.valueOf(taskToUpdate.getDateCompleted()));//TODO ACTUALLY UPDATE THE DATE COMPLETED! Just setting to null now.
+	            ps.setTimestamp(9, timeStamp);//taskToUpdate.getDateCompleted() == null ? null : Date.valueOf(taskToUpdate.getDateCompleted()));//TODO ACTUALLY UPDATE THE DATE COMPLETED! Just setting to null now.
 	            ps.setInt(10, taskToUpdate.getTaskOrder());
 	            ps.setBoolean(11, taskToUpdate.isExtraTask());
 	            ps.setBoolean(12, taskToUpdate.isTemplate());
