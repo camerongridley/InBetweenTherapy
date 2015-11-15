@@ -198,8 +198,10 @@
 							role="button" data-toggle="collapse"
 							href="#collapse${task.taskID }" aria-expanded="true"
 							aria-controls="collapse${task.taskID }"> <span
-							class="task-completed">${task.title }</span> - Completed
-							${task.dateCompleted }
+							class="task-completed">${task.title }</span> - 
+							<c:set var="date" value="${task.dateCompleted }"/>
+							${date.month} ${date.dayOfMonth}, ${date.year} - ${date.hour}:${date.minute}
+							
 						</a>
 					</div>
 					<div id="collapse${task.taskID }" class="panel-collapse collapse"

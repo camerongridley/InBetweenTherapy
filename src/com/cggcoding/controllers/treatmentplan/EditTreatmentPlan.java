@@ -123,7 +123,6 @@ public class EditTreatmentPlan extends HttpServlet {
 		                	treatmentIssueID = customIssueID;
 		                }
 		                
-		                //TODO  just loadWithEmptyLists here?
 		                treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 		                
 		                treatmentPlan.setTitle(planTitle);

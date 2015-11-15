@@ -112,8 +112,6 @@ public abstract class Task implements Completable, DatabaseModel{
 	}
 	
 	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
-		//TODO delete this line once method working as desired - int userID, String title, String instructions, int taskTypeID, int parentTaskID, String resourceLink, boolean extraTask
-		//Task taskTemplate = new TaskGeneric(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, Constants.TEMPLATE_ORDER_NUMBER, extraTask, true);
 		taskTemplate.setStageID(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID);
 		taskTemplate.setTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
 		taskTemplate.setTemplate(true);
@@ -124,6 +122,7 @@ public abstract class Task implements Completable, DatabaseModel{
 	}
 	
 	public static Task load(int taskID) throws DatabaseException{
+		//XXX Ideally, this would take better advantage of the inheritance architecture - since when loading I don't know what the type will be, there has to be a check somewhere.  I'd prefer that somehow be in the model versus in the DAO as it is now
 		Task task =  databaseActionHandler.taskLoad(taskID);
 		//task = task.loadAdditionalData();
 		return task;
@@ -149,7 +148,7 @@ public abstract class Task implements Completable, DatabaseModel{
 	@Override
 	public Task saveNew()throws DatabaseException, ValidationException{
 		saveNewGeneralDataInDatabase();
-		saveNewAdditionalData();
+		saveNewAdditionalData();//see note above mthod declaration.
 		
 		return this;
 	}
@@ -191,6 +190,8 @@ public abstract class Task implements Completable, DatabaseModel{
 		return this;
 	}
 	
+	//XXX right now this does nothing in subclasses as MySQLActionHandler.taskCreate() does a taskType check and inserts into the appropriate subclass table
+	//If I change things so the connection is passed into the model then I would update this method for each subclass to update their db table 
 	protected abstract void saveNewAdditionalData() throws DatabaseException, ValidationException;
 	
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data

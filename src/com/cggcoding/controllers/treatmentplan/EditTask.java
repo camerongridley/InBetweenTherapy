@@ -138,19 +138,6 @@ public class EditTask extends HttpServlet {
 				case ("edit-task-update"):
 					
 					tempTask.update();
-					/*//TODO confirm replacing the code below with tempTask.update() consistently works before deleting
-					 * switch(tempTask.getTaskTypeID()){
-						case (Constants.TASK_TYPE_ID_GENERIC_TASK):
-							TaskGeneric genericTask = (TaskGeneric)tempTask;
-							genericTask.update();
-							tempTask = genericTask;
-							break;
-						case(Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK):
-							TaskTwoTextBoxes twoTextBoxesTask = (TaskTwoTextBoxes)tempTask;
-							twoTextBoxesTask.update();
-							tempTask = twoTextBoxesTask;
-							break;
-					}*/
 					
 					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
 						request.setAttribute("stage", Stage.load(tempTask.getStageID()));

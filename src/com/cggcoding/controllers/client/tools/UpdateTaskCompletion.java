@@ -21,6 +21,7 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
 
@@ -54,8 +55,9 @@ public class UpdateTaskCompletion extends HttpServlet {
 		try{
 			forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
 			
-			int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
+			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 	
+			//OPTIMIZE change this so just the basic treatment plan and the stage being displayed is loaded.
 			TreatmentPlan treatmentPlan = user.getTreatmentPlan(treatmentPlanID);
 			Stage activeStage = treatmentPlan.getActiveViewStage();
 	
@@ -79,6 +81,8 @@ public class UpdateTaskCompletion extends HttpServlet {
 			if(treatmentPlan.isCompleted()){
 				request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COMPLETED);
 			}
+			
+			treatmentPlan.update();
 			
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("activeStage", updatedStage);
@@ -143,16 +147,16 @@ public class UpdateTaskCompletion extends HttpServlet {
 		return newInfoTaskMap;
 	}
 
-	private List<Integer> convertStringArrayToInt(String[] taskIDsStrings){
+	private List<Integer> convertStringArrayToInt(String[] taskIDsStrings) throws ValidationException{
 		List<Integer> taskIDsConvertedToInts = new ArrayList<>();
 		if(taskIDsStrings != null){
 			for(int i = 0; i < taskIDsStrings.length; i++){
 				try{
 					taskIDsConvertedToInts.add(Integer.parseInt(taskIDsStrings[i]));
 				} catch (NumberFormatException ex){
-					//TODO handle this exception differently?
-					System.out.println("Illegal value for a task checkbox.  Detected a non-integer value.");
+					System.out.println("");
 					ex.printStackTrace();
+					throw new ValidationException("A non-integer value was detected in your list of task checkboxes.  Please contact customer support for help.");
 				}
 			}
 		}

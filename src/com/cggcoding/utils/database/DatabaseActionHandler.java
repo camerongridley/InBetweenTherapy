@@ -19,7 +19,7 @@ import com.cggcoding.models.UserClient;
 
 public interface DatabaseActionHandler {
 
-	Connection getConnection();
+	Connection getConnection() throws DatabaseException;
 
 	//**************************************************
 	// *************** Login Methods *******************
