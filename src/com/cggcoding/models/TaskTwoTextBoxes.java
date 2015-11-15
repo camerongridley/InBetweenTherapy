@@ -103,7 +103,7 @@ public class TaskTwoTextBoxes extends Task{
 		//If wanted to break it up into separate calls then would probably load general data here and then call loadAdditionalData() 
 	}*/
 	
-	//TODO remove saveNewAdditionalData as abstract method?
+	//XXX see note for loadAdditionalData()
 	@Override
 	protected void saveNewAdditionalData() throws DatabaseException, ValidationException{
 		//databaseActionHandler.taskTwoTextBoxesSaveNewAdditionalData(this);
@@ -116,7 +116,7 @@ public class TaskTwoTextBoxes extends Task{
 
 	@Override
 	public Task loadAdditionalData() {
-		/*TODO - this is doing nothing now and is not ever called.  If I change the DAO so that the connection is passed 
+		/*XXX - this is doing nothing now and is not ever called.  If I change the DAO so that the connection is passed 
 		 * around the models, then I will need to update this so there is a call to the TwoTextBoxes db table 
 		 * here and the load for this is a 2-step process vs being a one-step process using a join in the SQL*/
 		return this;
