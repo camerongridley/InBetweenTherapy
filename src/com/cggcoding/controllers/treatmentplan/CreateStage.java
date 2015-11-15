@@ -17,6 +17,7 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
@@ -121,6 +122,7 @@ public class CreateStage extends HttpServlet {
 			                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 			                	
 			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
+			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
 			                	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
 			                }
 						}

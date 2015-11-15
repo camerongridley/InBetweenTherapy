@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -31,6 +32,18 @@ public class TaskTwoTextBoxes extends Task{
 		this.extraTextValue1 = extraTextValue1;
 		this.extraTextLabel2 = extraTextLabel2;
 		this.extraTextValue2 = extraTextValue2;
+	}
+	
+	private TaskTwoTextBoxes(int taskID, int userID){
+		super(taskID, userID);
+		this.extraTextLabel1 = "";
+		this.extraTextValue1 = "";
+		this.extraTextLabel2 = "";
+		this.extraTextValue2 = "";
+	}
+	
+	public static TaskTwoTextBoxes getInstanceBareBones(int taskID, int userID){
+		return new TaskTwoTextBoxes(taskID, userID);
 	}
 	
 	public static TaskTwoTextBoxes getInstanceFull(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,	String instructions, 
@@ -90,7 +103,7 @@ public class TaskTwoTextBoxes extends Task{
 		//If wanted to break it up into separate calls then would probably load general data here and then call loadAdditionalData() 
 	}*/
 	
-	//TODO remove saveNewAdditionalData as abstract method?
+	//XXX see note for loadAdditionalData()
 	@Override
 	protected void saveNewAdditionalData() throws DatabaseException, ValidationException{
 		//databaseActionHandler.taskTwoTextBoxesSaveNewAdditionalData(this);
@@ -102,9 +115,23 @@ public class TaskTwoTextBoxes extends Task{
 	}
 
 	@Override
-	protected void loadAdditionalData() {
-		
+	public Task loadAdditionalData() {
+		/*XXX - this is doing nothing now and is not ever called.  If I change the DAO so that the connection is passed 
+		 * around the models, then I will need to update this so there is a call to the TwoTextBoxes db table 
+		 * here and the load for this is a 2-step process vs being a one-step process using a join in the SQL*/
+		return this;
 
+	}
+	
+	@Override
+	public void transferAdditionalData(Task taskWithNewData) {
+			TaskTwoTextBoxes newData = (TaskTwoTextBoxes)taskWithNewData;
+
+			this.setExtraTextLabel1(newData.getExtraTextLabel1());
+			this.setExtraTextValue1(newData.getExtraTextValue1());
+			this.setExtraTextLabel2(newData.getExtraTextLabel2());
+			this.setExtraTextValue2(newData.getExtraTextValue2());
+		
 	}
 
 	@Override
@@ -121,6 +148,8 @@ public class TaskTwoTextBoxes extends Task{
 		
 		return task.saveNew();
 	}
+
+	
 
 /*	@Override
 	public Object saveNew() throws ValidationException, DatabaseException {

@@ -9,6 +9,8 @@ public class Constants {
 		
 	}
 	
+	public static final int ADMIN_ROLE_ID = 1;
+	
 	public static final String USER_ADMIN = "admin";
 	public static final String USER_CLIENT = "client";
 	public static final String USER_THERAPIST = "therapist";
@@ -34,6 +36,8 @@ public class Constants {
 	public static String getTaskTypeNameTaskTwoTextboxes() {
 		return TASK_TYPE_NAME_TASK_TWO_TEXTBOXES;
 	}
+	
+	public static String PATH_CREATE_TREATMENT_PLAN = "creatingPlanTemplate";
 
 	
 	

@@ -6,8 +6,9 @@ import java.sql.SQLException;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.sql.DataSource;
 
-import org.apache.tomcat.jdbc.pool.DataSource;
+
 
 public class MySQLConnection implements DatabaseConnection {
 
@@ -21,6 +22,8 @@ public class MySQLConnection implements DatabaseConnection {
 		try {
 			Context initCtx = new InitialContext();
 			Context envCtx = (Context) initCtx.lookup("java:comp/env");
+			
+			//The resource "jdbc/DoItRight" is set in /META-INF/context.xml - here all of the datasource connection properties are set
 			DataSource ds = (DataSource) envCtx.lookup("jdbc/DoItRight");
 			
 			cn = ds.getConnection();

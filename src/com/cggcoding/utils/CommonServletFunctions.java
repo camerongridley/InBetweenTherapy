@@ -69,4 +69,12 @@ public class CommonServletFunctions {
 
 		return task;
 	}
+	
+	public static void setDefaultTreatmentIssuesInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
+		request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());
+	}
+	
+	public static void setDefaultTreatmentPlansInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
+		request.setAttribute("defaultTreatmentPlanList", DefaultDatabaseCalls.getDefaultTreatmentPlans());
+	}
 }

@@ -34,7 +34,7 @@ public class TaskGeneric extends Task{
 	}
 	
 	//Static Factory Methods
-	public static TaskGeneric getInstanceByID(int taskID, int userID){
+	public static TaskGeneric getInstanceBareBones(int taskID, int userID){
 		return new TaskGeneric(taskID, userID);
 	}
 	
@@ -66,43 +66,15 @@ public class TaskGeneric extends Task{
 				title, instructions, resourceLink, false, null, 0, extraTask, true);
 	}
 	
-	/*public static Task load(int taskID) throws DatabaseException{
-		return databaseActionHandler.taskGenericLoad(taskID);
-	}*/
-	
-	/*@Override
-	public Object saveNew() throws DatabaseException, ValidationException{
-		Task savedTask = super.saveNewGeneralDataInDatabase();
-		saveNewAdditionalData(); //this does nothing here but just putting in place for sake of consistency with other task types
-		return savedTask;
-	}
-	
-	@Override
-	public void update() throws DatabaseException, ValidationException{
-		super.updateDataInDatabase();
-		//for other tasks call update method for additional data
-	}
-	
-	@Override
-	public void delete() throws ValidationException, DatabaseException {
-		// TODO  implement method
-		
-	}
-
-	@Override
-	public List<Object> copy(int numberOfCopies) {
-		// TODO  implement method
-		return null;
-	}
-	*/
 	@Override
 	protected boolean updateAdditionalData () {
 		return true;//there is no additional data in GenericTask to update
 	}
 
 	@Override
-	protected void loadAdditionalData() {
+	public Task loadAdditionalData() {
 		//there is no additional data to load for GenericTask
+		return this;
 	}
 
 	@Override
@@ -127,6 +99,12 @@ public class TaskGeneric extends Task{
 		copy.setUserID(userID);
 		
 		return copy.saveNew();
+	}
+
+	@Override
+	public void transferAdditionalData(Task taskWithNewData) {
+		//there is no additional data with this task
+		
 	}
 	
 	

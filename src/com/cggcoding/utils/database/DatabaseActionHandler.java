@@ -19,7 +19,7 @@ import com.cggcoding.models.UserClient;
 
 public interface DatabaseActionHandler {
 
-	Connection getConnection();
+	Connection getConnection() throws DatabaseException;
 
 	//**************************************************
 	// *************** Login Methods *******************
@@ -33,8 +33,9 @@ public interface DatabaseActionHandler {
 	// *************** User Methods *******************
 	//**************************************************
 	public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException;
-
-	List<TreatmentPlan> userGetAssignedClientTreatmentPlans(int clientUserID) throws DatabaseException, ValidationException;
+	
+	List<TreatmentPlan> userGetClientTreatmentPlans(int clientUserID, boolean inProgress, boolean isCompleted)
+			throws DatabaseException, ValidationException;
 
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
@@ -64,6 +65,8 @@ public interface DatabaseActionHandler {
 	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException;
 	
 	void treatmentPlanValidateAndUpdateBasic(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException;
+
+	void treatmentPlanDelete(int treatmentPlanID) throws DatabaseException, ValidationException;
 	
 	void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException;
 
@@ -144,6 +147,13 @@ public interface DatabaseActionHandler {
 	boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException;
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
+
+	void taskDelete(int taskID) throws DatabaseException, ValidationException;
+
+	
+
+	
+
 
 
 

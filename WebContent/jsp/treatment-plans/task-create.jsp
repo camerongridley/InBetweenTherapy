@@ -83,7 +83,8 @@
 			<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 			<input type="hidden" name="isTemplate" value="${task.template }">
 			<input type="hidden" name="isExtraTask" value="${task.extraTask }">
-			    	
+			    
+			<c:if test="${task.taskTypeID!=0 }">	
 	        <div class="form-group">
 	            <label for="taskTitle" class="col-sm-2 control-label">Task Name</label>
 	            <div class="col-sm-10">
@@ -93,7 +94,7 @@
 	        <div class="form-group">
 	            <label for="taskInstructions" class="col-sm-2 control-label">Instructions</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="taskInstructions" name="taskInstructions" value="<c:out value="${fn:escapeXml(task.instructions) }"/>" placeholder="Describe the stage.">
+	                <input type="text" class="form-control" id="taskInstructions" name="taskInstructions" value="<c:out value="${fn:escapeXml(task.instructions) }"/>" placeholder="Describe the task">
 	            </div>
 	        </div>
 			<div class="form-group">
@@ -102,6 +103,8 @@
 	                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${fn:escapeXml(task.resourceLink) }"/>" placeholder="Add a link to related resources for this task.">
 	            </div>
 	        </div>
+	        </c:if>
+	        
 			<c:if test="${task.taskTypeID==2 }">
 				<div class="form-group">
 		            <label for="extraTextLabel1" class="col-sm-2 control-label">Extra TextBox 1 Label</label>
@@ -132,7 +135,7 @@
 			<div class="form-group">
 				<div class="checkbox col-sm-offset-2">
 				  <label>
-				    <input type="checkbox" value="yes" name="copyAsTemplate" id="copyAsTemplate">
+				    <input type="checkbox" value="checked" name="copyAsTemplate" id="copyAsTemplate">
 				    Make a copy for use as a default Task?
 				  </label>
 				</div>

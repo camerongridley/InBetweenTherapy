@@ -37,5 +37,21 @@ public class ParameterUtils {
 		}
 	}
 	
+	/**Checks the parameter value of the checkbox name supplied for the value of "checked".
+	 * @param request
+	 * @param chkbxParameterName
+	 * @return TRUE if checkbox value equals "checked", false if null or equal something else.
+	 */
+	public static boolean singleCheckboxIsOn(HttpServletRequest request, String chkbxParameterName){
+		String[] checkbox = request.getParameterValues(chkbxParameterName);
+		if(checkbox == null){
+			return false;
+		}
+		if(checkbox[0].equals("checked")){
+			return true;
+		}
+		
+		return false;
+	}
 	
 }

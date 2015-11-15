@@ -35,7 +35,7 @@ public final class ErrorMessages {
 	
 	//Other
 	public static final String CLONE_NOT_SUPPORTED = "There was a problem copying the data.  Please try again or contact customer support.";
-	
+	public static final String CONNECTION_IS_NULL = "The database connection is null.";
 	
 	
 }

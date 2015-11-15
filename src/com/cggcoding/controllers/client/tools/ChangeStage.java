@@ -1,5 +1,6 @@
 package com.cggcoding.controllers.client.tools;
 
+import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 
@@ -38,7 +39,9 @@ public class ChangeStage extends HttpServlet {
 
         int newViewID = Integer.parseInt(request.getParameter("stageIndex"));
         treatmentPlan.setActiveViewStageIndex(newViewID);
-
+        Stage activeStage = treatmentPlan.getActiveViewStage();
+        
+        request.setAttribute("activeStage", activeStage);
         request.setAttribute("treatmentPlan", treatmentPlan);
 
         request.getRequestDispatcher("/jsp/client-tools/run-treatment-plan.jsp").forward(request,response);

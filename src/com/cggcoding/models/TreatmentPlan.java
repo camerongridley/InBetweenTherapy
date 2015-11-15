@@ -78,6 +78,7 @@ public class TreatmentPlan implements DatabaseModel{
 
 	public void initialize(){
 		stages.get(0).setInProgress(true);
+		setInProgress(true);
 		//currentStageIndex = stages.get(0).getStageID();
 		//activeViewStageIndex = currentStageIndex;
 	}
@@ -201,6 +202,7 @@ public class TreatmentPlan implements DatabaseModel{
 				this.setCompleted(false);
 			} else {
 				this.setCompleted(true);
+				this.setInProgress(false);
 				
 			}
 		}
@@ -252,8 +254,12 @@ public class TreatmentPlan implements DatabaseModel{
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		// TODO implement method
+		databaseActionHandler.treatmentPlanDelete(this.treatmentPlanID);
 		
+	}
+	
+	public static void delete(int treatmentPlanID) throws DatabaseException, ValidationException{
+		databaseActionHandler.treatmentPlanDelete(treatmentPlanID);
 	}
 
 	public static TreatmentPlan load(int treatmentPlanID) throws DatabaseException, ValidationException{

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
@@ -56,19 +57,17 @@ public class ClientSelectPlan extends HttpServlet {
 				UserClient client = (UserClient)user;
 				
 				switch(requestedAction){
-				case "select-plan-start":
-					
-					request.setAttribute("assignedPlansList", client.getAssignedTreatmentPlanIDs());
-					forwardTo= "/jsp/client-tools/start-new-plan.jsp";
-					break;
 				case "select-plan-load":
-					int assignedTreatmentPlanID = ParameterUtils.parseIntParameter(request, "assignedTreatmentPlanID");
+					int assignedTreatmentPlanID = ParameterUtils.parseIntParameter(request, "selectedPlanID");
 					TreatmentPlan selectedPlan = TreatmentPlan.load(assignedTreatmentPlanID);
 					selectedPlan.initialize();
 					
 					client.addTreatmentPlan(selectedPlan);
 					client.setActiveTreatmentPlanId(assignedTreatmentPlanID);
-
+					
+					Stage activeStage = selectedPlan.getActiveViewStage();
+					
+					request.setAttribute("activeStage", activeStage);
 					request.setAttribute("treatmentPlan", selectedPlan);
 					forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
 					break;

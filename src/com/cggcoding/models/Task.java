@@ -28,7 +28,6 @@ public abstract class Task implements Completable, DatabaseModel{
 	
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
 	
-	//TODO see if I can eliminate some of these constructors! Once done with temp LoadData.java and actually load client data from database, look at GenericTask and prune to use only constructors needed for it
 	//empty constructor necessary to allow static factory methods in subclasses
 	public Task(){
 	}
@@ -51,73 +50,19 @@ public abstract class Task implements Completable, DatabaseModel{
 
 	}
 	
-	//basic parent Task that sets properties to defaults
-	public Task(int taskID, int userID, String title, String instructions){
-		this.taskID = taskID;
-		this.stageID = 0;
-		this.userID = userID;
-		this.taskTypeID = 0;
-		this.parentTaskID = 0;
-		this.title = title;
-		this.instructions = instructions;
-		this.resourceLink = null;
-		this.completed = false;
-		this.dateCompleted = null;
-		this.taskOrder = 0;
-		this.extraTask = false;
-		this.template = false;
-	}
-
-	//basic parent Task before database insert that has no id and sets properties to defaults
-	public Task(int userID, String title, String instructions){
-		this.taskID = 0;
-		this.stageID = 0;
-		this.userID = userID;
-		this.taskTypeID = 0;
-		this.parentTaskID = 0;
-		this.title = title;
-		this.instructions = instructions;
-		this.resourceLink = null;
-		this.completed = false;
-		this.dateCompleted = null;
-		this.taskOrder = 0;
-		this.extraTask = false;
-		this.template = false;
-	}
-	
-	//basic constructor if task is going to be a subtask
-	public Task(int taskID, int userID, int parentTaskID, String title, String instructions){
-		this.taskID = taskID;
-		this.stageID = 0;
-		this.userID = userID;
-		this.taskTypeID = 0;
-		this.parentTaskID = parentTaskID;
-		this.title = title;
-		this.instructions = instructions;
-		this.resourceLink = null;
-		this.completed = false;
-		this.dateCompleted = null;
-		this.taskOrder = 0;
-		this.extraTask = false;
-		this.template = false;
-	}
-	
-	public Task (int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean extraTask, boolean template){
-		this.taskID = 0;
-		this.stageID = 0;
-		this.userID = userID;
-		this.taskTypeID = taskTypeID;
-		this.parentTaskID = parentTaskID;
-		this.title = title;
-		this.instructions = instructions;
-		this.resourceLink = resourceLink;
-		this.completed = false;
-		this.dateCompleted = null;
-		this.taskOrder = 0;
-		this.extraTask = extraTask;
-		this.template = false;
-	}
-	
+	/**Constructor for use before Task is inserted into the database, so no taskID is available to set, therefore a temporary value of 0 is given to taskID.  Since this is a new task and
+	 * will not have had a chance to be completed, the properties completed and dateCompleted are given default values.  All other propertied take the value of the supplied arguments.
+	 * @param stageID
+	 * @param userID
+	 * @param taskTypeID
+	 * @param parentTaskID
+	 * @param title
+	 * @param instructions
+	 * @param resourceLink
+	 * @param taskOrder
+	 * @param extraTask
+	 * @param template
+	 */
 	public Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template){
 		this.taskID = 0;
 		this.stageID = stageID;
@@ -134,22 +79,22 @@ public abstract class Task implements Completable, DatabaseModel{
 		this.template = template;
 	}
 	
-	public Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template){
-		this.taskID = taskID;
-		this.stageID = stageID;
-		this.userID = userID;
-		this.taskTypeID = taskTypeID;
-		this.parentTaskID = parentTaskID;
-		this.title = title;
-		this.instructions = instructions;
-		this.resourceLink = resourceLink;
-		this.completed = false;
-		this.dateCompleted = null;
-		this.taskOrder = taskOrder;
-		this.extraTask = extraTask;
-		this.template = template;
-	}
 	
+	/**Full constructor where every property is set by a supplied argument.
+	 * @param taskID
+	 * @param stageID
+	 * @param userID
+	 * @param taskTypeID
+	 * @param parentTaskID
+	 * @param title
+	 * @param instructions
+	 * @param resourceLink
+	 * @param completed
+	 * @param dateCompleted
+	 * @param taskOrder
+	 * @param extraTask
+	 * @param template
+	 */
 	public Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template){
 		this.taskID = taskID;
 		this.stageID = stageID;
@@ -167,8 +112,6 @@ public abstract class Task implements Completable, DatabaseModel{
 	}
 	
 	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
-		//TODO delete this line once method working as desired - int userID, String title, String instructions, int taskTypeID, int parentTaskID, String resourceLink, boolean extraTask
-		//Task taskTemplate = new TaskGeneric(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, Constants.TEMPLATE_ORDER_NUMBER, extraTask, true);
 		taskTemplate.setStageID(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID);
 		taskTemplate.setTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
 		taskTemplate.setTemplate(true);
@@ -179,28 +122,33 @@ public abstract class Task implements Completable, DatabaseModel{
 	}
 	
 	public static Task load(int taskID) throws DatabaseException{
-		return databaseActionHandler.taskLoad(taskID);
+		//XXX Ideally, this would take better advantage of the inheritance architecture - since when loading I don't know what the type will be, there has to be a check somewhere.  I'd prefer that somehow be in the model versus in the DAO as it is now
+		Task task =  databaseActionHandler.taskLoad(taskID);
+		//task = task.loadAdditionalData();
+		return task;
 
 	}
 	
-	protected abstract void loadAdditionalData();
+	public abstract Task loadAdditionalData();
 	
+	/*
+	public static Task castToType(Task task){
+		switch(task.getTaskTypeID()){
+		case Constants.TASK_TYPE_ID_GENERIC_TASK:
+			task = (TaskGeneric)task;
+			break;
+		case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+			task = (TaskTwoTextBoxes)task;
+			break;
+		}
+		
+		return task;
+	}*/
 	
 	@Override
 	public Task saveNew()throws DatabaseException, ValidationException{
 		saveNewGeneralDataInDatabase();
-		
-		switch(getTaskTypeID()){
-			case Constants.TASK_TYPE_ID_GENERIC_TASK:
-				saveNewAdditionalData();
-				
-				break;	
-			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-				TaskTwoTextBoxes twoTextTask = (TaskTwoTextBoxes)this;
-				twoTextTask.saveNewAdditionalData();
-				
-				break;
-		}
+		saveNewAdditionalData();//see note above mthod declaration.
 		
 		return this;
 	}
@@ -213,7 +161,7 @@ public abstract class Task implements Completable, DatabaseModel{
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		
+		databaseActionHandler.taskDelete(this.taskID);
 		
 	}
 
@@ -242,6 +190,8 @@ public abstract class Task implements Completable, DatabaseModel{
 		return this;
 	}
 	
+	//XXX right now this does nothing in subclasses as MySQLActionHandler.taskCreate() does a taskType check and inserts into the appropriate subclass table
+	//If I change things so the connection is passed into the model then I would update this method for each subclass to update their db table 
 	protected abstract void saveNewAdditionalData() throws DatabaseException, ValidationException;
 	
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
@@ -421,29 +371,24 @@ public abstract class Task implements Completable, DatabaseModel{
 		return this.getClass().getSimpleName();
 	}
 
-	public void updateData(Task taskWithNewData) throws ValidationException, DatabaseException {
+	public void transferGeneralData(Task taskWithNewData) throws ValidationException, DatabaseException {
 		//update all universal properties that can be modified by user
-		this.setCompleted(taskWithNewData.isCompleted());
-		this.setDateCompleted(taskWithNewData.getDateCompleted());
+		if(!this.isCompleted() && taskWithNewData.isCompleted()){
+			this.setCompleted(taskWithNewData.isCompleted());
+			this.setDateCompleted(taskWithNewData.getDateCompleted());
+		} else if(this.isCompleted() && !taskWithNewData.isCompleted()){
+			this.setCompleted(taskWithNewData.isCompleted());
+			this.setDateCompleted(null);
+		}
+		
 
 		//update case-specific properties
-		switch (getTaskTypeID()) {
-			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK :
-				TaskTwoTextBoxes twoTask = (TaskTwoTextBoxes)this;
-				TaskTwoTextBoxes newData = (TaskTwoTextBoxes)taskWithNewData;
-
-				twoTask.setExtraTextLabel1(newData.getExtraTextLabel1());
-				twoTask.setExtraTextValue1(newData.getExtraTextValue1());
-				twoTask.setExtraTextLabel2(newData.getExtraTextLabel2());
-				twoTask.setExtraTextValue2(newData.getExtraTextValue2());
-
-				break;
-		}
-
-		update();
-				
+		transferAdditionalData(taskWithNewData);
+		
+		//update in database
+		update();		
 	}
 	
-	
+	public abstract void transferAdditionalData(Task taskWithNewData);
 
 }

@@ -20,39 +20,56 @@
 <c:import url="/jsp/message-modal.jsp" />
 
 
-
-
-<form class="form-horizontal" action="./EditTreatmentPlan" method="POST">
-	<input type="hidden" name="requestedAction"
-		value="plan-edit-select-plan"> <input type="hidden"
-		name="path" value="${path }">
-	<c:if test="${path=='editingPlan' || path=='editingPlanTemplate' }">
-		<div class="form-group">
-			<label for="selectedDefaultTreatmentPlanID"
-				class="col-sm-2 control-label">Select Default Treatment Plan
-				to Edit</label>
-			<div class="col-sm-5">
-				<select class="form-control" id="selectedDefaultTreatmentPlanID"
-					name="selectedDefaultTreatmentPlanID">
-					<option value="">Select a treatment plan to edit.</option>
-					<c:forEach var="defaultPlan" items="${defaultTreatmentPlanList }">
-						<option value="${defaultPlan.treatmentPlanID}"
-							<c:if test="${defaultPlan.treatmentPlanID == treatmentPlan.treatmentPlanID }">selected</c:if>>${defaultPlan.title}</option>
-					</c:forEach>
-				</select>
-
-			</div>
-
+<c:if test="${path=='editingPlan' || path=='editingPlanTemplate' }">
+<div class="row">
+	<div class="form-group">
+		<form class="form-horizontal" action="./EditTreatmentPlan" method="POST">
+			<input type="hidden" name="requestedAction" value="plan-edit-select-plan"> 
+			<input type="hidden" name="path" value="${path }">
+			
+				<label for="selectedDefaultTreatmentPlanID"
+					class="col-sm-2 control-label">Select a Treatment Plan</label>
+				<div class="col-sm-8">
+					<select class="form-control" id="selectedDefaultTreatmentPlanID"
+						name="selectedDefaultTreatmentPlanID">
+						<option value="">Select a treatment plan to edit.</option>
+						<c:forEach var="defaultPlan" items="${defaultTreatmentPlanList }">
+							<option value="${defaultPlan.treatmentPlanID}"
+								<c:if test="${defaultPlan.treatmentPlanID == treatmentPlan.treatmentPlanID }">selected</c:if>>${defaultPlan.title}</option>
+						</c:forEach>
+					</select>
+		
+				</div>
+			
+		</form>	
+		<div class="col-xs-1">
+			<form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
+				<input type="hidden" name="requestedAction" value="plan-create-start"> 
+				<input type="hidden" name="path" value="creatingPlanTemplate">
+				<button type="submit" class="btn btn-default glyphicon glyphicon-plus" aria-hidden="true" title="Add a new treatment plan."></button>
+			</form>
+		</div>	
+		<div class="col-xs-1">
+			<form class="form-horizontal" action="./EditTreatmentPlan" method="POST">
+				<input type="hidden" name="requestedAction" value="delete-plan"> 
+				<input type="hidden" name="path" value="${path }">
+				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+				<button type="submit" class="btn btn-default glyphicon glyphicon-remove" aria-hidden="true" title="Delete this treatment plan."></button>
+			</form>
 		</div>
-	</c:if>
-</form>
+	</div>
+</div>
+
+<hr>
+</c:if>
+
 
 <form class="form-horizontal" action="./EditTreatmentPlan" method="POST">
 	<input type="hidden" name="requestedAction" value="plan-edit-update">
-	<input type="hidden" name="path" value="${path }"> <input
-		type="hidden" name="treatmentPlanID"
-		value="${treatmentPlan.treatmentPlanID}">
-	<div class="form-group">
+	<input type="hidden" name="path" value="${path }"> 
+	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+	
+	<div class="row form-group">
 		<label for="planName" class="col-sm-2 control-label">Plan Name</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control" id="planTitle"
@@ -60,7 +77,7 @@
 				placeholder="Enter a treatment plan name here.">
 		</div>
 	</div>
-	<div class="form-group">
+	<div class="row form-group">
 		<label for="planDescription" class="col-sm-2 control-label">Plan
 			Description</label>
 		<div class="col-sm-10">
@@ -70,23 +87,24 @@
 		</div>
 	</div>
 	<div class="well well-sm">
-		<div class="form-group col-md-12">
-			<c:choose>
-				<c:when test="${customTreatmentIssues != null }">
-					<h4>
-						Select <strong>one</strong> of the following options for
-						designating the issue this plan will treat.
-					</h4>
-				</c:when>
-				<c:otherwise>
-					<h4>Select the issue this plan will treat.</h4>
-				</c:otherwise>
-			</c:choose>
-
+		<div class="row form-group">
+			<div class="col-md-12">
+				<c:choose>
+					<c:when test="${customTreatmentIssues != null }">
+						<h4>
+							Select <strong>one</strong> of the following options for
+							designating the issue this plan will treat.
+						</h4>
+					</c:when>
+					<c:otherwise>
+						<h4>Select the issue this plan will treat.</h4>
+					</c:otherwise>
+				</c:choose>
+			</div>
 		</div>
 
 
-		<div class="form-group">
+		<div class="row form-group">
 			<label for="defaultTreatmentIssue" class="col-sm-2 control-label">Default
 				Tx Issues</label>
 			<div class="col-sm-9">
@@ -100,16 +118,16 @@
 				</select>
 			</div>
 			<div class="col-sm-1">
-				<button type="button" class="btn btn-default"
+				<button type="button" class="btn btn-default" title="Add a new default treatment issue."
 					aria-label="Left Align" data-toggle="modal"
 					data-target="#newDefaultTreatmentIssueModal">
-					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+					<span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
 				</button>
 			</div>
 		</div>
 
 		<c:if test="${customTreatmentIssues != null }">
-			<div class="form-group">
+			<div class="row form-group">
 				<label for="customTreatmentIssue" class="col-sm-2 control-label">Existing
 					Custom Tx Issues</label>
 				<div class="col-sm-10">
@@ -171,7 +189,7 @@
 			<div id="collapse${stage.stageID }" class="panel-collapse collapse"
 				role="tabpanel" aria-labelledby="heading${stage.stageID}">
 				<div class="panel-body">${stage.description }</div>
-				<div class="" style="padding-left:20px">
+				<div class="" style="padding-left: 20px">
 					<table class="table table-striped table-bordered">
 						<thead>
 							<tr>
@@ -184,12 +202,13 @@
 									<!-- <th scope="row">${task.taskOrder}</th>-->
 									<td><c:out value="${task.title }"></c:out><span
 										class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-										<a role="button"
+										<!-- <a role="button"
 										href="./EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
 										class="btn btn-default btn-xs pull-right"
 										title="Edit this task"> <span
 											class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-									</a></td>
+										</a> -->
+									</td>
 								</tr>
 							</c:forEach>
 						</tbody>
@@ -200,15 +219,7 @@
 		</div>
 	</c:forEach>
 
-
-
-
-
-
-
-
-
-	<div class="form-group">
+	<div class="row form-group">
 		<div class="col-sm-offset-2 col-sm-10">
 			<button type="submit" class="btn btn-default">Save</button>
 		</div>

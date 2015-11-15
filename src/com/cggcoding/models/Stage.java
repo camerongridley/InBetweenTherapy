@@ -312,8 +312,7 @@ public class Stage implements Completable, DatabaseModel {
 		//iterate through task map to update with info from updatedTasks list
 		for(Task persistentTask : this.tasks){
 			Task taskWithNewInfo = updatedTasksMap.get(persistentTask.getTaskID());
-			persistentTask.updateData(taskWithNewInfo);//TODO replace this with task.update()
-			//updateTaskData(persistentTask, taskWithNewInfo);
+			persistentTask.transferGeneralData(taskWithNewInfo);
 		}
 
 		updateProgress();
@@ -414,6 +413,19 @@ public class Stage implements Completable, DatabaseModel {
 		taskBeingCopied.setTaskOrder(this.getTaskOrderDefaultValue());
 		
 		return taskBeingCopied.saveNew();
+	}
+	
+	public Stage deleteTask(int taskToDeleteID) throws ValidationException, DatabaseException{
+		for(int i = 0; i < tasks.size(); i++){
+			Task task = tasks.get(i);
+			if(task.getTaskID() == taskToDeleteID){
+				tasks.remove(i);
+				task.delete();
+				break;
+			}
+		}
+		
+		return this;
 	}
 	
 	/**Creates a copy of the Stage and sets the copy's stageID to 0.
