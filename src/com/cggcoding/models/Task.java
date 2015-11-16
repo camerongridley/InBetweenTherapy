@@ -147,8 +147,12 @@ public abstract class Task implements Completable, DatabaseModel{
 	
 	@Override
 	public Task saveNew()throws DatabaseException, ValidationException{
-		saveNewGeneralDataInDatabase();
-		saveNewAdditionalData();//see note above mthod declaration.
+		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);
+		this.taskID = savedTask.getTaskID();
+		
+		//XXX if I split the saving a a new Task into 2 steps, generic, then for specific subclass, use the code below
+		//saveNewGeneralDataInDatabase();
+		//saveNewAdditionalData();//see note above mthod declaration.
 		
 		return this;
 	}
@@ -184,7 +188,7 @@ public abstract class Task implements Completable, DatabaseModel{
 	 * @throws ValidationException
 	 */
 	protected Task saveNewGeneralDataInDatabase() throws DatabaseException, ValidationException{
-		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);
+		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);//XXX this call actually checks for taskType and updates all fields in a task and not just the general/generic ones
 		this.taskID = savedTask.getTaskID();
 		
 		return this;

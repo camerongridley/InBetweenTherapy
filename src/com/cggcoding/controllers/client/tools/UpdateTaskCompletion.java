@@ -58,7 +58,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 	
 			//OPTIMIZE change this so just the basic treatment plan and the stage being displayed is loaded.
-			TreatmentPlan treatmentPlan = user.getTreatmentPlan(treatmentPlanID);
+			TreatmentPlan treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 			Stage activeStage = treatmentPlan.getActiveViewStage();
 	
 			//get checked values from the request and convert to List<Integer>
