@@ -103,6 +103,25 @@
 	                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${fn:escapeXml(task.resourceLink) }"/>" placeholder="Add a link to related resources for this task.">
 	            </div>
 	        </div>
+	        
+			<div class="form-group">
+	            <label for="repetitions" class="col-sm-2 control-label">Repetitions</label>
+	            <div class="col-sm-2">
+	            	<select class="form-control" id="repetitions" name="repetitions">
+	                    <option  value="1">1</option>
+						<option  value="2">2</option>
+						<option  value="3">3</option>
+						<option  value="4">4</option>
+						<option  value="5">5</option>
+						<option  value="6">6</option>
+						<option  value="7">7</option>
+						<option  value="8">8</option>
+						<option  value="9">9</option>
+						<option  value="10">10</option>
+	                </select>
+	              
+	            </div>
+	        </div>
 	        </c:if>
 	        
 			<c:if test="${task.taskTypeID==2 }">

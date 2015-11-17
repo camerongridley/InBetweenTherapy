@@ -23,11 +23,11 @@ public class TaskTwoTextBoxes extends Task{
 	
 	private TaskTwoTextBoxes(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,
 			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,
-			boolean extraTask, boolean template,
+			boolean extraTask, boolean template, int templateID, int repetitions,
 			String extraTextLabel1, String extraTextValue1,
 			String extraTextLabel2, String extraTextValue2) {
 		super(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed,
-				dateCompleted, taskOrder, extraTask, template);
+				dateCompleted, taskOrder, extraTask, template, templateID, repetitions);
 		this.extraTextLabel1 = extraTextLabel1;
 		this.extraTextValue1 = extraTextValue1;
 		this.extraTextLabel2 = extraTextLabel2;
@@ -47,12 +47,12 @@ public class TaskTwoTextBoxes extends Task{
 	}
 	
 	public static TaskTwoTextBoxes getInstanceFull(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,	String instructions, 
-			String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,boolean extraTask, boolean template,
+			String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,boolean extraTask, boolean template, int templateID, int repetitions,
 			String extraTextLabel1, String extraTextValue1,
 			String extraTextLabel2, String extraTextValue2){
 		
 		return new TaskTwoTextBoxes(taskID, stageID, userID, taskTypeID, parentTaskID, title,instructions, 
-			resourceLink, completed, dateCompleted, taskOrder, extraTask, template,
+			resourceLink, completed, dateCompleted, taskOrder, extraTask, template, templateID, repetitions,
 			extraTextLabel1, extraTextValue1,
 			extraTextLabel2, extraTextValue2);
 	}
@@ -60,7 +60,7 @@ public class TaskTwoTextBoxes extends Task{
 	public static TaskTwoTextBoxes addDataToGenericTask(TaskGeneric genericTask, String extraTextLabel1, String extraTextValue1,String extraTextLabel2, String extraTextValue2){
 		return new TaskTwoTextBoxes(genericTask.getTaskID(), genericTask.getStageID(), genericTask.getUserID(), genericTask.getTaskTypeID(), genericTask.getParentTaskID(), genericTask.getTitle(),
 				genericTask.getInstructions(), genericTask.getResourceLink(), genericTask.isCompleted(), genericTask.getDateCompleted(), genericTask.getTaskOrder(),
-				genericTask.isExtraTask(), genericTask.isTemplate(),
+				genericTask.isExtraTask(), genericTask.isTemplate(), genericTask.getTemplateID(), genericTask.getRepetitions(),
 				extraTextLabel1, extraTextValue1,
 				extraTextLabel2, extraTextValue2);
 	}
@@ -137,7 +137,8 @@ public class TaskTwoTextBoxes extends Task{
 	@Override
 	public Task copy(){
 		TaskTwoTextBoxes task =  getInstanceFull(0, getStageID(), getUserID(), getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
-					isCompleted(), getDateCompleted(), getTaskOrder(), isExtraTask(), false, extraTextLabel1, extraTextValue1, extraTextLabel2, extraTextValue2);
+					isCompleted(), getDateCompleted(), getTaskOrder(), isExtraTask(), false, getTemplateID(), getRepetitions(),
+					extraTextLabel1, extraTextValue1, extraTextLabel2, extraTextValue2);
 		
 		return task;
 	}
@@ -149,32 +150,5 @@ public class TaskTwoTextBoxes extends Task{
 		return task.saveNew();
 	}
 
-	
-
-/*	@Override
-	public Object saveNew() throws ValidationException, DatabaseException {
-		Task savedTask = super.saveNewGeneralDataInDatabase();
-		saveNewAdditionalData();
-		return savedTask;
-	}
-
-	@Override
-	public void update() throws ValidationException, DatabaseException {
-		super.updateDataInDatabase();
-		updateAdditionalData();
-		
-	}
-
-	@Override
-	public void delete() throws ValidationException, DatabaseException {
-		
-		
-	}
-
-	@Override
-	public List<Object> copy(int numberOfCopies) {
-		
-		return null;
-	}*/
 
 }

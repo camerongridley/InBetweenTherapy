@@ -44,8 +44,10 @@ public class CommonServletFunctions {
 		int taskOrder =  ParameterUtils.parseIntParameter(request, "taskOrder");
 		boolean extraTask = ParameterUtils.getBooleanParameter(request, "isExtraTask"); 
 		boolean template = ParameterUtils.getBooleanParameter(request, "isTemplate"); 
+		int templateID = ParameterUtils.parseIntParameter(request, "templateID");
+		int repetitions = ParameterUtils.parseIntParameterDefaultIsOne(request, "repetitions");
 		
-		TaskGeneric genericTask = TaskGeneric.getInstanceWithoutTaskID(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template);
+		TaskGeneric genericTask = TaskGeneric.getInstanceWithoutTaskID(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template, templateID, repetitions);
 		genericTask.setTaskID(taskID);
 		
 		switch(taskTypeID){
