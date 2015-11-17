@@ -199,8 +199,7 @@
 							href="#collapse${task.taskID }" aria-expanded="true"
 							aria-controls="collapse${task.taskID }"> <span
 							class="task-completed">${task.title }</span> - 
-							<c:set var="date" value="${task.dateCompleted }"/>
-							${date.month} ${date.dayOfMonth}, ${date.year} - ${date.hour}:${date.minute}
+							${task.dateCompletedFormatted }
 							
 						</a>
 					</div>

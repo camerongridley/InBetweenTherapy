@@ -368,6 +368,29 @@ public abstract class Task implements Completable, DatabaseModel{
 		return parentTaskID == 0;
 	}
 
+	public String getDateCompletedFormatted(){
+		String amPM = " AM";
+		StringBuilder dateBuilder = new StringBuilder();
+		dateBuilder.append(dateCompleted.getMonthValue());
+		dateBuilder.append("/");
+		dateBuilder.append(dateCompleted.getDayOfMonth());
+		dateBuilder.append("/");
+		dateBuilder.append(dateCompleted.getYear());
+		dateBuilder.append(" ");
+		int hour = dateCompleted.getHour();
+		if(hour>12){
+			hour = hour - 12;
+			amPM = " PM";
+		}
+		dateBuilder.append(hour);
+		dateBuilder.append(":");
+		dateBuilder.append(dateCompleted.getMinute());
+		dateBuilder.append(amPM);
+		
+		
+		return dateBuilder.toString();
+	}
+	
 	
 	@Override
 	public boolean isCompleted() {
