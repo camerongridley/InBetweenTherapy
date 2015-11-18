@@ -10,6 +10,7 @@ public class ParameterUtils {
 	public ParameterUtils() {
 
 	}
+	
 	/** Checks specified int parameter in request. If it is null or empty returns 0, otherwise parses the parameter string and return the int value
 	 * @param request HttpServletRequest
 	 * @param intParameterName the parameter name for a variable of type int
@@ -18,6 +19,19 @@ public class ParameterUtils {
 	public static int parseIntParameter(HttpServletRequest request, String intParameterName){
 		if(request.getParameter(intParameterName)==null || request.getParameter(intParameterName).isEmpty()){
 			return 0;
+		} else{
+			return Integer.parseInt(request.getParameter(intParameterName));
+		}
+	}
+	
+	/** Checks specified int parameter in request. If it is null or empty returns 1, otherwise parses the parameter string and return the int value
+	 * @param request HttpServletRequest
+	 * @param intParameterName the parameter name for a variable of type int
+	 * @return int value of parameter or 0 if null or empty
+	 */
+	public static int parseIntParameterDefaultIsOne(HttpServletRequest request, String intParameterName){
+		if(request.getParameter(intParameterName)==null || request.getParameter(intParameterName).isEmpty()){
+			return 1;
 		} else{
 			return Integer.parseInt(request.getParameter(intParameterName));
 		}

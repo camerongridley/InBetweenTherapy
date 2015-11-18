@@ -25,6 +25,8 @@ public abstract class Task implements Completable, DatabaseModel{
 	private int taskOrder;
 	private boolean extraTask;
 	private boolean template;
+	private int templateID;
+	int repetitions;
 	
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
 	
@@ -47,6 +49,8 @@ public abstract class Task implements Completable, DatabaseModel{
 		this.taskOrder = 0;
 		this.extraTask = false;
 		this.template = false;
+		this.templateID = 0;
+		this.repetitions = 1;
 
 	}
 	
@@ -63,7 +67,7 @@ public abstract class Task implements Completable, DatabaseModel{
 	 * @param extraTask
 	 * @param template
 	 */
-	public Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template){
+	public Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template, int templateID, int repetitions){
 		this.taskID = 0;
 		this.stageID = stageID;
 		this.userID = userID;
@@ -77,6 +81,8 @@ public abstract class Task implements Completable, DatabaseModel{
 		this.taskOrder = taskOrder;
 		this.extraTask = extraTask;
 		this.template = template;
+		this.templateID = templateID;
+		this.repetitions = repetitions;
 	}
 	
 	
@@ -95,7 +101,7 @@ public abstract class Task implements Completable, DatabaseModel{
 	 * @param extraTask
 	 * @param template
 	 */
-	public Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template){
+	public Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template, int templateID, int repetitions){
 		this.taskID = taskID;
 		this.stageID = stageID;
 		this.userID = userID;
@@ -109,6 +115,8 @@ public abstract class Task implements Completable, DatabaseModel{
 		this.taskOrder = taskOrder;
 		this.extraTask = extraTask;
 		this.template = template;
+		this.templateID = templateID;
+		this.repetitions = repetitions;
 	}
 	
 	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
@@ -147,8 +155,12 @@ public abstract class Task implements Completable, DatabaseModel{
 	
 	@Override
 	public Task saveNew()throws DatabaseException, ValidationException{
-		saveNewGeneralDataInDatabase();
-		saveNewAdditionalData();//see note above mthod declaration.
+		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);
+		this.taskID = savedTask.getTaskID();
+		
+		//XXX if I split the saving a a new Task into 2 steps, generic, then for specific subclass, use the code below
+		//saveNewGeneralDataInDatabase();
+		//saveNewAdditionalData();//see note above method declaration.
 		
 		return this;
 	}
@@ -184,7 +196,7 @@ public abstract class Task implements Completable, DatabaseModel{
 	 * @throws ValidationException
 	 */
 	protected Task saveNewGeneralDataInDatabase() throws DatabaseException, ValidationException{
-		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);
+		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);//XXX this call actually checks for taskType and updates all fields in a task and not just the general/generic ones
 		this.taskID = savedTask.getTaskID();
 		
 		return this;
@@ -316,20 +328,36 @@ public abstract class Task implements Completable, DatabaseModel{
 		return taskOrder + 1;
 	}
 
-	public boolean isTemplate() {
-		return template;
-	}
-
-	public void setTemplate(boolean isTemplate) {
-		this.template = isTemplate;
-	}
-
 	public boolean isExtraTask() {
 		return extraTask;
 	}
 
 	public void setExtraTask(boolean extraTask) {
 		this.extraTask = extraTask;
+	}
+	
+	public int getTemplateID() {
+		return templateID;
+	}
+
+	public void setTemplateID(int templateID) {
+		this.templateID = templateID;
+	}
+
+	public int getRepetitions() {
+		return repetitions;
+	}
+
+	public void setRepetitions(int repetitions) {
+		this.repetitions = repetitions;
+	}
+
+	public boolean isTemplate() {
+		return template;
+	}
+
+	public void setTemplate(boolean isTemplate) {
+		this.template = isTemplate;
 	}
 
 	public void setCompleted(boolean status){
@@ -340,6 +368,29 @@ public abstract class Task implements Completable, DatabaseModel{
 		return parentTaskID == 0;
 	}
 
+	public String getDateCompletedFormatted(){
+		String amPM = " AM";
+		StringBuilder dateBuilder = new StringBuilder();
+		dateBuilder.append(dateCompleted.getMonthValue());
+		dateBuilder.append("/");
+		dateBuilder.append(dateCompleted.getDayOfMonth());
+		dateBuilder.append("/");
+		dateBuilder.append(dateCompleted.getYear());
+		dateBuilder.append(" ");
+		int hour = dateCompleted.getHour();
+		if(hour>12){
+			hour = hour - 12;
+			amPM = " PM";
+		}
+		dateBuilder.append(hour);
+		dateBuilder.append(":");
+		dateBuilder.append(dateCompleted.getMinute());
+		dateBuilder.append(amPM);
+		
+		
+		return dateBuilder.toString();
+	}
+	
 	
 	@Override
 	public boolean isCompleted() {
