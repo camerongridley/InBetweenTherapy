@@ -1436,7 +1436,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             	}
             	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
             			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
-            			convertTimestampToLocalDateTime(rs.getTimestamp("task_date_completed")), rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"));
+            			convertTimestampToLocalDateTime(rs.getTimestamp("task_date_completed")), rs.getInt("task_order"), rs.getBoolean("is_extra_task"), 
+            			rs.getBoolean("task_is_template"), rs.getInt("template_id"), rs.getInt("repetitions"));
             }
 
         } finally {
@@ -1546,7 +1547,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             while (rs.next()){
             	task = TaskTwoTextBoxes.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
             			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
-            			convertTimestampToLocalDateTime(rs.getTimestamp("task_date_completed")), rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"),
+            			convertTimestampToLocalDateTime(rs.getTimestamp("task_date_completed")), rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"), 
+            			rs.getInt("template_id"), rs.getInt("repetitions"),
             			rs.getString("extra_text_label_1"), rs.getString("extra_text_value_1"), rs.getString("extra_text_label_2"), rs.getString("extra_text_value_2"));
             }
 
@@ -1591,7 +1593,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         try {
 
 	    		String sql = "UPDATE task_generic SET task_generic_task_type_id_fk=?, task_generic_stage_id_fk=?, task_generic_user_id_fk=?, parent_task_id=?, task_title=?, instructions=?, resource_link=?, "
-	    				+ "task_completed=?, task_date_completed=?, task_order=?, is_extra_task=?, task_is_template=? WHERE task_generic_id=?";
+	    				+ "task_completed=?, task_date_completed=?, task_order=?, is_extra_task=?, task_is_template=?, template_id=?, repetitions=? WHERE task_generic_id=?";
 	        	
 	            ps = cn.prepareStatement(sql);
 	            
@@ -1607,7 +1609,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	            ps.setInt(10, taskToUpdate.getTaskOrder());
 	            ps.setBoolean(11, taskToUpdate.isExtraTask());
 	            ps.setBoolean(12, taskToUpdate.isTemplate());
-	            ps.setInt(13, taskToUpdate.getTaskID());
+	            ps.setInt(13, taskToUpdate.getTemplateID());
+	            ps.setInt(14, taskToUpdate.getRepetitions());
+	            ps.setInt(15, taskToUpdate.getTaskID());
 	
 	            success = ps.executeUpdate();
 
@@ -1723,9 +1727,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         ResultSet generatedKeys = null;
         
         try {
-        	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_stage_id_fk, task_generic_user_id_fk, "
-        			+ "parent_task_id, task_title, instructions, resource_link, task_completed, task_date_completed, task_order, is_extra_task, task_is_template) "
-    				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_stage_id_fk, task_generic_user_id_fk, parent_task_id, task_title, "
+        			+ "instructions, resource_link, task_completed, task_date_completed, task_order, is_extra_task, task_is_template, template_id, repetitions) "
+    				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
@@ -1742,6 +1746,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setInt(10, newTask.getTaskOrder());
             ps.setBoolean(11, newTask.isExtraTask());
             ps.setBoolean(12, newTask.isTemplate());
+            ps.setInt(13, newTask.getTemplateID());
+            ps.setInt(14, newTask.getRepetitions());
 
             int success = ps.executeUpdate();
             
