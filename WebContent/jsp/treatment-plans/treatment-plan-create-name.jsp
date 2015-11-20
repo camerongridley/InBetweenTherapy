@@ -8,7 +8,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
-
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"  %>
 
 <c:import url="/jsp/header.jsp" />
 
@@ -25,13 +25,13 @@
         <div class="form-group">
             <label for="planTitle" class="col-sm-2 control-label">Plan Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="planTitle" name="planTitle" value="${planTitle }" placeholder="Enter a treatment plan name here.">
+                <input type="text" class="form-control" id="planTitle" name="planTitle" value="${fn:escapeXml(planTitle) }" placeholder="Enter a treatment plan name here.">
             </div>
         </div>
         <div class="form-group">
             <label for="planDescription" class="col-sm-2 control-label">Plan Description</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="planDescription" name="planDescription" value="${planDescription }" placeholder="Describe the treatment plan.">
+                <input type="text" class="form-control" id="planDescription" name="planDescription" value="${fn:escapeXml(planDescription) }" placeholder="Describe the treatment plan.">
             </div>
         </div>
 		
@@ -111,7 +111,7 @@
 		        <h4 class="modal-title" id="newDefaultTreatmentIssueModalLabel">Enter a new default Treatment Issue</h4>
 		      </div>
 		      <div class="modal-body">
-		        <input type="text" class="form-control" id="newDefaultTreatmentIssue" name="newDefaultTreatmentIssue" value="${newDefaultTreatmentIssue }" placeholder="Enter a new default treatment issue.">
+		        <input type="text" class="form-control" id="newDefaultTreatmentIssue" name="newDefaultTreatmentIssue" value="${fn:escapeXml(newDefaultTreatmentIssue) }" placeholder="Enter a new default treatment issue.">
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

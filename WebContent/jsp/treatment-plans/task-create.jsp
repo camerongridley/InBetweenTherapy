@@ -31,7 +31,7 @@
 		                <select class="form-control" id="defaultTaskList" name="taskID">
 		                    <option  value="">Select a default task.</option>
 		                    <c:forEach items="${defaultTasks}" var="defaultTask">
-		                        <option value="${defaultTask.taskID}">${defaultTask.title}</option>
+		                        <option value="${defaultTask.taskID}">${fn:escapeXml(defaultTask.title)}</option>
 		                    </c:forEach>
 		                </select>
 		            </div>
