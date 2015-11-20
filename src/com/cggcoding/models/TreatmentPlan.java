@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,11 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class TreatmentPlan implements DatabaseModel{
+public class TreatmentPlan implements Serializable, DatabaseModel{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int treatmentPlanID;
 	private int userID;
 	private int treatmentIssueID;

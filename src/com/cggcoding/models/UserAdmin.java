@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,11 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class UserAdmin extends User{
+public class UserAdmin extends User implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<TreatmentIssue> customTreatmentIssues;
 
 	public UserAdmin(int userID, String email) {

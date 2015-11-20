@@ -6,10 +6,15 @@ import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Stage implements Completable, DatabaseModel {
+public class Stage implements Serializable, Completable, DatabaseModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int stageID;
 	private int treatmentPlanID;
 	private int userID;

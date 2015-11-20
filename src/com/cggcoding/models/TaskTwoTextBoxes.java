@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -9,7 +10,11 @@ import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class TaskTwoTextBoxes extends Task{
+public class TaskTwoTextBoxes extends Task implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String extraTextLabel1;
 	private String extraTextValue1;
 	private String extraTextLabel2;

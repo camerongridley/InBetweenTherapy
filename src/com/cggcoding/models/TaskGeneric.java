@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -8,7 +9,11 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class TaskGeneric extends Task{
+public class TaskGeneric extends Task implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
 	
 	public TaskGeneric(){

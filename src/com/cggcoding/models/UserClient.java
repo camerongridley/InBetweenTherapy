@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
@@ -7,7 +8,12 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class UserClient extends User{
+public class UserClient extends User implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private int activeTreatmentPlanId;
 	
 	DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
