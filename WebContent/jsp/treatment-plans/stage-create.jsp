@@ -2,7 +2,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
-<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"  %>
+
 
 <c:import url="/jsp/header.jsp" />
 
@@ -67,15 +67,38 @@
 	        <div class="form-group">
 	            <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value="${fn:escapeXml(stageTitle)}" placeholder="Enter a stage name here.">
+	                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value="${stageTitle }" placeholder="Enter a stage name here.">
 	            </div>
 	        </div>
 	        <div class="form-group">
 	            <label for="stageDescription" class="col-sm-2 control-label">Stage Description</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="stageDescription" name="stageDescription" value="${fn:escapeXml(stageDescription)}" placeholder="Describe the stage.">
+	                <input type="text" class="form-control" id="stageDescription" name="stageDescription" value="${stageDescription }" placeholder="Describe the stage.">
 	            </div>
 	        </div>
+	        
+	        
+	       <!--  <div class="form-group col-md-12">
+	                <h4>Define the goals for the stage</h4>
+	        </div>
+	
+	       
+	       	<div class="form-group col-md-12">
+	               <h4>Select the tasks for the stage</h4>
+	        </div> -->
+	           <!-- TODO change this to list all the tasks associated with this stage
+	           <div class="form-group">
+	               <label for="existingCustomTreatmentIssue" class="col-sm-2 control-label">Existing Custom Tx Issues</label>
+	               <div class="col-sm-10">
+	                   <select class="form-control" id="existingCustomTreatmentIssue" name="existingCustomTreatmentIssue">
+	                       <option value="">Or select an issue you've previously created.</option>
+	                       <c:forEach items="${customTreatmentIssues}" var="customIssue">
+	                           <option value="${customIssue.treatmentIssueID}">${customIssue.treatmentIssueName}</option>
+	                       </c:forEach>
+	                   </select>
+	               </div>
+	           </div>
+	            -->
 	        
 	        <button type="submit" class="btn btn-default col-sm-offset-2">Save</button>
 

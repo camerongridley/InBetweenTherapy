@@ -8,7 +8,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 
 <c:import url="/jsp/header.jsp" />
@@ -74,7 +73,7 @@
 		<label for="planName" class="col-sm-2 control-label">Plan Name</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control" id="planTitle"
-				name="planTitle" value="${fn:escapeXml(treatmentPlan.title) }"
+				name="planTitle" value="${treatmentPlan.title }"
 				placeholder="Enter a treatment plan name here.">
 		</div>
 	</div>
@@ -83,7 +82,7 @@
 			Description</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control" id="planDescription"
-				name="planDescription" value="${fn:escapeXml(treatmentPlan.description) }"
+				name="planDescription" value="${treatmentPlan.description }"
 				placeholder="Describe the treatment plan.">
 		</div>
 	</div>
@@ -137,7 +136,7 @@
 						<option value="">Or select an issue you've previously
 							created.</option>
 						<c:forEach items="${customTreatmentIssues}" var="customIssue">
-							<option value="${customIssue.treatmentIssueID}">${fn:escapeXml(customIssue.treatmentIssueName)}</option>
+							<option value="${customIssue.treatmentIssueID}">${customIssue.treatmentIssueName}</option>
 						</c:forEach>
 					</select>
 				</div>
@@ -201,7 +200,7 @@
 							<c:forEach items="${stage.tasks }" var="task">
 								<tr>
 									<!-- <th scope="row">${task.taskOrder}</th>-->
-									<td><c:out value="${fn:escapeXml(task.title) }"></c:out><span
+									<td><c:out value="${task.title }"></c:out><span
 										class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 										<!-- <a role="button"
 										href="./EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
@@ -250,7 +249,7 @@
 				<div class="modal-body">
 					<input type="text" class="form-control"
 						id="newDefaultTreatmentIssue" name="newDefaultTreatmentIssue"
-						value="${fn:escapeXml(newDefaultTreatmentIssue) }"
+						value="${newDefaultTreatmentIssue }"
 						placeholder="Enter a new default treatment issue.">
 				</div>
 				<div class="modal-footer">
