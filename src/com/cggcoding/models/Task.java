@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,11 @@ import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
 
-public abstract class Task implements Completable, DatabaseModel{
+public abstract class Task implements Serializable, Completable, DatabaseModel{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int taskID;
 	private int stageID;
 	private int userID;

@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +14,12 @@ import com.cggcoding.utils.database.MySQLActionHandler;
 /**
  * Created by cgrid_000 on 8/8/2015.
  */
-public class UserTherapist extends User{
-    private Map<Integer, UserClient> clientMap;
+public class UserTherapist extends User implements Serializable{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Map<Integer, UserClient> clientMap;
     private List<TreatmentIssue> defaultTreatmentIssues;
 
     private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();

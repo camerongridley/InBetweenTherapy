@@ -1,11 +1,17 @@
 package com.cggcoding.models;
 
+import java.io.Serializable;
+
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class StageGoal {
+public class StageGoal implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int stageGoalID;
 	private int stageID;
 	private String description;
