@@ -291,11 +291,15 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			}
 		}
 		
+		reorderStages();
+		
+		databaseActionHandler.treatmentPlanDeleteStage(stageID, stages);
+	}
+	
+	private void reorderStages(){
 		for(int i=0; i < this.stages.size(); i++){
 			stages.get(i).setStageOrder(i);
 		}
-		
-		databaseActionHandler.treatmentPlanDeleteStage(stageID, stages);
 	}
 	
 	/*public TreatmentPlan copy(int userID){

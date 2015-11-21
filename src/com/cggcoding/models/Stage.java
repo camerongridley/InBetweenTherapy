@@ -430,7 +430,23 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			}
 		}
 		
+		reorderTasks();
+		
+		//FIXME need to call a database update for the Task list - another instance where having the connection in the model would be helpful since this is with Tasks and there is the type check issue.  Could also create method in dao that take List<Task> and loops through updating
+		//XXX code below is temporary!  at least while connection is not passes to model.  Right now this opens and closes a connection for each task.  BAD!
+		for(int i=0; i < this.tasks.size(); i++){
+			tasks.get(i).update();
+		}
+		
+		
 		return this;
+	}
+	
+	private void reorderTasks(){
+		for(int i=0; i < this.tasks.size(); i++){
+			tasks.get(i).setTaskOrder(i);
+			
+		}
 	}
 	
 	/**Creates a copy of the Stage and sets the copy's stageID to 0.
