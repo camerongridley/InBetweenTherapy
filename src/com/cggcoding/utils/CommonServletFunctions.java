@@ -19,7 +19,7 @@ public class CommonServletFunctions {
 	public static void createDefaultTreatmentIssue(HttpServletRequest request, int userID) throws ValidationException, DatabaseException{
 		String newIssueName = request.getParameter("newDefaultTreatmentIssue");
 		TreatmentIssue issue = new TreatmentIssue(newIssueName, userID);
-		issue.saveNew();
+		issue.create();
 		
 		request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());
 	}

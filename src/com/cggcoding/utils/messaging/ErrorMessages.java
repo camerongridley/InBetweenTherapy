@@ -3,7 +3,8 @@ package com.cggcoding.utils.messaging;
 public final class ErrorMessages {
 
 	//Database errors
-		public static final String GENERAL_DB_ERROR = "There seems to be a problem accessing your information from the database.  Please try again later.";
+		public static final String GENERAL_DB_ERROR = "There seems to be a problem performing the database operation you requested.  Please try again or contact customer support.";
+		public static final String ROLLBACK_DB_ERROR = "An error has occured while performing the database opertion you request and also a problem reverting your data back to it's original state.  Please contact customer support.";
 		
 	//General Validation errors
 		public static final String GENERAL_VALIDATION_ERROR = "There was an error validating your request.  Please try againg or contact customer support.";

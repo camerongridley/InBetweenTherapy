@@ -88,7 +88,7 @@ public class TaskGeneric extends Task implements Serializable{
 	}
 
 	@Override
-	protected void saveNewAdditionalData() throws DatabaseException, ValidationException {
+	protected void createAdditionalData(Connection cn) throws ValidationException {
 		//there is no additional data to save for GenericTask
 		
 	}
@@ -108,7 +108,7 @@ public class TaskGeneric extends Task implements Serializable{
 		copy.setStageID(stageID);
 		copy.setUserID(userID);
 		
-		return copy.saveNew();
+		return copy.create();
 	}
 
 	@Override

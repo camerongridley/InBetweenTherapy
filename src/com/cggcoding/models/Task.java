@@ -134,7 +134,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		taskTemplate.setTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
 		taskTemplate.setTemplate(true);
 		
-		taskTemplate.saveNew();
+		taskTemplate.create();
 		
 		return taskTemplate;
 	}
@@ -189,14 +189,39 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return task;
 	}
 	
+	
 	@Override
-	public Task saveNew()throws DatabaseException, ValidationException{
-		Task savedTask = dao.taskValidateAndCreate(this);
-		this.taskID = savedTask.getTaskID();
+	public Task create()throws DatabaseException, ValidationException{
+		Connection cn = null;
+		Task task = null;
+
+		try{
+			cn = dao.getConnection();
+			cn.setAutoCommit(false);
+			
+			task = create(cn);
+			
+			cn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				cn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+			}
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
 		
-		//XXX if I split the saving a a new Task into 2 steps, generic, then for specific subclass, use the code below
-		//saveNewGeneralDataInDatabase();
-		//saveNewAdditionalData();//see note above method declaration.
+		return task;
+	}
+	
+	public Task create(Connection cn)throws ValidationException, SQLException{
+		
+		createGeneralData(cn);
+		createAdditionalData(cn);
 		
 		return this;
 	}
@@ -214,6 +239,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	}
 
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
+	 * @param cn
 	 * @param taskID
 	 * @param stageID
 	 * @param userID
@@ -230,17 +256,29 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @return
 	 * @throws DatabaseException
 	 * @throws ValidationException
+	 * @throws SQLException 
 	 */
-	protected Task saveNewGeneralDataInDatabase() throws DatabaseException, ValidationException{
-		Task savedTask = dao.taskValidateAndCreate(this);//XXX this call actually checks for taskType and updates all fields in a task and not just the general/generic ones
-		this.taskID = savedTask.getTaskID();
+	protected Task createGeneralData(Connection cn) throws ValidationException, SQLException{
 		
+		//basic validation of the new task
+		if(this.getTitle() == null || this.getTitle().isEmpty() || 
+				this.getInstructions() == null || this.getInstructions().isEmpty() ||
+						this.getTaskTypeID() == 0){
+			throw new ValidationException(ErrorMessages.TASK_MISSING_INFO);
+		}
+		
+		//do any validation that requires a database call and if ok make db insert call
+		if(dao.taskValidate(cn, this)){
+			Task savedTask = dao.taskGenericCreate(cn, this);
+			this.taskID = savedTask.getTaskID();
+		}
+
 		return this;
 	}
 	
 	//XXX right now this does nothing in subclasses as MySQLActionHandler.taskCreate() does a taskType check and inserts into the appropriate subclass table
 	//If I change things so the connection is passed into the model then I would update this method for each subclass to update their db table 
-	protected abstract void saveNewAdditionalData() throws DatabaseException, ValidationException;
+	protected abstract void createAdditionalData(Connection cn) throws ValidationException, SQLException;
 	
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
 	 * @param taskWithNewData

@@ -246,7 +246,7 @@ public class EditTreatmentPlan extends HttpServlet {
         	//if there are no validation problems and there is a new custom issue name, add the new issue to the database and get its id
         	if(hasNewCustomIssue){
 	        	TreatmentIssue issue = new TreatmentIssue(newIssueName, user.getUserID());
-				issue.saveNew();// = user.createTreatmentIssue(issue);
+				issue.create();// = user.createTreatmentIssue(issue);
 	            issueID = issue.getTreatmentIssueID();
         	}
         	

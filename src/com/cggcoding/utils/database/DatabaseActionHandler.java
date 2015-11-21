@@ -155,6 +155,12 @@ public interface DatabaseActionHandler {
 
 	Task taskTwoTextBoxesLoadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException;
 
+	void taskTwoTextBoxesCreateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws SQLException;
+
+	boolean taskValidate(Connection cn, Task newTask) throws ValidationException, SQLException;
+
+	Task taskGenericCreate(Connection cn, Task newTask) throws SQLException;
+
 	
 
 	

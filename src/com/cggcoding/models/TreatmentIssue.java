@@ -61,7 +61,7 @@ public class TreatmentIssue implements Serializable, DatabaseModel{
 	}
 
 	@Override
-	public Object saveNew() throws ValidationException, DatabaseException {
+	public Object create() throws ValidationException, DatabaseException {
 		TreatmentIssue savedIssue = databaseActionHandler.treatmentIssueValidateAndCreate(this, userID);
 		this.treatmentIssueID = savedIssue.getTreatmentIssueID();
 		return savedIssue;

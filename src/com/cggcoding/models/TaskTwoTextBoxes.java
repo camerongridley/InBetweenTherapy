@@ -108,16 +108,10 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 		this.extraTextValue2 = extraTextValue2;
 	}
 
-	/*public static Task load(int taskID) throws DatabaseException {
-		return databaseActionHandler.taskTwoTextBoxesLoad(taskID);
-		//this method currently uses a SQL query that joins the generic and two-textbox table so can do in one call.  
-		//If wanted to break it up into separate calls then would probably load general data here and then call loadAdditionalData() 
-	}*/
-	
-	//XXX see note for loadAdditionalData()
 	@Override
-	protected void saveNewAdditionalData() throws DatabaseException, ValidationException{
-		//databaseActionHandler.taskTwoTextBoxesSaveNewAdditionalData(this);
+	protected void createAdditionalData(Connection cn) throws ValidationException, SQLException{
+		//TODO add validation code here
+		dao.taskTwoTextBoxesCreateAdditionalData(cn, this);
 	}
 	
 	@Override
@@ -160,7 +154,7 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	public Task copyAndSave(int stageID, int userID) throws DatabaseException, ValidationException {
 		TaskTwoTextBoxes task =  (TaskTwoTextBoxes)copy();
 		
-		return task.saveNew();
+		return task.create();
 	}
 
 

@@ -1450,8 +1450,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         
         return task;
 	}
-	
-	private void taskTwoTextBoxesCreateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws SQLException{
+	@Override
+	public void taskTwoTextBoxesCreateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws SQLException{
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
@@ -1708,13 +1708,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	//TODO - bug fix - either create different validate method for updates so doesn't throw TaskTitleExists exception when updating fields of a task without changing the title or add logic in method below to do this
-	private boolean taskValidate(Connection cn, Task newTask) throws ValidationException, SQLException{
+	@Override
+	public boolean taskValidate(Connection cn, Task newTask) throws ValidationException, SQLException{
 
-		if(newTask.getTitle() == null || newTask.getTitle().isEmpty() || 
-				newTask.getInstructions() == null || newTask.getInstructions().isEmpty() ||
-				newTask.getTaskTypeID() == 0){
-			throw new ValidationException(ErrorMessages.TASK_MISSING_INFO);
-		}
+		
 		
 		PreparedStatement ps = null;
         ResultSet stageCount = null;
@@ -1752,7 +1749,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	 * @return
 	 * @throws DatabaseException
 	 */
-	private Task taskGenericCreate(Connection cn, Task newTask) throws SQLException{
+	@Override
+	public Task taskGenericCreate(Connection cn, Task newTask) throws SQLException{
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         

@@ -105,7 +105,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public static Stage createTemplate(int userID, String title, String description) throws ValidationException, DatabaseException{
 		Stage stageTemplate = new Stage(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, title, description, Constants.TEMPLATE_ORDER_NUMBER, true);
 		
-		stageTemplate.saveNew();// = databaseActionHandler.stageValidateAndCreate(stageTemplate);
+		stageTemplate.create();// = databaseActionHandler.stageValidateAndCreate(stageTemplate);
 		
 		return stageTemplate;
 	}
@@ -379,7 +379,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 
 	@Override
-	public Object saveNew() throws ValidationException, DatabaseException{
+	public Object create() throws ValidationException, DatabaseException{
 		Stage savedStage = databaseActionHandler.stageValidateAndCreate(this);
 		this.stageID = savedStage.getStageID();
 		return savedStage;
@@ -406,7 +406,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		task.setStageID(this.stageID);
 		task.setTaskOrder(this.getTaskOrderDefaultValue());
 		
-		task.saveNew();
+		task.create();
 		this.addTask(task);
 		
 		return task;
@@ -417,7 +417,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		taskBeingCopied.setStageID(this.stageID);
 		taskBeingCopied.setTaskOrder(this.getTaskOrderDefaultValue());
 		
-		return taskBeingCopied.saveNew();
+		return taskBeingCopied.create();
 	}
 	
 	public Stage deleteTask(int taskToDeleteID) throws ValidationException, DatabaseException{

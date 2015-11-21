@@ -1,6 +1,5 @@
 package com.cggcoding.models;
 
-import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -17,7 +16,7 @@ public interface DatabaseModel {
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	Object saveNew() throws ValidationException, DatabaseException;
+	Object create() throws ValidationException, DatabaseException;
 	
 	/**Updates the record for the model in the database
 	 * @throws ValidationException

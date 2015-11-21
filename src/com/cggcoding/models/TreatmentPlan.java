@@ -245,7 +245,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	@Override
-	public Object saveNew() throws ValidationException, DatabaseException{
+	public Object create() throws ValidationException, DatabaseException{
 		 TreatmentPlan savedPlan = databaseActionHandler.treatmentPlanValidateAndCreate(this);
 		 this.treatmentPlanID = savedPlan.getTreatmentPlanID();
 		 return savedPlan;
@@ -339,7 +339,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
 		stageBeingCopied.setStageOrder(this.getNumberOfStages());
 		
-		stageBeingCopied.saveNew();
+		stageBeingCopied.create();
 		
 		this.addStage(stageBeingCopied);
 		
@@ -349,7 +349,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	public Stage createNewStage(int userID, String title, String description) throws ValidationException, DatabaseException{
 		
 		Stage newStage = Stage.getInstanceWithoutID(this.treatmentPlanID, userID, title, description, this.getStageOrderDefaultValue(), false);
-		newStage.saveNew();
+		newStage.create();
 		
 		this.addStage(newStage);
 		
