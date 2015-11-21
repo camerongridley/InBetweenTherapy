@@ -123,7 +123,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	public User userLoadInfo(String email, String password) throws DatabaseException{
     	Connection cn = null;
     	PreparedStatement ps = null;
-        ResultSet userInfo = null;
+        ResultSet rsUserInfo = null;
         User user = null;
         
         try {
@@ -132,24 +132,27 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             ps.setString(1, email);
             ps.setString(2, password);
 
-            userInfo = ps.executeQuery();
+            rsUserInfo = ps.executeQuery();
             
             //XXX - replace the use of downcasting? - e.g. UserClient.setActiveTreatmentPlanID
             // see http://programmers.stackexchange.com/questions/258655/ood-java-inheritance-and-access-to-child-methods-via-casting 
-            while (userInfo.next()){
-            	switch (userInfo.getString("role")){
+            while (rsUserInfo.next()){
+            	switch (rsUserInfo.getString("role")){
             		case "admin":
-            			user = new UserAdmin(userInfo.getInt("user_id"), userInfo.getString("email"));
+            			user = new UserAdmin(rsUserInfo.getInt("user_id"), rsUserInfo.getString("email"));
             			user.addRole("admin");
+            			user.setRole("admin");
             			break;
             		case "therapist":
-            			user = new UserTherapist(userInfo.getInt("user_id"), userInfo.getString("email"));
+            			user = new UserTherapist(rsUserInfo.getInt("user_id"), rsUserInfo.getString("email"));
             			user.addRole("therapist");
+            			user.setRole("therapist");
             			break;
             		case "client":
-            			user = new UserClient(userInfo.getInt("user_id"), userInfo.getString("email"));
+            			user = new UserClient(rsUserInfo.getInt("user_id"), rsUserInfo.getString("email"));
             			user.addRole("client");
-            			((UserClient)user).setActiveTreatmentPlanId(userInfo.getInt("active_treatment_plan_id"));
+            			user.setRole("client");
+            			((UserClient)user).setActiveTreatmentPlanId(rsUserInfo.getInt("active_treatment_plan_id"));
             			break;
             	}
             }
@@ -159,7 +162,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	e.printStackTrace();
         	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
-        	DbUtils.closeQuietly(userInfo);
+        	DbUtils.closeQuietly(rsUserInfo);
 			DbUtils.closeQuietly(ps);
 			DbUtils.closeQuietly(cn);
         }

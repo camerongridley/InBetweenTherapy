@@ -89,6 +89,7 @@ public class AssignTreatmentPlan extends HttpServlet {
 			}
 		
 		}catch(DatabaseException | ValidationException e){
+			forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
 			request.setAttribute("errorMessage", e.getMessage());
 			System.out.println(e.getMessage());
 		}
