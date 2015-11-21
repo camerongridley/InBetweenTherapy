@@ -1,15 +1,20 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 
 public abstract class Task implements Serializable, Completable, DatabaseModel{
@@ -33,7 +38,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private int templateID;
 	int repetitions;
 	
-	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
 	//empty constructor necessary to allow static factory methods in subclasses
 	public Task(){
@@ -135,32 +140,58 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	}
 	
 	public static Task load(int taskID) throws DatabaseException{
-		//XXX Ideally, this would take better advantage of the inheritance architecture - since when loading I don't know what the type will be, there has to be a check somewhere.  I'd prefer that somehow be in the model versus in the DAO as it is now
-		Task task =  databaseActionHandler.taskLoad(taskID);
-		//task = task.loadAdditionalData();
+		Connection cn = null;
+		Task task = null;
+
+		try{
+			cn = dao.getConnection();
+
+			task = load(cn, taskID);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+
 		return task;
 
 	}
 	
-	public abstract Task loadAdditionalData();
+	public static Task load(Connection cn, int taskID) throws SQLException {
+
+		Task task = null;
+
+		TaskGeneric genericTask = TaskGeneric.loadGeneric(cn, taskID);
+		
+		task = convertToType(genericTask);
+		
+		task.loadAdditionalData(cn, genericTask);
+
+		return task;
+	}
 	
-	/*
-	public static Task castToType(Task task){
-		switch(task.getTaskTypeID()){
-		case Constants.TASK_TYPE_ID_GENERIC_TASK:
-			task = (TaskGeneric)task;
-			break;
-		case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-			task = (TaskTwoTextBoxes)task;
-			break;
+	protected abstract void loadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException;
+	
+	
+	private static Task convertToType(TaskGeneric genericTask){
+		Task task = null;
+		switch(genericTask.getTaskTypeID()){
+			case Constants.TASK_TYPE_ID_GENERIC_TASK:
+				task = genericTask;
+				break;
+			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+				task = TaskTwoTextBoxes.convertFromGeneric(genericTask);
+				break;
 		}
 		
 		return task;
-	}*/
+	}
 	
 	@Override
 	public Task saveNew()throws DatabaseException, ValidationException{
-		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);
+		Task savedTask = dao.taskValidateAndCreate(this);
 		this.taskID = savedTask.getTaskID();
 		
 		//XXX if I split the saving a a new Task into 2 steps, generic, then for specific subclass, use the code below
@@ -172,13 +203,13 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		databaseActionHandler.taskGenericUpdate(this);
+		dao.taskGenericUpdate(this);
 		updateAdditionalData();
 	}
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		databaseActionHandler.taskDelete(this.taskID);
+		dao.taskDelete(this.taskID);
 		
 	}
 
@@ -201,7 +232,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @throws ValidationException
 	 */
 	protected Task saveNewGeneralDataInDatabase() throws DatabaseException, ValidationException{
-		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);//XXX this call actually checks for taskType and updates all fields in a task and not just the general/generic ones
+		Task savedTask = dao.taskValidateAndCreate(this);//XXX this call actually checks for taskType and updates all fields in a task and not just the general/generic ones
 		this.taskID = savedTask.getTaskID();
 		
 		return this;

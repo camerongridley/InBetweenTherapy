@@ -1,6 +1,7 @@
 package com.cggcoding.utils.database;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -136,6 +137,8 @@ public interface DatabaseActionHandler {
 	
 	Task taskLoad(int taskID) throws DatabaseException;
 	
+	Task taskGenericLoad(Connection cn, int taskID) throws SQLException;
+	
 	boolean taskTwoTextBoxesUpdateAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException;
 	
 	/**Updates task with new data.  If taskToUpdate.isTemplate == true, then stageID foreign key is set to null before inserting
@@ -149,6 +152,10 @@ public interface DatabaseActionHandler {
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
 
 	void taskDelete(int taskID) throws DatabaseException, ValidationException;
+
+	Task taskTwoTextBoxesLoadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException;
+
+	
 
 	
 

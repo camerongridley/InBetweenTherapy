@@ -1,6 +1,8 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,7 +22,7 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	private String extraTextLabel2;
 	private String extraTextValue2;
 	
-	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
+	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
 	public TaskTwoTextBoxes(){
 		super();
@@ -70,6 +72,10 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 				extraTextLabel2, extraTextValue2);
 	}
 	
+	public static Task convertFromGeneric(TaskGeneric genericTask){
+		return addDataToGenericTask(genericTask, null, null, null, null);
+	}
+	
 	public String getExtraTextLabel1() {
 		return extraTextLabel1;
 	}
@@ -116,15 +122,17 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	
 	@Override
 	protected boolean updateAdditionalData() throws DatabaseException, ValidationException {
-		return databaseActionHandler.taskTwoTextBoxesUpdateAdditionalData(this);
+		return dao.taskTwoTextBoxesUpdateAdditionalData(this);
 	}
 
 	@Override
-	public Task loadAdditionalData() {
+	protected void loadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException {
+		transferAdditionalData(dao.taskTwoTextBoxesLoadAdditionalData(cn, genericTask));
+		
 		/*XXX - this is doing nothing now and is not ever called.  If I change the DAO so that the connection is passed 
 		 * around the models, then I will need to update this so there is a call to the TwoTextBoxes db table 
 		 * here and the load for this is a 2-step process vs being a one-step process using a join in the SQL*/
-		return this;
+
 
 	}
 	

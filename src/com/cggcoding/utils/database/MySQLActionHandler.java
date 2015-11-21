@@ -1416,8 +1416,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		return task;
 	}
 	
-
-	private Task taskGenericLoad(Connection cn, int taskID) throws SQLException{
+	@Override
+	public Task taskGenericLoad(Connection cn, int taskID) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         Task task = null;
@@ -1553,6 +1553,33 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             			convertTimestampToLocalDateTime(rs.getTimestamp("task_date_completed")), rs.getInt("task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_is_template"), 
             			rs.getInt("template_id"), rs.getInt("repetitions"),
             			rs.getString("extra_text_label_1"), rs.getString("extra_text_value_1"), rs.getString("extra_text_label_2"), rs.getString("extra_text_value_2"));
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return task;
+	}
+	
+	@Override
+	public Task taskTwoTextBoxesLoadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet rs = null;
+        TaskTwoTextBoxes task = null;
+        
+        try {
+    		String sql = "SELECT * FROM cggcodin_doitright.task_two_textboxes WHERE task_two_textboxes.task_generic_id =?";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, genericTask.getTaskID());
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	task = TaskTwoTextBoxes.addDataToGenericTask(genericTask, rs.getString("extra_text_label_1"), rs.getString("extra_text_value_1"), rs.getString("extra_text_label_2"), rs.getString("extra_text_value_2"));
             }
 
         } finally {
