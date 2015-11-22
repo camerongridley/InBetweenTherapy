@@ -219,7 +219,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		Stage nextStage = stages.get(activeViewStageIndex);
 		nextStage.setInProgress(true);
 		
-		dao.treatmentPlanValidateAndUpdateBasic(this);
+		this.updateBasic();
 		nextStage.update();
 		//databaseActionHandler.stageValidateAndUpdateBasic(nextStage);
 		
@@ -306,18 +306,97 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		dao.treatmentPlanValidateAndUpdateBasic(this);
+		Connection cn = null;
+        
+        try {
+        	cn = dao.getConnection();
+        	cn.setAutoCommit(false);
+        	
+        	updateBasic(cn);
+        	
+        	cn.commit();
+        } catch (SQLException e) {
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+        }
 		
+	}
+	
+	public void updateBasic() throws ValidationException, DatabaseException {
+		Connection cn = null;
+        
+        try {
+        	cn = dao.getConnection();  	
+        	updateBasic(cn);
+        } catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DbUtils.closeQuietly(cn);
+        }
+		
+	}
+	
+	public void updateBasic(Connection cn) throws ValidationException, SQLException {
+		if(dao.treatmentPlanValidateUpdatedTitle(cn, this)){
+    		dao.treatmentPlanUpdateBasic(cn, this);
+    	}
 	}
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		dao.treatmentPlanDelete(this.treatmentPlanID);
+		Connection cn = null;
+        
+        try {
+        	cn = dao.getConnection();
+            
+        	delete(cn);
+            
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(cn);
+        }
+		
+	}
+	
+	public void delete(Connection cn) throws ValidationException, SQLException {
+		dao.throwValidationExceptionIfTemplateHolderID(this.treatmentPlanID);
+		
+		dao.treatmentPlanDelete(cn, this.treatmentPlanID);
 		
 	}
 	
 	public static void delete(int treatmentPlanID) throws DatabaseException, ValidationException{
-		dao.treatmentPlanDelete(treatmentPlanID);
+		Connection cn = null;
+        
+		dao.throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
+		
+        try {
+        	cn = dao.getConnection();
+            
+        	dao.treatmentPlanDelete(cn, treatmentPlanID);
+            
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(cn);
+        }
+		
 	}
 
 	public static TreatmentPlan load(int treatmentPlanID) throws DatabaseException, ValidationException{
@@ -395,6 +474,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
+	
+	//XXX use Stage.delete here!
 	public void deleteStage(int stageID) throws ValidationException, DatabaseException {
 		for(int i=0; i < this.stages.size(); i++){
 			if(stages.get(i).getStageID()==stageID){

@@ -24,7 +24,8 @@ public final class ErrorMessages {
 	public static final String ISSUE_NAME_EXISTS = "The treatment issue already exists in the default choices or in your profile.  Please choose another name for the treatment issue.";
 	public static final String ISSUE_NAME_MISSING = "You entered a blank treatment issue.  Please try again.";
 	public static final String STAGE_TITLE_EXISTS = "The stage name you entered already exists in your profile. Please use another name. If you'd like to view or edit the existing task, <a href=#>click here</a>";
-
+	public static final String PLAN_DELETE_ERROR = "There is no treatment plan selected to delete.";
+	
 	//Stages
 	public static final String STAGE_GOAL_VALIDATION_ERROR = "You must enter a goal description.";
 	public static final String STAGE_UPDATE_NO_SELECTION = "Please select and load a stage.";

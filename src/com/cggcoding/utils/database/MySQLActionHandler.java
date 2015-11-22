@@ -558,7 +558,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return treatmentPlan;
 	}
     
-    @Override
+    //TODO delete
+/*    @Override
 	public void treatmentPlanValidateAndUpdateBasic(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException {
 		
 		Connection cn = null;
@@ -575,10 +576,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 			DbUtils.closeQuietly(cn);
         }
 		
-	}
+	}*/
     
-
-	private boolean treatmentPlanValidateUpdatedTitle(Connection cn, TreatmentPlan treatmentPlan) throws ValidationException, SQLException{
+    @Override
+	public boolean treatmentPlanValidateUpdatedTitle(Connection cn, TreatmentPlan treatmentPlan) throws ValidationException, SQLException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
@@ -610,7 +611,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
 	}
 
-	private void treatmentPlanUpdateBasic(Connection cn, TreatmentPlan treatmentPlan) throws SQLException, ValidationException {
+    @Override
+	public void treatmentPlanUpdateBasic(Connection cn, TreatmentPlan treatmentPlan) throws SQLException, ValidationException {
 		PreparedStatement ps = null;
         
         throwValidationExceptionIfNull(treatmentPlan);
@@ -639,7 +641,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         }
 	}
 	
-	public void treatmentPlanUpdateStages(List<Stage> stageList) throws DatabaseException, ValidationException{
+    //TODO delete?
+/*	public void treatmentPlanUpdateStages(List<Stage> stageList) throws DatabaseException, ValidationException{
 		Connection cn = null;
         
         try {
@@ -663,7 +666,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 			DbUtils.closeQuietly(cn);
         }
 		
-	}
+	}*/
     
 
     @Override
@@ -699,27 +702,22 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	@Override
-	public void treatmentPlanDelete(int treatmentPlanID) throws DatabaseException, ValidationException {
-		Connection cn = null;
+	public void treatmentPlanDelete(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
 		PreparedStatement ps = null;
 
 		try {
-        	cn = getConnection();
             ps = cn.prepareStatement("DELETE FROM treatment_plan WHERE treatment_plan_id=?");
             ps.setInt(1, treatmentPlanID);
 
             ps.executeUpdate();
-            
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		
 		} finally {
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
 	    }
 
 	}
 
+	//XXX move this into model
 	@Override
 	public void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException {
 		Connection cn = null;
@@ -960,8 +958,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return success;
 	}*/
 	
-	
-	private boolean stageValidateAndUpdateBasic(Connection cn, Stage stage) throws ValidationException, SQLException, DatabaseException{
+	//TODO delete???
+	/*private boolean stageValidateAndUpdateBasic(Connection cn, Stage stage) throws ValidationException, SQLException, DatabaseException{
     	PreparedStatement ps = null;
         boolean success = false;
         
@@ -979,7 +977,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         }
         
         return success;
-	}
+	}*/
 	
 	@Override
 	public boolean stageUpdateBasic(Connection cn, Stage stage) throws ValidationException, SQLException{
@@ -1273,10 +1271,14 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	public void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException, DatabaseException{
     	PreparedStatement ps = null;
         
-        ps = cn.prepareStatement("DELETE FROM stage WHERE stage_id=?");
-        ps.setInt(1, stageID);
-
-        ps.executeUpdate();
+    	try{
+	        ps = cn.prepareStatement("DELETE FROM stage WHERE stage_id=?");
+	        ps.setInt(1, stageID);
+	
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
 	
 	}
 	
@@ -1822,6 +1824,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
     	}
     	return ldt;
     }
+
 
 
 }

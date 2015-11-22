@@ -41,6 +41,21 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
 	//**************************************************************************************************
+
+	TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+
+	List<Integer> treatmentPlanGetStageIDs(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+
+	boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle)
+			throws ValidationException, SQLException;
+
+	TreatmentPlan treatmentPlanCreateBasic(Connection cn, TreatmentPlan treatmentPlan)
+			throws SQLException, ValidationException;
+
+	boolean treatmentPlanValidateUpdatedTitle(Connection cn, TreatmentPlan treatmentPlan)
+			throws ValidationException, SQLException;
+
+	void treatmentPlanUpdateBasic(Connection cn, TreatmentPlan treatmentPlan) throws SQLException, ValidationException;
 	
 	/**Gets all of the "default" TreatmentPlans, which means it returns all the the TreatmentPlans that have been created by an Admin user and can be copied for use by Therapist and Client users.
 	 * It returns all TreatmentPlans that are owned by users of type Admin and have isTemplate as true.  It specifically excludes TreatmentPlan with id=0 since that TreatmentPlan is designated
@@ -51,9 +66,7 @@ public interface DatabaseActionHandler {
 	 */
 	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException;
 	
-	void treatmentPlanValidateAndUpdateBasic(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException;
-
-	void treatmentPlanDelete(int treatmentPlanID) throws DatabaseException, ValidationException;
+	void treatmentPlanDelete(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 	
 	void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException;
 
@@ -147,15 +160,6 @@ public interface DatabaseActionHandler {
 
 	void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException, DatabaseException;
 
-	TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
-
-	List<Integer> treatmentPlanGetStageIDs(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
-
-	boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle)
-			throws ValidationException, SQLException;
-
-	TreatmentPlan treatmentPlanCreateBasic(Connection cn, TreatmentPlan treatmentPlan)
-			throws SQLException, ValidationException;
 
 
 

@@ -521,15 +521,16 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 	}
 	
-	public void delete(Connection cn) throws SQLException, ValidationException, DatabaseException{
-    	PreparedStatement ps = null;
-        
+	public void delete(Connection cn) throws SQLException, ValidationException, DatabaseException{      
         dao.throwValidationExceptionIfTemplateHolderID(this.stageID);
         
         dao.stageDelete(cn, this.stageID);
 	
 	}
 	
+	//TODO create a static delete()?
+	
+	//TODO review this method to see if needs to incorporate new Task methods since connection was moved to model
 	public Task copyTaskIntoStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
 		Task task = Task.load(taskIDBeingCopied);
 		task.setTemplate(false);
@@ -543,6 +544,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return task;
 	}
 	
+	//TODO review this method to see if needs to incorporate new Task methods since connection was moved to model
 	public Task createNewTask(Task taskBeingCopied) throws DatabaseException, ValidationException{
 		taskBeingCopied.setUserID(this.userID);
 		taskBeingCopied.setStageID(this.stageID);
@@ -551,6 +553,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return taskBeingCopied.create();
 	}
 	
+	//XXX use Task.delete here! This method needs several changes...
 	public Stage deleteTask(int taskToDeleteID) throws ValidationException, DatabaseException{
 		for(int i = 0; i < tasks.size(); i++){
 			Task task = tasks.get(i);
@@ -580,6 +583,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		}
 	}
 	
+	//TODO review this method to see if needs to incorporate new methods since connection was moved to model
 	/**Creates a copy of the Stage and sets the copy's stageID to 0.
 	 * @param treatmentPlanIDToCopy - treatmentPlanID the Stage is being copied into
 	 * @param userIDToCopy - userID of the User that owns the TreatmentPlan the Stage is being copied into

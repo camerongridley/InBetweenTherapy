@@ -160,7 +160,7 @@ public class EditTreatmentPlan extends HttpServlet {
 						
 		            case "delete-plan":
 		            	if(treatmentPlanID == 0){
-		            		throw new ValidationException("There is no treatment plan selected to delete.");
+		            		throw new ValidationException(ErrorMessages.PLAN_DELETE_ERROR);
 		            	}else{
 			            	TreatmentPlan.delete(treatmentPlanID);
 			            	request.removeAttribute("treatmentPlan");

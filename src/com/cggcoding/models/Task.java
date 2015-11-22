@@ -298,7 +298,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	}
 	
 	//TODO add delete(cn) method
-
+	//TODO add static delete(cn) method
+	
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
 	 * @param cn
 	 * @param taskID
