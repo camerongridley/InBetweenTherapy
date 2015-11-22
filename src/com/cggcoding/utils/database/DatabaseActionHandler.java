@@ -161,6 +161,11 @@ public interface DatabaseActionHandler {
 
 	Task taskGenericCreate(Connection cn, Task newTask) throws SQLException;
 
+	boolean taskGenericUpdate(Connection cn, Task taskToUpdate) throws SQLException;
+
+	boolean taskTwoTextBoxesUpdateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask)
+			throws SQLException, ValidationException;
+
 	
 
 	

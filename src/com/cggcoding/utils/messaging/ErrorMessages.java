@@ -4,6 +4,7 @@ public final class ErrorMessages {
 
 	//Database errors
 		public static final String GENERAL_DB_ERROR = "There seems to be a problem performing the database operation you requested.  Please try again or contact customer support.";
+		public static final String ROLLBACK_DB_OP = "An error has occured while performing the database opertion you request and the data has been rolled back to its previous state.";
 		public static final String ROLLBACK_DB_ERROR = "An error has occured while performing the database opertion you request and also a problem reverting your data back to it's original state.  Please contact customer support.";
 		
 	//General Validation errors

@@ -1507,7 +1507,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return success == 1;
 	}
 	
-	private boolean taskTwoTextBoxesUpdateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws SQLException, ValidationException {
+	@Override
+	public boolean taskTwoTextBoxesUpdateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws SQLException, ValidationException {
     	PreparedStatement ps = null;
         int success = 0;
         
@@ -1593,7 +1594,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	@Override
 	public boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException {
 		Connection cn = null;
-    	PreparedStatement ps = null;
         int success = 0;
         
         try {
@@ -1607,15 +1607,14 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             e.printStackTrace();
             throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
-			DbUtils.closeQuietly(ps);
 			DbUtils.closeQuietly(cn);
         }
         
         return success == 1;
 	}
 	
-	
-	private boolean taskGenericUpdate(Connection cn, Task taskToUpdate) throws SQLException {
+	@Override
+	public boolean taskGenericUpdate(Connection cn, Task taskToUpdate) throws SQLException {
 
     	PreparedStatement ps = null;
         int success = 0;

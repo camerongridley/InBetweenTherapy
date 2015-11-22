@@ -78,7 +78,7 @@ public class TaskGeneric extends Task implements Serializable{
 	}
 	
 	@Override
-	protected boolean updateAdditionalData () {
+	protected boolean updateAdditionalData (Connection cn) throws SQLException {
 		return true;//there is no additional data in GenericTask to update
 	}
 

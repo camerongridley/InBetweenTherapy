@@ -159,6 +159,13 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 
 	}
 	
+	/**Loads a task.  
+	 * CALLING METHOD IS REPOSONSIBLE FOR CLOSING THE CONNECTION PASSED TO THIS METHOD
+	 * @param cn
+	 * @param taskID
+	 * @return
+	 * @throws SQLException
+	 */
 	public static Task load(Connection cn, int taskID) throws SQLException {
 
 		Task task = null;
@@ -205,6 +212,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		} catch (SQLException e) {
 			e.printStackTrace();
 			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
 				cn.rollback();
 			} catch (SQLException e1) {
 				e1.printStackTrace();
@@ -218,6 +226,12 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return task;
 	}
 	
+	/**Creates a new task. CALLING METHOD IS REPOSONSIBLE FOR CLOSING THE CONNECTION PASSED TO THIS METHOD
+	 * @param cn
+	 * @return
+	 * @throws ValidationException
+	 * @throws SQLException
+	 */
 	public Task create(Connection cn)throws ValidationException, SQLException{
 		
 		createGeneralData(cn);
@@ -228,8 +242,34 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		dao.taskGenericUpdate(this);
-		updateAdditionalData();
+		Connection cn = null;
+        
+        try {
+        	cn = dao.getConnection();
+        	cn.setAutoCommit(false);
+        	if(dao.taskValidate(cn, this)){	
+        		update(cn);
+        	}
+        	cn.commit();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+			}
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(cn);
+        }
+	}
+	
+	public void update(Connection cn) throws ValidationException, SQLException{
+		dao.taskGenericUpdate(cn, this);
+		updateAdditionalData(cn);
 	}
 
 	@Override
@@ -281,12 +321,13 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	protected abstract void createAdditionalData(Connection cn) throws ValidationException, SQLException;
 	
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
+	 * @param cn TODO
 	 * @param taskWithNewData
 	 * @return true if update successful, false if error
 	 * @throws ValidationException 
-	 * @throws DatabaseException 
+	 * @throws SQLException TODO
 	 */
-	protected abstract boolean updateAdditionalData() throws DatabaseException, ValidationException;
+	protected abstract boolean updateAdditionalData(Connection cn) throws ValidationException, SQLException;
 
 	
 	/**Copies the task, setting the taskID to 0 and template=false since templates are unique.

@@ -115,8 +115,8 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	}
 	
 	@Override
-	protected boolean updateAdditionalData() throws DatabaseException, ValidationException {
-		return dao.taskTwoTextBoxesUpdateAdditionalData(this);
+	protected boolean updateAdditionalData(Connection cn) throws ValidationException, SQLException {
+		return dao.taskTwoTextBoxesUpdateAdditionalData(cn, this);
 	}
 
 	@Override
