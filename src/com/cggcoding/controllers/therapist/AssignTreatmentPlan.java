@@ -77,7 +77,8 @@ public class AssignTreatmentPlan extends HttpServlet {
 						forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
 						break;
 					case "copy-plan-to-client":
-						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID);
+						boolean isTemplate = false;
+						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
 						
 						forwardTo = "/jsp/therapist-tools/therapist-main-menu.jsp";
 						break;

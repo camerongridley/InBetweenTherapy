@@ -307,7 +307,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
    
             while (rs.next()){
             	if(rs.getInt("treatment_plan_id") != Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID){ //TreatmentPlan with id=1 is the Plan that holds all Stage Defaults and so should not be included in the results of this query.
-            		defaultPlanList.add(treatmentPlanLoadWithEmpyLists(rs.getInt("treatment_plan_id")));
+            		defaultPlanList.add(treatmentPlanLoadBasic(cn, rs.getInt("treatment_plan_id")));
             	}
             	
             }
@@ -327,7 +327,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return defaultPlanList;
 	}
 	
-	@Override
+	//TODO delete
+/*	@Override
     public TreatmentPlan treatmentPlanLoad(int treatmentPlanID) throws DatabaseException, ValidationException{
     	Connection cn = null;
         TreatmentPlan plan = null;
@@ -389,9 +390,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         throwValidationExceptionIfNull(plan);
         
         return plan;
-    }
+    }*/
 	
-    private TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException{
+	@Override
+    public TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException{
     	PreparedStatement ps = null;
         ResultSet planInfo = null;
         TreatmentPlan plan = null;
@@ -423,10 +425,11 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return plan;
     }
     
-    private List<Stage> treatmentPlanGetStages(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
+	@Override
+    public List<Integer> treatmentPlanGetStageIDs(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Stage> stages = new ArrayList<>();
+        List<Integer> stageIDs = new ArrayList<>();
         
         throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
         
@@ -438,8 +441,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
 
             while (rs.next()){
-            	stages.add(Stage.load(cn, rs.getInt("stage_id")));
-            	//stages.add(stageLoad(cn, rs.getInt("stage_id")));
+            	stageIDs.add(rs.getInt("stage_id"));
             }
 
         } finally {
@@ -447,10 +449,11 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 			DbUtils.closeQuietly(ps);
         }
 
-        return stages;
+        return stageIDs;
     }
     
-    @Override
+	//TODO delete
+  /*  @Override
     public TreatmentPlan treatmentPlanValidateAndCreate(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException{
     	Connection cn = null;
         
@@ -474,10 +477,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         	cn.commit();
         } catch (SQLException e) {
 			try {
-				System.out.println("Rolling back SQL transaction.");
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
 				cn.rollback();
 			} catch (SQLException e1) {
-				System.out.println("Error rolling back SQL transaction.");
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
@@ -493,10 +496,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         throwValidationExceptionIfNull(treatmentPlan);
         
         return treatmentPlan;
-    }
+    }*/
     
     //TODO delete method?
-    private TreatmentPlan treatmentPlanValidateAndCreate(Connection cn, TreatmentPlan treatmentPlan) throws ValidationException, SQLException{
+    /*private TreatmentPlan treatmentPlanValidateAndCreate(Connection cn, TreatmentPlan treatmentPlan) throws ValidationException, SQLException{
         	
         	if(treatmentPlanValidateNewTitle(cn, treatmentPlan.getUserID(), treatmentPlan.getTitle())){
         		treatmentPlan = treatmentPlanCreateBasic(cn, treatmentPlan);
@@ -515,9 +518,10 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         throwValidationExceptionIfNull(treatmentPlan);
         
         return treatmentPlan;
-    }
+    }*/
     
-	private TreatmentPlan treatmentPlanCreateBasic(Connection cn, TreatmentPlan treatmentPlan) throws SQLException, ValidationException{		
+    @Override
+	public TreatmentPlan treatmentPlanCreateBasic(Connection cn, TreatmentPlan treatmentPlan) throws SQLException, ValidationException{		
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
@@ -661,25 +665,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
 	}
     
-    @Override
-    public TreatmentPlan treatmentPlanCopy(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
-    	TreatmentPlan planToCopy = treatmentPlanLoad(treatmentPlanIDBeingCopied);
-    	planToCopy.setTemplate(isTemplate);
-    	
-    	planToCopy.setUserID(userIDTakingNewPlan);
-    	//loop through and change all the userIDs to the userID supplied by the method argument
-    	for(Stage stage : planToCopy.getStages()){
-    		stage.setUserID(userIDTakingNewPlan);
-    		for(Task task : stage.getTasks()){
-    			task.setUserID(userIDTakingNewPlan);
-    		}
-    	}
-    	
-    	//save the plan - which is responsible for updating treatmentPlanID in all the child objects
-    	return treatmentPlanValidateAndCreate(planToCopy);
-    }
 
-	private boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle) throws ValidationException, SQLException{
+    @Override
+	public boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle) throws ValidationException, SQLException{
     	PreparedStatement ps = null;
         ResultSet issueCount = null;
         int comboExists = 0;
@@ -1190,7 +1178,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
             rs = ps.executeQuery();
 
             while (rs.next()){
-            	tasks.add(taskLoad(cn, rs.getInt("task_generic_id")));
+            	tasks.add(Task.load(cn, rs.getInt("task_generic_id")));
             }
 
         } finally {
@@ -1332,24 +1320,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         }
         
         return defaultTaskList;
-	}
-	
-	//XXX DELETE when finished moving Connection to Stage.java
-	private Task taskLoad(Connection cn, int taskID) throws SQLException {
-
-		Task task = null;
-
-		Task genericTask = taskGenericLoad(cn, taskID);
-		switch(genericTask.getTaskTypeID()){
-			case Constants.TASK_TYPE_ID_GENERIC_TASK:
-				task = genericTask;
-				break;
-			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-				task = taskTwoTextBoxesLoad(cn, taskID);
-				break;
-		}
-
-		return task;
 	}
 	
 	@Override
@@ -1542,7 +1512,8 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return success == 1;
 	}
 	
-	private Task taskCreate(Connection cn, Task newTask) throws SQLException{
+	//TODO delete
+	/*private Task taskCreate(Connection cn, Task newTask) throws SQLException{
 		Task createdTask = null;
 
     	createdTask = taskGenericCreate(cn, newTask);
@@ -1558,7 +1529,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
 		return createdTask;
 		
-	}
+	}*/
 	
 	//TODO - bug fix - either create different validate method for updates so doesn't throw TaskTitleExists exception when updating fields of a task without changing the title or add logic in method below to do this
 	@Override

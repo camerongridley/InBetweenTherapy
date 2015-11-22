@@ -41,20 +41,6 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
 	//**************************************************************************************************
-
-	TreatmentPlan treatmentPlanValidateAndCreate(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
-	
-	public TreatmentPlan treatmentPlanLoad(int treatmentPlanID) throws DatabaseException, ValidationException;
-	
-	/**Gets basic TreatmentPlan based on treatmentPlanID with none of it's lists (stages, etc.) populated.  If treatmentPlanID=1, return null because the TreatmentPlan.treatmentPlanID=1 is the TreatmentPlan that holds all Stage templates and should not ever be loaded.
-	 * @param treatmentPlanID
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ValidationException 
-	 */
-	TreatmentPlan treatmentPlanLoadWithEmpyLists(int treatmentPlanID) throws DatabaseException, ValidationException;
-	
-	public TreatmentPlan treatmentPlanCopy(int userID, int treatmentPlanID, boolean isTemplate) throws ValidationException, DatabaseException;
 	
 	/**Gets all of the "default" TreatmentPlans, which means it returns all the the TreatmentPlans that have been created by an Admin user and can be copied for use by Therapist and Client users.
 	 * It returns all TreatmentPlans that are owned by users of type Admin and have isTemplate as true.  It specifically excludes TreatmentPlan with id=0 since that TreatmentPlan is designated
@@ -160,6 +146,16 @@ public interface DatabaseActionHandler {
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
 	void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException, DatabaseException;
+
+	TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+
+	List<Integer> treatmentPlanGetStageIDs(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+
+	boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle)
+			throws ValidationException, SQLException;
+
+	TreatmentPlan treatmentPlanCreateBasic(Connection cn, TreatmentPlan treatmentPlan)
+			throws SQLException, ValidationException;
 
 
 

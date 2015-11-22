@@ -116,6 +116,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return stageTemplate;
 	}
 	
+	//TODO review to make sure is using the new create methods - if not then rename so not using "create" - that is confusing if whether there is a db insert
 	public static Stage createTemplate(Stage templateStage) throws ValidationException, DatabaseException{
 		return createTemplate(templateStage.getUserID(), templateStage.getTitle(), templateStage.getDescription());
 	}

@@ -17,6 +17,10 @@ import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
 
+/**
+ * @author cgrid_000
+ *
+ */
 public abstract class Task implements Serializable, Completable, DatabaseModel{
 	/**
 	 * 
@@ -182,6 +186,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	protected abstract void loadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException;
 	
 	
+	
+	/**This is used to determine the task type, primarily for when loading a task based solely on taskID and, therefore, the taskType would be unknown.
+	 * @param genericTask
+	 * @return
+	 */
 	private static Task convertToType(TaskGeneric genericTask){
 		Task task = null;
 		switch(genericTask.getTaskTypeID()){
