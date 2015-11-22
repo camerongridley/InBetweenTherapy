@@ -75,17 +75,21 @@ public interface DatabaseActionHandler {
 	//****************************************** Stage Methods *****************************************
 	//**************************************************************************************************
 	
-	Stage stageLoad(int stageID) throws DatabaseException, ValidationException;
+	List<StageGoal> stageLoadGoals(Connection cn, int stageID) throws SQLException, ValidationException;
+
+	List<Task> stageLoadTasks(Connection cn, int stageID) throws SQLException;
+
+	Stage stageLoadBasic(Connection cn, int stageID) throws SQLException, ValidationException;
 	
-	/**Validates and if passes, creates stage.  If the Stage.isTemplate=true, then the treatmentPlanID foreign key is set to null before inserting into the database.
-	 * @param stage
-	 * @return
-	 * @throws ValidationException
-	 * @throws DatabaseException
-	 */
-	Stage stageValidateAndCreate(Stage stage) throws ValidationException, DatabaseException;
-	
-	boolean stageValidateAndUpdateBasic(Stage newStageTemplate) throws ValidationException, DatabaseException;
+	boolean stageValidateNewTitle(Connection cn, Stage newStage) throws ValidationException, SQLException;
+
+	Stage stageCreateBasic(Connection cn, Stage newStage) throws ValidationException, SQLException;
+
+	boolean stageValidateUpdatedTitle(Connection cn, Stage newStage) throws ValidationException, SQLException;
+
+	StageGoal stageGoalCreate(Connection cn, StageGoal stageGoal) throws SQLException, ValidationException;
+
+	boolean stageUpdateBasic(Connection cn, Stage stage) throws ValidationException, SQLException;
 	
 	/**Gets basic Stage based on stageID with none of it's lists (goals, tasks, etc.) populated.  If stageID=1, return null because the Stage.stageID=1 is the Stage that holds all Task templates and should not ever be loaded. 
 	 * @param stageID
@@ -104,13 +108,12 @@ public interface DatabaseActionHandler {
 	 */
 	List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException;
 	
-	StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException, ValidationException;
+	//StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException, ValidationException;
 	
 	//List<Integer> stageGetTaskIDs(int stageID) throws DatabaseException, ValidationException;
 	
 	//List<StageGoal> stageLoadGoals(int stageID) throws DatabaseException, ValidationException;
 	
-	void stageDelete(int stageID) throws DatabaseException, ValidationException;
 
 	//**************************************************************************************************
 	//*************************************** Treatment Issue Methods **********************************
@@ -145,6 +148,23 @@ public interface DatabaseActionHandler {
 
 	boolean taskTwoTextBoxesUpdateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask)
 			throws SQLException, ValidationException;
+
+	
+	
+	
+	//**************************************************************************************************
+	//*************************************** Misc Methods **********************************
+	//**************************************************************************************************
+	boolean throwValidationExceptionIfTemplateHolderID(int templateHolderObjectID) throws ValidationException;
+
+	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
+
+	void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException, DatabaseException;
+
+
+
+
+
 
 	
 

@@ -220,6 +220,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 			}
 			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
 		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			DbUtils.closeQuietly(cn);
 	    }
 		
@@ -263,6 +268,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 			}
             throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
+        	try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			DbUtils.closeQuietly(cn);
         }
 	}
@@ -277,6 +287,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		dao.taskDelete(this.taskID);
 		
 	}
+	
+	//TODO add delete(cn) method
 
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
 	 * @param cn

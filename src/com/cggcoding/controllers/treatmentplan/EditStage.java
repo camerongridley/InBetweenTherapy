@@ -105,7 +105,8 @@ public class EditStage extends HttpServlet {
 		            	break;
 		            case "stage-edit-add-goal" :
 		            	String goalDescription = request.getParameter("newStageGoalDescription");
-		            	StageGoal.saveNewInDatabase(stageID, goalDescription);
+		            	StageGoal goal = StageGoal.getInstanceWithoutID(stageID, goalDescription);
+		            	goal.create();
 		            	request.setAttribute("stage", Stage.load(stageID));
 		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 		            	break;

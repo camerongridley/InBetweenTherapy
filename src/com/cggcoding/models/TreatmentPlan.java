@@ -216,7 +216,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		nextStage.setInProgress(true);
 		
 		databaseActionHandler.treatmentPlanValidateAndUpdateBasic(this);
-		databaseActionHandler.stageValidateAndUpdateBasic(nextStage);
+		nextStage.update();
+		//databaseActionHandler.stageValidateAndUpdateBasic(nextStage);
 		
 		return nextStage;
 	}

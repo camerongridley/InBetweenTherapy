@@ -5,9 +5,15 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
+
+import org.apache.commons.dbutils.DbUtils;
 
 public class Stage implements Serializable, Completable, DatabaseModel {
 
@@ -29,7 +35,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	private boolean inProgress;
 	private boolean template;
 	
-	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
+	private static DatabaseActionHandler dao = new MySQLActionHandler();
 
 	private Stage (int treatmentPlanID, int userID, String title, String description, int stageOrder, boolean template){
 		this.stageID = 0;
@@ -115,13 +121,38 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	public static Stage load(int stageID) throws DatabaseException, ValidationException{
-		
-		Stage stage = databaseActionHandler.stageLoad(stageID);//stageLoadWithEmplyLists(stageID);
-		//if(stage != null){
-		//	stage.loadTasks();
-		//	stage.loadGoals();
-		//}
+		Connection cn = null;
+		Stage stage = null;
+
+		try{
+			cn = dao.getConnection();
+
+			stage = load(cn, stageID);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+
 		return stage;
+		
+	}
+	
+	public static Stage load(Connection cn, int stageID) throws SQLException, ValidationException{
+		Stage stage = null;
+        
+        dao.throwValidationExceptionIfTemplateHolderID(stageID);
+        
+    	stage = dao.stageLoadBasic(cn, stageID);
+    	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
+		stage.setTasks(dao.stageLoadTasks(cn, stage.getStageID()));
+
+        
+        dao.throwValidationExceptionIfNull(stage);
+        
+        return stage;
 	}
 	
 /*	public void loadTasks() throws DatabaseException, ValidationException{
@@ -338,7 +369,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			this.markIncomplete();
 		}
 		
-		databaseActionHandler.stageValidateAndUpdateBasic(this);
+		update();
 	}
 	
 	
@@ -379,24 +410,123 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 
 	@Override
-	public Object create() throws ValidationException, DatabaseException{
-		Stage savedStage = databaseActionHandler.stageValidateAndCreate(this);
+	public Stage create() throws ValidationException, DatabaseException{
+		Connection cn = null;
+		
+		dao.throwValidationExceptionIfTemplateHolderID(this.stageID);
+		
+        try {
+        	cn= dao.getConnection();
+        	
+        	cn.setAutoCommit(false);
+        	
+			create(cn);
+			
+			cn.commit();
+			
+        } catch (SQLException e) {
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+		}
+        
+        dao.throwValidationExceptionIfNull(this);
+        
+        return this;
+		
+		
+		/*Stage savedStage = dao.stageValidateAndCreate(this);
 		this.stageID = savedStage.getStageID();
-		return savedStage;
+		return savedStage;*/
+	}
+	
+	public void create(Connection cn) throws ValidationException, SQLException{
+		if(dao.stageValidateNewTitle(cn, this)){
+			dao.stageCreateBasic(cn, this);
+			
+			for(StageGoal goal : getGoals()){
+				goal.setStageID(this.stageID);
+				goal.create(cn);
+				
+				
+				if(goal.isValidNewGoal()){
+					//set the newly generated stageID in the goal
+					goal.setStageID(getStageID());
+					goal.create(cn);
+				}
+			}
+			
+			for(Task task : getTasks()){
+				//set the newly generated stageID in the task
+				task.setStageID(getStageID());
+				task.create(cn);
+			}
+		}
 	}
 
-	
+	//TODO decide if I should make updateFull() and updateBasic(), as this currently just updates basic info.  method title should accurately reflect just how much is being updated
 	@Override
 	public void update()  throws ValidationException, DatabaseException {
-		//if(this.validateForDatabase()){
-			databaseActionHandler.stageValidateAndUpdateBasic(this);//TODO should this be stageValidateAndUpdate() - be consistent with how validating in MySQLActionHandler whether it's contained within Update/Create or if is a separate method - separateMethods I think is preferable
-		//}
+		Connection cn = null;
+              
+        try {
+        	cn = dao.getConnection();
+        	
+        	updateBasic(cn);
+        	
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+
+			DbUtils.closeQuietly(cn);
+        }
 		
 	}
+	
+	public void updateBasic(Connection cn) throws ValidationException, SQLException{
+		if(dao.stageValidateUpdatedTitle(cn, this)){
+			dao.stageUpdateBasic(cn, this);
+		}
+	}
+	
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		databaseActionHandler.stageDelete(this.stageID);
+		Connection cn = null;
+        
+        try {
+        	cn = dao.getConnection();
+            
+        	delete(cn);
+            
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+			DbUtils.closeQuietly(cn);
+        }
 		
+	}
+	
+	public void delete(Connection cn) throws SQLException, ValidationException, DatabaseException{
+    	PreparedStatement ps = null;
+        
+        dao.throwValidationExceptionIfTemplateHolderID(this.stageID);
+        
+        dao.stageDelete(cn, this.stageID);
+	
 	}
 	
 	public Task copyTaskIntoStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
