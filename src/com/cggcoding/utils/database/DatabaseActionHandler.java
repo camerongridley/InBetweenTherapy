@@ -127,27 +127,7 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	List<Task> taskGetDefaults() throws DatabaseException;
 	
-	/**Validates and if passes, creates task.  If the Task.isTemplate=true, then the stageID foreign key is set to null before inserting into the database.
-	 * @param newTask
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ValidationException
-	 */
-	Task taskValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
-	
-	Task taskLoad(int taskID) throws DatabaseException;
-	
 	Task taskGenericLoad(Connection cn, int taskID) throws SQLException;
-	
-	boolean taskTwoTextBoxesUpdateAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException;
-	
-	/**Updates task with new data.  If taskToUpdate.isTemplate == true, then stageID foreign key is set to null before inserting
-	 * @param taskToUpdate
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ValidationException
-	 */
-	boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException;
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
 

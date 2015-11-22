@@ -1380,25 +1380,7 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         return defaultTaskList;
 	}
 	
-	public Task taskLoad(int taskID) throws DatabaseException {
-		Connection cn = null;
-		Task task = null;
-
-		try{
-			cn = getConnection();
-
-			task = taskLoad(cn, taskID);
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-		} finally {
-			DbUtils.closeQuietly(cn);
-	    }
-
-		return task;
-	}
-	
+	//XXX DELETE when finished moving Connection to Stage.java
 	private Task taskLoad(Connection cn, int taskID) throws SQLException {
 
 		Task task = null;
@@ -1482,29 +1464,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
         }
 		
 
-	}
-
-	@Override
-	public boolean taskTwoTextBoxesUpdateAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException {
-		Connection cn = null;
-    	PreparedStatement ps = null;
-        int success = 0;
-        
-        try {
-        	cn = getConnection();
-        	if(taskValidate(cn, twoTextBoxesTask)){
-        		taskTwoTextBoxesUpdateAdditionalData(cn, twoTextBoxesTask);	
-        	}
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-        } finally {
-			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
-        }
-        
-        return success == 1;
 	}
 	
 	@Override
@@ -1592,28 +1551,6 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 	}
 	
 	@Override
-	public boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException {
-		Connection cn = null;
-        int success = 0;
-        
-        try {
-        	cn = getConnection();
-        	if(taskValidate(cn, taskToUpdate)){	
-        		taskGenericUpdate(cn, taskToUpdate);
-        	}
-        	
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-        } finally {
-			DbUtils.closeQuietly(cn);
-        }
-        
-        return success == 1;
-	}
-	
-	@Override
 	public boolean taskGenericUpdate(Connection cn, Task taskToUpdate) throws SQLException {
 
     	PreparedStatement ps = null;
@@ -1669,49 +1606,9 @@ public class MySQLActionHandler implements DatabaseActionHandler{
 		
 	}
 	
-	@Override
-	public Task taskValidateAndCreate(Task newTask) throws DatabaseException, ValidationException{
-		Connection cn = null;
-
-        try {
-        	cn= getConnection();
-        	cn.setAutoCommit(false);
-
-			if(taskValidate(cn, newTask)){
-				return taskCreate(cn, newTask);
-			}
-			
-			cn.commit();
-			
-        } catch (SQLException e) {
-        	try {
-				cn.rollback();
-				System.out.println("The SQL transaction is being rolled back.");
-			} catch (SQLException e1) {
-				System.out.println("Error rolling back SQL transaction.");
-				e1.printStackTrace();
-			}
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-		} finally {
-			try {
-				cn.setAutoCommit(true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			DbUtils.closeQuietly(cn);
-		}
-        
-        return null;
-		
-	}
-	
 	//TODO - bug fix - either create different validate method for updates so doesn't throw TaskTitleExists exception when updating fields of a task without changing the title or add logic in method below to do this
 	@Override
 	public boolean taskValidate(Connection cn, Task newTask) throws ValidationException, SQLException{
-
-		
-		
 		PreparedStatement ps = null;
         ResultSet stageCount = null;
         int comboExists = 0;
