@@ -4,10 +4,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.TaskTwoTextBoxes;
 
 public class CommonServletFunctions {
@@ -21,7 +21,7 @@ public class CommonServletFunctions {
 		TreatmentIssue issue = new TreatmentIssue(newIssueName, userID);
 		issue.create();
 		
-		request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());
+		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
 	}
 	
 	/**Gets all the parameter values from request, except user info which isn't in the request and is set in doPost(), and creates a Task object of the correct taskType with them
@@ -73,10 +73,10 @@ public class CommonServletFunctions {
 	}
 	
 	public static void setDefaultTreatmentIssuesInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
-		request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());
+		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
 	}
 	
 	public static void setDefaultTreatmentPlansInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
-		request.setAttribute("defaultTreatmentPlanList", DefaultDatabaseCalls.getDefaultTreatmentPlans());
+		request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
 	}
 }

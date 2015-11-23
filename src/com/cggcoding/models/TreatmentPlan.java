@@ -556,4 +556,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 		return newStage;
 	}
+	
+	public static List<TreatmentPlan> getDefaultTreatmentPlans() throws DatabaseException, ValidationException {
+		return dao.treatmentPlanGetDefaults();
+	}
 }

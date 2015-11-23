@@ -10,16 +10,11 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
-import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
-import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.CommonServletFunctions;
-import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
-import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
  * Servlet implementation class EditTask
@@ -110,8 +105,8 @@ public class EditTask extends HttpServlet {
 
 		try {
 			//put user-independent attributes acquired from database in the request
-			request.setAttribute("taskTypeMap", DefaultDatabaseCalls.getTaskTypeMap());
-			request.setAttribute("taskTemplateList", DefaultDatabaseCalls.getDefaultTasks());
+			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
+			request.setAttribute("taskTemplateList", Task.getDefaultTasks());
 			
 			if(user.hasRole("admin")){
 				switch(requestedAction){

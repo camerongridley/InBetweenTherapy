@@ -8,21 +8,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.swing.text.DefaultEditorKit.DefaultKeyTypedAction;
-
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
-import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
-import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
-import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
-import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
  * Servlet implementation class CreateTask
@@ -81,8 +74,8 @@ public class CreateTask extends HttpServlet {
 
 		try {
 			//put user-independent (i.e. default) lists acquired from database in the request
-			request.setAttribute("taskTypeMap", DefaultDatabaseCalls.getTaskTypeMap());
-			request.setAttribute("defaultTasks", DefaultDatabaseCalls.getDefaultTasks());
+			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
+			request.setAttribute("defaultTasks", Task.getDefaultTasks());
 	
 			if(user.hasRole("admin")){
 				UserAdmin admin = (UserAdmin)user;
@@ -109,7 +102,7 @@ public class CreateTask extends HttpServlet {
 					break;
 				case "task-type-select":
 					request.setAttribute("task", taskToCreate);
-					request.setAttribute("defaultTasks", DefaultDatabaseCalls.getDefaultTasks());
+					request.setAttribute("defaultTasks", Task.getDefaultTasks());
 					forwardTo = "/jsp/treatment-plans/task-create.jsp";
 					break;
 				case ("task-save"):

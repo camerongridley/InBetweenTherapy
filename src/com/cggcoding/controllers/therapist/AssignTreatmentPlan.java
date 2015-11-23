@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
@@ -62,7 +62,7 @@ public class AssignTreatmentPlan extends HttpServlet {
 				request.setAttribute("clientMap", therapistUser.loadClients());
 						
 				//set the default treatment plans and the custom plans for this therapist into the request
-				request.setAttribute("defaultTreatmentPlanList", DefaultDatabaseCalls.getDefaultTreatmentPlans());
+				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
 				switch(requestedAction){
 					case "assign-treatment-plan-start":
 

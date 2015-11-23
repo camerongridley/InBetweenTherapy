@@ -10,14 +10,13 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
+import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.ParameterUtils;
-import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
@@ -66,7 +65,7 @@ public class EditStage extends HttpServlet {
 		
 		
 		try{
-			request.setAttribute("defaultStageList", DefaultDatabaseCalls.getDefaultStages());
+			request.setAttribute("defaultStageList", Stage.getDefaultStages());
 			
 			if(user.hasRole("admin")){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
@@ -95,7 +94,7 @@ public class EditStage extends HttpServlet {
 		            	if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate")){
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
 		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(editedStage.getTreatmentPlanID()));
-		            		request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());
+		            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
 		            		forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	}else{
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);

@@ -2,7 +2,6 @@ package com.cggcoding.controllers.treatmentplan;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -14,16 +13,12 @@ import com.cggcoding.utils.messaging.ErrorMessages;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.tomcat.jdbc.pool.DataSource;
 
 /**
  * Created by cgrid_000 on 8/12/2015.
@@ -78,7 +73,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 				
 			} else if(user.hasRole("admin")){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
-				ArrayList<TreatmentIssue> defaultreatmentIssues = DefaultDatabaseCalls.getDefaultTreatmentIssues();		
+				ArrayList<TreatmentIssue> defaultreatmentIssues = TreatmentIssue.getDefaultTreatmentIssues();		
 				request.setAttribute("defaultTreatmentIssues", defaultreatmentIssues);
 				
 				switch (requestedAction){

@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -506,26 +507,39 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	}
 
 	public String getDateCompletedFormatted(){
-		String amPM = " AM";
-		StringBuilder dateBuilder = new StringBuilder();
-		dateBuilder.append(dateCompleted.getMonthValue());
-		dateBuilder.append("/");
-		dateBuilder.append(dateCompleted.getDayOfMonth());
-		dateBuilder.append("/");
-		dateBuilder.append(dateCompleted.getYear());
-		dateBuilder.append(" ");
-		int hour = dateCompleted.getHour();
-		if(hour>12){
-			hour = hour - 12;
-			amPM = " PM";
+		if(dateCompleted != null){
+			String amPM = " AM";
+			StringBuilder dateBuilder = new StringBuilder();
+			dateBuilder.append(dateCompleted.getMonthValue());
+			dateBuilder.append("/");
+			dateBuilder.append(dateCompleted.getDayOfMonth());
+			dateBuilder.append("/");
+			dateBuilder.append(dateCompleted.getYear());
+			dateBuilder.append(" ");
+			int hour = dateCompleted.getHour();
+			if(hour>12){
+				hour = hour - 12;
+				amPM = " PM";
+			}
+			dateBuilder.append(hour);
+			dateBuilder.append(":");
+			
+			//getMinutes() returns a single digit for values less than 10, so here we add a leading 0 to account for the first m in the format hh:mm
+			int minutes = dateCompleted.getMinute();
+			if(minutes < 10){
+				dateBuilder.append("0" + minutes);
+			}else{
+				dateBuilder.append(minutes);
+			}
+			
+			dateBuilder.append(amPM);
+			
+			
+			return dateBuilder.toString();
+		}else{
+			return null;
 		}
-		dateBuilder.append(hour);
-		dateBuilder.append(":");
-		dateBuilder.append(dateCompleted.getMinute());
-		dateBuilder.append(amPM);
 		
-		
-		return dateBuilder.toString();
 	}
 	
 	
@@ -579,4 +593,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	
 	public abstract void transferAdditionalData(Task taskWithNewData);
 
+	public static List<Task> getDefaultTasks() throws DatabaseException{
+		return dao.taskGetDefaults();
+	}
+	
+	public static Map<Integer, String> getTaskTypeMap() throws DatabaseException {
+		return dao.taskTypesLoad();
+	}
 }

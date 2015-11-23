@@ -155,6 +155,38 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         
         return stage;
 	}
+
+	public static Stage loadBasic(int stageID) throws DatabaseException, ValidationException{
+		Connection cn = null;
+		Stage stage = null;
+
+		try{
+			cn = dao.getConnection();
+
+			stage = loadBasic(cn, stageID);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+
+		return stage;
+	}
+	
+	public static Stage loadBasic(Connection cn, int stageID) throws SQLException, ValidationException{
+		Stage stage = null;
+        
+        dao.throwValidationExceptionIfTemplateHolderID(stageID);
+        
+    	stage = dao.stageLoadBasic(cn, stageID);
+
+        dao.throwValidationExceptionIfNull(stage);
+        
+        return stage;
+	}
+
 	
 /*	public void loadTasks() throws DatabaseException, ValidationException{
 		List<Integer> taskIDs = databaseActionHandler.stageGetTaskIDs(stageID);
@@ -454,6 +486,11 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	public void create(Connection cn) throws ValidationException, SQLException{
+		
+		if(this.title.isEmpty()){
+    		throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
+    	}
+		
 		if(dao.stageValidateNewTitle(cn, this)){
 			dao.stageCreateBasic(cn, this);
 			
@@ -621,5 +658,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		}
 		
 		return copiedStage;
+	}
+	
+	public static List<Stage> getDefaultStages() throws DatabaseException, ValidationException{
+		return dao.stagesGetDefaults();
 	}
 }

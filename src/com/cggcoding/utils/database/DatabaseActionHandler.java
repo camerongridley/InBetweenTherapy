@@ -89,14 +89,7 @@ public interface DatabaseActionHandler {
 	StageGoal stageGoalCreate(Connection cn, StageGoal stageGoal) throws SQLException, ValidationException;
 
 	boolean stageUpdateBasic(Connection cn, Stage stage) throws ValidationException, SQLException;
-	
-	/**Gets basic Stage based on stageID with none of it's lists (goals, tasks, etc.) populated.  If stageID=1, return null because the Stage.stageID=1 is the Stage that holds all Task templates and should not ever be loaded. 
-	 * @param stageID
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ValidationException
-	 */
-	Stage stageLoadWithEmplyLists(int stageID) throws DatabaseException, ValidationException;
+
 	
 	/**Gets all of the "default" Stages, which means it returns all the the Stages that have been created by an Admin user and can be copied for use by Therapist and Client users.
 	 * It returns all Stages that are owned by users of type Admin and have isTemplate as true.  It specifically excludes Stage with id=0 since that Stage is designated
@@ -118,8 +111,11 @@ public interface DatabaseActionHandler {
 	//*************************************** Treatment Issue Methods **********************************
 	//**************************************************************************************************
 
-	TreatmentIssue treatmentIssueValidateAndCreate(TreatmentIssue treatmentIssue, int userID) throws ValidationException, DatabaseException;
+	TreatmentIssue treatmentIssueCreate(Connection cn, TreatmentIssue treatmentIssue, int userID) throws ValidationException, SQLException;
 
+	boolean treatmentIssueValidateNewName(Connection cn, String issueName, int userID)
+			throws ValidationException, SQLException;
+	
 	ArrayList<TreatmentIssue> treatmentIssueGetDefaults() throws DatabaseException;
 
 	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
@@ -159,6 +155,8 @@ public interface DatabaseActionHandler {
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
 	void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException, DatabaseException;
+
+	
 
 
 
