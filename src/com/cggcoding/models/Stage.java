@@ -458,13 +458,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			dao.stageCreateBasic(cn, this);
 			
 			for(StageGoal goal : getGoals()){
-				goal.setStageID(this.stageID);
-				goal.create(cn);
-				
-				
 				if(goal.isValidNewGoal()){
 					//set the newly generated stageID in the goal
-					goal.setStageID(getStageID());
+					goal.setStageID(this.stageID);
 					goal.create(cn);
 				}
 			}
@@ -480,6 +476,25 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	//TODO decide if I should make updateFull() and updateBasic(), as this currently just updates basic info.  method title should accurately reflect just how much is being updated
 	@Override
 	public void update()  throws ValidationException, DatabaseException {
+		Connection cn = null;
+              
+        try {
+        	cn = dao.getConnection();
+        	
+        	updateBasic(cn);
+        	
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+
+			DbUtils.closeQuietly(cn);
+        }
+		
+	}
+	
+	//TODO add to interface?
+	public void updateBasic()  throws ValidationException, DatabaseException {
 		Connection cn = null;
               
         try {

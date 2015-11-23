@@ -85,11 +85,20 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed, currentStageIndex, activeViewStageIndex);
 	}
 
-	public void initialize(){
-		stages.get(0).setInProgress(true);
-		setInProgress(true);
+	/**Run first time a client loads a plan.  Sets inProgress=true for the TreatmentPlan itself and for the first stage of the plan
+	 * then updates them in the database
+	 * @throws DatabaseException 
+	 * @throws ValidationException 
+	 */
+	public void initialize() throws ValidationException, DatabaseException{
+		Stage firstStage = stages.get(0);
+		firstStage.setInProgress(true);
+		this.setInProgress(true);
 		//currentStageIndex = stages.get(0).getStageID();
 		//activeViewStageIndex = currentStageIndex;
+		firstStage.updateBasic();
+		updateBasic();
+		
 	}
 
 	public void setTreatmentPlanID(int planID){
