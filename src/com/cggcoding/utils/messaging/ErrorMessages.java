@@ -3,7 +3,8 @@ package com.cggcoding.utils.messaging;
 public final class ErrorMessages {
 
 	//Database errors
-		public static final String GENERAL_DB_ERROR = "There seems to be a problem performing the database operation you requested.  Please try again or contact customer support.";
+	public static final String CONNECTION_IS_NULL = "Unable to establish a connection to the database.";	
+	public static final String GENERAL_DB_ERROR = "There seems to be a problem performing the database operation you requested.  Please try again or contact customer support.";
 		public static final String ROLLBACK_DB_OP = "An error has occured while performing the database opertion you request and the data has been rolled back to its previous state.";
 		public static final String ROLLBACK_DB_ERROR = "An error has occured while performing the database opertion you request and also a problem reverting your data back to it's original state.  Please contact customer support.";
 		
@@ -38,7 +39,7 @@ public final class ErrorMessages {
 	
 	//Other
 	public static final String CLONE_NOT_SUPPORTED = "There was a problem copying the data.  Please try again or contact customer support.";
-	public static final String CONNECTION_IS_NULL = "The database connection is null.";
+	
 	
 	
 }

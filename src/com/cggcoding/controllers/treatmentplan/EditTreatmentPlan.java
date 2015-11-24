@@ -69,9 +69,12 @@ public class EditTreatmentPlan extends HttpServlet {
     	int customIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
 
     	TreatmentPlan treatmentPlan = null;
-    	Stage stage = null;
     	
     	try {
+    		if(user==null){
+    			throw new ValidationException("Your session has expired.  Please log back in.");
+    		}
+    		
     		//set default lists in the request
     		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
     		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
