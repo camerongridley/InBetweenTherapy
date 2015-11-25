@@ -35,4 +35,7 @@ public interface DatabaseModel {
 	 */
 	void delete() throws ValidationException, DatabaseException;
 
+	//TODO make delete(cn) method
+	
+	//TODO make *****Basic() methods?
 }

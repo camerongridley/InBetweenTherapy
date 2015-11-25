@@ -289,10 +289,6 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 
         return this;
 		
-		//TODO delete
-		 /*TreatmentPlan savedPlan = dao.treatmentPlanValidateAndCreate(this);
-		 this.treatmentPlanID = savedPlan.getTreatmentPlanID();
-		 return savedPlan;*/
 	}
 	
 	public TreatmentPlan create(Connection cn) throws ValidationException, SQLException{
@@ -449,14 +445,6 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 		return plan;
 	}
-	
-	//TODO keep?
-	/*public void loadStages() throws DatabaseException, ValidationException{
-		List<Integer> stageIDs = databaseActionHandler.treatmentPlanGetStageIDs(this.treatmentPlanID);
-		for(int stageID : stageIDs){
-			addStage(Stage.load(stageID));
-		}
-	}*/
 	
 	public static TreatmentPlan loadBasic(int treatmentPlanID) throws DatabaseException, ValidationException{
 		Connection cn = null;

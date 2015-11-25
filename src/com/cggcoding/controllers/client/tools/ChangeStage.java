@@ -36,26 +36,26 @@ public class ChangeStage extends HttpServlet {
         User user = (User)request.getSession().getAttribute("user");
         String forwardTo = "index.jsp";
         int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
+        TreatmentPlan treatmentPlan = null;
+        Stage activeStage  = null;
         
         try {
-	        //FIXME - dont get txPlan from user, load from db to prevent concurrency probs
-	        //TreatmentPlan treatmentPlan = user.getTreatmentPlan(treatmentPlanID);
-	        TreatmentPlan treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+	        treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 	
 	        int newViewID = Integer.parseInt(request.getParameter("stageIndex"));
 	        treatmentPlan.setActiveViewStageIndex(newViewID);
-	        Stage activeStage = treatmentPlan.getActiveViewStage();
+	        activeStage = treatmentPlan.getActiveViewStage();
 	        
-	        //FIXME change to only update basic info - though I think that is all update() does right now, should change method name to reflect this.
-        
-			treatmentPlan.update();
+			treatmentPlan.updateBasic();
 			
 			request.setAttribute("activeStage", activeStage);
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			
 			forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
 		} catch (ValidationException | DatabaseException e) {
-			// TODO Auto-generated catch block
+			request.setAttribute("errorMessage", e.getMessage());
+			request.setAttribute("treatmentPlan", treatmentPlan);
+			request.setAttribute("activeStage", activeStage);
 			e.printStackTrace();
 		}
         

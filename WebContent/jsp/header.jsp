@@ -50,19 +50,19 @@
           <li class="active">
           	<c:choose>
           		<c:when test="${user==null }">
-          			<a href="/index.jsp">
+          			<a href="./index.jsp">
           		</c:when>
           		<c:when test="${user.role=='admin' }">
-          			<a href="/index.jsp">
+          			<a href="./index.jsp">
           		</c:when>
           		<c:when test="${user.role=='therapist' }">
-          			<a href="/index.jsp">
+          			<a href="./index.jsp">
           		</c:when>
           		<c:when test="${user.role=='client' }">
-          			<a href="/index.jsp">
+          			<a href="./index.jsp">
           		</c:when>
           		<c:otherwise>
-          			<a href="/index.jsp">
+          			<a href="./index.jsp">
           		</c:otherwise>
           	</c:choose>
             Home</a></li>

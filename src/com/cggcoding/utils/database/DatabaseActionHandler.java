@@ -129,7 +129,7 @@ public interface DatabaseActionHandler {
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
 
-	void taskDelete(int taskID) throws DatabaseException, ValidationException;
+	void taskDelete(Connection cn, int taskID) throws SQLException;
 
 	Task taskTwoTextBoxesLoadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException;
 

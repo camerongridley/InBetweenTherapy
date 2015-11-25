@@ -2,6 +2,7 @@ package com.cggcoding.models;
 
 import java.io.Serializable;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -294,12 +295,39 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		dao.taskDelete(this.taskID);
-		
+		Connection cn = null;
+
+		try {
+        	cn = dao.getConnection();
+            delete(cn);
+            
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
 	}
 	
-	//TODO add delete(cn) method
-	//TODO add static delete(cn) method
+	public void delete(Connection cn) throws SQLException {
+		dao.taskDelete(cn, this.taskID);
+	}
+	
+	public static void delete(int taskID) throws ValidationException, DatabaseException {
+		Connection cn = null;
+
+		try {
+        	cn = dao.getConnection();
+        	dao.taskDelete(cn, taskID);
+            
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }	
+	}
+	
 	
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
 	 * @param cn
@@ -339,16 +367,14 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return this;
 	}
 	
-	//XXX right now this does nothing in subclasses as MySQLActionHandler.taskCreate() does a taskType check and inserts into the appropriate subclass table
-	//If I change things so the connection is passed into the model then I would update this method for each subclass to update their db table 
 	protected abstract void createAdditionalData(Connection cn) throws ValidationException, SQLException;
 	
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
-	 * @param cn TODO
+	 * @param cn
 	 * @param taskWithNewData
 	 * @return true if update successful, false if error
 	 * @throws ValidationException 
-	 * @throws SQLException TODO
+	 * @throws SQLException
 	 */
 	protected abstract boolean updateAdditionalData(Connection cn) throws ValidationException, SQLException;
 

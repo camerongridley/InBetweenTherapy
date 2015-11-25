@@ -1182,23 +1182,17 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	
 	
 	@Override
-	public void taskDelete(int taskID) throws DatabaseException, ValidationException {
-		Connection cn = null;
+	public void taskDelete(Connection cn, int taskID) throws SQLException {
 		PreparedStatement ps = null;
 
 		try {
-        	cn = getConnection();
             ps = cn.prepareStatement("DELETE FROM task_generic WHERE task_generic_id=?");
             ps.setInt(1, taskID);
 
             ps.executeUpdate();
-            
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+
 		} finally {
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
 	    }
 
 	}
