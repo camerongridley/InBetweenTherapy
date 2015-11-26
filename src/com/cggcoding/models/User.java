@@ -114,16 +114,37 @@ public abstract class User implements Serializable{
 	}
 	
 	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID){
+		//TODO implement
 		return true;
 	}
 	
 	public boolean isAuthorizedForStage(int stageID){
+		//TODO implement
 		return true;
 	}
 	
 	public boolean isAuthorizedForTask(int taskID){
+		//TODO implement
 		return true;
 	}
+	
+	public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
+    	TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
+    	planToCopy.setTemplate(isTemplate);
+    	
+    	planToCopy.setUserID(userIDTakingNewPlan);
+    	//loop through and change all the userIDs to the userID supplied by the method argument
+    	for(Stage stage : planToCopy.getStages()){
+    		stage.setUserID(userIDTakingNewPlan);
+    		for(Task task : stage.getTasks()){
+    			task.setUserID(userIDTakingNewPlan);
+    		}
+    	}
+    	
+    	//save the plan - which is responsible for updating treatmentPlanID in all the child objects
+    	return planToCopy.create();
+    	
+    }
 	
 	@Override
 	public String toString(){

@@ -1,5 +1,7 @@
 package com.cggcoding.controllers.client.tools;
 
+import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -32,19 +34,34 @@ public class ChangeStage extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User)request.getSession().getAttribute("user");
-
+        String forwardTo = "index.jsp";
         int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
-
-        TreatmentPlan treatmentPlan = user.getTreatmentPlan(treatmentPlanID);
-
-        int newViewID = Integer.parseInt(request.getParameter("stageIndex"));
-        treatmentPlan.setActiveViewStageIndex(newViewID);
-        Stage activeStage = treatmentPlan.getActiveViewStage();
+        TreatmentPlan treatmentPlan = null;
+        Stage activeStage  = null;
         
-        request.setAttribute("activeStage", activeStage);
-        request.setAttribute("treatmentPlan", treatmentPlan);
+        try {
+	        treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+	
+	        int newViewID = Integer.parseInt(request.getParameter("stageIndex"));
+	        treatmentPlan.setActiveViewStageIndex(newViewID);
+	        activeStage = treatmentPlan.getActiveViewStage();
+	        
+			treatmentPlan.updateBasic();
+			
+			request.setAttribute("activeStage", activeStage);
+			request.setAttribute("treatmentPlan", treatmentPlan);
+			
+			forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
+		} catch (ValidationException | DatabaseException e) {
+			request.setAttribute("errorMessage", e.getMessage());
+			request.setAttribute("treatmentPlan", treatmentPlan);
+			request.setAttribute("activeStage", activeStage);
+			e.printStackTrace();
+		}
+        
+        
 
-        request.getRequestDispatcher("/jsp/client-tools/run-treatment-plan.jsp").forward(request,response);
+        request.getRequestDispatcher(forwardTo).forward(request,response);
 
 	}
 

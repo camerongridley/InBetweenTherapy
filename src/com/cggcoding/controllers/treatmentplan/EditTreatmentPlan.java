@@ -1,8 +1,6 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,7 +10,6 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
@@ -72,9 +69,12 @@ public class EditTreatmentPlan extends HttpServlet {
     	int customIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
 
     	TreatmentPlan treatmentPlan = null;
-    	Stage stage = null;
     	
     	try {
+    		if(user==null){
+    			throw new ValidationException("Your session has expired.  Please log back in.");
+    		}
+    		
     		//set default lists in the request
     		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
     		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
@@ -160,7 +160,7 @@ public class EditTreatmentPlan extends HttpServlet {
 						
 		            case "delete-plan":
 		            	if(treatmentPlanID == 0){
-		            		throw new ValidationException("There is no treatment plan selected to delete.");
+		            		throw new ValidationException(ErrorMessages.PLAN_DELETE_ERROR);
 		            	}else{
 			            	TreatmentPlan.delete(treatmentPlanID);
 			            	request.removeAttribute("treatmentPlan");
@@ -246,7 +246,7 @@ public class EditTreatmentPlan extends HttpServlet {
         	//if there are no validation problems and there is a new custom issue name, add the new issue to the database and get its id
         	if(hasNewCustomIssue){
 	        	TreatmentIssue issue = new TreatmentIssue(newIssueName, user.getUserID());
-				issue.saveNew();// = user.createTreatmentIssue(issue);
+				issue.create();// = user.createTreatmentIssue(issue);
 	            issueID = issue.getTreatmentIssueID();
         	}
         	
