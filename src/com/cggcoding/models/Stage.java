@@ -580,6 +580,11 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	    }	
 	}
 	
+	public static void delete(Connection cn, int stageID) throws ValidationException, SQLException {
+        	dao.stageDelete(cn, stageID);
+
+	}
+	
 	public Task copyTaskIntoStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
 		Task task = Task.load(taskIDBeingCopied);
 		task.setTemplate(false);

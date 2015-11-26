@@ -68,7 +68,6 @@ public interface DatabaseActionHandler {
 	
 	void treatmentPlanDelete(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 	
-	void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException;
 
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
@@ -154,7 +153,7 @@ public interface DatabaseActionHandler {
 
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
-	void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException, DatabaseException;
+	void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException;
 
 	
 

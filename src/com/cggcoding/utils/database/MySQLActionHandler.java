@@ -524,35 +524,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	    }
 
 	}
-
-	//XXX move this into model
-	@Override
-	public void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException {
-		Connection cn = null;
-		
-		try{
-			cn = getConnection();
-			cn.setAutoCommit(false);
-			
-			stageDelete(cn, stageID);
-			for(Stage stage : stages){
-				stageUpdateBasic(cn, stage);
-			}
-			
-			cn.commit();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-		} finally {
-			try {
-				cn.setAutoCommit(true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			DbUtils.closeQuietly(cn);
-		}
-		
-	}
 	
 	/** Validating a new Stage title involves checking is there is already a match for the combination of the new title and the userID.
 	 * If there is a match then the new title is invalid
@@ -884,7 +855,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
 	
 	@Override
-	public void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException, DatabaseException{
+	public void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException{
     	PreparedStatement ps = null;
         
     	try{

@@ -472,17 +472,43 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	
-	//XXX use Stage.delete here!
 	public void deleteStage(int stageID) throws ValidationException, DatabaseException {
-		for(int i=0; i < this.stages.size(); i++){
-			if(stages.get(i).getStageID()==stageID){
-				stages.remove(i);
+		
+		Connection cn = null;
+		
+		try{
+			cn = dao.getConnection();
+			cn.setAutoCommit(false);
+			
+			//delete specified stage from database
+			Stage.delete(cn, stageID);
+			
+			//remove the stage from the local variable
+			for(int i=0; i < this.stages.size(); i++){
+				if(stages.get(i).getStageID()==stageID){
+					stages.remove(i);
+				}
 			}
+			
+			reorderStages();
+			
+			//update other stages to reflect changes in order et.al.
+			for(Stage stage : stages){
+				stage.updateBasic(cn);
+			}
+			
+			cn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
 		}
-		
-		reorderStages();
-		
-		dao.treatmentPlanDeleteStage(stageID, stages);
 	}
 	
 	private void reorderStages(){
@@ -491,11 +517,6 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		}
 	}
 	
-	/*public TreatmentPlan copy(int userID){
-		TreatmentPlan copiedPlan = null;
-		
-		return copiedPlan;
-	}*/
 	
 	/**Copies a pre-existing Stage into a TreatmentPlan.  This methods gets the existing Stage, updated the treatmentPlanID and the userID associated with the new TreatmentPlan that the
 	 * Stage is being copies into.  It also sets the copied Stages's isTemplate to false and determines the stageOrder it will have initially.
