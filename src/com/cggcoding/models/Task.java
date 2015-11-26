@@ -1,17 +1,28 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 
+/**
+ * @author cgrid_000
+ *
+ */
 public abstract class Task implements Serializable, Completable, DatabaseModel{
 	/**
 	 * 
@@ -33,7 +44,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private int templateID;
 	int repetitions;
 	
-	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
 	//empty constructor necessary to allow static factory methods in subclasses
 	public Task(){
@@ -129,60 +140,197 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		taskTemplate.setTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
 		taskTemplate.setTemplate(true);
 		
-		taskTemplate.saveNew();
+		taskTemplate.create();
 		
 		return taskTemplate;
 	}
 	
 	public static Task load(int taskID) throws DatabaseException{
-		//XXX Ideally, this would take better advantage of the inheritance architecture - since when loading I don't know what the type will be, there has to be a check somewhere.  I'd prefer that somehow be in the model versus in the DAO as it is now
-		Task task =  databaseActionHandler.taskLoad(taskID);
-		//task = task.loadAdditionalData();
+		Connection cn = null;
+		Task task = null;
+
+		try{
+			cn = dao.getConnection();
+
+			task = load(cn, taskID);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+
 		return task;
 
 	}
 	
-	public abstract Task loadAdditionalData();
+	/**Loads a task.  
+	 * CALLING METHOD IS REPOSONSIBLE FOR CLOSING THE CONNECTION PASSED TO THIS METHOD
+	 * @param cn
+	 * @param taskID
+	 * @return
+	 * @throws SQLException
+	 */
+	public static Task load(Connection cn, int taskID) throws SQLException {
+
+		Task task = null;
+
+		TaskGeneric genericTask = TaskGeneric.loadGeneric(cn, taskID);
+		
+		task = convertToType(genericTask);
+		
+		task.loadAdditionalData(cn, genericTask);
+
+		return task;
+	}
 	
-	/*
-	public static Task castToType(Task task){
-		switch(task.getTaskTypeID()){
-		case Constants.TASK_TYPE_ID_GENERIC_TASK:
-			task = (TaskGeneric)task;
-			break;
-		case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
-			task = (TaskTwoTextBoxes)task;
-			break;
+	protected abstract void loadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException;
+	
+	
+	
+	/**This is used to determine the task type, primarily for when loading a task based solely on taskID and, therefore, the taskType would be unknown.
+	 * @param genericTask
+	 * @return
+	 */
+	private static Task convertToType(TaskGeneric genericTask){
+		Task task = null;
+		switch(genericTask.getTaskTypeID()){
+			case Constants.TASK_TYPE_ID_GENERIC_TASK:
+				task = genericTask;
+				break;
+			case Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK:
+				task = TaskTwoTextBoxes.convertFromGeneric(genericTask);
+				break;
 		}
 		
 		return task;
-	}*/
+	}
+	
 	
 	@Override
-	public Task saveNew()throws DatabaseException, ValidationException{
-		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);
-		this.taskID = savedTask.getTaskID();
+	public Task create()throws DatabaseException, ValidationException{
+		Connection cn = null;
+		Task task = null;
+
+		try{
+			cn = dao.getConnection();
+			cn.setAutoCommit(false);
+			
+			task = create(cn);
+			
+			cn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+			}
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+	    }
 		
-		//XXX if I split the saving a a new Task into 2 steps, generic, then for specific subclass, use the code below
-		//saveNewGeneralDataInDatabase();
-		//saveNewAdditionalData();//see note above method declaration.
+		return task;
+	}
+	
+	/**Creates a new task. CALLING METHOD IS REPOSONSIBLE FOR CLOSING THE CONNECTION PASSED TO THIS METHOD
+	 * @param cn
+	 * @return
+	 * @throws ValidationException
+	 * @throws SQLException
+	 */
+	public Task create(Connection cn)throws ValidationException, SQLException{
+		
+		createGeneralData(cn);
+		createAdditionalData(cn);
 		
 		return this;
 	}
 	
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		databaseActionHandler.taskGenericUpdate(this);
-		updateAdditionalData();
+		Connection cn = null;
+        
+        try {
+        	cn = dao.getConnection();
+        	cn.setAutoCommit(false);
+        	if(dao.taskValidate(cn, this)){	
+        		update(cn);
+        	}
+        	cn.commit();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+			}
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+        }
+	}
+	
+	public void update(Connection cn) throws ValidationException, SQLException{
+		dao.taskGenericUpdate(cn, this);
+		updateAdditionalData(cn);
 	}
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		databaseActionHandler.taskDelete(this.taskID);
-		
-	}
+		Connection cn = null;
 
+		try {
+        	cn = dao.getConnection();
+            delete(cn);
+            
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+	}
+	
+	public void delete(Connection cn) throws SQLException {
+		dao.taskDelete(cn, this.taskID);
+	}
+	
+	public static void delete(int taskID) throws ValidationException, DatabaseException {
+		Connection cn = null;
+
+		try {
+        	cn = dao.getConnection();
+        	dao.taskDelete(cn, taskID);
+            
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }	
+	}
+	
+	
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
+	 * @param cn
 	 * @param taskID
 	 * @param stageID
 	 * @param userID
@@ -199,25 +347,36 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @return
 	 * @throws DatabaseException
 	 * @throws ValidationException
+	 * @throws SQLException 
 	 */
-	protected Task saveNewGeneralDataInDatabase() throws DatabaseException, ValidationException{
-		Task savedTask = databaseActionHandler.taskValidateAndCreate(this);//XXX this call actually checks for taskType and updates all fields in a task and not just the general/generic ones
-		this.taskID = savedTask.getTaskID();
+	protected Task createGeneralData(Connection cn) throws ValidationException, SQLException{
 		
+		//basic validation of the new task
+		if(this.getTitle() == null || this.getTitle().isEmpty() || 
+				this.getInstructions() == null || this.getInstructions().isEmpty() ||
+						this.getTaskTypeID() == 0){
+			throw new ValidationException(ErrorMessages.TASK_MISSING_INFO);
+		}
+		
+		//do any validation that requires a database call and if ok make db insert call
+		if(dao.taskValidate(cn, this)){
+			Task savedTask = dao.taskGenericCreate(cn, this);
+			this.taskID = savedTask.getTaskID();
+		}
+
 		return this;
 	}
 	
-	//XXX right now this does nothing in subclasses as MySQLActionHandler.taskCreate() does a taskType check and inserts into the appropriate subclass table
-	//If I change things so the connection is passed into the model then I would update this method for each subclass to update their db table 
-	protected abstract void saveNewAdditionalData() throws DatabaseException, ValidationException;
+	protected abstract void createAdditionalData(Connection cn) throws ValidationException, SQLException;
 	
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
+	 * @param cn
 	 * @param taskWithNewData
 	 * @return true if update successful, false if error
 	 * @throws ValidationException 
-	 * @throws DatabaseException 
+	 * @throws SQLException
 	 */
-	protected abstract boolean updateAdditionalData() throws DatabaseException, ValidationException;
+	protected abstract boolean updateAdditionalData(Connection cn) throws ValidationException, SQLException;
 
 	
 	/**Copies the task, setting the taskID to 0 and template=false since templates are unique.
@@ -374,26 +533,39 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	}
 
 	public String getDateCompletedFormatted(){
-		String amPM = " AM";
-		StringBuilder dateBuilder = new StringBuilder();
-		dateBuilder.append(dateCompleted.getMonthValue());
-		dateBuilder.append("/");
-		dateBuilder.append(dateCompleted.getDayOfMonth());
-		dateBuilder.append("/");
-		dateBuilder.append(dateCompleted.getYear());
-		dateBuilder.append(" ");
-		int hour = dateCompleted.getHour();
-		if(hour>12){
-			hour = hour - 12;
-			amPM = " PM";
+		if(dateCompleted != null){
+			String amPM = " AM";
+			StringBuilder dateBuilder = new StringBuilder();
+			dateBuilder.append(dateCompleted.getMonthValue());
+			dateBuilder.append("/");
+			dateBuilder.append(dateCompleted.getDayOfMonth());
+			dateBuilder.append("/");
+			dateBuilder.append(dateCompleted.getYear());
+			dateBuilder.append(" ");
+			int hour = dateCompleted.getHour();
+			if(hour>12){
+				hour = hour - 12;
+				amPM = " PM";
+			}
+			dateBuilder.append(hour);
+			dateBuilder.append(":");
+			
+			//getMinutes() returns a single digit for values less than 10, so here we add a leading 0 to account for the first m in the format hh:mm
+			int minutes = dateCompleted.getMinute();
+			if(minutes < 10){
+				dateBuilder.append("0" + minutes);
+			}else{
+				dateBuilder.append(minutes);
+			}
+			
+			dateBuilder.append(amPM);
+			
+			
+			return dateBuilder.toString();
+		}else{
+			return null;
 		}
-		dateBuilder.append(hour);
-		dateBuilder.append(":");
-		dateBuilder.append(dateCompleted.getMinute());
-		dateBuilder.append(amPM);
 		
-		
-		return dateBuilder.toString();
 	}
 	
 	
@@ -447,4 +619,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	
 	public abstract void transferAdditionalData(Task taskWithNewData);
 
+	public static List<Task> getDefaultTasks() throws DatabaseException{
+		return dao.taskGetDefaults();
+	}
+	
+	public static Map<Integer, String> getTaskTypeMap() throws DatabaseException {
+		return dao.taskTypesLoad();
+	}
 }
