@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 /**
  * Servlet Filter implementation class SessionTimeout
  */
-@WebFilter("/WebContent/jsp/")
+@WebFilter("/*")
 public class SessionTimeout implements Filter {
 
     /**
@@ -37,19 +37,28 @@ public class SessionTimeout implements Filter {
 	 */
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 		
-		System.out.println("Filtered.");
-
+		System.out.print("Session Timeout Filter - ");
+		
 		HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         HttpSession session = request.getSession(false);
+        
+        System.out.println("Request URI: " + request.getRequestURI());
+        //System.out.println("Context Path: " + request.getContextPath());
 
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect(request.getContextPath() + "/"); // No logged-in user found, so redirect to login page.
-        } else {
-            chain.doFilter(req, res); // Logged-in user found, so just continue request.
+        //XXX This should probably work by having all my restricted servlets use a different path, like /secure/ServletName and have the @WebFilter only apply to that path
+        if(!request.getRequestURI().equals("/index.jsp")){
+        	if (session == null || session.getAttribute("user") == null) {
+	            response.sendRedirect(request.getContextPath() + "/"); // No logged-in user found, so redirect to login page.
+	        } else {
+	            chain.doFilter(req, res); // Logged-in user found, so just continue request.
+	        }
+        }else {
+        	// pass the request along the filter chain
+        	chain.doFilter(req, res);
         }
-		// pass the request along the filter chain
-		chain.doFilter(req, res);
+        
+		
 	}
 
 	/**
