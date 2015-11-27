@@ -88,6 +88,11 @@ public class EditStage extends HttpServlet {
 		            	editedStage = Stage.load(stageID);
 		            	editedStage.setTitle(stageTitle);
 		            	editedStage.setDescription(stageDescription);
+		            	
+		            	for(StageGoal goal: editedStage.getGoals()){
+		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
+		            	}
+		            	
 		            	editedStage.update();
 		            	
 		            	request.setAttribute("stage", editedStage);
@@ -121,6 +126,14 @@ public class EditStage extends HttpServlet {
 						int taskToDeleteID = ParameterUtils.parseIntParameter(request, "taskID");
 						editedStage.deleteTask(taskToDeleteID);
 						
+						request.setAttribute("stage", editedStage);
+		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+						break;
+					case("delete-goal"):
+						int goalID = ParameterUtils.parseIntParameter(request, "stageGoalID");
+						StageGoal.delete(goalID);
+						
+						editedStage = Stage.load(stageID);
 						request.setAttribute("stage", editedStage);
 		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 						break;

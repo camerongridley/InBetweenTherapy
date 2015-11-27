@@ -677,11 +677,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         return success == 1;
 	}
-	
-	//TODO implement method
-	public Stage stageCopy(int stageIDBeingCopied, int userID, int treatmentPlanID, int stageOrder, boolean isTemplate ){
-		return null;
-	}
+
 	
 	public List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException{
 		Connection cn = null;
@@ -821,6 +817,21 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
 	
 	@Override
+	public void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException{
+    	PreparedStatement ps = null;
+        
+    	try{
+	        ps = cn.prepareStatement("DELETE FROM stage WHERE stage_id=?");
+	        ps.setInt(1, stageID);
+	
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
+	
+	}
+	
+	@Override
 	public StageGoal stageGoalCreate(Connection cn, StageGoal stageGoal) throws SQLException, ValidationException {
 		PreparedStatement ps = null;
         ResultSet generatedKeys = null;
@@ -855,12 +866,39 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
 	
 	@Override
-	public void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException{
+	public boolean stageGoalUpdate(Connection cn, StageGoal goal) throws ValidationException, SQLException{
+    	PreparedStatement ps = null;
+        int success = 0;
+        
+        throwValidationExceptionIfTemplateHolderID(goal.getStageID());
+        
+        try {
+        		
+    		String sql = "UPDATE stage_goal SET stage_goal_stage_id_fk=?, stage_goal_description=? WHERE stage_goal_id=?";
+        	
+            ps = cn.prepareStatement(sql);
+
+            ps.setInt(1, goal.getStageID());
+            ps.setString(2, goal.getDescription());
+            ps.setInt(3, goal.getStageGoalID());
+            
+
+            success = ps.executeUpdate();
+        	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success == 1;
+	}
+	
+	@Override
+	public void stageGoalDelete(Connection cn, int stageGoalID) throws SQLException, ValidationException{
     	PreparedStatement ps = null;
         
     	try{
-	        ps = cn.prepareStatement("DELETE FROM stage WHERE stage_id=?");
-	        ps.setInt(1, stageID);
+	        ps = cn.prepareStatement("DELETE FROM stage_goal WHERE stage_goal_id=?");
+	        ps.setInt(1, stageGoalID);
 	
 	        ps.executeUpdate();
     	}finally{
@@ -1229,7 +1267,46 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return treatmentIssue;
 	}
 	
+	@Override
+	public boolean treatmentIssueUpdate(Connection cn, TreatmentIssue issue) throws ValidationException, SQLException{
+    	PreparedStatement ps = null;
+        int success = 0;
+        
+        try {
+        		
+    		String sql = "UPDATE treatment_issue SET treatment_issue_user_id_fk=?, issue=? WHERE treatment_issue_id=?";
+        	
+            ps = cn.prepareStatement(sql);
 
+            ps.setInt(1, issue.getUserID());
+            ps.setString(2, issue.getTreatmentIssueName());
+            ps.setInt(3, issue.getTreatmentIssueID());
+            
+
+            success = ps.executeUpdate();
+        	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success == 1;
+	}
+	
+	@Override
+	public void treatmentIssueDelete(Connection cn, int treatmentIssueID) throws SQLException, ValidationException{
+    	PreparedStatement ps = null;
+        
+    	try{
+	        ps = cn.prepareStatement("DELETE FROM treatment_issue WHERE treatment_issue_id=?");
+	        ps.setInt(1, treatmentIssueID);
+	
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
+	
+	}
+	
 	/**
 	 * Checks if there is an existing combination of treatment issue name and userID in the database.
 	 * @param cn Database connection
@@ -1248,9 +1325,42 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
 
-            ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_issue WHERE (((treatment_issue.issue)=?) AND ((treatment_issue.treatment_issue_user_id_fk)=?))");
+            ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_issue WHERE ((treatment_issue.issue=?) AND (treatment_issue.treatment_issue_user_id_fk=?))");
             ps.setString(1, issueName.trim());
             ps.setInt(2, userID);
+
+            issueCount = ps.executeQuery();
+
+
+            while (issueCount.next()){
+                comboExists = issueCount.getInt("COUNT(*)");
+            }
+
+        } finally {
+			DbUtils.closeQuietly(issueCount);
+			DbUtils.closeQuietly(ps);
+		}
+
+        if(comboExists > 0){
+        	throw new ValidationException(ErrorMessages.ISSUE_NAME_EXISTS);
+        } else {
+            return true;
+        }
+    }
+	
+	@Override
+	public boolean treatmentIssueValidateUpdatedName(Connection cn, TreatmentIssue issue) throws ValidationException, SQLException{
+    	PreparedStatement ps = null;
+        ResultSet issueCount = null;
+        int comboExists = 0;
+        
+        try {
+
+            ps = cn.prepareStatement("SELECT COUNT(*)  FROM treatment_issue WHERE ((treatment_issue.issue=?) AND (treatment_issue.treatment_issue_user_id_fk=?)"
+            		+ "AND (treatment_issue_id != ?))");
+            ps.setString(1, issue.getTreatmentIssueName().trim());
+            ps.setInt(2, issue.getUserID());
+            ps.setInt(3, issue.getTreatmentIssueID());
 
             issueCount = ps.executeQuery();
 

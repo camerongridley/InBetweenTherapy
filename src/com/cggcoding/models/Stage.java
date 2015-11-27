@@ -470,7 +470,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			dao.stageCreateBasic(cn, this);
 			
 			for(StageGoal goal : getGoals()){
-				if(goal.isValidNewGoal()){
+				if(goal.isValidGoal()){
 					//set the newly generated stageID in the goal
 					goal.setStageID(this.stageID);
 					goal.create(cn);
@@ -505,6 +505,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         	cn = dao.getConnection();
         	
         	updateBasic(cn);
+        	
+        	for(StageGoal goal : goals){
+        		goal.update(cn);
+        	}
         	
         } catch (SQLException e) {
             e.printStackTrace();

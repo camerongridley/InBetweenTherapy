@@ -146,6 +146,8 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	@Override
 	public Task copyAndSave(int stageID, int userID) throws DatabaseException, ValidationException {
 		TaskTwoTextBoxes task =  (TaskTwoTextBoxes)copy();
+		task.setStageID(stageID);
+		task.setUserID(userID);
 		
 		return task.create();
 	}

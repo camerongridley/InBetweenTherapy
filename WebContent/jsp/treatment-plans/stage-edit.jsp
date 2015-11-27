@@ -62,12 +62,20 @@
 					</button>
 					
 				</label>
-				<c:forEach items="${stage.goals }" var="goal">
-		            <p>
-		                <input type="text" class="form-control" id="stageGoalDescription" name="stageGoalDescription" value="${goal.description }" placeholder="Describe the goal.">
-		            </p>
-				</c:forEach>
-				</div>
+			</div>
+				
+			<c:forEach items="${stage.goals }" var="goal">
+	            <div class="col-xs-11">
+	                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
+	            </div>
+	            <div class="col-xs-1">    
+	                <a role="button" href="./EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" class="btn btn-default btn-xs pull-right" title="Delete goal:${goal.description }">
+					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+					</a>
+	            
+	            </div>
+			</c:forEach>
+				
 		</div>
 		
 		<label for="stageList" class="control-label">Tasks
@@ -86,11 +94,11 @@
 			          ${task.taskOrderForUserDisplay } - <span class="">${task.title }</span>
 			        </a>
 			        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-			        <a role="button" href="./EditStage?requestedAction=delete-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete this task">
+			        <a role="button" href="./EditStage?requestedAction=delete-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete task:${task.title }">
 					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 					</a>
 					
-			        <a role="button" href="./EditTask?requestedAction=edit-task-select-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit this task.">
+			        <a role="button" href="./EditTask?requestedAction=edit-task-select-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit task: ${task.title }">
 					  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 					</a>
 					

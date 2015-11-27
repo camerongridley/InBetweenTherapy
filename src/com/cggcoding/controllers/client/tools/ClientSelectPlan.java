@@ -62,7 +62,6 @@ public class ClientSelectPlan extends HttpServlet {
 					TreatmentPlan selectedPlan = TreatmentPlan.load(assignedTreatmentPlanID);
 					selectedPlan.initialize();
 					
-					client.addTreatmentPlan(selectedPlan);//XXX Remove this since not really keeping the users Plan list active?
 					client.setActiveTreatmentPlanId(assignedTreatmentPlanID);
 					
 					Stage activeStage = selectedPlan.getActiveViewStage();

@@ -71,24 +71,24 @@ public class TreatmentIssue implements Serializable, DatabaseModel{
 		Connection cn = null;
 		TreatmentIssue savedIssue = null;
 		
-		if(this.treatmentIssueName.isEmpty() || this.treatmentIssueName ==""){
-    		throw new ValidationException(ErrorMessages.ISSUE_NAME_MISSING);
-    	}
-		try{
-			cn = dao.getConnection();
-			
-			if(dao.treatmentIssueValidateNewName(cn, this.treatmentIssueName, userID)){
-				dao.treatmentIssueCreate(cn, this, userID);
-				//this.treatmentIssueID = savedIssue.getTreatmentIssueID();
-			}
-			
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-		} finally {
-			DbUtils.closeQuietly(cn);
-	    }
+		if(isIssuePresent()){
+		
+			try{
+				cn = dao.getConnection();
+				
+				if(dao.treatmentIssueValidateNewName(cn, this.treatmentIssueName, userID)){
+					dao.treatmentIssueCreate(cn, this, userID);
+				}
+				
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }
+		
+		}
 		
 		return savedIssue;
 		
@@ -96,13 +96,50 @@ public class TreatmentIssue implements Serializable, DatabaseModel{
 
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		// TODO implement method
+		if(isIssuePresent()){
+			Connection cn = null;
+			
+			try{
+				cn = dao.getConnection();
+				
+				if(dao.treatmentIssueValidateUpdatedName(cn, this)){
+					dao.treatmentIssueUpdate(cn, this);
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }
+
+		}
 		
+	}
+
+	private boolean isIssuePresent() throws ValidationException {
+		if(this.treatmentIssueName.isEmpty() || this.treatmentIssueName ==""){
+    		throw new ValidationException(ErrorMessages.ISSUE_NAME_MISSING);
+    	}else {
+    		return true;
+    	}
 	}
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		// TODO implement method
+		Connection cn = null;
+		
+		try{
+			cn = dao.getConnection();
+			
+			dao.treatmentIssueDelete(cn, this.treatmentIssueID);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
 		
 	}
     

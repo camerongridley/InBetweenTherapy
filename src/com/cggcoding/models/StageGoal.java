@@ -85,11 +85,14 @@ public class StageGoal implements Serializable, DatabaseModel{
 		this.associatedTaskID = associatedTaskID;
 	}
 
+	/**Copies the goal and sets stageGoalID to 0.  DOES NOT SAVE TO DATABASE
+	 * @return
+	 */
 	public StageGoal copy(){
 		return new StageGoal(0, this.stageID, this.getDescription(), this.associatedTaskID);
 	}
 
-	public boolean isValidNewGoal() throws ValidationException{
+	public boolean isValidGoal() throws ValidationException{
 		if(getStageID() != 0 && !getDescription().isEmpty()){
         	return true;
     	} else {
@@ -117,7 +120,7 @@ public class StageGoal implements Serializable, DatabaseModel{
 	}
 	
 	public StageGoal create(Connection cn) throws ValidationException, SQLException {
-		if(isValidNewGoal()){
+		if(isValidGoal()){
 			dao.stageGoalCreate(cn, this);
 		}
 		return this;
@@ -125,13 +128,65 @@ public class StageGoal implements Serializable, DatabaseModel{
 
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
+		if(isValidGoal()){
+			Connection cn = null;
+			
+			try{
+				cn = dao.getConnection();
+				
+				update(cn);
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }
+
+		}
 		
+	}
+	
+	public void update(Connection cn) throws ValidationException, SQLException {
+		dao.stageGoalUpdate(cn, this);
 	}
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		// TODO Auto-generated method stub
+		Connection cn = null;
+		
+		try{
+			cn = dao.getConnection();
+			
+			delete(cn);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+		
+	}
+	
+	public void delete(Connection cn) throws ValidationException, SQLException {
+		dao.stageGoalDelete(cn, this.stageGoalID);	
+	}
+	
+	public static void delete(int goalID) throws ValidationException, DatabaseException {
+		Connection cn = null;
+		
+		try{
+			cn = dao.getConnection();
+			
+			dao.stageGoalDelete(cn, goalID);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
 		
 	}
 
