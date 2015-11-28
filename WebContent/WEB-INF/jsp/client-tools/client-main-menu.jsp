@@ -10,12 +10,12 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
     <div class="page-header">
         <h1>Main Menu</h1>
     </div>
-    <c:import url="/jsp/message-modal.jsp"/>
+    <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 
 	<h3>Continue a plan.</h3>
 	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
@@ -98,4 +98,4 @@
         </div>
 	</form>
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

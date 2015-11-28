@@ -4,12 +4,12 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
 
 <h1>Treatment Issue: ${treatmentPlan.title }</h1>
 
-<c:import url="/jsp/message-modal.jsp" />
+<c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
 <div class="row">
 
@@ -255,4 +255,4 @@
 	</div>
 </div>
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

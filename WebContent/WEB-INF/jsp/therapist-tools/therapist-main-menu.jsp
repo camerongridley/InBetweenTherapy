@@ -10,11 +10,12 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
   <div class="page-header">
     <h1>Therapist Main Menu</h1>
   </div>
+  <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
   <p>
     <form class="form-inline" action="/secure/LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary" disabled>Create Treatment Plan</button></div>
@@ -46,4 +47,4 @@
 
 
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

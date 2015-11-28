@@ -11,14 +11,14 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
 	<h1>Update Treatment Plan</h1>
 	<h2>Add and update detail to the treatment plan</h2>
 </div>
 
-<c:import url="/jsp/message-modal.jsp" />
+<c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
 
 <c:if test="${path=='editingPlan' || path=='editingPlanTemplate' }">
@@ -269,4 +269,4 @@
 		});
 	});
 </script>
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

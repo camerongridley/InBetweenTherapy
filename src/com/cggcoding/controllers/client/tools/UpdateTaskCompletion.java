@@ -53,7 +53,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		/*-----------End Common Servlet variables---------------*/
 		
 		try{
-			forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
+			forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
 			
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 	

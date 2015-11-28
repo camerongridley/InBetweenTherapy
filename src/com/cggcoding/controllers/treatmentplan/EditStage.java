@@ -72,7 +72,7 @@ public class EditStage extends HttpServlet {
 								
 				switch (requestedAction){
 		            case "stage-edit-start" :
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-select-stage" :
 		            	int selectedDefaultStageID = ParameterUtils.parseIntParameter(request, "selectedDefaultStageID");
@@ -82,7 +82,7 @@ public class EditStage extends HttpServlet {
 		            		request.setAttribute("stage", null);
 		            	}
 		            	
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-name" :
 		            	editedStage = Stage.load(stageID);
@@ -100,10 +100,10 @@ public class EditStage extends HttpServlet {
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
 		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(editedStage.getTreatmentPlanID()));
 		            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
-		            		forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            		forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	}else{
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
-		            		forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+		            		forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 		            	}
 
 		            	break;
@@ -112,13 +112,13 @@ public class EditStage extends HttpServlet {
 		            	StageGoal goal = StageGoal.getInstanceWithoutID(stageID, goalDescription);
 		            	goal.create();
 		            	request.setAttribute("stage", Stage.load(stageID));
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            	
 		            case "stage-edit":
 						editedStage = Stage.load(stageID);
 						request.setAttribute("stage", editedStage);
-						forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;	
 						
 					case("delete-task"):
@@ -127,7 +127,7 @@ public class EditStage extends HttpServlet {
 						editedStage.deleteTask(taskToDeleteID);
 						
 						request.setAttribute("stage", editedStage);
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;
 					case("delete-goal"):
 						int goalID = ParameterUtils.parseIntParameter(request, "stageGoalID");
@@ -135,12 +135,12 @@ public class EditStage extends HttpServlet {
 						
 						editedStage = Stage.load(stageID);
 						request.setAttribute("stage", editedStage);
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;
 					
 		            default:
 
-		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 				}
 			}
 			
@@ -151,7 +151,7 @@ public class EditStage extends HttpServlet {
 			request.setAttribute("stage", editedStage);
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
-            forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+            forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

@@ -49,6 +49,7 @@ public class SessionTimeout implements Filter {
 
         	if (session == null || session.getAttribute("user") == null) {
         		System.out.println("No logged-in user found, redirecting to login page.");
+        		//TODO change this to login page once that is created
 	            response.sendRedirect(request.getContextPath() + "/"); // No logged-in user found, so redirect to login page.
 	        } else {
 	            chain.doFilter(req, res); // Logged-in user found, so just continue request.

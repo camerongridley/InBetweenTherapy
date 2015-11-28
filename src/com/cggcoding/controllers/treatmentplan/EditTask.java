@@ -60,7 +60,7 @@ public class EditTask extends HttpServlet {
 							Task tempTask = Task.load(selectedTaskID);
 							request.setAttribute("task", tempTask);
 						
-						forwardTo = "/jsp/treatment-plans/task-edit.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 						break;
 					}
 				}
@@ -69,7 +69,7 @@ public class EditTask extends HttpServlet {
 			//request.setAttribute("task", tempTask);
 			request.setAttribute("errorMessage", e.getMessage());
 
-			forwardTo = "/jsp/treatment-plans/task-edit.jsp";
+			forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);*/
@@ -115,7 +115,7 @@ public class EditTask extends HttpServlet {
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", tempTask);
 					
-					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
+					forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-select-task"):
 					int selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
@@ -123,12 +123,12 @@ public class EditTask extends HttpServlet {
 						request.setAttribute("task", Task.load(selectedTaskID));
 					//}
 
-					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
+					forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-select-task-type"):
 					// most of the work for this case was moved to CommonServletFunctions.getTaskParametersFromRequest, so now it just needs to set forwardTo
 					
-					forwardTo = "/jsp/treatment-plans/task-edit.jsp";
+					forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-update"):
 					
@@ -137,9 +137,9 @@ public class EditTask extends HttpServlet {
 					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
 						request.setAttribute("defaultStageList", Stage.getDefaultStages());
 						request.setAttribute("stage", Stage.load(tempTask.getStageID()));
-						forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 					}else{
-						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 					}
 				
 					break;
@@ -152,7 +152,7 @@ public class EditTask extends HttpServlet {
 			request.setAttribute("task", tempTask);
 			request.setAttribute("errorMessage", e.getMessage());
 
-			forwardTo = "/jsp/treatment-plans/task-edit.jsp";
+			forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

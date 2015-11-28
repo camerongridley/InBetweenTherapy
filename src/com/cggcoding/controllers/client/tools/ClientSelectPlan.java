@@ -68,14 +68,14 @@ public class ClientSelectPlan extends HttpServlet {
 					
 					request.setAttribute("activeStage", activeStage);
 					request.setAttribute("treatmentPlan", selectedPlan);
-					forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
+					forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
 					break;
 				}
 			}
 		} catch (DatabaseException | ValidationException e) {
 			request.setAttribute("errorMessage", e.getMessage());
 			e.printStackTrace();
-			forwardTo = "/jsp/client-tools/client-main-menu.jsp";
+			forwardTo = "/WEB-INF/jsp/client-tools/client-main-menu.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

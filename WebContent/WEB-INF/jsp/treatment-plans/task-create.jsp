@@ -4,14 +4,14 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
 	<c:if test="${path=='creatingTaskTemplate' }"><h1>Create A Task Template</h1></c:if>
 	<c:if test="${path!='creatingTaskTemplate' }"><h1>Create a Task for the Stage: ${stage.title}</h1></c:if>
 </div>
   
-<c:import url="/jsp/message-modal.jsp"/>
+<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 	
 	<c:if test="${path!='creatingTaskTemplate' }">
 		<div class="well well-sm">
@@ -173,4 +173,4 @@
 		});
 	</script>
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

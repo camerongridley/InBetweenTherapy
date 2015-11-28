@@ -49,13 +49,13 @@
           			<a href="/index.jsp">
           		</c:when>
           		<c:when test="${user.role=='admin' }">
-          			<a href="/jsp/admin-tools/admin-main-menu.jsp">
+          			<a href="/index.jsp">
           		</c:when>
           		<c:when test="${user.role=='therapist' }">
-          			<a href="/jsp/therapist-tools/therapist-main-menu.jsp">
+          			<a href="/index.jsp">
           		</c:when>
           		<c:when test="${user.role=='client' }">
-          			<a href="/jsp/client-tools/client-main-menu.jsp">
+          			<a href="/index.jsp">
           		</c:when>
           		<c:otherwise>
           			<a href="/index.jsp">

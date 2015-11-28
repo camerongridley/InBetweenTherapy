@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"  %>
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
     <div class="page-header">
     
@@ -12,7 +12,7 @@
         <c:if test="${path != 'creatingStageTemplate' }"><h2>Add a Stage to: ${treatmentPlan.title} (${treatmentPlan.treatmentPlanID })</h2></c:if>
     </div>
     
-	<c:import url="/jsp/message-modal.jsp"/>
+	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 
 	<c:if test="${path != 'creatingStageTemplate' }">
 		<div class="well well-sm">
@@ -82,4 +82,4 @@
 	    </form>
 	</div>
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

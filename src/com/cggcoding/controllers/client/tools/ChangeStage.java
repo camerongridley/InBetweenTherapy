@@ -51,7 +51,7 @@ public class ChangeStage extends HttpServlet {
 			request.setAttribute("activeStage", activeStage);
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			
-			forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
+			forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
 		} catch (ValidationException | DatabaseException e) {
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("treatmentPlan", treatmentPlan);
