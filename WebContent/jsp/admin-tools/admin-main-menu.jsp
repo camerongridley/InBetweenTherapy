@@ -58,7 +58,7 @@
 			</form>
 			</p>
 			<p>
-			<form class="form-inline" action="./EditStage"
+			<form class="form-inline" action="/EditStage"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Edit
@@ -82,7 +82,7 @@
 			</form>
 			</p>
 			<p>
-			<form class="form-inline" action="./EditTask" method="POST">
+			<form class="form-inline" action="/secure/EditTask" method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Edit
 						Task Template</button>

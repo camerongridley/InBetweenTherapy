@@ -181,7 +181,7 @@
 					title="Delete this stage."> <span
 					class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 				</a> <a role="button"
-					href="./EditStage?requestedAction=stage-edit&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
+					href="/EditStage?requestedAction=stage-edit&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
 					class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 				</a>
@@ -204,7 +204,7 @@
 									<td><c:out value="${fn:escapeXml(task.title) }"></c:out><span
 										class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 										<!-- <a role="button"
-										href="./EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
+										href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
 										class="btn btn-default btn-xs pull-right"
 										title="Edit this task"> <span
 											class="glyphicon glyphicon-edit" aria-hidden="true"></span>

@@ -13,12 +13,12 @@
     <title>Do It Right!</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="./css/custom.css" rel="stylesheet">
+    <link href="/css/custom.css" rel="stylesheet">
 
-	<script src="./js/jquery-1.11.3.min.js"></script>
+	<script src="/js/jquery-1.11.3.min.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -46,19 +46,19 @@
           <li class="active">
           	<c:choose>
           		<c:when test="${user==null }">
-          			<a href="./index.jsp">
+          			<a href="/index.jsp">
           		</c:when>
           		<c:when test="${user.role=='admin' }">
-          			<a href="./index.jsp">
+          			<a href="/index.jsp">
           		</c:when>
           		<c:when test="${user.role=='therapist' }">
-          			<a href="./index.jsp">
+          			<a href="/index.jsp">
           		</c:when>
           		<c:when test="${user.role=='client' }">
-          			<a href="./index.jsp">
+          			<a href="/index.jsp">
           		</c:when>
           		<c:otherwise>
-          			<a href="./index.jsp">
+          			<a href="/index.jsp">
           		</c:otherwise>
           	</c:choose>
             Home</a></li>

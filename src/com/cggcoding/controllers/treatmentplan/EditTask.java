@@ -19,7 +19,7 @@ import com.cggcoding.utils.ParameterUtils;
 /**
  * Servlet implementation class EditTask
  */
-@WebServlet("/EditTask")
+@WebServlet("/secure/EditTask")
 public class EditTask extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	int userID = 0;

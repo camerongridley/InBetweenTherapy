@@ -12,7 +12,7 @@
   
 <c:import url="/jsp/message-modal.jsp"/>
 	
-	<form class="form-horizontal" action="./EditStage" method="POST">
+	<form class="form-horizontal" action="/EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-select-stage">
 		<input type="hidden" name="path" value="${path }">
 		
@@ -35,7 +35,7 @@
 		
 	</form>
 	
-	<form class="form-horizontal" action="./EditStage" method="POST">
+	<form class="form-horizontal" action="/EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-name">
 		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >	
@@ -69,7 +69,7 @@
 	                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
 	            </div>
 	            <div class="col-xs-1">    
-	                <a role="button" href="./EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" class="btn btn-default btn-xs pull-right" title="Delete goal:${goal.description }">
+	                <a role="button" href="/EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" class="btn btn-default btn-xs pull-right" title="Delete goal:${goal.description }">
 					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 					</a>
 	            
@@ -94,11 +94,11 @@
 			          ${task.taskOrderForUserDisplay } - <span class="">${task.title }</span>
 			        </a>
 			        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-			        <a role="button" href="./EditStage?requestedAction=delete-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete task:${task.title }">
+			        <a role="button" href="/EditStage?requestedAction=delete-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete task:${task.title }">
 					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 					</a>
 					
-			        <a role="button" href="./EditTask?requestedAction=edit-task-select-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit task: ${task.title }">
+			        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit task: ${task.title }">
 					  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 					</a>
 					
@@ -122,7 +122,7 @@
 	<div class="modal fade" id="newStageGoalModal" tabindex="-1" role="dialog" aria-labelledby="newStageGoalModalLabel">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
-		    <form class="form-horizontal" action="./EditStage" method="POST">
+		    <form class="form-horizontal" action="/EditStage" method="POST">
 		    <input type="hidden" name="requestedAction" value="stage-edit-add-goal">
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="stageID" value="${stage.stageID}" >

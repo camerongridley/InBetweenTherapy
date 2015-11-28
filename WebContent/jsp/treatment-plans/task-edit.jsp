@@ -12,7 +12,7 @@
   
 <c:import url="/jsp/message-modal.jsp"/>
 
-<form class="form-horizontal" action="./EditTask" method="POST">
+<form class="form-horizontal" action="/secure/EditTask" method="POST">
 	<input type="hidden" name="requestedAction" value="edit-task-select-task">
 	<input type="hidden" name="path" value="${path }">
 
@@ -32,7 +32,7 @@
 	</c:if>
 </form>
 
-<form class="form-horizontal" action="./EditTask" method="POST">
+<form class="form-horizontal" action="/secure/EditTask" method="POST">
 	<input type="hidden" name="requestedAction" value="edit-task-select-task-type">
 	<input type="hidden" name="path" value="${path }">
 	<input type="hidden" name="taskID" value="${task.taskID }">
@@ -50,7 +50,7 @@
 	</div>
 </form>
 	
-<form class="form-horizontal" action="./EditTask" method="POST">
+<form class="form-horizontal" action="/secure/EditTask" method="POST">
 		<input type="hidden" name="requestedAction" value="edit-task-update">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">
@@ -147,4 +147,4 @@
 		});
 	</script>
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="../footer.jsp" />
