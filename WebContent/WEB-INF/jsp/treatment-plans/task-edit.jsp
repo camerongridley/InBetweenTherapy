@@ -59,7 +59,7 @@
 		<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
-		
+		<input type="hidden" name="taskOrder" value="${task.taskOrder }">
 		
 				
         <div class="form-group">
