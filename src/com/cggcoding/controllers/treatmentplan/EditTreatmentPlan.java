@@ -23,7 +23,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class EditTreatmentPlan
  */
-@WebServlet("/EditTreatmentPlan")
+@WebServlet("/secure/EditTreatmentPlan")
 public class EditTreatmentPlan extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

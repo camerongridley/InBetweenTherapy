@@ -22,7 +22,7 @@
 	<div class="col-md-6">
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="./CreateTreatmentPlan"
+			<form class="form-inline" action="/secure/CreateTreatmentPlan"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary">Create
@@ -34,7 +34,7 @@
 			</p>
 
 			<p>
-			<form class="form-inline" action="./EditTreatmentPlan" method="POST">
+			<form class="form-inline" action="/secure/EditTreatmentPlan" method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary">Edit
 						Treatment Plan Template</button>
@@ -47,7 +47,7 @@
 
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="./CreateStage"
+			<form class="form-inline" action="/secure/CreateStage"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary">Create Stage
@@ -58,7 +58,7 @@
 			</form>
 			</p>
 			<p>
-			<form class="form-inline" action="/EditStage"
+			<form class="form-inline" action="/secure/EditStage"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Edit
@@ -72,7 +72,7 @@
 
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="./CreateTask" method="POST">
+			<form class="form-inline" action="/secure/CreateTask" method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Create
 						Task Template</button>

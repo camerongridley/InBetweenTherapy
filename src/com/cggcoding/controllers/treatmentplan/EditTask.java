@@ -135,6 +135,7 @@ public class EditTask extends HttpServlet {
 					tempTask.update();
 					
 					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
+						request.setAttribute("defaultStageList", Stage.getDefaultStages());
 						request.setAttribute("stage", Stage.load(tempTask.getStageID()));
 						forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 					}else{

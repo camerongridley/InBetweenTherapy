@@ -19,7 +19,7 @@ import com.cggcoding.utils.ParameterUtils;
 /**
  * Servlet implementation class AssignTreatmentPlan
  */
-@WebServlet("/AssignTreatmentPlan")
+@WebServlet("/secure/AssignTreatmentPlan")
 public class AssignTreatmentPlan extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

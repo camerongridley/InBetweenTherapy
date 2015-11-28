@@ -18,7 +18,7 @@
     <c:import url="/jsp/message-modal.jsp"/>
 
 	<h3>Continue a plan.</h3>
-	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="client-execute-plan">
 
@@ -45,7 +45,7 @@
 	</form>
 
 	<h3>Start a new plan.</h3>
-	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="client-execute-plan">
 
@@ -72,7 +72,7 @@
 	</form>
 	
 	<h3>View Completed Plans.</h3>
-	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="client-execute-plan">
 

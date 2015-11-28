@@ -20,7 +20,7 @@ SELECT user_id, email FROM user
 
 ------
 ------
-<form action="./TestDBServlet" method="post" class="form-inline">
+<form action="/secure/TestDBServlet" method="post" class="form-inline">
 	<input type="text" name="userID">
 	<button type="submit">Get Email</button>
 

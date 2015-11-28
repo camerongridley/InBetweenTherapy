@@ -28,7 +28,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class UpdateTaskCompletion
  */
-@WebServlet("/UpdateTaskCompletion")
+@WebServlet("/secure/UpdateTaskCompletion")
 public class UpdateTaskCompletion extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

@@ -20,7 +20,7 @@ import com.cggcoding.utils.ParameterUtils;
 /**
  * Servlet implementation class CreateTask
  */
-@WebServlet("/CreateTask")
+@WebServlet("/secure/CreateTask")
 public class CreateTask extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	int userID =  0;
@@ -93,6 +93,7 @@ public class CreateTask extends HttpServlet {
 						
 						if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
 							request.setAttribute("stage", stage);
+							request.setAttribute("defaultStageList", Stage.getDefaultStages());
 							forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
 						}else{
 							forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";

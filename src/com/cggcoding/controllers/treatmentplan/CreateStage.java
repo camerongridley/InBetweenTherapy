@@ -24,7 +24,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class CreateStage
  */
-@WebServlet("/CreateStage")
+@WebServlet("/secure/CreateStage")
 public class CreateStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

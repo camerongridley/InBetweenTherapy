@@ -20,7 +20,7 @@ import com.cggcoding.utils.ParameterUtils;
 /**
  * Servlet implementation class ClientSelectPlan
  */
-@WebServlet("/ClientSelectPlan")
+@WebServlet("/secure/ClientSelectPlan")
 public class ClientSelectPlan extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

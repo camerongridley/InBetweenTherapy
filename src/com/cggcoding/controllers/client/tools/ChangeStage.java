@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
 /**
  * Servlet implementation class ChangeStage
  */
-@WebServlet("/ChangeStage")
+@WebServlet("/secure/ChangeStage")
 public class ChangeStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

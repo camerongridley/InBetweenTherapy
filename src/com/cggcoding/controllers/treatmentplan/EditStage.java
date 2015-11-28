@@ -22,7 +22,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class EditStage
  */
-@WebServlet("/EditStage")
+@WebServlet("/secure/EditStage")
 public class EditStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        

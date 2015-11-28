@@ -147,4 +147,4 @@
 		});
 	</script>
 
-<c:import url="../footer.jsp" />
+<c:import url="/jsp/footer.jsp" />

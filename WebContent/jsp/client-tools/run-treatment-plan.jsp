@@ -26,7 +26,7 @@
 			<div
 				class="progress-stage progress-stage-enabled-active col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
 				<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex }">
-					<form action="./ChangeStage" method="POST">
+					<form action="/secure/ChangeStage" method="POST">
 				</c:if>
 				${stage.title } <a href="#" type="button" data-toggle="modal"
 					data-target="#stageInfoModal"> <span
@@ -48,7 +48,7 @@
 				class="progress-stage progress-stage-enabled-inactive col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
 				<c:if
 					test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }">
-					<form action="./ChangeStage" method="POST">
+					<form action="/secure/ChangeStage" method="POST">
 						<a href='#' onclick='this.parentNode.submit(); return false;'>
 				</c:if>
 				${stage.title }<input type="hidden" name="stageIndex"
@@ -109,7 +109,7 @@
 <div class="row">
 	<div class="col-md-12">
 
-		<form action="./UpdateTaskCompletion" method="post"
+		<form action="/secure/UpdateTaskCompletion" method="post"
 			class="form-inline">
 			<input type="hidden" name="treatmentPlanID"
 				value="${treatmentPlan.treatmentPlanID}" />

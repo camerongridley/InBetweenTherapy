@@ -13,7 +13,7 @@
     
 	<c:import url="/jsp/message-modal.jsp"/>
 
-	<form class="form-horizontal" action="./AssignTreatmentPlan" method="POST">
+	<form class="form-horizontal" action="/secure/AssignTreatmentPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-client">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="defaultTreatmentPlanID" value="${defaultTreatmentPlanID }">
@@ -37,7 +37,7 @@
         </div>
 	</form>
 	
-	<form class="form-horizontal" action="./AssignTreatmentPlan" method="POST">
+	<form class="form-horizontal" action="/secure/AssignTreatmentPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-treatment-plan">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="clientUserID" value="${clientUserID }">
@@ -60,7 +60,7 @@
         </div>
      </form>
      
-     <form class="form-horizontal" action="./AssignTreatmentPlan" method="POST">
+     <form class="form-horizontal" action="/secure/AssignTreatmentPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="copy-plan-to-client">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="clientUserID" value="${clientUserID }">

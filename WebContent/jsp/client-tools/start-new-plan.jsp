@@ -20,7 +20,7 @@
     
 	<c:import url="/jsp/message-modal.jsp"/>
 	<p>Select a plan.</p>
-	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="${path }">
 

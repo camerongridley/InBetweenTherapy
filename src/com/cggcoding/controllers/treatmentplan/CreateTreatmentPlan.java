@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSession;
  * Created by cgrid_000 on 8/12/2015.
  * 
  */
-@WebServlet("/CreateTreatmentPlan")
+@WebServlet("/secure/CreateTreatmentPlan")
 public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 	
 	private static final long serialVersionUID = 1L;

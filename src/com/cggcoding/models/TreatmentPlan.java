@@ -91,12 +91,14 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	 * @throws ValidationException 
 	 */
 	public void initialize() throws ValidationException, DatabaseException{
-		Stage firstStage = stages.get(0);
-		firstStage.setInProgress(true);
+		if(stages.size() != 0){
+			Stage firstStage = stages.get(0);
+			firstStage.setInProgress(true);
+			firstStage.updateBasic();
+		}
+		
 		this.setInProgress(true);
-		//currentStageIndex = stages.get(0).getStageID();
-		//activeViewStageIndex = currentStageIndex;
-		firstStage.updateBasic();
+		
 		updateBasic();
 		
 	}

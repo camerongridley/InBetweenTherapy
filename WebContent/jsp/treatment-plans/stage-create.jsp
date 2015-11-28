@@ -16,7 +16,7 @@
 
 	<c:if test="${path != 'creatingStageTemplate' }">
 		<div class="well well-sm">
-			<form class="form-horizontal" action="./CreateStage" method="POST">
+			<form class="form-horizontal" action="/secure/CreateStage" method="POST">
 				<input type="hidden" name="requestedAction" value="stage-add-default">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
@@ -55,7 +55,7 @@
 	
 	
 	<div class="well well-sm">
-		<form class="form-horizontal" action="./CreateStage" method="POST">
+		<form class="form-horizontal" action="/secure/CreateStage" method="POST">
 			<input type="hidden" name="requestedAction" value="stage-create-title">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
