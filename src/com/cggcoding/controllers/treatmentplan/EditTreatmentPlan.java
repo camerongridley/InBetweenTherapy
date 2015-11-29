@@ -23,7 +23,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class EditTreatmentPlan
  */
-@WebServlet("/EditTreatmentPlan")
+@WebServlet("/secure/EditTreatmentPlan")
 public class EditTreatmentPlan extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -100,7 +100,7 @@ public class EditTreatmentPlan extends HttpServlet {
 				
 				switch (requestedAction){
 		            case "plan-edit-start":
-		            	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            case "plan-edit-update":
 
@@ -133,7 +133,7 @@ public class EditTreatmentPlan extends HttpServlet {
 		                treatmentPlan.update();
 		
 		                request.setAttribute("treatmentPlan", treatmentPlan);
-		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
 		            	break;
 		            case "plan-edit-select-plan":
@@ -143,19 +143,19 @@ public class EditTreatmentPlan extends HttpServlet {
 		        		} else {
 		        			request.setAttribute("treatmentPlan", null);
 		        		}
-		            	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            case "create-default-treatment-issue":
 		            	CommonServletFunctions.createDefaultTreatmentIssue(request, user.getUserID());
 
-						forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            case "stage-delete":
 						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						treatmentPlan.deleteStage(stageID);
 				    	request.setAttribute("treatmentPlan", treatmentPlan);
 						
-						forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 						break;
 						
 		            case "delete-plan":
@@ -170,7 +170,7 @@ public class EditTreatmentPlan extends HttpServlet {
 			            	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
 		            	}
 		            	
-		            	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            
 				}
@@ -186,7 +186,7 @@ public class EditTreatmentPlan extends HttpServlet {
     		request.setAttribute("defaultTreatmentIssue", defaultIssueID);
     		request.setAttribute("existingCustomTreatmentIssue", customIssueID);
     		
-    		forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+    		forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 			//e.printStackTrace();
 		}
     	

@@ -19,7 +19,7 @@ import com.cggcoding.utils.ParameterUtils;
 /**
  * Servlet implementation class AssignTreatmentPlan
  */
-@WebServlet("/AssignTreatmentPlan")
+@WebServlet("/secure/AssignTreatmentPlan")
 public class AssignTreatmentPlan extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -66,21 +66,21 @@ public class AssignTreatmentPlan extends HttpServlet {
 				switch(requestedAction){
 					case "assign-treatment-plan-start":
 
-						forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+						forwardTo = "/WEB-INF/jsp/therapist-tools/assign-treatment-plan.jsp";
 						break;
 					case "select-client":
 						
-						forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+						forwardTo = "/WEB-INF/jsp/therapist-tools/assign-treatment-plan.jsp";
 						break;
 					case "select-treatment-plan":
 
-						forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+						forwardTo = "/WEB-INF/jsp/therapist-tools/assign-treatment-plan.jsp";
 						break;
 					case "copy-plan-to-client":
 						boolean isTemplate = false;
 						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
 						
-						forwardTo = "/jsp/therapist-tools/therapist-main-menu.jsp";
+						forwardTo = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
 						break;
 				}
 				
@@ -90,7 +90,7 @@ public class AssignTreatmentPlan extends HttpServlet {
 			}
 		
 		}catch(DatabaseException | ValidationException e){
-			forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+			forwardTo = "/WEB-INF/jsp/therapist-tools/assign-treatment-plan.jsp";
 			request.setAttribute("errorMessage", e.getMessage());
 			System.out.println(e.getMessage());
 		}

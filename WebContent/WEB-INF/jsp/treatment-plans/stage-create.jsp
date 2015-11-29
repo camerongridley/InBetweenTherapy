@@ -4,7 +4,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"  %>
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
     <div class="page-header">
     
@@ -12,11 +12,11 @@
         <c:if test="${path != 'creatingStageTemplate' }"><h2>Add a Stage to: ${treatmentPlan.title} (${treatmentPlan.treatmentPlanID })</h2></c:if>
     </div>
     
-	<c:import url="/jsp/message-modal.jsp"/>
+	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 
 	<c:if test="${path != 'creatingStageTemplate' }">
 		<div class="well well-sm">
-			<form class="form-horizontal" action="./CreateStage" method="POST">
+			<form class="form-horizontal" action="/secure/CreateStage" method="POST">
 				<input type="hidden" name="requestedAction" value="stage-add-default">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
@@ -55,7 +55,7 @@
 	
 	
 	<div class="well well-sm">
-		<form class="form-horizontal" action="./CreateStage" method="POST">
+		<form class="form-horizontal" action="/secure/CreateStage" method="POST">
 			<input type="hidden" name="requestedAction" value="stage-create-title">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
@@ -82,4 +82,4 @@
 	    </form>
 	</div>
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

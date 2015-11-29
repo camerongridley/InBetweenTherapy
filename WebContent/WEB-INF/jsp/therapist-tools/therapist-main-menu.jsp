@@ -10,27 +10,28 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
   <div class="page-header">
     <h1>Therapist Main Menu</h1>
   </div>
+  <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
   <p>
-    <form class="form-inline" action="./LoadData" method="POST">
+    <form class="form-inline" action="/secure/LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary" disabled>Create Treatment Plan</button></div>
       <input type="hidden" name="requestedAction" value="createplan">
     </form>
   </p>
 
   <p>
-    <form class="form-inline" action="./LoadData" method="POST">
+    <form class="form-inline" action="/secure/LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary" disabled>Edit Treatment Plans</button></div>
       <input type="hidden" name="requestedAction" value="editplan">
     </form>
   </p>
 
   <p>
-    <form class="form-inline" action="./AssignTreatmentPlan" method="POST">
+    <form class="form-inline" action="/secure/AssignTreatmentPlan" method="POST">
       <div><button type="submit" class="btn btn-primary">Assign Plan to Client</button></div>
       <input type="hidden" name="requestedAction" value="assign-treatment-plan-start">
       <input type="hidden" name="path" value="assignClientTreatmentPlan">
@@ -38,7 +39,7 @@
   </p>
 
   <p>
-    <form class="form-inline" action="./LoadData" method="POST">
+    <form class="form-inline" action="/secure/LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary" disabled>View Client Progress</button></div>
       <input type="hidden" name="requestedAction" value="viewclient">
     </form>
@@ -46,4 +47,4 @@
 
 
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

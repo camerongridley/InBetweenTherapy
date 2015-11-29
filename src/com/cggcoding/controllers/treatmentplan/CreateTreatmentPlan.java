@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSession;
  * Created by cgrid_000 on 8/12/2015.
  * 
  */
-@WebServlet("/CreateTreatmentPlan")
+@WebServlet("/secure/CreateTreatmentPlan")
 public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
@@ -80,11 +80,11 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 					case "create-default-treatment-issue":
 		            	CommonServletFunctions.createDefaultTreatmentIssue(request, user.getUserID());
 	
-						forwardTo = "/jsp/treatment-plans/treatment-plan-create-name.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-create-name.jsp";
 		            	break;
 					case "plan-create-start":
 
-						forwardTo = "/jsp/treatment-plans/treatment-plan-create-name.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-create-name.jsp";
 						break;
 		            case "plan-create-name":
 		            	
@@ -119,7 +119,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 		                treatmentPlan.create();
 		
 		                request.setAttribute("treatmentPlan", treatmentPlan);
-		                forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		                forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		                break;
 				}
 
@@ -137,7 +137,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
     		request.setAttribute("selectedDefaultIssueID", selectedDefaultIssueID);
     		request.setAttribute("selectedCustomTreatmentIssue", selectedCustomIssueID);
 
-    		forwardTo = "/jsp/treatment-plans/treatment-plan-create-name.jsp";
+    		forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-create-name.jsp";
 			//e.printStackTrace();
 		}
     	

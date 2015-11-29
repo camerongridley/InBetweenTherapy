@@ -4,12 +4,12 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
 
 <h1>Treatment Issue: ${treatmentPlan.title }</h1>
 
-<c:import url="/jsp/message-modal.jsp" />
+<c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
 <div class="row">
 
@@ -26,7 +26,7 @@
 			<div
 				class="progress-stage progress-stage-enabled-active col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
 				<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex }">
-					<form action="./ChangeStage" method="POST">
+					<form action="/secure/ChangeStage" method="POST">
 				</c:if>
 				${stage.title } <a href="#" type="button" data-toggle="modal"
 					data-target="#stageInfoModal"> <span
@@ -48,7 +48,7 @@
 				class="progress-stage progress-stage-enabled-inactive col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
 				<c:if
 					test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }">
-					<form action="./ChangeStage" method="POST">
+					<form action="/secure/ChangeStage" method="POST">
 						<a href='#' onclick='this.parentNode.submit(); return false;'>
 				</c:if>
 				${stage.title }<input type="hidden" name="stageIndex"
@@ -109,7 +109,7 @@
 <div class="row">
 	<div class="col-md-12">
 
-		<form action="./UpdateTaskCompletion" method="post"
+		<form action="/secure/UpdateTaskCompletion" method="post"
 			class="form-inline">
 			<input type="hidden" name="treatmentPlanID"
 				value="${treatmentPlan.treatmentPlanID}" />
@@ -255,4 +255,4 @@
 	</div>
 </div>
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

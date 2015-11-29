@@ -4,15 +4,15 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
 	<h1>Edit A Task</h1>
 </div>
   
-<c:import url="/jsp/message-modal.jsp"/>
+<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 
-<form class="form-horizontal" action="./EditTask" method="POST">
+<form class="form-horizontal" action="/secure/EditTask" method="POST">
 	<input type="hidden" name="requestedAction" value="edit-task-select-task">
 	<input type="hidden" name="path" value="${path }">
 
@@ -32,7 +32,7 @@
 	</c:if>
 </form>
 
-<form class="form-horizontal" action="./EditTask" method="POST">
+<form class="form-horizontal" action="/secure/EditTask" method="POST">
 	<input type="hidden" name="requestedAction" value="edit-task-select-task-type">
 	<input type="hidden" name="path" value="${path }">
 	<input type="hidden" name="taskID" value="${task.taskID }">
@@ -50,7 +50,7 @@
 	</div>
 </form>
 	
-<form class="form-horizontal" action="./EditTask" method="POST">
+<form class="form-horizontal" action="/secure/EditTask" method="POST">
 		<input type="hidden" name="requestedAction" value="edit-task-update">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">
@@ -59,7 +59,7 @@
 		<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
-		
+		<input type="hidden" name="taskOrder" value="${task.taskOrder }">
 		
 				
         <div class="form-group">
@@ -147,4 +147,4 @@
 		});
 	</script>
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

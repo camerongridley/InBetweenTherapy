@@ -4,23 +4,22 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
 	<h1>Heading</h1>
 	<h2>Subheading</h2>
 </div>
   
-<c:import url="/jsp/message-modal.jsp"/>
 	
 	<div class="page-header">
         <h1>Select A Treatment Plan</h1>
         
     </div>
     
-	<c:import url="/jsp/message-modal.jsp"/>
+	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 	<p>Select a plan.</p>
-	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="${path }">
 
@@ -50,4 +49,4 @@
 	</form>
 	
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

@@ -68,7 +68,6 @@ public interface DatabaseActionHandler {
 	
 	void treatmentPlanDelete(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 	
-	void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException;
 
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
@@ -86,10 +85,7 @@ public interface DatabaseActionHandler {
 
 	boolean stageValidateUpdatedTitle(Connection cn, Stage newStage) throws ValidationException, SQLException;
 
-	StageGoal stageGoalCreate(Connection cn, StageGoal stageGoal) throws SQLException, ValidationException;
-
 	boolean stageUpdateBasic(Connection cn, Stage stage) throws ValidationException, SQLException;
-
 	
 	/**Gets all of the "default" Stages, which means it returns all the the Stages that have been created by an Admin user and can be copied for use by Therapist and Client users.
 	 * It returns all Stages that are owned by users of type Admin and have isTemplate as true.  It specifically excludes Stage with id=0 since that Stage is designated
@@ -100,11 +96,17 @@ public interface DatabaseActionHandler {
 	 */
 	List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException;
 	
-	//StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException, ValidationException;
 	
-	//List<Integer> stageGetTaskIDs(int stageID) throws DatabaseException, ValidationException;
+	//**************************************************************************************************
+	//*************************************** Stage Goal Methods ***************************************
+	//**************************************************************************************************
+	StageGoal stageGoalCreate(Connection cn, StageGoal stageGoal) throws SQLException, ValidationException;
 	
-	//List<StageGoal> stageLoadGoals(int stageID) throws DatabaseException, ValidationException;
+	void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException;
+
+	boolean stageGoalUpdate(Connection cn, StageGoal goal) throws ValidationException, SQLException;
+
+	void stageGoalDelete(Connection cn, int stageGoalID) throws SQLException, ValidationException;
 	
 
 	//**************************************************************************************************
@@ -116,9 +118,16 @@ public interface DatabaseActionHandler {
 	boolean treatmentIssueValidateNewName(Connection cn, String issueName, int userID)
 			throws ValidationException, SQLException;
 	
+	boolean treatmentIssueValidateUpdatedName(Connection cn, TreatmentIssue issue)
+			throws ValidationException, SQLException;
+	
 	ArrayList<TreatmentIssue> treatmentIssueGetDefaults() throws DatabaseException;
 
 	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
+
+	boolean treatmentIssueUpdate(Connection cn, TreatmentIssue issue) throws ValidationException, SQLException;
+
+	void treatmentIssueDelete(Connection cn, int treatmentIssueID) throws SQLException, ValidationException;
 
 	//**************************************************************************************************
 	//*************************************** Task Methods **********************************
@@ -154,7 +163,6 @@ public interface DatabaseActionHandler {
 
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
-	void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException, DatabaseException;
 
 	
 

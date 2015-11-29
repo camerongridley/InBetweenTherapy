@@ -1,4 +1,4 @@
-package com.cggcoding.controllers.client.tools;
+package com.cggcoding.controllers.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class UpdateTaskCompletion
  */
-@WebServlet("/UpdateTaskCompletion")
+@WebServlet("/secure/UpdateTaskCompletion")
 public class UpdateTaskCompletion extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -53,7 +53,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		/*-----------End Common Servlet variables---------------*/
 		
 		try{
-			forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
+			forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
 			
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 	

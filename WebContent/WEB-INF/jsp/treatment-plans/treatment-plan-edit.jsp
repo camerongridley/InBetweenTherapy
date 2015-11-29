@@ -11,20 +11,20 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
 	<h1>Update Treatment Plan</h1>
 	<h2>Add and update detail to the treatment plan</h2>
 </div>
 
-<c:import url="/jsp/message-modal.jsp" />
+<c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
 
 <c:if test="${path=='editingPlan' || path=='editingPlanTemplate' }">
 <div class="row">
 	<div class="form-group">
-		<form class="form-horizontal" action="./EditTreatmentPlan" method="POST">
+		<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
 			<input type="hidden" name="requestedAction" value="plan-edit-select-plan"> 
 			<input type="hidden" name="path" value="${path }">
 			
@@ -44,14 +44,14 @@
 			
 		</form>	
 		<div class="col-xs-1">
-			<form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
+			<form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
 				<input type="hidden" name="requestedAction" value="plan-create-start"> 
 				<input type="hidden" name="path" value="creatingPlanTemplate">
 				<button type="submit" class="btn btn-default glyphicon glyphicon-plus" aria-hidden="true" title="Add a new treatment plan."></button>
 			</form>
 		</div>	
 		<div class="col-xs-1">
-			<form class="form-horizontal" action="./EditTreatmentPlan" method="POST">
+			<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
 				<input type="hidden" name="requestedAction" value="delete-plan"> 
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
@@ -65,7 +65,7 @@
 </c:if>
 
 
-<form class="form-horizontal" action="./EditTreatmentPlan" method="POST">
+<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
 	<input type="hidden" name="requestedAction" value="plan-edit-update">
 	<input type="hidden" name="path" value="${path }"> 
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
@@ -157,7 +157,7 @@
 
 	<label for="stageList" class="control-label">Stages <a
 		role="button"
-		href="./CreateStage?requestedAction=add-stage-to-treatment-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}"
+		href="/secure/CreateStage?requestedAction=add-stage-to-treatment-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}"
 		class="btn btn-default btn-xs"
 		title="Add a stage to this treatment plan."> <span
 			class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -176,12 +176,12 @@
 					${stage.stageOrderForUserDisplay } - <span class="">${stage.title }</span>
 				</a> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 				<a role="button"
-					href="./EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
+					href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
 					class="btn btn-default btn-xs pull-right"
 					title="Delete this stage."> <span
 					class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 				</a> <a role="button"
-					href="./EditStage?requestedAction=stage-edit&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
+					href="/secure/EditStage?requestedAction=stage-edit&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
 					class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 				</a>
@@ -204,7 +204,7 @@
 									<td><c:out value="${fn:escapeXml(task.title) }"></c:out><span
 										class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 										<!-- <a role="button"
-										href="./EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
+										href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
 										class="btn btn-default btn-xs pull-right"
 										title="Edit this task"> <span
 											class="glyphicon glyphicon-edit" aria-hidden="true"></span>
@@ -232,7 +232,7 @@
 	role="dialog" aria-labelledby="newDefaultTreatmentIssueModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<form class="form-horizontal" action="./EditTreatmentPlan"
+			<form class="form-horizontal" action="/secure/EditTreatmentPlan"
 				method="POST">
 				<input type="hidden" name="requestedAction"
 					value="create-default-treatment-issue"> <input
@@ -269,4 +269,4 @@
 		});
 	});
 </script>
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

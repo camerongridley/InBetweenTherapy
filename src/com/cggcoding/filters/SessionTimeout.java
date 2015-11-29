@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 /**
  * Servlet Filter implementation class SessionTimeout
  */
-@WebFilter("/WebContent/jsp/")
+@WebFilter("/secure/*")
 public class SessionTimeout implements Filter {
 
     /**
@@ -37,19 +37,24 @@ public class SessionTimeout implements Filter {
 	 */
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 		
-		System.out.println("Filtered.");
-
+		System.out.print("Session Timeout Filter - ");
+		
 		HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         HttpSession session = request.getSession(false);
+        
+        System.out.println("Request URI: " + request.getRequestURI());
+        //System.out.println("Context Path: " + request.getContextPath());
 
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect(request.getContextPath() + "/"); // No logged-in user found, so redirect to login page.
-        } else {
-            chain.doFilter(req, res); // Logged-in user found, so just continue request.
-        }
-		// pass the request along the filter chain
-		chain.doFilter(req, res);
+
+        	if (session == null || session.getAttribute("user") == null) {
+        		System.out.println("No logged-in user found, redirecting to login page.");
+        		//TODO change this to login page once that is created
+	            response.sendRedirect(request.getContextPath() + "/"); // No logged-in user found, so redirect to login page.
+	        } else {
+	            chain.doFilter(req, res); // Logged-in user found, so just continue request.
+	        }
+        
 	}
 
 	/**

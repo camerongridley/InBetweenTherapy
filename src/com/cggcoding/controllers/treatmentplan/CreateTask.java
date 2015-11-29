@@ -20,7 +20,7 @@ import com.cggcoding.utils.ParameterUtils;
 /**
  * Servlet implementation class CreateTask
  */
-@WebServlet("/CreateTask")
+@WebServlet("/secure/CreateTask")
 public class CreateTask extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	int userID =  0;
@@ -83,7 +83,7 @@ public class CreateTask extends HttpServlet {
 				case ("create-task-start"):
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", taskToCreate);
-					forwardTo = "/jsp/treatment-plans/task-create.jsp";
+					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
 					break;
 				case "task-add-default" :
 
@@ -93,9 +93,10 @@ public class CreateTask extends HttpServlet {
 						
 						if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
 							request.setAttribute("stage", stage);
-							forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+							request.setAttribute("defaultStageList", Stage.getDefaultStages());
+							forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						}else{
-							forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+							forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 						}
 					}
 					
@@ -103,7 +104,7 @@ public class CreateTask extends HttpServlet {
 				case "task-type-select":
 					request.setAttribute("task", taskToCreate);
 					request.setAttribute("defaultTasks", Task.getDefaultTasks());
-					forwardTo = "/jsp/treatment-plans/task-create.jsp";
+					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
 					break;
 				case ("task-save"):
 					if(path.equals("creatingTaskTemplate")){
@@ -121,9 +122,9 @@ public class CreateTask extends HttpServlet {
 					}
 										
 					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
-						forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 					}else{
-						forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 					}
 
 					break;
@@ -144,7 +145,7 @@ public class CreateTask extends HttpServlet {
 			request.setAttribute("task", taskToCreate);
 			request.setAttribute("errorMessage", e.getMessage());
 
-			forwardTo = "/jsp/treatment-plans/task-create.jsp";
+			forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

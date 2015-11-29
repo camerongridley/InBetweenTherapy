@@ -4,38 +4,38 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
 	<h1>Edit a Stage</h1>
 </div>
   
-<c:import url="/jsp/message-modal.jsp"/>
+<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 	
-	<form class="form-horizontal" action="./EditStage" method="POST">
+	<form class="form-horizontal" action="/secure/EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-select-stage">
 		<input type="hidden" name="path" value="${path }">
 		
-		<c:if test="${path=='editingStageTemplate'}">
-			<div class="form-group">
-				<label for="selectedDefaultStageID" class="col-sm-2 control-label">Select Default Stage to Edit</label>
-		        <div class="col-sm-5">
-		            <select class="form-control" id="selectedDefaultStageID" name="selectedDefaultStageID">
-		                <option  value="">Select a stage to edit.</option>
-		                <c:forEach var="defaultStage" items="${defaultStageList }">
-		                    <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == stage.stageID }">selected</c:if> >${defaultStage.title}</option>
-		                </c:forEach>
-		            </select>
-		        </div>
-			</div>
-			
-			
-		</c:if>
-		
+		<div class="well well-sm">
+			<c:if test="${path=='editingStageTemplate'}">
+				<div class="form-group">
+					<label for="selectedDefaultStageID" class="col-sm-2 control-label">Select Default Stage</label>
+			        <div class="col-sm-5">
+			            <select class="form-control" id="selectedDefaultStageID" name="selectedDefaultStageID">
+			                <option  value="">Select a stage to edit.</option>
+			                <c:forEach var="defaultStage" items="${defaultStageList }">
+			                    <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == stage.stageID }">selected</c:if> >${defaultStage.title}</option>
+			                </c:forEach>
+			            </select>
+			        </div>
+				</div>
+				
+			</c:if>
+		</div>
 		
 	</form>
 	
-	<form class="form-horizontal" action="./EditStage" method="POST">
+	<form class="form-horizontal" action="/secure/EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-name">
 		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >	
@@ -62,17 +62,25 @@
 					</button>
 					
 				</label>
-				<c:forEach items="${stage.goals }" var="goal">
-		            <p>
-		                <input type="text" class="form-control" id="stageGoalDescription" name="stageGoalDescription" value="${goal.description }" placeholder="Describe the goal.">
-		            </p>
-				</c:forEach>
-				</div>
+			</div>
+				
+			<c:forEach items="${stage.goals }" var="goal">
+	            <div class="col-xs-11">
+	                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
+	            </div>
+	            <div class="col-xs-1">    
+	                <a role="button" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" class="btn btn-default btn-xs pull-right" title="Delete goal:${goal.description }">
+					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+					</a>
+	            
+	            </div>
+			</c:forEach>
+				
 		</div>
 		
 		<label for="stageList" class="control-label">Tasks
 
-       			<a role="button" href="./CreateTask?requestedAction=create-task-start&path=${path}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
+       			<a role="button" href="/secure/CreateTask?requestedAction=create-task-start&path=${path}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</a>
 
@@ -86,11 +94,11 @@
 			          ${task.taskOrderForUserDisplay } - <span class="">${task.title }</span>
 			        </a>
 			        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-			        <a role="button" href="./EditStage?requestedAction=delete-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete this task">
+			        <a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete task:${task.title }">
 					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 					</a>
 					
-			        <a role="button" href="./EditTask?requestedAction=edit-task-select-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit this task.">
+			        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit task: ${task.title }">
 					  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 					</a>
 					
@@ -114,7 +122,7 @@
 	<div class="modal fade" id="newStageGoalModal" tabindex="-1" role="dialog" aria-labelledby="newStageGoalModalLabel">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
-		    <form class="form-horizontal" action="./EditStage" method="POST">
+		    <form class="form-horizontal" action="/secure/EditStage" method="POST">
 		    <input type="hidden" name="requestedAction" value="stage-edit-add-goal">
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="stageID" value="${stage.stageID}" >
@@ -141,4 +149,4 @@
 		    });
 		});
 	</script>
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

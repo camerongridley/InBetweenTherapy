@@ -24,7 +24,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class CreateStage
  */
-@WebServlet("/CreateStage")
+@WebServlet("/secure/CreateStage")
 public class CreateStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -67,7 +67,7 @@ public class CreateStage extends HttpServlet {
 			}
 			
 			
-			request.getRequestDispatcher("/jsp/treatment-plans/stage-create.jsp").forward(request, response);
+			request.getRequestDispatcher("/WEB-INF/jsp/treatment-plans/stage-create.jsp").forward(request, response);
 		}*/
 	}
 
@@ -108,7 +108,7 @@ public class CreateStage extends HttpServlet {
 				switch (requestedAction){
 					case "stage-create-start":
 
-						forwardTo = "/jsp/treatment-plans/stage-create.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
 						break;
 					case "stage-add-default": //default stage can never be a template, so it will always call treatmentPlan.copyStageIntoPlan()
 						
@@ -121,7 +121,7 @@ public class CreateStage extends HttpServlet {
 			                	
 			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
 			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
-			                	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+			                	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 			                }
 						}
 		            	break;
@@ -148,17 +148,17 @@ public class CreateStage extends HttpServlet {
 		                }else{
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
 		                }
-		                forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		                forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		                break;
 		            case("add-stage-to-treatment-plan"):
 						//set all user-independent lists into request
 						request.setAttribute("defaultStages", defaultStages);
 						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-						forwardTo = "/jsp/treatment-plans/stage-create.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
 						break;
 		            default:
 
-		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 		                break;
 				}
 				
@@ -176,7 +176,7 @@ public class CreateStage extends HttpServlet {
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("defaultStages", defaultStages);
 			
-            forwardTo = "/jsp/treatment-plans/stage-create.jsp";
+            forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

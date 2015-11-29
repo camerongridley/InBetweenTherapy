@@ -4,16 +4,16 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
     <div class="page-header">
         <h1>Assign Treatment Plan</h1>
         
     </div>
     
-	<c:import url="/jsp/message-modal.jsp"/>
+	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 
-	<form class="form-horizontal" action="./AssignTreatmentPlan" method="POST">
+	<form class="form-horizontal" action="/secure/AssignTreatmentPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-client">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="defaultTreatmentPlanID" value="${defaultTreatmentPlanID }">
@@ -37,7 +37,7 @@
         </div>
 	</form>
 	
-	<form class="form-horizontal" action="./AssignTreatmentPlan" method="POST">
+	<form class="form-horizontal" action="/secure/AssignTreatmentPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-treatment-plan">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="clientUserID" value="${clientUserID }">
@@ -60,7 +60,7 @@
         </div>
      </form>
      
-     <form class="form-horizontal" action="./AssignTreatmentPlan" method="POST">
+     <form class="form-horizontal" action="/secure/AssignTreatmentPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="copy-plan-to-client">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="clientUserID" value="${clientUserID }">
@@ -85,4 +85,4 @@
 		});
 	</script>
 	
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

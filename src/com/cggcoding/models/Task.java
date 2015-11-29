@@ -379,7 +379,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	protected abstract boolean updateAdditionalData(Connection cn) throws ValidationException, SQLException;
 
 	
-	/**Copies the task, setting the taskID to 0 and template=false since templates are unique.
+	/**Copies the task, setting the taskID to 0 and template=false since templates are unique. DOES NOT SAVE TO DATABASE.
 	 * @param stageID
 	 * @param userID
 	 * @return

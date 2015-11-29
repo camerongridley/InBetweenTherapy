@@ -1,4 +1,4 @@
-package com.cggcoding.controllers.client.tools;
+package com.cggcoding.controllers.client;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
 /**
  * Servlet implementation class ChangeStage
  */
-@WebServlet("/ChangeStage")
+@WebServlet("/secure/ChangeStage")
 public class ChangeStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -51,7 +51,7 @@ public class ChangeStage extends HttpServlet {
 			request.setAttribute("activeStage", activeStage);
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			
-			forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
+			forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
 		} catch (ValidationException | DatabaseException e) {
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("treatmentPlan", treatmentPlan);
