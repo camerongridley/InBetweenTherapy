@@ -443,6 +443,9 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			plan.addStage(Stage.load(cn, stageID));
 		}
         
+		if(plan.getStages().size()==0){
+			throw new ValidationException(ErrorMessages.STAGES_IS_EMPTY);
+		}
 		
 		return plan;
 	}

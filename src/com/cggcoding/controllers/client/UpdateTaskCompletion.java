@@ -1,4 +1,4 @@
-package com.cggcoding.controllers.client.tools;
+package com.cggcoding.controllers.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
