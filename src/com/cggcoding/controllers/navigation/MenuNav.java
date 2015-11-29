@@ -47,6 +47,8 @@ public class MenuNav extends HttpServlet {
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
+		String destination = request.getParameter("destination");
+		
 		
 		if(user!=null){
 			switch(user.getRole()){
