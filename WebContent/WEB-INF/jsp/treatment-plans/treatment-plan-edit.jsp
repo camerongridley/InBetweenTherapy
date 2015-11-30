@@ -201,7 +201,7 @@
 							<c:forEach items="${stage.tasks }" var="task">
 								<tr>
 									<!-- <th scope="row">${task.taskOrder}</th>-->
-									<td><c:out value="${fn:escapeXml(task.title) }"></c:out><span
+									<td>${task.title} (${task.repetitions }) <span
 										class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 										<!-- <a role="button"
 										href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"

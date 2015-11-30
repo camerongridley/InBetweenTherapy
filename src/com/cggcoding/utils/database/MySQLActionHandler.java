@@ -972,7 +972,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
             			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
             			dateCompleted, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), 
-            			rs.getBoolean("task_is_template"), rs.getInt("template_id"), rs.getInt("repetitions"));
+            			rs.getBoolean("task_is_template"), rs.getInt("task_template_id"), rs.getInt("repetitions"));
             }
 
         } finally {
@@ -1078,7 +1078,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         try {
 
 	    		String sql = "UPDATE task_generic SET task_generic_task_type_id_fk=?, task_generic_stage_id_fk=?, task_generic_user_id_fk=?, parent_task_id=?, task_title=?, instructions=?, resource_link=?, "
-	    				+ "task_completed=?, task_date_completed=?, task_order=?, is_extra_task=?, task_is_template=?, template_id=?, repetitions=? WHERE task_generic_id=?";
+	    				+ "task_completed=?, task_date_completed=?, task_order=?, is_extra_task=?, task_is_template=?, task_template_id=?, repetitions=? WHERE task_generic_id=?";
 	        	
 	            ps = cn.prepareStatement(sql);
 	            
@@ -1153,7 +1153,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_stage_id_fk, task_generic_user_id_fk, parent_task_id, task_title, "
-        			+ "instructions, resource_link, task_completed, task_date_completed, task_order, is_extra_task, task_is_template, template_id, repetitions) "
+        			+ "instructions, resource_link, task_completed, task_date_completed, task_order, is_extra_task, task_is_template, task_template_id, repetitions) "
     				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);

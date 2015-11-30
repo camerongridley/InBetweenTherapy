@@ -22,7 +22,7 @@
 				<input type="hidden" name="isTemplate" value="${task.template }">
 				
 				<div>
-					<h3>Add a Predefined Stage</h3>
+					<h3>Add a Predefined Task</h3>
 				</div>
 				
 		        <div class="form-group">
@@ -75,7 +75,7 @@
 	    </form>
 	        
 	    <form class="form-horizontal" action="/secure/CreateTask" method="POST">
-			<input type="hidden" name="requestedAction" value="task-save">
+			<input type="hidden" name="requestedAction" value="new-task-save">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">
 			<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">

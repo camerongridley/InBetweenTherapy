@@ -106,7 +106,7 @@ public class CreateTask extends HttpServlet {
 					request.setAttribute("defaultTasks", Task.getDefaultTasks());
 					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
 					break;
-				case ("task-save"):
+				case ("new-task-save"):
 					if(path.equals("creatingTaskTemplate")){
 						Task.createTemplate(taskToCreate);
 					} else{

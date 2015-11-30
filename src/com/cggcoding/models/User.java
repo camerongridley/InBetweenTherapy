@@ -10,6 +10,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 public abstract class User implements Serializable{
 	/**
@@ -128,8 +129,14 @@ public abstract class User implements Serializable{
 		return true;
 	}
 	
+	//XXX change this to nest copy() - stage.copy(userID)?
 	public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
     	TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
+    	
+    	if(planToCopy.getStages().size()==0){
+			throw new ValidationException(ErrorMessages.STAGES_IS_EMPTY);
+		}
+    	
     	planToCopy.setTemplate(isTemplate);
     	
     	planToCopy.setUserID(userIDTakingNewPlan);
