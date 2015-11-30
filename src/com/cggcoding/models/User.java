@@ -197,16 +197,27 @@ public abstract class User implements Serializable{
     	
     	planToCopy.setUserID(userIDTakingNewPlan);
     	//loop through and change all the userIDs to the userID supplied by the method argument
+    	//OPTIMIZE O(N3) complexity here with 3 nested for loops.  Is there a better way to do this?
     	for(Stage stage : planToCopy.getStages()){
     		stage.setUserID(userIDTakingNewPlan);
+    		List<Task> taskRepetitionsAdded = new ArrayList<>();
     		for(Task task : stage.getTasks()){
-    			if(task.getRepetitions() > 1){
-    				//TODO add repetitions here
-    			}
     			task.setUserID(userIDTakingNewPlan);
-    		}
-    		//TODO before moving on to next stage in loop, update the task orders to account for any repetitions added
-    	}
+    			task.setTemplate(false);
+    			task.setTemplateID(task.getTaskID());
+    			for(int i = 0; i < task.getRepetitions(); i++){
+    				Task taskRep = task.copy();
+    				taskRep.setTaskOrder(taskRepetitionsAdded.size()-1);
+    				taskRepetitionsAdded.add(taskRep);
+    			}
+    			
+    		}//end Task loop
+    		
+    		//reset the Stage's Task list with new list that has been populated with repetitions
+    		stage.setTasks(taskRepetitionsAdded);
+    		
+    		//TODO before moving on to next stage in loop, update the task orders to account for any repetitions added?
+    	}//end Stage loop
     	
     	//save the plan - which is responsible for updating treatmentPlanID in all the child objects
     	return planToCopy.create();
