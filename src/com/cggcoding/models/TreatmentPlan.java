@@ -310,6 +310,30 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		 return this;
 	}
 	
+	public TreatmentPlan createBasic() throws ValidationException, DatabaseException {
+		
+		Connection cn = null;
+        TreatmentPlan plan = null;
+        try {
+        	cn = dao.getConnection();  	
+        	plan = createBasic(cn);
+        } catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return plan;
+	}
+	
+	public TreatmentPlan createBasic(Connection cn) throws ValidationException, SQLException {
+		TreatmentPlan plan = null;
+		if(dao.treatmentPlanValidateNewTitle(cn, this.userID, this.title)){
+			dao.treatmentPlanCreateBasic(cn, this);
+		}
+		return plan;
+	}
+	
 	@Override
 	public void update() throws ValidationException, DatabaseException {
 		Connection cn = null;

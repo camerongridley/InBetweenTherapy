@@ -1,9 +1,12 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.dbutils.DbUtils;
 import org.apache.tomcat.jdbc.pool.DataSource;
 
 import com.cggcoding.exceptions.DatabaseException;
@@ -23,7 +26,7 @@ public abstract class User implements Serializable{
 	private List<String> roles;
 	String role;
 	private List<TreatmentPlan> treatmentPlanList;
-	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
 	public User (int userID, String email){
 		this.userID = userID;
@@ -130,8 +133,9 @@ public abstract class User implements Serializable{
 	}
 	
 	//XXX change this to nest copy() - stage.copy(userID)?
-	public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
+	/*public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
     	TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
+    	List<Stage> stages = planToCopy.getStages();
     	
     	if(planToCopy.getStages().size()==0){
 			throw new ValidationException(ErrorMessages.STAGES_IS_EMPTY);
@@ -140,12 +144,68 @@ public abstract class User implements Serializable{
     	planToCopy.setTemplate(isTemplate);
     	
     	planToCopy.setUserID(userIDTakingNewPlan);
+
+    	Connection cn = null;
+        
+        try {
+        	cn = dao.getConnection();
+        	cn.setAutoCommit(false);
+        	
+        	planToCopy = planToCopy.createBasic(cn);//XXX Check that this updates the treatmentPlanID correctly
+        	
+        	//loop through and copy into the new plan
+        	for(Stage stage : stages){
+        		//OPTIMIZE the following lines of code are repeated in TreatmentPlan.copyStageIntoTreatmentPlan.  I couldn't figure out a way to use that method since I need to know the state of a TreatmentPlan's isTemplate to determine if repetitions are made, so can't do that from Stage.java
+        		stage.setUserID(userIDTakingNewPlan);
+        		stage.setTemplate(false);
+        		stage.setTreatmentPlanID(planToCopy.getTreatmentPlanID());//set with new treatmentPlanID that was created when .createBasic was called earlier
+        		for(Task task : stage.getTasks()){
+        			task.setUserID(userIDTakingNewPlan);
+        			task.setTemplate(false);
+        			task.setStageID(stageID);
+        		}
+        	}
+        	
+        	cn.commit();
+        } catch (SQLException e) {
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+        }
+    	
+    	//save the plan - which is responsible for updating treatmentPlanID in all the child objects
+    	return planToCopy.create();
+    	
+    }*/
+	
+	
+	 public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
+    	TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
+    	planToCopy.setTemplate(isTemplate);
+    	
+    	planToCopy.setUserID(userIDTakingNewPlan);
     	//loop through and change all the userIDs to the userID supplied by the method argument
     	for(Stage stage : planToCopy.getStages()){
     		stage.setUserID(userIDTakingNewPlan);
     		for(Task task : stage.getTasks()){
+    			if(task.getRepetitions() > 1){
+    				//TODO add repetitions here
+    			}
     			task.setUserID(userIDTakingNewPlan);
     		}
+    		//TODO before moving on to next stage in loop, update the task orders to account for any repetitions added
     	}
     	
     	//save the plan - which is responsible for updating treatmentPlanID in all the child objects
