@@ -271,7 +271,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
         	create(cn);
         	
         	cn.commit();
-        } catch (SQLException e) {
+        } catch (SQLException | ValidationException e) {
 			try {
 				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
 				cn.rollback();
@@ -280,6 +280,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
+			throw new ValidationException(e.getMessage());
 		} finally {
 			try {
 				cn.setAutoCommit(true);

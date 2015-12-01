@@ -207,7 +207,12 @@ public abstract class User implements Serializable{
     			task.setTemplateID(task.getTaskID());
     			for(int i = 0; i < task.getRepetitions(); i++){
     				Task taskRep = task.copy();
-    				taskRep.setTaskOrder(taskRepetitionsAdded.size()-1);
+    				
+    				if(task.getRepetitions() > 1){
+    					taskRep.setTitle(task.getTitle() + " (" + (i+1) + ")");
+    				}
+    				
+    				taskRep.setTaskOrder(taskRepetitionsAdded.size());
     				taskRepetitionsAdded.add(taskRep);
     			}
     			

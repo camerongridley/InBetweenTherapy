@@ -20,14 +20,14 @@
 
   <p>
     <form class="form-inline" action="" method="POST">
-      <div><button type="submit" class="btn btn-primary" disabled>Another Option</button></div>
+      <div><button type="submit" class="btn btn-primary" disabled>Manage My Treatment Plans</button></div>
       <input type="hidden" name="requestedAction" value="editplan">
     </form>
   </p>
 
   <p>
     <form class="form-inline" action="" method="POST">
-      <div><button type="submit" class="btn btn-primary" disabled>Option 3</button></div>
+      <div><button type="submit" class="btn btn-primary" disabled>Another Option</button></div>
       <input type="hidden" name="requestedAction" value="assign-treatment-plan-start">
       <input type="hidden" name="path" value="assignClientTreatmentPlan">
     </form>
