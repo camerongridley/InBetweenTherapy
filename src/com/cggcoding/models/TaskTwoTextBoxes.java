@@ -24,6 +24,9 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	
 	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
+	/**
+	 * Default constructor.  Designated public so Task.getTaskType() can be accessed outside of the package.
+	 */
 	public TaskTwoTextBoxes(){
 		super();
 	}

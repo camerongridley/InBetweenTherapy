@@ -47,11 +47,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
 	//empty constructor necessary to allow static factory methods in subclasses
-	public Task(){
+	protected Task(){
 	}
 	
 	//basic parent Task that sets properties to defaults
-	public Task(int taskID, int userID) {
+	protected Task(int taskID, int userID) {
 		this.taskID = taskID;
 		this.stageID = 0;
 		this.userID = userID;
@@ -83,7 +83,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @param extraTask
 	 * @param template
 	 */
-	public Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template, int templateID, int repetitions){
+	protected Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template, int templateID, int repetitions){
 		this.taskID = 0;
 		this.stageID = stageID;
 		this.userID = userID;
@@ -117,7 +117,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @param extraTask
 	 * @param template
 	 */
-	public Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template, int templateID, int repetitions){
+	protected Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template, int templateID, int repetitions){
 		this.taskID = taskID;
 		this.stageID = stageID;
 		this.userID = userID;
@@ -248,7 +248,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @throws ValidationException
 	 * @throws SQLException
 	 */
-	public Task create(Connection cn)throws ValidationException, SQLException{
+	protected Task create(Connection cn)throws ValidationException, SQLException{
 		
 		createGeneralData(cn);
 		createAdditionalData(cn);
@@ -288,7 +288,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
         }
 	}
 	
-	public void update(Connection cn) throws ValidationException, SQLException{
+	protected void update(Connection cn) throws ValidationException, SQLException{
 		dao.taskGenericUpdate(cn, this);
 		updateAdditionalData(cn);
 	}
@@ -309,7 +309,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	    }
 	}
 	
-	public void delete(Connection cn) throws SQLException {
+	protected void delete(Connection cn) throws SQLException {
 		dao.taskDelete(cn, this.taskID);
 	}
 	

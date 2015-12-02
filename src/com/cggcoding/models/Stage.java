@@ -460,7 +460,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return savedStage;*/
 	}
 	
-	public void create(Connection cn) throws ValidationException, SQLException{
+	protected void create(Connection cn) throws ValidationException, SQLException{
 		
 		if(this.title.isEmpty()){
     		throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
@@ -538,7 +538,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 	}
 	
-	public void updateBasic(Connection cn) throws ValidationException, SQLException{
+	protected void updateBasic(Connection cn) throws ValidationException, SQLException{
 		if(dao.stageValidateUpdatedTitle(cn, this)){
 			dao.stageUpdateBasic(cn, this);
 		}
@@ -562,7 +562,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 	}
 	
-	public void delete(Connection cn) throws SQLException, ValidationException, DatabaseException{      
+	protected void delete(Connection cn) throws SQLException, ValidationException, DatabaseException{      
         dao.throwValidationExceptionIfTemplateHolderID(this.stageID);
         
         dao.stageDelete(cn, this.stageID);
@@ -584,7 +584,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	    }	
 	}
 	
-	public static void delete(Connection cn, int stageID) throws ValidationException, SQLException {
+	protected static void delete(Connection cn, int stageID) throws ValidationException, SQLException {
         	dao.stageDelete(cn, stageID);
 
 	}

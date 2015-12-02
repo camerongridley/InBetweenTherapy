@@ -294,7 +294,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
-	public TreatmentPlan create(Connection cn) throws ValidationException, SQLException{
+	protected TreatmentPlan create(Connection cn) throws ValidationException, SQLException{
 		
 		if(dao.treatmentPlanValidateNewTitle(cn, this.userID, this.title)){
     		dao.treatmentPlanCreateBasic(cn, this);//createBasic(cn);
@@ -327,7 +327,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
         return plan;
 	}
 	
-	public TreatmentPlan createBasic(Connection cn) throws ValidationException, SQLException {
+	protected TreatmentPlan createBasic(Connection cn) throws ValidationException, SQLException {
 		TreatmentPlan plan = null;
 		if(dao.treatmentPlanValidateNewTitle(cn, this.userID, this.title)){
 			dao.treatmentPlanCreateBasic(cn, this);
@@ -380,7 +380,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
-	public void updateBasic(Connection cn) throws ValidationException, SQLException {
+	protected void updateBasic(Connection cn) throws ValidationException, SQLException {
 		if(dao.treatmentPlanValidateUpdatedTitle(cn, this)){
     		dao.treatmentPlanUpdateBasic(cn, this);
     	}
@@ -404,7 +404,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
-	public void delete(Connection cn) throws ValidationException, SQLException {
+	protected void delete(Connection cn) throws ValidationException, SQLException {
 		dao.throwValidationExceptionIfTemplateHolderID(this.treatmentPlanID);
 		
 		dao.treatmentPlanDelete(cn, this.treatmentPlanID);
