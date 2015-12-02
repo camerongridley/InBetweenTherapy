@@ -16,8 +16,8 @@
 		<input type="hidden" name="requestedAction" value="stage-edit-select-stage">
 		<input type="hidden" name="path" value="${path }">
 		
-		<div class="well well-sm">
-			<c:if test="${path=='editingStageTemplate'}">
+		<c:if test="${path=='stageTemplate'}">
+			<div class="well well-sm">
 				<div class="form-group">
 					<label for="selectedDefaultStageID" class="col-sm-2 control-label">Select Default Stage</label>
 			        <div class="col-sm-5">
@@ -29,10 +29,8 @@
 			            </select>
 			        </div>
 				</div>
-				
-			</c:if>
-		</div>
-		
+			</div>
+		</c:if>
 	</form>
 	
 	<form class="form-horizontal" action="/secure/EditStage" method="POST">

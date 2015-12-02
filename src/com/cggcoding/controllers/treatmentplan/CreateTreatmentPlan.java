@@ -109,7 +109,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 
 		                treatmentPlan = TreatmentPlan.getInstanceWithoutID(planTitle, user.getUserID(), planDescription, treatmentIssueID);
 		                
-		                if(path.equals("creatingPlanTemplate")){
+		                if(path.equals("treatmentPlanTemplate")){
 		                	treatmentPlan.setTemplate(true);
 		                }else{
 		                	treatmentPlan.setTemplate(false);

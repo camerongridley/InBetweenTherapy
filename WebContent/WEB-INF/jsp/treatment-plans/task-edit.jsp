@@ -16,7 +16,7 @@
 	<input type="hidden" name="requestedAction" value="edit-task-select-task">
 	<input type="hidden" name="path" value="${path }">
 
-	<c:if test="${path=='editingTaskTemplate'}">
+	<c:if test="${path=='taskTemplate'}">
 		<div class="form-group">
 			<label for="defaultTaskListID" class="col-sm-2 control-label">Select Task</label>
 			<div class="col-sm-8">

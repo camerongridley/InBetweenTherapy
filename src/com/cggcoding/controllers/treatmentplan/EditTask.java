@@ -35,44 +35,7 @@ public class EditTask extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		processRequest(request, response);
-		
-		/*--Common Servlet variables that should be in every controller--*/
-		/*HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
-		String requestedAction = request.getParameter("requestedAction");
-		String path = request.getParameter("path");
-		request.setAttribute("path", path);*/
-		/*-----------End Common Servlet variables---------------*/
-		
-		/*int taskID = ParameterUtils.parseIntParameter(request, "taskID");
-		
-		try {
-			if(user.isAuthorizedForTask(taskID)){
-				if(user.hasRole("admin")){
-					switch(requestedAction){
-					case ("edit-task-select-task"):
-						int selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
-	
-						
-							Task tempTask = Task.load(selectedTaskID);
-							request.setAttribute("task", tempTask);
-						
-						forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
-						break;
-					}
-				}
-			}
-		} catch (DatabaseException e) {
-			//request.setAttribute("task", tempTask);
-			request.setAttribute("errorMessage", e.getMessage());
-
-			forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
-		}
-		
-		request.getRequestDispatcher(forwardTo).forward(request, response);*/
 	}
 
 	/**
@@ -134,7 +97,7 @@ public class EditTask extends HttpServlet {
 					
 					tempTask.update();
 					
-					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
+					if(path.equals("treatmentPlanTemplate")|| path.equals("stageTemplate")){
 						request.setAttribute("stage", Stage.load(tempTask.getStageID()));
 						request.setAttribute("defaultStageList", Stage.getDefaultStages());
 						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";

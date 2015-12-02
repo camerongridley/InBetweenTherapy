@@ -35,16 +35,7 @@ public class CreateTask extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*--Common Servlet variables that should be in every controller--*/
-		/*HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
-		String requestedAction = request.getParameter("requestedAction");
-		String path = request.getParameter("path");
-		request.setAttribute("path", path);*/
-		/*-----------End Common Servlet variables---------------*/
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		processRequest(request, response);
 	}
 
@@ -91,7 +82,7 @@ public class CreateTask extends HttpServlet {
 						stage = Stage.load(stageID);
 						stage.copyTaskIntoStage(taskToCreate.getTaskID());
 						
-						if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
+						if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
 							request.setAttribute("stage", stage);
 							request.setAttribute("defaultStageList", Stage.getDefaultStages());
 							forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
@@ -106,8 +97,20 @@ public class CreateTask extends HttpServlet {
 					request.setAttribute("defaultTasks", Task.getDefaultTasks());
 					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
 					break;
-				case ("new-task-save"):
-					if(path.equals("creatingTaskTemplate")){
+				case ("create-new-task"):
+					//TODO implement this?
+					switch(path){
+						case "taskTemplate":
+							
+							break;
+						case "stageTemplate":
+							
+							break;
+						default:
+							
+							
+					}
+					if(path.equals("taskTemplate")){
 						Task.createTemplate(taskToCreate);
 					} else{
 						stage = Stage.load(stageID);
@@ -121,7 +124,7 @@ public class CreateTask extends HttpServlet {
 						request.setAttribute("stage", Stage.load(stageID));
 					}
 										
-					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
+					if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
 						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 					}else{
 						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
@@ -131,7 +134,7 @@ public class CreateTask extends HttpServlet {
 				}
 				
 				
-				if(path.equals("creatingTaskTemplate")){
+				if(path.equals("taskTemplate")){
 					
 				}else{
 					stage = getStageAndPutInRequest(request, stageID);

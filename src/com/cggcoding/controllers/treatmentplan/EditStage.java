@@ -16,6 +16,7 @@ import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.SuccessMessages;
 
@@ -96,10 +97,11 @@ public class EditStage extends HttpServlet {
 		            	editedStage.update();
 		            	
 		            	request.setAttribute("stage", editedStage);
-		            	if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate")){
+		            	if(path.equals("treatmentPlanTemplate")){
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
 		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(editedStage.getTreatmentPlanID()));
 		            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
+		            		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
 		            		forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	}else{
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);

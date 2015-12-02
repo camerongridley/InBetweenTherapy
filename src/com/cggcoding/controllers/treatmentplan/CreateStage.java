@@ -40,35 +40,6 @@ public class CreateStage extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		processRequest(request, response);
-		/*--Common Servlet variables that should be in every controller--*/
-		/*HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
-		String requestedAction = request.getParameter("requestedAction");
-		String path = request.getParameter("path");
-		request.setAttribute("path", path);
-		-----------End Common Servlet variables---------------
-		
-		if(user.hasRole("admin")){
-			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
-
-			try {
-				switch(requestedAction){
-				case("add-stage-to-treatment-plan"):
-					//set all user-independent lists into request
-					request.setAttribute("defaultStages", DefaultDatabaseCalls.getDefaultStages());
-					request.setAttribute("treatmentPlan", TreatmentPlan.load(treatmentPlanID));
-					break;
-				}
-				
-			} catch (DatabaseException | ValidationException e) {
-				request.setAttribute("errorMessage", e.getMessage());
-				e.printStackTrace();
-			}
-			
-			
-			request.getRequestDispatcher("/WEB-INF/jsp/treatment-plans/stage-create.jsp").forward(request, response);
-		}*/
 	}
 
 	/**
@@ -116,7 +87,7 @@ public class CreateStage extends HttpServlet {
 							treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 							treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
 	
-			            	if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate")){
+			            	if(path.equals("treatmentPlanTemplate")){
 			                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 			                	
 			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
@@ -132,7 +103,7 @@ public class CreateStage extends HttpServlet {
 		                }
 		                
 		                Stage newStage = null;
-		                if(path.equals("creatingStageTemplate")){
+		                if(path.equals("stageTemplate")){
 		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
 		                } else {
 		                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
@@ -142,7 +113,7 @@ public class CreateStage extends HttpServlet {
 		                request.setAttribute("stage", newStage);
 		                
 		                
-		                if(path.equals("editingPlanTemplate")){
+		                if(path.equals("treatmentPlanTemplate")){
 		                	
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 		                }else{
