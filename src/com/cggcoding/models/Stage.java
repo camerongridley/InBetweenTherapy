@@ -350,6 +350,14 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return null;
 	}
 
+	/**Loads the stage and all associated Tasks.  Checks if the Stage is a template.  If so, then it's Tasks are also templates and 
+	 * the database loads the Tasks using the task_template_stage_template_mapping table to get the taskIDs to load.  If not a template then it 
+	 * just loads tasks straight from the task_generic table
+	 * @param stageID
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
 	public static Stage load(int stageID) throws DatabaseException, ValidationException{
 		Connection cn = null;
 		Stage stage = null;
@@ -370,6 +378,15 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 	}
 	
+	/**Loads the stage and all associated Tasks.  Checks if the Stage is a template.  If so, then it's Tasks are also templates and 
+	 * the database loads the Tasks using the task_template_stage_template_mapping table to get the taskIDs to load.  If not a template then it 
+	 * just loads tasks straight from the task_generic table
+	 * @param cn
+	 * @param stageID
+	 * @return
+	 * @throws SQLException
+	 * @throws ValidationException
+	 */
 	public static Stage load(Connection cn, int stageID) throws SQLException, ValidationException{
 		Stage stage = null;
         
@@ -377,7 +394,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         
     	stage = dao.stageLoadBasic(cn, stageID);
     	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
-		stage.setTasks(dao.stageLoadTasks(cn, stage.getStageID()));
+    	if(stage.isTemplate()){
+    		stage.setTasks(dao.stageLoadTaskTemplates(cn, stageID));
+    	}else{
+    		stage.setTasks(dao.stageLoadTasks(cn, stage.getStageID()));
+    	}
+		
 
         
         dao.throwValidationExceptionIfNull(stage);

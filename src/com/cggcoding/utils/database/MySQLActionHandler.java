@@ -799,17 +799,15 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         ResultSet rs = null;
         List<Task> tasks = new ArrayList<>();
         
-        //throwValidationExceptionIfTemplateHolderID(stageID);
-        
         try {
-            ps = cn.prepareStatement("SELECT task_generic_id FROM task_template_id_stage_template_id_maps WHERE stage_template_id_fk=?");
+            ps = cn.prepareStatement("SELECT task_generic_template_id_fk FROM task_template_id_stage_template_id_maps WHERE stage_template_id_fk=?");
             ps.setInt(1, stageID);
             
 
             rs = ps.executeQuery();
             
             while (rs.next()){
-            	tasks.add(Task.load(cn, rs.getInt("task_generic_id")));
+            	tasks.add(Task.load(cn, rs.getInt("task_generic_template_id_fk")));
             }
             //TODO confirm that the order of tasks is correct when loaded here
         } finally {
