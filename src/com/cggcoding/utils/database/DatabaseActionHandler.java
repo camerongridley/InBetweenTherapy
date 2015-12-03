@@ -163,6 +163,13 @@ public interface DatabaseActionHandler {
 
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
+	List<Task> stageLoadTaskTemplates(Connection cn, int stageID) throws SQLException;
+
+	void mapsTaskStageTemplateCreate(Connection cn, int taskTemplateID, int stageTemplateID) throws SQLException;
+
+	boolean mapsTaskStageTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID)
+			throws ValidationException, SQLException;
+
 
 	
 

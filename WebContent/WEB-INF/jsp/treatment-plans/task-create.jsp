@@ -16,7 +16,7 @@
 	<c:if test="${path!='taskTemplate' }">
 		<div class="well well-sm">
 			<form class="form-horizontal" action="/secure/CreateTask" method="POST">
-				<input type="hidden" name="requestedAction" value="task-add-default">
+				<input type="hidden" name="requestedAction" value="task-add-default-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="stageID" value="${stage.stageID }">
 				<input type="hidden" name="isTemplate" value="${task.template }">

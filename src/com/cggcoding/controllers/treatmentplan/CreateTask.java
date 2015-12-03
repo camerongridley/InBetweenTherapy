@@ -76,11 +76,12 @@ public class CreateTask extends HttpServlet {
 					request.setAttribute("task", taskToCreate);
 					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
 					break;
-				case "task-add-default" :
+				case "task-add-default-template" :
 
 					if(taskToCreate.getTaskID() != 0){
 						stage = Stage.load(stageID);
-						stage.copyTaskIntoStage(taskToCreate.getTaskID());
+						stage.addTaskTemplate(taskToCreate.getTaskID());
+						//stage.copyTaskIntoStage(taskToCreate.getTaskID());
 						
 						if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
 							request.setAttribute("stage", stage);

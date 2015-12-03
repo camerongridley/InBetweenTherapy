@@ -32,6 +32,8 @@ public final class ErrorMessages {
 	public static final String STAGE_GOAL_VALIDATION_ERROR = "You must enter a goal description.";
 	public static final String STAGE_UPDATE_NO_SELECTION = "Please select and load a stage.";
 	public static final String STAGE_TITLE_DESCRIPTION_MISSING = "You must enter a stage name and description.";
+	public static final String STAGE_IS_NOT_TEMPLATE = "You appear to be trying to add a task template to a stage that is not a template.  This is not allowed.  Please try again or contact customer support.";
+	public static final String STAGE_CONTAINS_TASK_TEMPLATE = "This stage template already contains the task you've chosen.  Go to the Edit Task page to increase the number of repetitions for this task.";
 	
 	//Tasks
 	public static final String TASK_MISSING_INFO = "You must select a task type as well as enter a task name and instructions.";

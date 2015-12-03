@@ -589,6 +589,34 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 
 	}
 	
+	/**Adds a task template to a stage template.  Inserts into taskTemplate-stageTemplate mapping table. Both the Task and Stage must be templates to be valid.
+	 * @param taskTemplateID
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	public void addTaskTemplate(int taskTemplateID) throws DatabaseException, ValidationException{
+		Connection cn = null;
+	
+		if(this.isTemplate()){
+			try {
+				
+	        	cn = dao.getConnection();
+	        	if(dao.mapsTaskStageTemplateValidate(cn, taskTemplateID, this.getStageID())){
+	        		dao.mapsTaskStageTemplateCreate(cn, taskTemplateID, this.stageID);
+	        	}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }		
+		}else{
+			throw new ValidationException(ErrorMessages.STAGE_IS_NOT_TEMPLATE);
+		}
+		
+	}
+	
 	public Task copyTaskIntoStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
 		Task task = Task.load(taskIDBeingCopied);
 		task.setTemplate(false);

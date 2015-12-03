@@ -69,11 +69,10 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 		return true;
 	}
     
-
+	
     /* (non-Javadoc)
 	 * @see com.cggcoding.utils.database.DatabaseActionHandler#validateUser(java.lang.String, java.lang.String)
 	 */
-     
     @Override
 	public boolean userValidate(String email, String password) throws DatabaseException{
     	Connection cn = null;
@@ -763,6 +762,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return stage;
 	}
 	
+	//TODO rename this to reflect that it is loading live/non-template tasks
+	//OPTIMIZE instead of calling Task.load() for each record, could change SELECT statement to return all records from Task that match and build each Task inside this method.
 	@Override
 	public List<Task> stageLoadTasks(Connection cn, int stageID) throws SQLException {
 		PreparedStatement ps = null;
@@ -772,7 +773,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         //throwValidationExceptionIfTemplateHolderID(stageID);
         
         try {
-            ps = cn.prepareStatement("SELECT task_generic_id, task_generic_task_type_id_fk, task_order FROM task_generic WHERE task_generic_stage_id_fk=? ORDER BY task_order");
+            ps = cn.prepareStatement("SELECT task_generic_id FROM task_generic WHERE task_generic_stage_id_fk=? ORDER BY task_order");
             ps.setInt(1, stageID);
             
 
@@ -782,6 +783,35 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	tasks.add(Task.load(cn, rs.getInt("task_generic_id")));
             }
 
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+
+        }
+
+        return tasks;
+	}
+	
+	//OPTIMIZE instead of calling Task.load() for each record, could change SELECT statement to return all records from Task that match and build each Task inside this method.
+	@Override
+	public List<Task> stageLoadTaskTemplates(Connection cn, int stageID) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Task> tasks = new ArrayList<>();
+        
+        //throwValidationExceptionIfTemplateHolderID(stageID);
+        
+        try {
+            ps = cn.prepareStatement("SELECT task_generic_id FROM task_template_id_stage_template_id_maps WHERE stage_template_id_fk=?");
+            ps.setInt(1, stageID);
+            
+
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+            	tasks.add(Task.load(cn, rs.getInt("task_generic_id")));
+            }
+            //TODO confirm that the order of tasks is correct when loaded here
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
@@ -1190,7 +1220,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 		return newTask;
 	}
 	
-	
 	@Override
 	public void taskDelete(Connection cn, int taskID) throws SQLException {
 		PreparedStatement ps = null;
@@ -1439,6 +1468,58 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         return issues;
     }
+    
+    @Override
+	public void mapsTaskStageTemplateCreate(Connection cn, int taskTemplateID, int stageTemplateID) throws SQLException{
+		PreparedStatement ps = null;
+        
+        try {
+        	String sql = "INSERT INTO task_template_id_stage_template_id_maps (task_generic_template_id_fk, stage_template_id_fk) "
+        			+ "VALUES (?, ?)";
+
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setInt(1, taskTemplateID);
+            ps.setInt(2, stageTemplateID);
+
+            int success = ps.executeUpdate();
+ 	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+
+	}
+    
+    @Override
+	public boolean mapsTaskStageTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID) throws ValidationException, SQLException{
+		PreparedStatement ps = null;
+        ResultSet rsStageCount = null;
+        int comboExists = 0;
+	        
+        try {
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM task_template_id_stage_template_id_maps WHERE task_generic_template_id_fk=? AND stage_template_id_fk=?");
+			ps.setInt(1, taskTemplateID);
+			ps.setInt(2, stageTemplateID);
+
+			rsStageCount = ps.executeQuery();
+
+			while (rsStageCount.next()){
+			    comboExists = rsStageCount.getInt("COUNT(*)");
+			}
+
+        } finally {
+			DbUtils.closeQuietly(rsStageCount);
+			DbUtils.closeQuietly(ps);
+		}
+        
+		if(comboExists > 0){
+			throw new ValidationException(ErrorMessages.STAGE_CONTAINS_TASK_TEMPLATE);
+		} else {
+			return true;
+		}
+		
+	}
     
     private Timestamp convertLocalTimeDateToTimstamp(LocalDateTime ldt){
     	Timestamp timestamp = null;
