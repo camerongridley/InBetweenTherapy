@@ -84,7 +84,7 @@ public class CreateTask extends HttpServlet {
 						//stage.copyTaskIntoStage(taskToCreate.getTaskID());
 						
 						if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
-							request.setAttribute("stage", stage);
+							request.setAttribute("stage", stage);//XXX right now this is redundant as loadStageAndPutInRequest is called later
 							request.setAttribute("defaultStageList", Stage.getDefaultStages());
 							forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						}else{
@@ -138,7 +138,7 @@ public class CreateTask extends HttpServlet {
 				if(path.equals("taskTemplate")){
 					
 				}else{
-					stage = getStageAndPutInRequest(request, stageID);
+					stage = loadStageAndPutInRequest(request, stageID);
 				}
 
 			}
@@ -155,7 +155,7 @@ public class CreateTask extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 	}
 	
-	private Stage getStageAndPutInRequest(HttpServletRequest request, int stageID) throws DatabaseException, ValidationException{
+	private Stage loadStageAndPutInRequest(HttpServletRequest request, int stageID) throws DatabaseException, ValidationException{
 		Stage stage = null;
 		if(stageID != 0){
 			stage = Stage.load(stageID);

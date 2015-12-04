@@ -81,17 +81,23 @@ public class CreateStage extends HttpServlet {
 
 						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
 						break;
-					case "stage-add-default": //default stage can never be a template, so it will always call treatmentPlan.copyStageIntoPlan()
+					case "stage-add-default-template":
 						
 						if(selectedDefaultStageID != 0){
 							treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-							treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
+							treatmentPlan.addStageTemplate(selectedDefaultStageID);
+							//treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
 	
 			            	if(path.equals("treatmentPlanTemplate")){
 			                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 			                	
 			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
 			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
+			                	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+			                	
+			                	//OPTIMIZE loading the plan twice here - possible improvement would be to have plan.addStageTemplate add the stage to the local stages List so would need to have the dao method return a stage 
+			                	//need to reload the plan with the newly added stage
+			                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 			                	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 			                }
 						}

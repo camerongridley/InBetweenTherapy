@@ -44,7 +44,7 @@ public interface DatabaseActionHandler {
 
 	TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 
-	List<Integer> treatmentPlanGetStageIDs(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+	List<Stage> treatmentPlanLoadStages(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 
 	boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle)
 			throws ValidationException, SQLException;
@@ -67,6 +67,8 @@ public interface DatabaseActionHandler {
 	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException;
 	
 	void treatmentPlanDelete(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+	
+	List<Stage> treatmentPlanLoadStageTemplates(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 	
 
 	//**************************************************************************************************
@@ -96,6 +98,7 @@ public interface DatabaseActionHandler {
 	 */
 	List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException;
 	
+	List<Task> stageLoadTaskTemplates(Connection cn, int stageID) throws SQLException;
 	
 	//**************************************************************************************************
 	//*************************************** Stage Goal Methods ***************************************
@@ -163,12 +166,18 @@ public interface DatabaseActionHandler {
 
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
-	List<Task> stageLoadTaskTemplates(Connection cn, int stageID) throws SQLException;
-
 	void mapsTaskStageTemplateCreate(Connection cn, int taskTemplateID, int stageTemplateID) throws SQLException;
 
 	boolean mapsTaskStageTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID)
 			throws ValidationException, SQLException;
+
+	void mapsStageTreatmentPlanTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
+			throws SQLException;
+
+	boolean mapsStageTreatmentPlanTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
+			throws ValidationException, SQLException;
+
+	
 
 
 	

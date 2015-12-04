@@ -27,7 +27,9 @@ public final class ErrorMessages {
 	public static final String STAGE_TITLE_EXISTS = "The stage name you entered already exists in your profile. Please use another name. If you'd like to view or edit the existing task, <a href=#>click here</a>";
 	public static final String PLAN_DELETE_ERROR = "There is no treatment plan selected to delete.";
 	public static final String STAGES_IS_EMPTY = "There are no stages in this treatment plan. A plan must have at least one stage to be assigned to a client.";
-	
+	public static final String PLAN_IS_NOT_TEMPLATE = "You appear to be trying to add a stage template to a treatment plan that is not a template.  This is not allowed.  Please try again or contact customer support.";
+	public static final String PLAN_CONTAINS_STAGE_TEMPLATE = "This treatment plan template already contains the stage you've chosen.  Go to the Edit Stage page if you'd like to edit this stage's template.";
+
 	//Stages
 	public static final String STAGE_GOAL_VALIDATION_ERROR = "You must enter a goal description.";
 	public static final String STAGE_UPDATE_NO_SELECTION = "Please select and load a stage.";

@@ -350,10 +350,10 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
 	@Override
-    public List<Integer> treatmentPlanGetStageIDs(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
+    public List<Stage> treatmentPlanLoadStages(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Integer> stageIDs = new ArrayList<>();
+        List<Stage> stages = new ArrayList<>();
         
         throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
         
@@ -365,7 +365,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
 
             while (rs.next()){
-            	stageIDs.add(rs.getInt("stage_id"));
+            	stages.add(Stage.load(cn, rs.getInt("stage_id")));
             }
 
         } finally {
@@ -373,8 +373,36 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			DbUtils.closeQuietly(ps);
         }
 
-        return stageIDs;
+        return stages;
     }
+	
+	//OPTIMIZE instead of calling Stage.load() for each record, could change SELECT statement to return all records from Stage that match and build each Task inside this method.
+	//I like the current way because means I have fewer methods to update should the Stage object change.
+	@Override
+	public List<Stage> treatmentPlanLoadStageTemplates(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
+		PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Stage> stages = new ArrayList<>();
+        
+        try {
+            ps = cn.prepareStatement("SELECT stage_template_id_fk FROM stage_template_treatment_plan_template_maps WHERE treatment_plan_template_id_fk=?");
+            ps.setInt(1, treatmentPlanID);
+            
+
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+            	stages.add(Stage.load(cn, rs.getInt("stage_template_id_fk")));
+            }
+            //TODO confirm that the order of tasks is correct when loaded here
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+
+        }
+
+        return stages;
+	}
     
     @Override
 	public TreatmentPlan treatmentPlanCreateBasic(Connection cn, TreatmentPlan treatmentPlan) throws SQLException, ValidationException{		
@@ -1476,7 +1504,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         			+ "VALUES (?, ?)";
 
         	
-            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps = cn.prepareStatement(sql);
             
             ps.setInt(1, taskTemplateID);
             ps.setInt(2, stageTemplateID);
@@ -1513,6 +1541,58 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
 		if(comboExists > 0){
 			throw new ValidationException(ErrorMessages.STAGE_CONTAINS_TASK_TEMPLATE);
+		} else {
+			return true;
+		}
+		
+	}
+    
+    @Override
+	public void mapsStageTreatmentPlanTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID) throws SQLException{
+		PreparedStatement ps = null;
+        
+        try {
+        	String sql = "INSERT INTO stage_template_treatment_plan_template_maps (stage_template_id_fk, treatment_plan_template_id_fk) "
+        			+ "VALUES (?, ?)";
+
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, stageTemplateID);
+            ps.setInt(2, treatmentPlanTemplateID);
+
+            int success = ps.executeUpdate();
+ 	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+
+	}
+    
+    @Override
+	public boolean mapsStageTreatmentPlanTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID) throws ValidationException, SQLException{
+		PreparedStatement ps = null;
+        ResultSet rsStageCount = null;
+        int comboExists = 0;
+	        
+        try {
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage_template_treatment_plan_template_maps WHERE stage_template_id_fk=? AND treatment_plan_template_id_fk=?");
+			ps.setInt(1, stageTemplateID);
+			ps.setInt(2, treatmentPlanTemplateID);
+
+			rsStageCount = ps.executeQuery();
+
+			while (rsStageCount.next()){
+			    comboExists = rsStageCount.getInt("COUNT(*)");
+			}
+
+        } finally {
+			DbUtils.closeQuietly(rsStageCount);
+			DbUtils.closeQuietly(ps);
+		}
+        
+		if(comboExists > 0){
+			throw new ValidationException(ErrorMessages.PLAN_CONTAINS_STAGE_TEMPLATE);
 		} else {
 			return true;
 		}

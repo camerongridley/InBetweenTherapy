@@ -462,12 +462,12 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
         
 		//Load the Stages
-		List<Integer> stageIDs = dao.treatmentPlanGetStageIDs(cn, treatmentPlanID); 
-		
-		for(int stageID : stageIDs){
-			plan.addStage(Stage.load(cn, stageID));
+		if(plan.isTemplate()){
+			plan.setStages(dao.treatmentPlanLoadStageTemplates(cn, treatmentPlanID));
+		}else{
+			plan.setStages(dao.treatmentPlanLoadStages(cn, treatmentPlanID));
 		}
-
+		
 		return plan;
 	}
 	
@@ -542,6 +542,33 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		}
 	}
 	
+	/**Adds a stage template to a treatment plan template.  Inserts into stageTemplate-treatmentPlanTemplate mapping table. Both the Stage and TreatmentPlan must be templates to be valid.
+	 * @param stageTemplateID
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	public void addStageTemplate(int stageTemplateID) throws DatabaseException, ValidationException{
+		Connection cn = null;
+	
+		if(this.isTemplate()){
+			try {
+				
+	        	cn = dao.getConnection();
+	        	if(dao.mapsStageTreatmentPlanTemplateValidate(cn, stageTemplateID, this.getTreatmentPlanID())){
+	        		dao.mapsStageTreatmentPlanTemplateCreate(cn, stageTemplateID, this.getTreatmentPlanID());
+	        	}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }		
+		}else{
+			throw new ValidationException(ErrorMessages.PLAN_IS_NOT_TEMPLATE);
+		}
+		
+	}
 	
 	/**Copies a pre-existing Stage into a TreatmentPlan.  This methods gets the existing Stage, updated the treatmentPlanID and the userID associated with the new TreatmentPlan that the
 	 * Stage is being copies into.  It also sets the copied Stages's isTemplate to false and determines the stageOrder it will have initially.

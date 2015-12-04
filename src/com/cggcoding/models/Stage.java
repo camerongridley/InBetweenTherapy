@@ -393,7 +393,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         dao.throwValidationExceptionIfTemplateHolderID(stageID);
         
     	stage = dao.stageLoadBasic(cn, stageID);
+    	
     	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
+    	
     	if(stage.isTemplate()){
     		stage.setTasks(dao.stageLoadTaskTemplates(cn, stageID));
     	}else{
