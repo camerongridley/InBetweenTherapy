@@ -195,6 +195,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.stageOrder = stageOrder;
 	}
 	
+	//FIXME currently not being used since linking Treatment Plan templates directly to Stage templates and Stage templates all have an order value of 0. The order for these tasks is stored in the stage-plan mapping table.
 	/**Since stageOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
 	 *the order values start with 1.
 	 * @return
@@ -626,7 +627,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				
 	        	cn = dao.getConnection();
 	        	if(dao.mapsTaskStageTemplateValidate(cn, taskTemplateID, this.getStageID())){
-	        		dao.mapsTaskStageTemplateCreate(cn, taskTemplateID, this.stageID);
+	        		dao.mapsTaskStageTemplateCreate(cn, taskTemplateID, this.stageID, this.getTaskOrderDefaultValue());
 	        	}
 
 			} catch (SQLException e) {
@@ -669,22 +670,34 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			cn = dao.getConnection();
 			cn.setAutoCommit(false);
 			
+			//find task and delete from database then remove from local List
 			for(int i = 0; i < tasks.size(); i++){
 				Task task = tasks.get(i);
 				if(task.getTaskID() == taskToDeleteID){
+					
+					if(isTemplate()){ //UNSURE Does it matter if I check use Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
+						dao.mapsTaskStageTemplateDelete(cn, taskToDeleteID);
+					}else{
+						task.delete(cn);
+					}
+					
 					tasks.remove(i);
-					task.delete(cn);
 					break;
 				}
 			}
-
+			
 			reorderTasks();
 			
-			//OPTIMIZE Could replace this with method in dao that take List<Task> and loops through updating
-			for(int i=0; i < this.tasks.size(); i++){
-				tasks.get(i).update(cn);
+			//update the remaining tasks with their new order value
+			if(isTemplate()){
+				updateTaskTemplateList(cn, tasks);
+			}else{
+				//OPTIMIZE Could replace this with method in dao that take List<Task> and loops through updating
+				for(int i=0; i < this.tasks.size(); i++){
+					tasks.get(i).update(cn);
+				}
 			}
-			
+
 			cn.commit();
 		} catch (SQLException e) {
             e.printStackTrace();
@@ -706,6 +719,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         }
 
 		return this;
+	}
+	
+	protected List<Task> updateTaskTemplateList(Connection cn, List<Task> taskTemplates) throws SQLException{
+		return dao.stageUpdateTaskTemplates(cn, this.stageID, taskTemplates);
 	}
 	
 	private void reorderTasks(){

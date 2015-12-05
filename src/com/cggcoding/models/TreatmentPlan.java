@@ -505,9 +505,6 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			cn = dao.getConnection();
 			cn.setAutoCommit(false);
 			
-			//delete specified stage from database
-			Stage.delete(cn, stageID);
-			
 			//remove the stage from the local variable
 			for(int i=0; i < this.stages.size(); i++){
 				if(stages.get(i).getStageID()==stageID){
@@ -515,12 +512,22 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 				}
 			}
 			
-			reorderStages();
-			
-			//update other stages to reflect changes in order et.al.
-			for(Stage stage : stages){
-				stage.updateBasic(cn);
+			if(isTemplate()){
+				dao.mapsStageTreatmentPlanTemplateDelete(cn, stageID);
+				//TODO reorder and update stageOrder in maps table
+				//dao.updateMapsStages(List<Stage>) i.e. the stages variable - any time an update is needed here it means updating all stages in this treatmentplanID
+			}else{
+				//delete specified stage from database
+				Stage.delete(cn, stageID);
+				
+				reorderStages();
+				
+				//update other stages to reflect changes in order et.al.
+				for(Stage stage : stages){
+					stage.updateBasic(cn);
+				}
 			}
+			
 			
 			cn.commit();
 		} catch (SQLException e) {
@@ -555,7 +562,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 				
 	        	cn = dao.getConnection();
 	        	if(dao.mapsStageTreatmentPlanTemplateValidate(cn, stageTemplateID, this.getTreatmentPlanID())){
-	        		dao.mapsStageTreatmentPlanTemplateCreate(cn, stageTemplateID, this.getTreatmentPlanID());
+	        		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
+	        		dao.mapsStageTreatmentPlanTemplateCreate(cn, stageTemplateID, this.getTreatmentPlanID(), this.getNumberOfStages());
 	        	}
 
 			} catch (SQLException e) {

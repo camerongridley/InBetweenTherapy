@@ -100,6 +100,8 @@ public interface DatabaseActionHandler {
 	
 	List<Task> stageLoadTaskTemplates(Connection cn, int stageID) throws SQLException;
 	
+	List<Task> stageUpdateTaskTemplates(Connection cn, int stageID, List<Task> taskTemplates) throws SQLException;
+	
 	//**************************************************************************************************
 	//*************************************** Stage Goal Methods ***************************************
 	//**************************************************************************************************
@@ -166,16 +168,22 @@ public interface DatabaseActionHandler {
 
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
-	void mapsTaskStageTemplateCreate(Connection cn, int taskTemplateID, int stageTemplateID) throws SQLException;
+	void mapsTaskStageTemplateCreate(Connection cn, int taskTemplateID, int stageTemplateID, int taskOrder) throws SQLException;
 
 	boolean mapsTaskStageTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID)
 			throws ValidationException, SQLException;
 
-	void mapsStageTreatmentPlanTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
+	void mapsStageTreatmentPlanTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder)
 			throws SQLException;
 
 	boolean mapsStageTreatmentPlanTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
 			throws ValidationException, SQLException;
+
+	void mapsTaskStageTemplateDelete(Connection cn, int taskID) throws SQLException;
+
+	void mapsStageTreatmentPlanTemplateDelete(Connection cn, int stageID) throws SQLException;
+
+	
 
 	
 
