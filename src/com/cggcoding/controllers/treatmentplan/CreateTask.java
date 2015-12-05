@@ -157,6 +157,7 @@ public class CreateTask extends HttpServlet {
 			//put in temporary task object so values can be saved in inputs after error
 			request.setAttribute("stage", stage);
 			request.setAttribute("task", taskToCreate);
+			request.setAttribute("treatmentPlanID", planToReturnTo);
 			request.setAttribute("errorMessage", e.getMessage());
 
 			forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";

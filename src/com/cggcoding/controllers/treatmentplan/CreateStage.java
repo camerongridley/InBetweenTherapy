@@ -73,6 +73,9 @@ public class CreateStage extends HttpServlet {
 		request.setAttribute("treatmentPlanID", treatmentPlanID);
 		
 		try{
+			if(!path.equals("stageTemplate")){
+				treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+			}
 			
 			defaultStages = Stage.getDefaultStages();
 			
@@ -87,7 +90,7 @@ public class CreateStage extends HttpServlet {
 					case "stage-add-default-template":
 						
 						if(selectedDefaultStageID != 0){
-							treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+							//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 							treatmentPlan.addStageTemplate(selectedDefaultStageID);
 							//treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
 	
@@ -116,7 +119,7 @@ public class CreateStage extends HttpServlet {
 		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
 		                } else {
 		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
-		                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		                	//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 		                	treatmentPlan.addStageTemplate(newStage.getStageID());
 		                	
 		                	/*treatmentPlan = TreatmentPlan.load(treatmentPlanID);
@@ -137,7 +140,7 @@ public class CreateStage extends HttpServlet {
 		            case("add-stage-to-treatment-plan"):
 						//set all user-independent lists into request
 						request.setAttribute("defaultStages", defaultStages);
-						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		            	//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
 						break;
 		            default:

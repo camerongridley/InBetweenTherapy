@@ -125,6 +125,7 @@ public class EditTask extends HttpServlet {
 			//put in temporary task object so values can be saved in inputs after error
 			request.setAttribute("task", tempTask);
 			request.setAttribute("stageToReturnTo", stageToReturnTo);
+			request.setAttribute("treatmentPlanID", planToReturnTo);
 			request.setAttribute("errorMessage", e.getMessage());
 
 			forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";

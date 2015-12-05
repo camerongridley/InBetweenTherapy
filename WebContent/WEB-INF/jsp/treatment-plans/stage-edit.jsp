@@ -125,6 +125,7 @@
 		    <input type="hidden" name="requestedAction" value="stage-edit-add-goal">
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="stageID" value="${stage.stageID}" >
+		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		        <h4 class="modal-title" id="newStageGoalModalLabel">Enter a new stage goal.</h4>
