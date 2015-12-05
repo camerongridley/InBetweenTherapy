@@ -12,6 +12,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
@@ -70,6 +71,10 @@ public class CreateTask extends HttpServlet {
 			//put user-independent (i.e. default) lists acquired from database in the request
 			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
 			request.setAttribute("defaultTasks", Task.getDefaultTasks());
+			
+			if(!path.equals("taskTemplate")){
+				stage = Stage.load(stageID);
+			}
 	
 			if(user.hasRole("admin")){
 				UserAdmin admin = (UserAdmin)user;
@@ -82,7 +87,7 @@ public class CreateTask extends HttpServlet {
 				case "task-add-default-template" :
 
 					if(taskToCreate.getTaskID() != 0){
-						stage = Stage.load(stageID);
+						//TODO delete? stage = Stage.load(stageID);
 						stage.addTaskTemplate(taskToCreate.getTaskID());
 						//stage.copyTaskIntoStage(taskToCreate.getTaskID());
 						
@@ -122,7 +127,7 @@ public class CreateTask extends HttpServlet {
 						Task.createTemplate(taskToCreate);
 					} else {
 						newTask = Task.createTemplate(taskToCreate);
-						stage = Stage.load(stageID);
+						//TODO delete? stage = Stage.load(stageID);
 						stage.addTaskTemplate(newTask.getTaskID());
 						/*stage = Stage.load(stageID);
 						stage.createNewTask(taskToCreate);
