@@ -34,6 +34,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	private List<StageGoal> goals;
 	private boolean inProgress;
 	private boolean template;
+	private int templateID;
 	
 	private static DatabaseActionHandler dao = new MySQLActionHandler();
 
@@ -51,12 +52,13 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.goals = new ArrayList<>();
 		this.inProgress = false;
 		this.template = template;
+		this.templateID = 0;
 	}
 	
 	//Full constructor - asks for every argument stage has
 	private Stage(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals,
-			boolean inProgress, boolean template) {
+			boolean inProgress, boolean template, int templateID) {
 		this.stageID = stageID;
 		this.treatmentPlanID = treatmentPlanID;
 		this.userID = userID;
@@ -70,6 +72,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.goals = goals;
 		this.inProgress = inProgress;
 		this.template = template;
+		this.templateID = templateID;
 	}
 
 	/**Gets a complete instance of Stage and asks for every argument in class
@@ -87,9 +90,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @param template True if this is a Stage template and therefore has no concrete parent TreatmentPlan
 	 * @return Stage object
 	 */
-	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
-			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean inProgress, boolean template){
-		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, inProgress, template);
+	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder, List<Task> tasks, 
+			List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean inProgress, boolean template, int templateID){
+		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, inProgress, template, templateID);
 	}
 	
 	/**For use when creating a new Stage. As such, these are the only parameters that could be available for saving to the database.  
@@ -218,6 +221,14 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 
 	public void setTemplate(boolean template) {
 		this.template = template;
+	}
+	
+	public int getTemplateID() {
+		return templateID;
+	}
+
+	public void setTemplateID(int templateID) {
+		this.templateID = templateID;
 	}
 
 	//Tasks will be displayed in the order in which they are in the List

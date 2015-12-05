@@ -671,8 +671,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         ResultSet generatedKeys = null;
         
         try {
-    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, stage_title, stage_description, stage_completed, stage_order, percent_complete, stage_in_progress, stage_is_template) "
-            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, stage_title, stage_description, stage_completed, stage_order, percent_complete, stage_in_progress, stage_is_template, template_id) "
+            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
@@ -685,6 +685,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps.setDouble(7, newStage.getPercentComplete());
             ps.setBoolean(8, newStage.isInProgress());
             ps.setBoolean(9, newStage.isTemplate());
+            ps.setInt(10, newStage.getTemplateID());
 
             int success = ps.executeUpdate();
             
@@ -717,7 +718,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         		
-    		String sql = "UPDATE stage SET stage_treatment_plan_id_fk=?, stage_user_id_fk=?, stage_title=?, stage_description=?, stage_completed=?, `stage_order`=?, percent_complete=?, stage_in_progress=?, stage_is_template=? WHERE stage_id=?";
+    		String sql = "UPDATE stage SET stage_treatment_plan_id_fk=?, stage_user_id_fk=?, stage_title=?, stage_description=?, stage_completed=?, `stage_order`=?, percent_complete=?, stage_in_progress=?, stage_is_template=?, template_id=? WHERE stage_id=?";
         	
             ps = cn.prepareStatement(sql);
 
@@ -730,7 +731,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps.setDouble(7, stage.getPercentComplete());
             ps.setBoolean(8, stage.isInProgress());
             ps.setBoolean(9, stage.isTemplate());
-            ps.setInt(10, stage.getStageID());
+            ps.setInt(10, stage.getTemplateID());
+            ps.setInt(11, stage.getStageID());
 
             success = ps.executeUpdate();
         	
@@ -812,7 +814,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	//boolean inProgress = rs.getInt("") == 1;
             	//boolean isTemplate = rs.getInt("stage_is_template") == 1;
             	
-            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order"), tasks, extraTasks, rs.getBoolean("stage_completed"), rs.getDouble("percent_complete"), goals, rs.getBoolean("stage_in_progress"), rs.getBoolean("stage_is_template"));
+            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order"), tasks, extraTasks, rs.getBoolean("stage_completed"), rs.getDouble("percent_complete"), goals, rs.getBoolean("stage_in_progress"), rs.getBoolean("stage_is_template"), rs.getInt("template_id"));
             }
 
         } finally {

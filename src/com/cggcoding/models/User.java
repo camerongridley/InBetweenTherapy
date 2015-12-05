@@ -201,7 +201,7 @@ public abstract class User implements Serializable{
     	for(Stage stage : planToCopy.getStages()){
     		stage.setUserID(userIDTakingNewPlan);
     		stage.setTemplate(false);
-    		//stage.setTemplateID(stage.getStageID());TODO uncomment this once added templateID to Stage
+    		stage.setTemplateID(stage.getStageID());
     		List<Task> taskRepetitionsAdded = new ArrayList<>();
     		for(Task task : stage.getTasks()){
     			task.setUserID(userIDTakingNewPlan);
