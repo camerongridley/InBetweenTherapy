@@ -69,6 +69,9 @@ public class CreateStage extends HttpServlet {
 		TreatmentPlan treatmentPlan = null;
 		List<Stage> defaultStages = null;
 		
+		//maintain treatmentPlanID for when wanting to return user to main edit plan page
+		request.setAttribute("treatmentPlanID", treatmentPlanID);
+		
 		try{
 			
 			defaultStages = Stage.getDefaultStages();
@@ -112,8 +115,12 @@ public class CreateStage extends HttpServlet {
 		                if(path.equals("stageTemplate")){
 		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
 		                } else {
+		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
 		                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-		                	newStage = treatmentPlan.createNewStage(userAdmin.getUserID(), stageTitle, stageDescription);
+		                	treatmentPlan.addStageTemplate(newStage.getStageID());
+		                	
+		                	/*treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		                	newStage = treatmentPlan.createNewStage(userAdmin.getUserID(), stageTitle, stageDescription);*/
 		                }
 
 		                request.setAttribute("stage", newStage);

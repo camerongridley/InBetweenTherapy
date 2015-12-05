@@ -102,28 +102,35 @@ public class CreateTask extends HttpServlet {
 					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
 					break;
 				case ("create-new-task"):
+					Task newTask = null;
+				
 					//TODO implement this?
-					switch(path){
+					/*switch(path){
 						case "taskTemplate":
-							
+							Task.createTemplate(taskToCreate);
 							break;
 						case "stageTemplate":
-							
+							newTask = Task.createTemplate(taskToCreate);
+							stage = Stage.load(stageID);
+							stage.addTaskTemplate(newTask.getTaskID());
 							break;
 						default:
 							
 							
-					}
+					}*/
 					if(path.equals("taskTemplate")){
 						Task.createTemplate(taskToCreate);
-					} else{
+					} else {
+						newTask = Task.createTemplate(taskToCreate);
 						stage = Stage.load(stageID);
+						stage.addTaskTemplate(newTask.getTaskID());
+						/*stage = Stage.load(stageID);
 						stage.createNewTask(taskToCreate);
 						
 						if(ParameterUtils.singleCheckboxIsOn(request, "copyAsTemplate")){
 							Task templateCopy = taskToCreate.copy();
 							Task.createTemplate(templateCopy);
-						}
+						}*/
 						
 						request.setAttribute("stage", Stage.load(stageID));
 					}

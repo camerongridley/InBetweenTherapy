@@ -153,15 +153,16 @@
 		        </div>
 			</c:if>
 			
-			<div class="form-group">
-				<div class="checkbox col-sm-offset-2">
-				  <label>
-				    <input type="checkbox" value="checked" name="copyAsTemplate" id="copyAsTemplate">
-				    Make a copy for use as a default Task?
-				  </label>
-				</div>
-	        </div>
-
+			<c:if test="${path='clientTask' }">
+				<div class="form-group">
+					<div class="checkbox col-sm-offset-2">
+					  <label>
+					    <input type="checkbox" value="checked" name="copyAsTemplate" id="copyAsTemplate">
+					    Make a copy for use as a default Task?
+					  </label>
+					</div>
+		        </div>
+			</c:if>
 	        <button type="submit" class="btn btn-default col-sm-offset-2">Submit</button>
 
 	    </form>
