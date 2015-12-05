@@ -180,8 +180,8 @@ public class EditTreatmentPlan extends HttpServlet {
     	} catch (ValidationException | DatabaseException e) {
     		request.setAttribute("errorMessage", e.getMessage());
     		
-    		//create a temporary treatmentPlan to hold info for plan that is in the process of creation
-    		treatmentPlan = TreatmentPlan.getInstanceBasic(ParameterUtils.parseIntParameter(request, "treatmentPlanID"), user.getUserID(), request.getParameter("planTitle"), request.getParameter("planDescription"), 0, false, false, false,0,0);
+    		//create a temporary treatmentPlan to hold title and description info that might be changed for plan that is in the process of creation - UNSURE if this will cause accidental replacement of the other fields that I am just supplying false and 0 to
+    		treatmentPlan = TreatmentPlan.getInstanceBasic(ParameterUtils.parseIntParameter(request, "treatmentPlanID"), user.getUserID(), request.getParameter("planTitle"), request.getParameter("planDescription"), 0, false, false, false,0,0,0);
     		request.setAttribute("treatmentPlan", treatmentPlan);
     		request.setAttribute("defaultTreatmentIssue", defaultIssueID);
     		request.setAttribute("existingCustomTreatmentIssue", customIssueID);

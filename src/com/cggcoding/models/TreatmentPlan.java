@@ -31,6 +31,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	private boolean inProgress;
 	private boolean isTemplate;
 	private boolean completed;
+	private int templateID;
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
@@ -45,24 +46,11 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		this.inProgress = false;
 		this.isTemplate = false;
 		this.completed = false;
+		this.templateID = 0;
 	}	
-	
-	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID){
-		this.treatmentPlanID = treatmentPlanID;
-		this.title = title;
-		this.description = description;
-		this.treatmentIssueID = txIssueID;
-		this.userID = userID;
-		this.stages = new ArrayList<>();
-		this.currentStageIndex = 0;
-		this.activeViewStageIndex = 0;
-		this.inProgress = false;
-		this.isTemplate = false;
-		this.completed = false;
-	}
 
 	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
-			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex){
+			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID){
 		this.treatmentPlanID = treatmentPlanID;
 		this.title = title;
 		this.description = description;
@@ -74,6 +62,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		this.inProgress = inProgress;
 		this.isTemplate = isTemplate;
 		this.completed = completed;
+		this.templateID = templateID;
 	}
 	
 	public static TreatmentPlan getInstanceWithoutID(String title, int userID, String description, int treatmentPlanID){
@@ -81,8 +70,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
-			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex){
-		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed, currentStageIndex, activeViewStageIndex);
+			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID){
+		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed, currentStageIndex, activeViewStageIndex, templateID);
 	}
 
 	/**Run first time a client loads a plan.  Sets inProgress=true for the TreatmentPlan itself and for the first stage of the plan
@@ -207,6 +196,14 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 
 	public void setCompleted(boolean completed) {
 		this.completed = completed;
+	}
+
+	public int getTemplateID() {
+		return templateID;
+	}
+
+	public void setTemplateID(int templateID) {
+		this.templateID = templateID;
 	}
 
 	public int getNumberOfStages(){

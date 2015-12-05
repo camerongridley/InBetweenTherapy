@@ -335,7 +335,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	plan = TreatmentPlan.getInstanceBasic(rsPlanInfo.getInt("treatment_plan_id"), rsPlanInfo.getInt("treatment_plan_user_id_fk"), 
             			rsPlanInfo.getString("treatment_plan_title"), rsPlanInfo.getString("treatment_plan_description"), rsPlanInfo.getInt("treatment_plan_treatment_issue_id_fk"),
             			rsPlanInfo.getBoolean("in_progress"), rsPlanInfo.getBoolean("treatment_plan_is_template"), rsPlanInfo.getBoolean("treatment_plan_completed"),
-            			rsPlanInfo.getInt("current_stage_index"), rsPlanInfo.getInt("active_view_stage_index"));
+            			rsPlanInfo.getInt("current_stage_index"), rsPlanInfo.getInt("active_view_stage_index"), rsPlanInfo.getInt("template_id"));
             	
             }
             
@@ -439,8 +439,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         	String sql = "INSERT INTO treatment_plan (treatment_plan_user_id_fk, treatment_plan_treatment_issue_id_fk, treatment_plan_title, treatment_plan_description, "
-        			+ "current_stage_index, active_view_stage_index, in_progress, treatment_plan_is_template) "
-            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        			+ "current_stage_index, active_view_stage_index, in_progress, treatment_plan_is_template, template_id) "
+            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
@@ -452,6 +452,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps.setInt(6, treatmentPlan.getActiveViewStageIndex());
             ps.setBoolean(7, treatmentPlan.isInProgress());
             ps.setBoolean(8, treatmentPlan.isTemplate());
+            ps.setInt(9, treatmentPlan.getTemplateID());
 
             int success = ps.executeUpdate();
             
@@ -511,7 +512,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         	String sql = "UPDATE treatment_plan SET treatment_plan_user_id_fk=?, treatment_plan_treatment_issue_id_fk=?, treatment_plan_title=?, treatment_plan_description=?, current_stage_index=?, "
-        			+ "active_view_stage_index=?, in_progress=?, treatment_plan_is_template=?, treatment_plan_completed=? WHERE treatment_plan_id=?";
+        			+ "active_view_stage_index=?, in_progress=?, treatment_plan_is_template=?, treatment_plan_completed=?, template_id=? WHERE treatment_plan_id=?";
         	
             ps = cn.prepareStatement(sql);
             
@@ -524,7 +525,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps.setBoolean(7, treatmentPlan.isInProgress());
             ps.setBoolean(8, treatmentPlan.isTemplate());
             ps.setBoolean(9, treatmentPlan.isCompleted());
-            ps.setInt(10, treatmentPlan.getTreatmentPlanID());
+            ps.setInt(10, treatmentPlan.getTemplateID());
+            ps.setInt(11, treatmentPlan.getTreatmentPlanID());
 
             int success = ps.executeUpdate();
 

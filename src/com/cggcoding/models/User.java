@@ -194,7 +194,7 @@ public abstract class User implements Serializable{
 	 public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
     	TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
     	planToCopy.setTemplate(isTemplate);
-    	
+    	planToCopy.setTemplateID(planToCopy.getTreatmentPlanID());
     	planToCopy.setUserID(userIDTakingNewPlan);
     	//loop through and change all the userIDs to the userID supplied by the method argument
     	//OPTIMIZE O(N3) complexity here with 3 nested for loops.  Is there a better way to do this?
