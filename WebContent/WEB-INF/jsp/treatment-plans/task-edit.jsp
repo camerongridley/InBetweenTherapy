@@ -61,6 +61,7 @@
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
 		<input type="hidden" name="taskOrder" value="${task.taskOrder }">
 		<input type="hidden" name="stageToReturnTo" value="${stageToReturnTo }">
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 				
         <div class="form-group">
             <label for="taskTitle" class="col-sm-2 control-label">Task Name</label>

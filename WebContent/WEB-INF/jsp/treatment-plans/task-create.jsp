@@ -20,6 +20,7 @@
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="stageID" value="${stage.stageID }">
 				<input type="hidden" name="isTemplate" value="${task.template }">
+				<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 				
 				<div>
 					<h3>Add a Predefined Task</h3>
@@ -60,6 +61,7 @@
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">
 			<input type="hidden" name="isTemplate" value="${task.template }">
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 				
 			<div class="form-group">
 	            <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
@@ -79,10 +81,10 @@
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">
 			<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">
-			
 			<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 			<input type="hidden" name="isTemplate" value="${task.template }">
 			<input type="hidden" name="isExtraTask" value="${task.extraTask }">
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 			    
 			<c:if test="${task.taskTypeID!=0 }">	
 	        <div class="form-group">

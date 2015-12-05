@@ -63,6 +63,9 @@ public class CreateTask extends HttpServlet {
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
 		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
 
+		int planToReturnTo = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+		request.setAttribute("treatmentPlanID", planToReturnTo);
+		
 		try {
 			//put user-independent (i.e. default) lists acquired from database in the request
 			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
