@@ -385,20 +385,46 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         List<Stage> stages = new ArrayList<>();
         
         try {
-            ps = cn.prepareStatement("SELECT stage_template_id_fk FROM stage_template_treatment_plan_template_maps WHERE treatment_plan_template_id_fk=? ORDER BY stage_order");
+            ps = cn.prepareStatement("SELECT stage_template_id_fk, stage_order FROM stage_template_treatment_plan_template_maps WHERE treatment_plan_template_id_fk=? ORDER BY stage_order");
             ps.setInt(1, treatmentPlanID);
             
 
             rs = ps.executeQuery();
             
             while (rs.next()){
-            	stages.add(Stage.load(cn, rs.getInt("stage_template_id_fk")));
+            	Stage stageTemplate = Stage.load(cn, rs.getInt("stage_template_id_fk"));
+            	stageTemplate.setStageOrder(rs.getInt("stage_order"));
+            	stages.add(stageTemplate);
             }
             //TODO confirm that the order of tasks is correct when loaded here
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
 
+        }
+
+        return stages;
+	}
+	
+	@Override
+	public List<Stage> treatmentPlanUpdateStageTemplates(Connection cn, int treatmentPlanID, List<Stage> stageTemplates) throws SQLException{
+		PreparedStatement ps = null;
+        List<Stage> stages = new ArrayList<>();
+        
+        try {
+        	for(Stage stage : stageTemplates){
+        		ps = cn.prepareStatement("UPDATE stage_template_treatment_plan_template_maps SET stage_template_id_fk=?, treatment_plan_template_id_fk=?, stage_order=? WHERE stage_template_id_fk=? and treatment_plan_template_id_fk=?");
+                ps.setInt(1,stage.getStageID());
+                ps.setInt(2,treatmentPlanID);
+                ps.setInt(3,stage.getStageOrder());
+                ps.setInt(4,stage.getStageID());
+                ps.setInt(5,treatmentPlanID);
+                
+                ps.executeUpdate();
+        	}            
+            
+        } finally {
+			DbUtils.closeQuietly(ps);
         }
 
         return stages;

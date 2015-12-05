@@ -669,13 +669,13 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		try{
 			cn = dao.getConnection();
 			cn.setAutoCommit(false);
-			
+			Task task = null;
 			//find task and delete from database then remove from local List
 			for(int i = 0; i < tasks.size(); i++){
-				Task task = tasks.get(i);
+				task = tasks.get(i);
 				if(task.getTaskID() == taskToDeleteID){
 					
-					if(isTemplate()){ //UNSURE Does it matter if I check use Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
+					if(task.isTemplate()){ //UNSURE Does it matter if I check use Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
 						dao.mapsTaskStageTemplateDelete(cn, taskToDeleteID);
 					}else{
 						task.delete(cn);
@@ -689,12 +689,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			reorderTasks();
 			
 			//update the remaining tasks with their new order value
-			if(isTemplate()){
+			if(task.isTemplate()){
 				updateTaskTemplateList(cn, tasks);
 			}else{
-				//OPTIMIZE Could replace this with method in dao that take List<Task> and loops through updating
-				for(int i=0; i < this.tasks.size(); i++){
-					tasks.get(i).update(cn);
+				//OPTIMIZE Could replace this with method in dao that takes List<Task> and loops through updating
+				for(Task updateTask : tasks){
+					updateTask.update(cn);
 				}
 			}
 

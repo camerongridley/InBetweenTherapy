@@ -497,50 +497,69 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	
-	public void deleteStage(int stageID) throws ValidationException, DatabaseException {
+	public TreatmentPlan deleteStage(int stageID) throws ValidationException, DatabaseException {
 		
 		Connection cn = null;
 		
 		try{
 			cn = dao.getConnection();
 			cn.setAutoCommit(false);
-			
+			Stage stage = null;
 			//remove the stage from the local variable
 			for(int i=0; i < this.stages.size(); i++){
-				if(stages.get(i).getStageID()==stageID){
+				stage = stages.get(i);
+				if(stage.getStageID()==stageID){
+					
+					if(stage.isTemplate()){
+						dao.mapsStageTreatmentPlanTemplateDelete(cn, stageID);
+					}else{
+						Stage.delete(cn, stageID);
+					}	
+					
 					stages.remove(i);
+					break;
 				}
 			}
 			
-			if(isTemplate()){
-				dao.mapsStageTreatmentPlanTemplateDelete(cn, stageID);
-				//TODO reorder and update stageOrder in maps table
-				//dao.updateMapsStages(List<Stage>) i.e. the stages variable - any time an update is needed here it means updating all stages in this treatmentplanID
+				
+			reorderStages();
+			
+			//update other stages to reflect changes in order et.al.
+			if(stage.isTemplate()){
+				updateStageTemplateList(cn, stages);
 			}else{
-				//delete specified stage from database
-				Stage.delete(cn, stageID);
-				
-				reorderStages();
-				
-				//update other stages to reflect changes in order et.al.
-				for(Stage stage : stages){
-					stage.updateBasic(cn);
+				//OPTIMIZE Could replace this with method in dao that takes List<Stage> and loops through updating
+				for(Stage updateStage : stages){
+					updateStage.updateBasic(cn);
 				}
 			}
 			
-			
+
 			cn.commit();
 		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-		} finally {
-			try {
+            e.printStackTrace();
+            try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+			}
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	try {
 				cn.setAutoCommit(true);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			DbUtils.closeQuietly(cn);
-		}
+        }
+
+		return this;
+	}
+	
+	protected List<Stage> updateStageTemplateList(Connection cn, List<Stage> stageTemplates) throws SQLException{
+		return dao.treatmentPlanUpdateStageTemplates(cn, this.treatmentPlanID, stageTemplates);
 	}
 	
 	private void reorderStages(){

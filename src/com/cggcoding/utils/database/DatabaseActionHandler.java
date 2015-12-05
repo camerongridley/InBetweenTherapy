@@ -70,7 +70,9 @@ public interface DatabaseActionHandler {
 	
 	List<Stage> treatmentPlanLoadStageTemplates(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 	
-
+	List<Stage> treatmentPlanUpdateStageTemplates(Connection cn, int treatmentPlanID, List<Stage> stageTemplates)
+			throws SQLException;
+	
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
 	//**************************************************************************************************
@@ -182,6 +184,8 @@ public interface DatabaseActionHandler {
 	void mapsTaskStageTemplateDelete(Connection cn, int taskID) throws SQLException;
 
 	void mapsStageTreatmentPlanTemplateDelete(Connection cn, int stageID) throws SQLException;
+
+	
 
 	
 

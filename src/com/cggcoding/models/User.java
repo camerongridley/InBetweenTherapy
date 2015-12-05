@@ -200,6 +200,8 @@ public abstract class User implements Serializable{
     	//OPTIMIZE O(N3) complexity here with 3 nested for loops.  Is there a better way to do this?
     	for(Stage stage : planToCopy.getStages()){
     		stage.setUserID(userIDTakingNewPlan);
+    		stage.setTemplate(false);
+    		//stage.setTemplateID(stage.getStageID());TODO uncomment this once added templateID to Stage
     		List<Task> taskRepetitionsAdded = new ArrayList<>();
     		for(Task task : stage.getTasks()){
     			task.setUserID(userIDTakingNewPlan);
