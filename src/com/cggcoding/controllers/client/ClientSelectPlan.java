@@ -76,7 +76,9 @@ public class ClientSelectPlan extends HttpServlet {
 					case "select-plan-load":
 						int assignedTreatmentPlanID = ParameterUtils.parseIntParameter(request, "selectedPlanID");
 						TreatmentPlan selectedPlan = TreatmentPlan.load(assignedTreatmentPlanID);
-						selectedPlan.initialize();
+						if(request.getParameter("initialize").equals("yes")){
+							selectedPlan.initialize();
+						}
 						
 						client.setActiveTreatmentPlanId(assignedTreatmentPlanID);
 						

@@ -41,7 +41,7 @@
 	    <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
 	    <div class="col-sm-10">
 	        <select class="form-control" id="taskTypeID" name="taskTypeID">
-	            <option  value="">Select a default treatment issue.</option>
+	            <option  value="">Select a task type.</option>
 	            <c:forEach items="${taskTypeMap}" var="taskType">
 	                <option value="${taskType.key}" <c:if test="${taskType.key == task.taskTypeID}">selected</c:if> >${fn:escapeXml(taskType.value)}</option>
 	            </c:forEach>

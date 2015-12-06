@@ -104,6 +104,10 @@ public class EditTreatmentPlan extends HttpServlet {
 		            	break;
 		            case "plan-edit-update":
 
+		            	if(treatmentPlanID==0){
+		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+		            	}
+		            	
 		                if(planTitle.isEmpty() || planDescription.isEmpty()){
 		                	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
 		                }

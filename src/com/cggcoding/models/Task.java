@@ -220,7 +220,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 			task = create(cn);
 			
 			cn.commit();
-		} catch (SQLException e) {
+		} catch (SQLException | ValidationException e) {
 			e.printStackTrace();
 			try {
 				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
@@ -229,7 +229,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 				e1.printStackTrace();
 				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
 			}
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
 		} finally {
 			try {
 				cn.setAutoCommit(true);
@@ -268,7 +272,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
         	}
         	cn.commit();
 
-        } catch (SQLException e) {
+        } catch (SQLException | ValidationException e) {
             e.printStackTrace();
             try {
 				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
@@ -277,7 +281,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 				e1.printStackTrace();
 				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
 			}
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+            if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
         } finally {
         	try {
 				cn.setAutoCommit(true);

@@ -18,6 +18,7 @@ import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
 import com.cggcoding.utils.messaging.WarningMessages;
 
@@ -97,6 +98,9 @@ public class EditStage extends HttpServlet {
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-name" :
+		            	if(stageID==0){
+		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+		            	}
 		            	editedStage = Stage.load(stageID);
 		            	editedStage.setTitle(stageTitle);
 		            	editedStage.setDescription(stageDescription);

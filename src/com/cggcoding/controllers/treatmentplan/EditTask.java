@@ -15,6 +15,7 @@ import com.cggcoding.models.Task;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.WarningMessages;
 
 /**
@@ -103,7 +104,9 @@ public class EditTask extends HttpServlet {
 					forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-update"):
-					
+					if(tempTask.getTaskID()==0){
+						throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+					}
 					tempTask.update();
 					
 					stageToReturnTo = ParameterUtils.parseIntParameter(request, "stageToReturnTo");
