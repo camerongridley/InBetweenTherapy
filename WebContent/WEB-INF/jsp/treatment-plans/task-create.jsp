@@ -7,22 +7,23 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<c:if test="${path=='creatingTaskTemplate' }"><h1>Create A Task Template</h1></c:if>
-	<c:if test="${path!='creatingTaskTemplate' }"><h1>Create a Task for the Stage: ${stage.title}</h1></c:if>
+	<c:if test="${path=='taskTemplate' }"><h1>Create A Task Template</h1></c:if>
+	<c:if test="${path!='taskTemplate' }"><h1>Create a Task for the Stage: ${stage.title}</h1></c:if>
 </div>
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 	
-	<c:if test="${path!='creatingTaskTemplate' }">
+	<c:if test="${path!='taskTemplate' }">
 		<div class="well well-sm">
 			<form class="form-horizontal" action="/secure/CreateTask" method="POST">
-				<input type="hidden" name="requestedAction" value="task-add-default">
+				<input type="hidden" name="requestedAction" value="task-add-default-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="stageID" value="${stage.stageID }">
 				<input type="hidden" name="isTemplate" value="${task.template }">
+				<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 				
 				<div>
-					<h3>Add a Predefined Stage</h3>
+					<h3>Add a Predefined Task</h3>
 				</div>
 				
 		        <div class="form-group">
@@ -60,6 +61,7 @@
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">
 			<input type="hidden" name="isTemplate" value="${task.template }">
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 				
 			<div class="form-group">
 	            <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
@@ -75,14 +77,14 @@
 	    </form>
 	        
 	    <form class="form-horizontal" action="/secure/CreateTask" method="POST">
-			<input type="hidden" name="requestedAction" value="task-save">
+			<input type="hidden" name="requestedAction" value="create-new-task">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">
 			<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">
-			
 			<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 			<input type="hidden" name="isTemplate" value="${task.template }">
 			<input type="hidden" name="isExtraTask" value="${task.extraTask }">
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 			    
 			<c:if test="${task.taskTypeID!=0 }">	
 	        <div class="form-group">
@@ -151,15 +153,16 @@
 		        </div>
 			</c:if>
 			
-			<div class="form-group">
-				<div class="checkbox col-sm-offset-2">
-				  <label>
-				    <input type="checkbox" value="checked" name="copyAsTemplate" id="copyAsTemplate">
-				    Make a copy for use as a default Task?
-				  </label>
-				</div>
-	        </div>
-
+			<c:if test="${path='clientTask' }">
+				<div class="form-group">
+					<div class="checkbox col-sm-offset-2">
+					  <label>
+					    <input type="checkbox" value="checked" name="copyAsTemplate" id="copyAsTemplate">
+					    Make a copy for use as a default Task?
+					  </label>
+					</div>
+		        </div>
+			</c:if>
 	        <button type="submit" class="btn btn-default col-sm-offset-2">Submit</button>
 
 	    </form>

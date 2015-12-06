@@ -15,6 +15,8 @@ import com.cggcoding.models.Task;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.ErrorMessages;
+import com.cggcoding.utils.messaging.WarningMessages;
 
 /**
  * Servlet implementation class EditTask
@@ -35,44 +37,7 @@ public class EditTask extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 		processRequest(request, response);
-		
-		/*--Common Servlet variables that should be in every controller--*/
-		/*HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
-		String requestedAction = request.getParameter("requestedAction");
-		String path = request.getParameter("path");
-		request.setAttribute("path", path);*/
-		/*-----------End Common Servlet variables---------------*/
-		
-		/*int taskID = ParameterUtils.parseIntParameter(request, "taskID");
-		
-		try {
-			if(user.isAuthorizedForTask(taskID)){
-				if(user.hasRole("admin")){
-					switch(requestedAction){
-					case ("edit-task-select-task"):
-						int selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
-	
-						
-							Task tempTask = Task.load(selectedTaskID);
-							request.setAttribute("task", tempTask);
-						
-						forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
-						break;
-					}
-				}
-			}
-		} catch (DatabaseException e) {
-			//request.setAttribute("task", tempTask);
-			request.setAttribute("errorMessage", e.getMessage());
-
-			forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
-		}
-		
-		request.getRequestDispatcher(forwardTo).forward(request, response);*/
 	}
 
 	/**
@@ -93,15 +58,18 @@ public class EditTask extends HttpServlet {
 		/*-----------End Common Servlet variables---------------*/
 		
 		userID =  user.getUserID();
-		
+
 		//performed here to get parameters for all tasks run below
 		Task tempTask = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
 		
-		//get and maintain value of creatingTemplate, which indicates if this is for creating/editing templates vs data tied to specific user
-		/*String creatingTemplate = request.getParameter("isTemplate");
-		if(creatingTemplate.equals("true")){
-			tempTask.setTemplate(true);
-		}*/
+		/*These variables helps remember where to send the user back to when they are done editing the Task.
+		If the Task being edited is a template the stageID will be TEMPLATE_HOLDER_ID, and not the Stage template being working on.
+		If the Task being edited is part of a client's plan, then the stageID will be the stageID that is contained within the task.
+		Need to maintain it between requests*/
+		int stageToReturnTo = tempTask.getStageID();
+		request.setAttribute("stageToReturnTo", stageToReturnTo);
+		int planToReturnTo = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+		request.setAttribute("treatmentPlanID", planToReturnTo);
 
 		try {
 			//put user-independent attributes acquired from database in the request
@@ -119,24 +87,33 @@ public class EditTask extends HttpServlet {
 					break;
 				case ("edit-task-select-task"):
 					int selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
-					//if(selectedTaskID != 0){
-						request.setAttribute("task", Task.load(selectedTaskID));
-					//}
-
+					
+					request.setAttribute("task", Task.load(selectedTaskID));
+					
+					if(path.equals("treatmentPlanTemplate")|| path.equals("stageTemplate")){
+						request.setAttribute("warningMessage", WarningMessages.EDITING_TASK_TEMPLATE);
+					}
+					
 					forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-select-task-type"):
 					// most of the work for this case was moved to CommonServletFunctions.getTaskParametersFromRequest, so now it just needs to set forwardTo
 					
+					
+					
 					forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 					break;
 				case ("edit-task-update"):
-					
+					if(tempTask.getTaskID()==0){
+						throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+					}
 					tempTask.update();
 					
-					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
-						request.setAttribute("stage", Stage.load(tempTask.getStageID()));
+					stageToReturnTo = ParameterUtils.parseIntParameter(request, "stageToReturnTo");
+					if(path.equals("treatmentPlanTemplate")|| path.equals("stageTemplate")){
+						request.setAttribute("stage", Stage.load(stageToReturnTo));
 						request.setAttribute("defaultStageList", Stage.getDefaultStages());
+						
 						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 					}else{
 						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
@@ -150,6 +127,8 @@ public class EditTask extends HttpServlet {
 		} catch (DatabaseException | ValidationException e) {
 			//put in temporary task object so values can be saved in inputs after error
 			request.setAttribute("task", tempTask);
+			request.setAttribute("stageToReturnTo", stageToReturnTo);
+			request.setAttribute("treatmentPlanID", planToReturnTo);
 			request.setAttribute("errorMessage", e.getMessage());
 
 			forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";

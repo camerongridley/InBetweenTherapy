@@ -69,11 +69,10 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 		return true;
 	}
     
-
+	
     /* (non-Javadoc)
 	 * @see com.cggcoding.utils.database.DatabaseActionHandler#validateUser(java.lang.String, java.lang.String)
 	 */
-     
     @Override
 	public boolean userValidate(String email, String password) throws DatabaseException{
     	Connection cn = null;
@@ -336,7 +335,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	plan = TreatmentPlan.getInstanceBasic(rsPlanInfo.getInt("treatment_plan_id"), rsPlanInfo.getInt("treatment_plan_user_id_fk"), 
             			rsPlanInfo.getString("treatment_plan_title"), rsPlanInfo.getString("treatment_plan_description"), rsPlanInfo.getInt("treatment_plan_treatment_issue_id_fk"),
             			rsPlanInfo.getBoolean("in_progress"), rsPlanInfo.getBoolean("treatment_plan_is_template"), rsPlanInfo.getBoolean("treatment_plan_completed"),
-            			rsPlanInfo.getInt("current_stage_index"), rsPlanInfo.getInt("active_view_stage_index"));
+            			rsPlanInfo.getInt("current_stage_index"), rsPlanInfo.getInt("active_view_stage_index"), rsPlanInfo.getInt("template_id"));
             	
             }
             
@@ -351,10 +350,10 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
 	@Override
-    public List<Integer> treatmentPlanGetStageIDs(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
+    public List<Stage> treatmentPlanLoadStages(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Integer> stageIDs = new ArrayList<>();
+        List<Stage> stages = new ArrayList<>();
         
         throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
         
@@ -366,7 +365,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
 
             while (rs.next()){
-            	stageIDs.add(rs.getInt("stage_id"));
+            	stages.add(Stage.load(cn, rs.getInt("stage_id")));
             }
 
         } finally {
@@ -374,18 +373,74 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			DbUtils.closeQuietly(ps);
         }
 
-        return stageIDs;
+        return stages;
     }
+	
+	//OPTIMIZE instead of calling Stage.load() for each record, could change SELECT statement to return all records from Stage that match and build each Task inside this method.
+	//I like the current way because means I have fewer methods to update should the Stage object change.
+	@Override
+	public List<Stage> treatmentPlanLoadStageTemplates(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
+		PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Stage> stages = new ArrayList<>();
+        
+        try {
+            ps = cn.prepareStatement("SELECT stage_template_id_fk, stage_order FROM stage_template_treatment_plan_template_maps WHERE treatment_plan_template_id_fk=? ORDER BY stage_order");
+            ps.setInt(1, treatmentPlanID);
+            
+
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+            	Stage stageTemplate = Stage.load(cn, rs.getInt("stage_template_id_fk"));
+            	stageTemplate.setStageOrder(rs.getInt("stage_order"));
+            	stages.add(stageTemplate);
+            }
+            //TODO confirm that the order of tasks is correct when loaded here
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+
+        }
+
+        return stages;
+	}
+	
+	@Override
+	public List<Stage> treatmentPlanUpdateStageTemplates(Connection cn, int treatmentPlanID, List<Stage> stageTemplates) throws SQLException{
+		PreparedStatement ps = null;
+        List<Stage> stages = new ArrayList<>();
+        
+        try {
+        	for(Stage stage : stageTemplates){
+        		ps = cn.prepareStatement("UPDATE stage_template_treatment_plan_template_maps SET stage_template_id_fk=?, treatment_plan_template_id_fk=?, stage_order=? WHERE stage_template_id_fk=? and treatment_plan_template_id_fk=?");
+                ps.setInt(1,stage.getStageID());
+                ps.setInt(2,treatmentPlanID);
+                ps.setInt(3,stage.getStageOrder());
+                ps.setInt(4,stage.getStageID());
+                ps.setInt(5,treatmentPlanID);
+                
+                ps.executeUpdate();
+        	}            
+            
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+
+        return stages;
+	}
     
     @Override
 	public TreatmentPlan treatmentPlanCreateBasic(Connection cn, TreatmentPlan treatmentPlan) throws SQLException, ValidationException{		
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
+        throwValidationExceptionIfTemplateHolderID(treatmentPlan.getTreatmentPlanID());
+        
         try {
         	String sql = "INSERT INTO treatment_plan (treatment_plan_user_id_fk, treatment_plan_treatment_issue_id_fk, treatment_plan_title, treatment_plan_description, "
-        			+ "current_stage_index, active_view_stage_index, in_progress, treatment_plan_is_template) "
-            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        			+ "current_stage_index, active_view_stage_index, in_progress, treatment_plan_is_template, template_id) "
+            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
@@ -397,6 +452,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps.setInt(6, treatmentPlan.getActiveViewStageIndex());
             ps.setBoolean(7, treatmentPlan.isInProgress());
             ps.setBoolean(8, treatmentPlan.isTemplate());
+            ps.setInt(9, treatmentPlan.getTemplateID());
 
             int success = ps.executeUpdate();
             
@@ -456,7 +512,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         	String sql = "UPDATE treatment_plan SET treatment_plan_user_id_fk=?, treatment_plan_treatment_issue_id_fk=?, treatment_plan_title=?, treatment_plan_description=?, current_stage_index=?, "
-        			+ "active_view_stage_index=?, in_progress=?, treatment_plan_is_template=?, treatment_plan_completed=? WHERE treatment_plan_id=?";
+        			+ "active_view_stage_index=?, in_progress=?, treatment_plan_is_template=?, treatment_plan_completed=?, template_id=? WHERE treatment_plan_id=?";
         	
             ps = cn.prepareStatement(sql);
             
@@ -469,7 +525,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps.setBoolean(7, treatmentPlan.isInProgress());
             ps.setBoolean(8, treatmentPlan.isTemplate());
             ps.setBoolean(9, treatmentPlan.isCompleted());
-            ps.setInt(10, treatmentPlan.getTreatmentPlanID());
+            ps.setInt(10, treatmentPlan.getTemplateID());
+            ps.setInt(11, treatmentPlan.getTreatmentPlanID());
 
             int success = ps.executeUpdate();
 
@@ -512,6 +569,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	
 	@Override
 	public void treatmentPlanDelete(Connection cn, int treatmentPlanID) throws SQLException, ValidationException {
+		throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
+		
 		PreparedStatement ps = null;
 
 		try {
@@ -614,8 +673,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         ResultSet generatedKeys = null;
         
         try {
-    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, stage_title, stage_description, stage_completed, stage_order, percent_complete, stage_in_progress, stage_is_template) "
-            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    		String sql = "INSERT INTO stage (stage_user_id_fk, stage_treatment_plan_id_fk, stage_title, stage_description, stage_completed, stage_order, percent_complete, stage_in_progress, stage_is_template, template_id) "
+            		+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
@@ -628,6 +687,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps.setDouble(7, newStage.getPercentComplete());
             ps.setBoolean(8, newStage.isInProgress());
             ps.setBoolean(9, newStage.isTemplate());
+            ps.setInt(10, newStage.getTemplateID());
 
             int success = ps.executeUpdate();
             
@@ -653,9 +713,14 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         throwValidationExceptionIfTemplateHolderID(stage.getStageID());
         
+        if(stage.isTemplate()){  	
+        	//as a precaution - make sure the template's order is 0 since all order values for how stage templates are a part of a treatment plan template is kept in their mapping table
+        	stage.setStageOrder(0);
+        }
+        
         try {
         		
-    		String sql = "UPDATE stage SET stage_treatment_plan_id_fk=?, stage_user_id_fk=?, stage_title=?, stage_description=?, stage_completed=?, `stage_order`=?, percent_complete=?, stage_in_progress=?, stage_is_template=? WHERE stage_id=?";
+    		String sql = "UPDATE stage SET stage_treatment_plan_id_fk=?, stage_user_id_fk=?, stage_title=?, stage_description=?, stage_completed=?, `stage_order`=?, percent_complete=?, stage_in_progress=?, stage_is_template=?, template_id=? WHERE stage_id=?";
         	
             ps = cn.prepareStatement(sql);
 
@@ -668,7 +733,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps.setDouble(7, stage.getPercentComplete());
             ps.setBoolean(8, stage.isInProgress());
             ps.setBoolean(9, stage.isTemplate());
-            ps.setInt(10, stage.getStageID());
+            ps.setInt(10, stage.getTemplateID());
+            ps.setInt(11, stage.getStageID());
 
             success = ps.executeUpdate();
         	
@@ -750,7 +816,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	//boolean inProgress = rs.getInt("") == 1;
             	//boolean isTemplate = rs.getInt("stage_is_template") == 1;
             	
-            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order"), tasks, extraTasks, rs.getBoolean("stage_completed"), rs.getDouble("percent_complete"), goals, rs.getBoolean("stage_in_progress"), rs.getBoolean("stage_is_template"));
+            	stage = Stage.getInstance(stageID, rs.getInt("stage_treatment_plan_id_fk"), rs.getInt("stage.stage_user_id_fk"), rs.getString("stage.stage_title"), rs.getString("stage.stage_description"), rs.getInt("stage.stage_order"), tasks, extraTasks, rs.getBoolean("stage_completed"), rs.getDouble("percent_complete"), goals, rs.getBoolean("stage_in_progress"), rs.getBoolean("stage_is_template"), rs.getInt("template_id"));
             }
 
         } finally {
@@ -763,6 +829,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return stage;
 	}
 	
+	//TODO rename this to reflect that it is loading live/non-template tasks
+	//OPTIMIZE instead of calling Task.load() for each record, could change SELECT statement to return all records from Task that match and build each Task inside this method.
 	@Override
 	public List<Task> stageLoadTasks(Connection cn, int stageID) throws SQLException {
 		PreparedStatement ps = null;
@@ -772,7 +840,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         //throwValidationExceptionIfTemplateHolderID(stageID);
         
         try {
-            ps = cn.prepareStatement("SELECT task_generic_id, task_generic_task_type_id_fk, task_order FROM task_generic WHERE task_generic_stage_id_fk=? ORDER BY task_order");
+            ps = cn.prepareStatement("SELECT task_generic_id FROM task_generic WHERE task_generic_stage_id_fk=? ORDER BY task_order");
             ps.setInt(1, stageID);
             
 
@@ -790,7 +858,62 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 
         return tasks;
 	}
+	
+	//OPTIMIZE instead of calling Task.load() for each record, could change SELECT statement to return all records from Task that match and build each Task inside this method.
+	@Override
+	public List<Task> stageLoadTaskTemplates(Connection cn, int stageID) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Task> tasks = new ArrayList<>();
+        
+        try {
+            ps = cn.prepareStatement("SELECT task_generic_template_id_fk, task_order FROM task_template_id_stage_template_id_maps WHERE stage_template_id_fk=? ORDER BY task_order");
+            ps.setInt(1, stageID);
+            
 
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+            	Task taskTemplate = Task.load(cn, rs.getInt("task_generic_template_id_fk"));
+            	taskTemplate.setTaskOrder(rs.getInt("task_order"));
+            	tasks.add(taskTemplate);
+            }
+            //TODO confirm that the order of tasks is correct when loaded here
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+
+        }
+
+        return tasks;
+	}
+
+	@Override
+	public List<Task> stageUpdateTaskTemplates(Connection cn, int stageID, List<Task> taskTemplates) throws SQLException {
+		PreparedStatement ps = null;
+        List<Task> tasks = new ArrayList<>();
+        
+        try {
+        	for(Task task : taskTemplates){
+        		ps = cn.prepareStatement("UPDATE task_template_id_stage_template_id_maps SET task_generic_template_id_fk=?, stage_template_id_fk=?, task_order=? WHERE task_generic_template_id_fk=? and stage_template_id_fk=?;");
+                ps.setInt(1,task.getTaskID());
+                ps.setInt(2,stageID);
+                ps.setInt(3,task.getTaskOrder());
+                ps.setInt(4,task.getTaskID());
+                ps.setInt(5,stageID);
+                
+                ps.executeUpdate();
+        	}            
+
+            //ps.executeBatch();
+            
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+
+        return tasks;
+	}
+	
 	@Override
 	public List<StageGoal> stageLoadGoals(Connection cn, int stageID) throws SQLException, ValidationException{
     	PreparedStatement ps = null;
@@ -819,6 +942,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	
 	@Override
 	public void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException{
+		throwValidationExceptionIfTemplateHolderID(stageID);
     	PreparedStatement ps = null;
         
     	try{
@@ -972,7 +1096,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
             			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
             			dateCompleted, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), 
-            			rs.getBoolean("task_is_template"), rs.getInt("template_id"), rs.getInt("repetitions"));
+            			rs.getBoolean("task_is_template"), rs.getInt("task_template_id"), rs.getInt("repetitions"));
             }
 
         } finally {
@@ -1071,14 +1195,18 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	
 	@Override
 	public boolean taskGenericUpdate(Connection cn, Task taskToUpdate) throws SQLException {
-
     	PreparedStatement ps = null;
         int success = 0;
+        
+        if(taskToUpdate.isTemplate()){  	
+        	//as a precaution - make sure the template's order is 0 since all order values for how task templates are a part of a stage template is kept in their mapping table
+        	taskToUpdate.setTaskOrder(0);
+        }
         
         try {
 
 	    		String sql = "UPDATE task_generic SET task_generic_task_type_id_fk=?, task_generic_stage_id_fk=?, task_generic_user_id_fk=?, parent_task_id=?, task_title=?, instructions=?, resource_link=?, "
-	    				+ "task_completed=?, task_date_completed=?, task_order=?, is_extra_task=?, task_is_template=?, template_id=?, repetitions=? WHERE task_generic_id=?";
+	    				+ "task_completed=?, task_date_completed=?, task_order=?, is_extra_task=?, task_is_template=?, task_template_id=?, repetitions=? WHERE task_generic_id=?";
 	        	
 	            ps = cn.prepareStatement(sql);
 	            
@@ -1153,7 +1281,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_stage_id_fk, task_generic_user_id_fk, parent_task_id, task_title, "
-        			+ "instructions, resource_link, task_completed, task_date_completed, task_order, is_extra_task, task_is_template, template_id, repetitions) "
+        			+ "instructions, resource_link, task_completed, task_date_completed, task_order, is_extra_task, task_is_template, task_template_id, repetitions) "
     				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -1189,7 +1317,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 		
 		return newTask;
 	}
-	
 	
 	@Override
 	public void taskDelete(Connection cn, int taskID) throws SQLException {
@@ -1439,6 +1566,148 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         return issues;
     }
+    
+    @Override
+	public void mapsTaskStageTemplateCreate(Connection cn, int taskTemplateID, int stageTemplateID, int taskOrder) throws SQLException{
+		PreparedStatement ps = null;
+        
+        try {
+        	String sql = "INSERT INTO task_template_id_stage_template_id_maps (task_generic_template_id_fk, stage_template_id_fk, task_order) "
+        			+ "VALUES (?, ?, ?)";
+
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, taskTemplateID);
+            ps.setInt(2, stageTemplateID);
+            ps.setInt(3, taskOrder);
+
+            int success = ps.executeUpdate();
+ 	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+
+	}
+    
+    @Override
+	public boolean mapsTaskStageTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID) throws ValidationException, SQLException{
+		PreparedStatement ps = null;
+        ResultSet rsStageCount = null;
+        int comboExists = 0;
+	        
+        try {
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM task_template_id_stage_template_id_maps WHERE task_generic_template_id_fk=? AND stage_template_id_fk=?");
+			ps.setInt(1, taskTemplateID);
+			ps.setInt(2, stageTemplateID);
+
+			rsStageCount = ps.executeQuery();
+
+			while (rsStageCount.next()){
+			    comboExists = rsStageCount.getInt("COUNT(*)");
+			}
+
+        } finally {
+			DbUtils.closeQuietly(rsStageCount);
+			DbUtils.closeQuietly(ps);
+		}
+        
+		if(comboExists > 0){
+			throw new ValidationException(ErrorMessages.STAGE_CONTAINS_TASK_TEMPLATE);
+		} else {
+			return true;
+		}
+		
+	}
+    
+    @Override
+	public void mapsTaskStageTemplateDelete(Connection cn, int taskID) throws SQLException {
+		PreparedStatement ps = null;
+
+		try {
+            ps = cn.prepareStatement("DELETE FROM task_template_id_stage_template_id_maps WHERE task_generic_template_id_fk=?");
+            ps.setInt(1, taskID);
+
+            ps.executeUpdate();
+
+		} finally {
+			DbUtils.closeQuietly(ps);
+	    }
+
+	}
+    
+    //TODO add an updateMapsTaskStage method to update taskOrder that takes List<Task> as arg and loops through updating order
+    
+    @Override
+	public void mapsStageTreatmentPlanTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder) throws SQLException{
+		PreparedStatement ps = null;
+        
+        try {
+        	String sql = "INSERT INTO stage_template_treatment_plan_template_maps (stage_template_id_fk, treatment_plan_template_id_fk, stage_order) "
+        			+ "VALUES (?, ?, ?)";
+
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, stageTemplateID);
+            ps.setInt(2, treatmentPlanTemplateID);
+            ps.setInt(3, stageOrder);
+
+            int success = ps.executeUpdate();
+ 	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+
+	}
+    
+    @Override
+	public boolean mapsStageTreatmentPlanTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID) throws ValidationException, SQLException{
+		PreparedStatement ps = null;
+        ResultSet rsStageCount = null;
+        int comboExists = 0;
+	        
+        try {
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM stage_template_treatment_plan_template_maps WHERE stage_template_id_fk=? AND treatment_plan_template_id_fk=?");
+			ps.setInt(1, stageTemplateID);
+			ps.setInt(2, treatmentPlanTemplateID);
+
+			rsStageCount = ps.executeQuery();
+
+			while (rsStageCount.next()){
+			    comboExists = rsStageCount.getInt("COUNT(*)");
+			}
+
+        } finally {
+			DbUtils.closeQuietly(rsStageCount);
+			DbUtils.closeQuietly(ps);
+		}
+        
+		if(comboExists > 0){
+			throw new ValidationException(ErrorMessages.PLAN_CONTAINS_STAGE_TEMPLATE);
+		} else {
+			return true;
+		}
+		
+	}
+    
+    @Override
+	public void mapsStageTreatmentPlanTemplateDelete(Connection cn, int stageID) throws SQLException {
+		PreparedStatement ps = null;
+
+		try {
+            ps = cn.prepareStatement("DELETE FROM stage_template_treatment_plan_template_maps WHERE stage_template_id_fk=?");
+            ps.setInt(1, stageID);
+
+            ps.executeUpdate();
+
+		} finally {
+			DbUtils.closeQuietly(ps);
+	    }
+
+	}
+    
+    //TODO add an update mapsStagePlan method to update stageOrder that takes a List<Stage> arg and loops through and updated order
     
     private Timestamp convertLocalTimeDateToTimstamp(LocalDateTime ldt){
     	Timestamp timestamp = null;

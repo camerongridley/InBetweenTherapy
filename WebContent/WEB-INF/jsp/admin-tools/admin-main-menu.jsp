@@ -29,7 +29,7 @@
 						Treatment Plan Template</button>
 				</div>
 				<input type="hidden" name="requestedAction"	value="plan-create-start">
-				<input type="hidden" name="path" value="creatingPlanTemplate">
+				<input type="hidden" name="path" value="treatmentPlanTemplate">
 			</form>
 			</p>
 
@@ -40,7 +40,7 @@
 						Treatment Plan Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="plan-edit-start">
-				<input type="hidden" name="path" value="editingPlanTemplate">
+				<input type="hidden" name="path" value="treatmentPlanTemplate">
 			</form>
 			</p>
 		</div>
@@ -54,7 +54,7 @@
 						Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="stage-create-start">
-				<input type="hidden" name="path" value="creatingStageTemplate">
+				<input type="hidden" name="path" value="stageTemplate">
 			</form>
 			</p>
 			<p>
@@ -65,7 +65,7 @@
 						Stage Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="stage-edit-start">
-				<input type="hidden" name="path" value="editingStageTemplate">
+				<input type="hidden" name="path" value="stageTemplate">
 			</form>
 			</p>
 		</div>
@@ -78,7 +78,7 @@
 						Task Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="create-task-start">
-				<input type="hidden" name="path" value="creatingTaskTemplate">
+				<input type="hidden" name="path" value="taskTemplate">
 			</form>
 			</p>
 			<p>
@@ -88,7 +88,7 @@
 						Task Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="edit-task-start">
-				<input type="hidden" name="path" value="editingTaskTemplate">
+				<input type="hidden" name="path" value="taskTemplate">
 			</form>
 			</p>
 		</div>

@@ -21,7 +21,7 @@
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
 
-<c:if test="${path=='editingPlan' || path=='editingPlanTemplate' }">
+<c:if test="${path=='treatmentPlanTemplate' }">
 <div class="row">
 	<div class="form-group">
 		<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
@@ -46,7 +46,7 @@
 		<div class="col-xs-1">
 			<form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
 				<input type="hidden" name="requestedAction" value="plan-create-start"> 
-				<input type="hidden" name="path" value="creatingPlanTemplate">
+				<input type="hidden" name="path" value="treatmentPlanTemplate">
 				<button type="submit" class="btn btn-default glyphicon glyphicon-plus" aria-hidden="true" title="Add a new treatment plan."></button>
 			</form>
 		</div>	
@@ -201,7 +201,7 @@
 							<c:forEach items="${stage.tasks }" var="task">
 								<tr>
 									<!-- <th scope="row">${task.taskOrder}</th>-->
-									<td><c:out value="${fn:escapeXml(task.title) }"></c:out><span
+									<td>${task.title} (${task.repetitions }) <span
 										class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
 										<!-- <a role="button"
 										href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"

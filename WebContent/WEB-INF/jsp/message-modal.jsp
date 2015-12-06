@@ -11,6 +11,15 @@
     </c:if>
     <!-- END ERROR MESSAGE DISPLAY -->
     
+    <!-- WARNING MESSAGE DISPLAY  -->
+    <c:if test="${warningMessage != null}">
+		<div class="alert alert-warning alert-dismissible" role="alert">
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		  <strong>Warning!</strong> ${warningMessage}
+		</div>
+    </c:if>
+    <!-- END WARNING MESSAGE DISPLAY -->
+    
     <!-- SUCCESS MESSAGE DISPLAY  -->
     <c:if test="${successMessage != null}">
 		<div class="alert alert-success alert-dismissible" role="alert">
@@ -20,11 +29,12 @@
     </c:if>
     <!-- END SUCCESS MESSAGE DISPLAY -->
     
-    <!-- SUCCESS MESSAGE DISPLAY  -->
+    <!-- INFO MESSAGE DISPLAY  -->
     <c:if test="${infoMessage != null}">
 		<div class="alert alert-info alert-dismissible" role="alert">
 		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		  <strong>Heads up!</strong> ${infoMessage}
 		</div>
     </c:if>
-    <!-- END SUCCESS MESSAGE DISPLAY -->
+    <!-- END INFO MESSAGE DISPLAY -->
+    

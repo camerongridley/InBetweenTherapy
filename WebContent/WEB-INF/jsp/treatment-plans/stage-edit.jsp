@@ -16,8 +16,8 @@
 		<input type="hidden" name="requestedAction" value="stage-edit-select-stage">
 		<input type="hidden" name="path" value="${path }">
 		
-		<div class="well well-sm">
-			<c:if test="${path=='editingStageTemplate'}">
+		<c:if test="${path=='stageTemplate'}">
+			<div class="well well-sm">
 				<div class="form-group">
 					<label for="selectedDefaultStageID" class="col-sm-2 control-label">Select Default Stage</label>
 			        <div class="col-sm-5">
@@ -29,16 +29,15 @@
 			            </select>
 			        </div>
 				</div>
-				
-			</c:if>
-		</div>
-		
+			</div>
+		</c:if>
 	</form>
 	
 	<form class="form-horizontal" action="/secure/EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-name">
 		<input type="hidden" name="path" value="${path }">	
-		<input type="hidden" name="stageID" value="${stage.stageID }" >	
+		<input type="hidden" name="stageID" value="${stage.stageID }" >
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">	
 		
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
@@ -80,7 +79,7 @@
 		
 		<label for="stageList" class="control-label">Tasks
 
-       			<a role="button" href="/secure/CreateTask?requestedAction=create-task-start&path=${path}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
+       			<a role="button" href="/secure/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</a>
 
@@ -91,14 +90,14 @@
 				  	<input type="hidden" name="taskID" value="${task.taskID}"/>
 				  	<input type="hidden" name="taskTitle" value="${task.title}"/>
 					<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
-			          ${task.taskOrderForUserDisplay } - <span class="">${task.title }</span>
+			          ${task.taskOrderForUserDisplay } - <span class="">${task.title } (${task.repetitions})</span>
 			        </a>
 			        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-			        <a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete task:${task.title }">
+			        <a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete task:${task.title }">
 					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 					</a>
 					
-			        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit task: ${task.title }">
+			        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit task: ${task.title }">
 					  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 					</a>
 					
@@ -126,6 +125,7 @@
 		    <input type="hidden" name="requestedAction" value="stage-edit-add-goal">
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="stageID" value="${stage.stageID}" >
+		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		        <h4 class="modal-title" id="newStageGoalModalLabel">Enter a new stage goal.</h4>

@@ -16,8 +16,11 @@ import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
+import com.cggcoding.utils.messaging.WarningMessages;
 
 /**
  * Servlet implementation class EditStage
@@ -62,7 +65,13 @@ public class EditStage extends HttpServlet {
 		String stageTitle = request.getParameter("stageTitle");
 		String stageDescription = request.getParameter("stageDescription");
 		Stage editedStage = null;
-		
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+		/*This variable helps remember where to send the user back to when they are done editing the Task.
+		If the Task being edited is a template the stageID will be TEMPLATE_HOLDER_ID, and not the Stage template being working on.
+		If the Task being edited is part of a client's plan, then the stageID will be the stageID that is contained within the task.
+		Need to maintain it between requests*/
+		int planToReturnTo = treatmentPlanID;
+		request.setAttribute("treatmentPlanID", planToReturnTo);
 		
 		try{
 			request.setAttribute("defaultStageList", Stage.getDefaultStages());
@@ -82,9 +91,16 @@ public class EditStage extends HttpServlet {
 		            		request.setAttribute("stage", null);
 		            	}
 		            	
+		            	if(path.equals("treatmentPlanTemplate")){
+							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
+						}
+		            	
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-name" :
+		            	if(stageID==0){
+		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+		            	}
 		            	editedStage = Stage.load(stageID);
 		            	editedStage.setTitle(stageTitle);
 		            	editedStage.setDescription(stageDescription);
@@ -96,10 +112,11 @@ public class EditStage extends HttpServlet {
 		            	editedStage.update();
 		            	
 		            	request.setAttribute("stage", editedStage);
-		            	if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate")){
+		            	if(path.equals("treatmentPlanTemplate")){
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
-		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(editedStage.getTreatmentPlanID()));
+		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(planToReturnTo));
 		            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
+		            		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
 		            		forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	}else{
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
@@ -114,10 +131,16 @@ public class EditStage extends HttpServlet {
 		            	request.setAttribute("stage", Stage.load(stageID));
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
-		            	
+		            
+		            //TODO remove this and have calling forms use stage-edit-select-stage instead
 		            case "stage-edit":
 						editedStage = Stage.load(stageID);
 						request.setAttribute("stage", editedStage);
+						
+						if(path.equals("treatmentPlanTemplate")){
+							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
+						}
+						
 						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;	
 						
@@ -151,6 +174,7 @@ public class EditStage extends HttpServlet {
 			request.setAttribute("stage", editedStage);
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
+			request.setAttribute("treatmentPlanID", planToReturnTo);
             forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		}
 		

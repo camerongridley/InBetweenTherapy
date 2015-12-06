@@ -20,6 +20,7 @@
     <form class="form-inline" action="/secure/LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary" disabled>Create Treatment Plan</button></div>
       <input type="hidden" name="requestedAction" value="createplan">
+      <input type="hidden" name="path" value="assignClientTreatmentPlan">
     </form>
   </p>
 
@@ -27,6 +28,7 @@
     <form class="form-inline" action="/secure/LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary" disabled>Edit Treatment Plans</button></div>
       <input type="hidden" name="requestedAction" value="editplan">
+      <input type="hidden" name="path" value="assignClientTreatmentPlan">
     </form>
   </p>
 
@@ -40,8 +42,9 @@
 
   <p>
     <form class="form-inline" action="/secure/LoadData" method="POST">
-      <div><button type="submit" class="btn btn-primary" disabled>View Client Progress</button></div>
-      <input type="hidden" name="requestedAction" value="viewclient">
+      <div><button type="submit" class="btn btn-primary" disabled>Manage Clients</button></div>
+      <input type="hidden" name="requestedAction" value="manage-clients">
+      <input type="hidden" name="path" value="assignClientTreatmentPlan">
     </form>
   </p>
 

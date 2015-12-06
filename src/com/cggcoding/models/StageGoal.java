@@ -119,7 +119,7 @@ public class StageGoal implements Serializable, DatabaseModel{
 		return this;
 	}
 	
-	public StageGoal create(Connection cn) throws ValidationException, SQLException {
+	protected StageGoal create(Connection cn) throws ValidationException, SQLException {
 		if(isValidGoal()){
 			dao.stageGoalCreate(cn, this);
 		}
@@ -147,7 +147,7 @@ public class StageGoal implements Serializable, DatabaseModel{
 		
 	}
 	
-	public void update(Connection cn) throws ValidationException, SQLException {
+	protected void update(Connection cn) throws ValidationException, SQLException {
 		dao.stageGoalUpdate(cn, this);
 	}
 
@@ -169,7 +169,7 @@ public class StageGoal implements Serializable, DatabaseModel{
 		
 	}
 	
-	public void delete(Connection cn) throws ValidationException, SQLException {
+	protected void delete(Connection cn) throws ValidationException, SQLException {
 		dao.stageGoalDelete(cn, this.stageGoalID);	
 	}
 	

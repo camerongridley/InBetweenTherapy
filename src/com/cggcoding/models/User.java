@@ -1,15 +1,19 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.dbutils.DbUtils;
 import org.apache.tomcat.jdbc.pool.DataSource;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 public abstract class User implements Serializable{
 	/**
@@ -22,7 +26,7 @@ public abstract class User implements Serializable{
 	private List<String> roles;
 	String role;
 	private List<TreatmentPlan> treatmentPlanList;
-	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
 	public User (int userID, String email){
 		this.userID = userID;
@@ -128,18 +132,41 @@ public abstract class User implements Serializable{
 		return true;
 	}
 	
-	public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
+	
+	 public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
     	TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
     	planToCopy.setTemplate(isTemplate);
-    	
+    	planToCopy.setTemplateID(planToCopy.getTreatmentPlanID());
     	planToCopy.setUserID(userIDTakingNewPlan);
     	//loop through and change all the userIDs to the userID supplied by the method argument
+    	//OPTIMIZE O(N3) complexity here with 3 nested for loops.  Is there a better way to do this?
     	for(Stage stage : planToCopy.getStages()){
     		stage.setUserID(userIDTakingNewPlan);
+    		stage.setTemplate(false);
+    		stage.setTemplateID(stage.getStageID());
+    		List<Task> taskRepetitionsAdded = new ArrayList<>();
     		for(Task task : stage.getTasks()){
     			task.setUserID(userIDTakingNewPlan);
-    		}
-    	}
+    			task.setTemplate(false);
+    			task.setTemplateID(task.getTaskID());
+    			for(int i = 0; i < task.getRepetitions(); i++){
+    				Task taskRep = task.copy();
+    				
+    				if(task.getRepetitions() > 1){
+    					taskRep.setTitle(task.getTitle() + " (" + (i+1) + ")");
+    				}
+    				
+    				taskRep.setTaskOrder(taskRepetitionsAdded.size());
+    				taskRepetitionsAdded.add(taskRep);
+    			}
+    			
+    		}//end Task loop
+    		
+    		//reset the Stage's Task list with new list that has been populated with repetitions
+    		stage.setTasks(taskRepetitionsAdded);
+    		
+    		//TODO before moving on to next stage in loop, update the task orders to account for any repetitions added?
+    	}//end Stage loop
     	
     	//save the plan - which is responsible for updating treatmentPlanID in all the child objects
     	return planToCopy.create();

@@ -21,7 +21,7 @@
 	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="client-execute-plan">
-
+		<input type="hidden" name="initialize" value="no">
 		
         <div class="form-group">
             <label for="selectedPlanID" class="col-sm-3 control-label">Plans in Progress:</label>
@@ -48,6 +48,7 @@
 	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="client-execute-plan">
+		<input type="hidden" name="initialize" value="yes">
 
 		
         <div class="form-group">
@@ -75,6 +76,7 @@
 	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="client-execute-plan">
+		<input type="hidden" name="initialize" value="no">
 
 		
         <div class="form-group">

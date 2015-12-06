@@ -12,6 +12,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
@@ -35,16 +36,7 @@ public class CreateTask extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		/*--Common Servlet variables that should be in every controller--*/
-		/*HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
-		String requestedAction = request.getParameter("requestedAction");
-		String path = request.getParameter("path");
-		request.setAttribute("path", path);*/
-		/*-----------End Common Servlet variables---------------*/
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		processRequest(request, response);
 	}
 
@@ -72,10 +64,17 @@ public class CreateTask extends HttpServlet {
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
 		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
 
+		int planToReturnTo = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+		request.setAttribute("treatmentPlanID", planToReturnTo);
+		
 		try {
 			//put user-independent (i.e. default) lists acquired from database in the request
 			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
 			request.setAttribute("defaultTasks", Task.getDefaultTasks());
+			
+			if(!path.equals("taskTemplate")){
+				stage = Stage.load(stageID);
+			}
 	
 			if(user.hasRole("admin")){
 				UserAdmin admin = (UserAdmin)user;
@@ -85,14 +84,15 @@ public class CreateTask extends HttpServlet {
 					request.setAttribute("task", taskToCreate);
 					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
 					break;
-				case "task-add-default" :
+				case "task-add-default-template" :
 
 					if(taskToCreate.getTaskID() != 0){
-						stage = Stage.load(stageID);
-						stage.copyTaskIntoStage(taskToCreate.getTaskID());
+						//TODO delete? stage = Stage.load(stageID);
+						stage.addTaskTemplate(taskToCreate.getTaskID());
+						//stage.copyTaskIntoStage(taskToCreate.getTaskID());
 						
-						if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
-							request.setAttribute("stage", stage);
+						if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
+							request.setAttribute("stage", stage);//XXX right now this is redundant as loadStageAndPutInRequest is called later
 							request.setAttribute("defaultStageList", Stage.getDefaultStages());
 							forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						}else{
@@ -106,22 +106,41 @@ public class CreateTask extends HttpServlet {
 					request.setAttribute("defaultTasks", Task.getDefaultTasks());
 					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
 					break;
-				case ("task-save"):
-					if(path.equals("creatingTaskTemplate")){
+				case ("create-new-task"):
+					Task newTask = null;
+				
+					//TODO implement this?
+					/*switch(path){
+						case "taskTemplate":
+							Task.createTemplate(taskToCreate);
+							break;
+						case "stageTemplate":
+							newTask = Task.createTemplate(taskToCreate);
+							stage = Stage.load(stageID);
+							stage.addTaskTemplate(newTask.getTaskID());
+							break;
+						default:
+							
+							
+					}*/
+					if(path.equals("taskTemplate")){
 						Task.createTemplate(taskToCreate);
-					} else{
-						stage = Stage.load(stageID);
+					} else {
+						newTask = Task.createTemplate(taskToCreate);
+						//TODO delete? stage = Stage.load(stageID);
+						stage.addTaskTemplate(newTask.getTaskID());
+						/*stage = Stage.load(stageID);
 						stage.createNewTask(taskToCreate);
 						
 						if(ParameterUtils.singleCheckboxIsOn(request, "copyAsTemplate")){
 							Task templateCopy = taskToCreate.copy();
 							Task.createTemplate(templateCopy);
-						}
+						}*/
 						
 						request.setAttribute("stage", Stage.load(stageID));
 					}
 										
-					if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate") || path.equals("creatingStageTemplate")|| path.equals("editingStageTemplate")){
+					if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
 						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 					}else{
 						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
@@ -131,10 +150,10 @@ public class CreateTask extends HttpServlet {
 				}
 				
 				
-				if(path.equals("creatingTaskTemplate")){
+				if(path.equals("taskTemplate")){
 					
 				}else{
-					stage = getStageAndPutInRequest(request, stageID);
+					stage = loadStageAndPutInRequest(request, stageID);
 				}
 
 			}
@@ -143,6 +162,7 @@ public class CreateTask extends HttpServlet {
 			//put in temporary task object so values can be saved in inputs after error
 			request.setAttribute("stage", stage);
 			request.setAttribute("task", taskToCreate);
+			request.setAttribute("treatmentPlanID", planToReturnTo);
 			request.setAttribute("errorMessage", e.getMessage());
 
 			forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
@@ -151,7 +171,7 @@ public class CreateTask extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 	}
 	
-	private Stage getStageAndPutInRequest(HttpServletRequest request, int stageID) throws DatabaseException, ValidationException{
+	private Stage loadStageAndPutInRequest(HttpServletRequest request, int stageID) throws DatabaseException, ValidationException{
 		Stage stage = null;
 		if(stageID != 0){
 			stage = Stage.load(stageID);

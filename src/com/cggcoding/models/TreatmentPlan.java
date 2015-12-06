@@ -31,6 +31,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	private boolean inProgress;
 	private boolean isTemplate;
 	private boolean completed;
+	private int templateID;
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
@@ -45,24 +46,11 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		this.inProgress = false;
 		this.isTemplate = false;
 		this.completed = false;
+		this.templateID = 0;
 	}	
-	
-	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID){
-		this.treatmentPlanID = treatmentPlanID;
-		this.title = title;
-		this.description = description;
-		this.treatmentIssueID = txIssueID;
-		this.userID = userID;
-		this.stages = new ArrayList<>();
-		this.currentStageIndex = 0;
-		this.activeViewStageIndex = 0;
-		this.inProgress = false;
-		this.isTemplate = false;
-		this.completed = false;
-	}
 
 	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
-			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex){
+			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID){
 		this.treatmentPlanID = treatmentPlanID;
 		this.title = title;
 		this.description = description;
@@ -74,6 +62,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		this.inProgress = inProgress;
 		this.isTemplate = isTemplate;
 		this.completed = completed;
+		this.templateID = templateID;
 	}
 	
 	public static TreatmentPlan getInstanceWithoutID(String title, int userID, String description, int treatmentPlanID){
@@ -81,8 +70,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
-			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex){
-		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed, currentStageIndex, activeViewStageIndex);
+			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID){
+		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed, currentStageIndex, activeViewStageIndex, templateID);
 	}
 
 	/**Run first time a client loads a plan.  Sets inProgress=true for the TreatmentPlan itself and for the first stage of the plan
@@ -209,6 +198,14 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		this.completed = completed;
 	}
 
+	public int getTemplateID() {
+		return templateID;
+	}
+
+	public void setTemplateID(int templateID) {
+		this.templateID = templateID;
+	}
+
 	public int getNumberOfStages(){
 		return stages.size();
 	}
@@ -271,7 +268,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
         	create(cn);
         	
         	cn.commit();
-        } catch (SQLException e) {
+        } catch (SQLException | ValidationException e) {
+        	e.printStackTrace();
 			try {
 				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
 				cn.rollback();
@@ -279,7 +277,12 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
 				e1.printStackTrace();
 			}
-			e.printStackTrace();
+			if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
+			
 		} finally {
 			try {
 				cn.setAutoCommit(true);
@@ -293,7 +296,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
-	public TreatmentPlan create(Connection cn) throws ValidationException, SQLException{
+	protected TreatmentPlan create(Connection cn) throws ValidationException, SQLException{
 		
 		if(dao.treatmentPlanValidateNewTitle(cn, this.userID, this.title)){
     		dao.treatmentPlanCreateBasic(cn, this);//createBasic(cn);
@@ -310,6 +313,30 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		 return this;
 	}
 	
+	public TreatmentPlan createBasic() throws ValidationException, DatabaseException {
+		
+		Connection cn = null;
+        TreatmentPlan plan = null;
+        try {
+        	cn = dao.getConnection();  	
+        	plan = createBasic(cn);
+        } catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return plan;
+	}
+	
+	protected TreatmentPlan createBasic(Connection cn) throws ValidationException, SQLException {
+		TreatmentPlan plan = null;
+		if(dao.treatmentPlanValidateNewTitle(cn, this.userID, this.title)){
+			dao.treatmentPlanCreateBasic(cn, this);
+		}
+		return plan;
+	}
+	
 	@Override
 	public void update() throws ValidationException, DatabaseException {
 		Connection cn = null;
@@ -321,7 +348,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
         	updateBasic(cn);
         	
         	cn.commit();
-        } catch (SQLException e) {
+        } catch (SQLException | ValidationException e) {
+        	e.printStackTrace();
 			try {
 				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
 				cn.rollback();
@@ -329,7 +357,11 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
 				e1.printStackTrace();
 			}
-			e.printStackTrace();
+			if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
 		} finally {
 			try {
 				cn.setAutoCommit(true);
@@ -355,7 +387,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
-	public void updateBasic(Connection cn) throws ValidationException, SQLException {
+	protected void updateBasic(Connection cn) throws ValidationException, SQLException {
 		if(dao.treatmentPlanValidateUpdatedTitle(cn, this)){
     		dao.treatmentPlanUpdateBasic(cn, this);
     	}
@@ -379,7 +411,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
-	public void delete(Connection cn) throws ValidationException, SQLException {
+	protected void delete(Connection cn) throws ValidationException, SQLException {
 		dao.throwValidationExceptionIfTemplateHolderID(this.treatmentPlanID);
 		
 		dao.treatmentPlanDelete(cn, this.treatmentPlanID);
@@ -437,14 +469,10 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
         
 		//Load the Stages
-		List<Integer> stageIDs = dao.treatmentPlanGetStageIDs(cn, treatmentPlanID); 
-		
-		for(int stageID : stageIDs){
-			plan.addStage(Stage.load(cn, stageID));
-		}
-        
-		if(plan.getStages().size()==0){
-			throw new ValidationException(ErrorMessages.STAGES_IS_EMPTY);
+		if(plan.isTemplate()){
+			plan.setStages(dao.treatmentPlanLoadStageTemplates(cn, treatmentPlanID));
+		}else{
+			plan.setStages(dao.treatmentPlanLoadStages(cn, treatmentPlanID));
 		}
 		
 		return plan;
@@ -476,43 +504,73 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	
-	public void deleteStage(int stageID) throws ValidationException, DatabaseException {
+	public TreatmentPlan deleteStage(int stageID) throws ValidationException, DatabaseException {
 		
 		Connection cn = null;
 		
 		try{
 			cn = dao.getConnection();
 			cn.setAutoCommit(false);
-			
-			//delete specified stage from database
-			Stage.delete(cn, stageID);
-			
+			Stage stage = null;
 			//remove the stage from the local variable
 			for(int i=0; i < this.stages.size(); i++){
-				if(stages.get(i).getStageID()==stageID){
+				stage = stages.get(i);
+				if(stage.getStageID()==stageID){
+					
+					if(stage.isTemplate()){
+						dao.mapsStageTreatmentPlanTemplateDelete(cn, stageID);
+					}else{
+						Stage.delete(cn, stageID);
+					}	
+					
 					stages.remove(i);
+					break;
 				}
 			}
 			
+				
 			reorderStages();
 			
 			//update other stages to reflect changes in order et.al.
-			for(Stage stage : stages){
-				stage.updateBasic(cn);
+			if(stage.isTemplate()){
+				updateStageTemplateList(cn, stages);
+			}else{
+				//OPTIMIZE Could replace this with method in dao that takes List<Stage> and loops through updating
+				for(Stage updateStage : stages){
+					updateStage.updateBasic(cn);
+				}
 			}
 			
+
 			cn.commit();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-		} finally {
-			try {
+		} catch (SQLException | ValidationException e) {
+            e.printStackTrace();
+            try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+			}
+            if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
+        } finally {
+        	try {
 				cn.setAutoCommit(true);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			DbUtils.closeQuietly(cn);
-		}
+        }
+
+		return this;
+	}
+	
+	protected List<Stage> updateStageTemplateList(Connection cn, List<Stage> stageTemplates) throws SQLException{
+		return dao.treatmentPlanUpdateStageTemplates(cn, this.treatmentPlanID, stageTemplates);
 	}
 	
 	private void reorderStages(){
@@ -521,6 +579,34 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		}
 	}
 	
+	/**Adds a stage template to a treatment plan template.  Inserts into stageTemplate-treatmentPlanTemplate mapping table. Both the Stage and TreatmentPlan must be templates to be valid.
+	 * @param stageTemplateID
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	public void addStageTemplate(int stageTemplateID) throws DatabaseException, ValidationException{
+		Connection cn = null;
+	
+		if(this.isTemplate()){
+			try {
+				
+	        	cn = dao.getConnection();
+	        	if(dao.mapsStageTreatmentPlanTemplateValidate(cn, stageTemplateID, this.getTreatmentPlanID())){
+	        		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
+	        		dao.mapsStageTreatmentPlanTemplateCreate(cn, stageTemplateID, this.getTreatmentPlanID(), this.getNumberOfStages());
+	        	}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }		
+		}else{
+			throw new ValidationException(ErrorMessages.PLAN_IS_NOT_TEMPLATE);
+		}
+		
+	}
 	
 	/**Copies a pre-existing Stage into a TreatmentPlan.  This methods gets the existing Stage, updated the treatmentPlanID and the userID associated with the new TreatmentPlan that the
 	 * Stage is being copies into.  It also sets the copied Stages's isTemplate to false and determines the stageOrder it will have initially.
