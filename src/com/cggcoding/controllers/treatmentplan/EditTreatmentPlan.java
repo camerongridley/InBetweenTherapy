@@ -1,8 +1,6 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,7 +10,6 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
@@ -26,7 +23,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class EditTreatmentPlan
  */
-@WebServlet("/EditTreatmentPlan")
+@WebServlet("/secure/EditTreatmentPlan")
 public class EditTreatmentPlan extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -72,9 +69,12 @@ public class EditTreatmentPlan extends HttpServlet {
     	int customIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
 
     	TreatmentPlan treatmentPlan = null;
-    	Stage stage = null;
     	
     	try {
+    		if(user==null){
+    			throw new ValidationException("Your session has expired.  Please log back in.");
+    		}
+    		
     		//set default lists in the request
     		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
     		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
@@ -100,10 +100,14 @@ public class EditTreatmentPlan extends HttpServlet {
 				
 				switch (requestedAction){
 		            case "plan-edit-start":
-		            	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            case "plan-edit-update":
 
+		            	if(treatmentPlanID==0){
+		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+		            	}
+		            	
 		                if(planTitle.isEmpty() || planDescription.isEmpty()){
 		                	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
 		                }
@@ -133,7 +137,7 @@ public class EditTreatmentPlan extends HttpServlet {
 		                treatmentPlan.update();
 		
 		                request.setAttribute("treatmentPlan", treatmentPlan);
-		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
 		            	break;
 		            case "plan-edit-select-plan":
@@ -143,24 +147,24 @@ public class EditTreatmentPlan extends HttpServlet {
 		        		} else {
 		        			request.setAttribute("treatmentPlan", null);
 		        		}
-		            	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            case "create-default-treatment-issue":
 		            	CommonServletFunctions.createDefaultTreatmentIssue(request, user.getUserID());
 
-						forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            case "stage-delete":
 						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						treatmentPlan.deleteStage(stageID);
 				    	request.setAttribute("treatmentPlan", treatmentPlan);
 						
-						forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 						break;
 						
 		            case "delete-plan":
 		            	if(treatmentPlanID == 0){
-		            		throw new ValidationException("There is no treatment plan selected to delete.");
+		            		throw new ValidationException(ErrorMessages.PLAN_DELETE_ERROR);
 		            	}else{
 			            	TreatmentPlan.delete(treatmentPlanID);
 			            	request.removeAttribute("treatmentPlan");
@@ -170,7 +174,7 @@ public class EditTreatmentPlan extends HttpServlet {
 			            	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
 		            	}
 		            	
-		            	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            
 				}
@@ -180,13 +184,13 @@ public class EditTreatmentPlan extends HttpServlet {
     	} catch (ValidationException | DatabaseException e) {
     		request.setAttribute("errorMessage", e.getMessage());
     		
-    		//create a temporary treatmentPlan to hold info for plan that is in the process of creation
-    		treatmentPlan = TreatmentPlan.getInstanceBasic(ParameterUtils.parseIntParameter(request, "treatmentPlanID"), user.getUserID(), request.getParameter("planTitle"), request.getParameter("planDescription"), 0, false, false, false,0,0);
+    		//create a temporary treatmentPlan to hold title and description info that might be changed for plan that is in the process of creation - UNSURE if this will cause accidental replacement of the other fields that I am just supplying false and 0 to
+    		treatmentPlan = TreatmentPlan.getInstanceBasic(ParameterUtils.parseIntParameter(request, "treatmentPlanID"), user.getUserID(), request.getParameter("planTitle"), request.getParameter("planDescription"), 0, false, false, false,0,0,0);
     		request.setAttribute("treatmentPlan", treatmentPlan);
     		request.setAttribute("defaultTreatmentIssue", defaultIssueID);
     		request.setAttribute("existingCustomTreatmentIssue", customIssueID);
     		
-    		forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+    		forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 			//e.printStackTrace();
 		}
     	
@@ -246,7 +250,7 @@ public class EditTreatmentPlan extends HttpServlet {
         	//if there are no validation problems and there is a new custom issue name, add the new issue to the database and get its id
         	if(hasNewCustomIssue){
 	        	TreatmentIssue issue = new TreatmentIssue(newIssueName, user.getUserID());
-				issue.saveNew();// = user.createTreatmentIssue(issue);
+				issue.create();// = user.createTreatmentIssue(issue);
 	            issueID = issue.getTreatmentIssueID();
         	}
         	

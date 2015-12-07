@@ -12,13 +12,11 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
-import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
@@ -26,7 +24,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class CreateStage
  */
-@WebServlet("/CreateStage")
+@WebServlet("/secure/CreateStage")
 public class CreateStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -42,35 +40,6 @@ public class CreateStage extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		processRequest(request, response);
-		/*--Common Servlet variables that should be in every controller--*/
-		/*HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
-		String requestedAction = request.getParameter("requestedAction");
-		String path = request.getParameter("path");
-		request.setAttribute("path", path);
-		-----------End Common Servlet variables---------------
-		
-		if(user.hasRole("admin")){
-			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
-
-			try {
-				switch(requestedAction){
-				case("add-stage-to-treatment-plan"):
-					//set all user-independent lists into request
-					request.setAttribute("defaultStages", DefaultDatabaseCalls.getDefaultStages());
-					request.setAttribute("treatmentPlan", TreatmentPlan.load(treatmentPlanID));
-					break;
-				}
-				
-			} catch (DatabaseException | ValidationException e) {
-				request.setAttribute("errorMessage", e.getMessage());
-				e.printStackTrace();
-			}
-			
-			
-			request.getRequestDispatcher("/jsp/treatment-plans/stage-create.jsp").forward(request, response);
-		}*/
 	}
 
 	/**
@@ -100,9 +69,15 @@ public class CreateStage extends HttpServlet {
 		TreatmentPlan treatmentPlan = null;
 		List<Stage> defaultStages = null;
 		
+		//maintain treatmentPlanID for when wanting to return user to main edit plan page
+		request.setAttribute("treatmentPlanID", treatmentPlanID);
+		
 		try{
+			if(!path.equals("stageTemplate")){
+				treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+			}
 			
-			defaultStages = DefaultDatabaseCalls.getDefaultStages();
+			defaultStages = Stage.getDefaultStages();
 			
 			if(user.hasRole("admin")){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
@@ -110,20 +85,26 @@ public class CreateStage extends HttpServlet {
 				switch (requestedAction){
 					case "stage-create-start":
 
-						forwardTo = "/jsp/treatment-plans/stage-create.jsp";
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
 						break;
-					case "stage-add-default": //default stage can never be a template, so it will always call treatmentPlan.copyStageIntoPlan()
+					case "stage-add-default-template":
 						
 						if(selectedDefaultStageID != 0){
-							treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-							treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
+							//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+							treatmentPlan.addStageTemplate(selectedDefaultStageID);
+							//treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
 	
-			            	if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate")){
+			            	if(path.equals("treatmentPlanTemplate")){
 			                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 			                	
 			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
 			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
-			                	forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+			                	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+			                	
+			                	//OPTIMIZE loading the plan twice here - possible improvement would be to have plan.addStageTemplate add the stage to the local stages List so would need to have the dao method return a stage 
+			                	//need to reload the plan with the newly added stage
+			                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+			                	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 			                }
 						}
 		            	break;
@@ -134,33 +115,37 @@ public class CreateStage extends HttpServlet {
 		                }
 		                
 		                Stage newStage = null;
-		                if(path.equals("creatingStageTemplate")){
+		                if(path.equals("stageTemplate")){
 		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
 		                } else {
-		                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-		                	newStage = treatmentPlan.createNewStage(userAdmin.getUserID(), stageTitle, stageDescription);
+		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
+		                	//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		                	treatmentPlan.addStageTemplate(newStage.getStageID());
+		                	
+		                	/*treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		                	newStage = treatmentPlan.createNewStage(userAdmin.getUserID(), stageTitle, stageDescription);*/
 		                }
 
 		                request.setAttribute("stage", newStage);
 		                
 		                
-		                if(path.equals("editingPlanTemplate")){
+		                if(path.equals("treatmentPlanTemplate")){
 		                	
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 		                }else{
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
 		                }
-		                forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		                forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		                break;
 		            case("add-stage-to-treatment-plan"):
 						//set all user-independent lists into request
 						request.setAttribute("defaultStages", defaultStages);
-						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-						forwardTo = "/jsp/treatment-plans/stage-create.jsp";
+		            	//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
 						break;
 		            default:
 
-		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 		                break;
 				}
 				
@@ -178,7 +163,7 @@ public class CreateStage extends HttpServlet {
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("defaultStages", defaultStages);
 			
-            forwardTo = "/jsp/treatment-plans/stage-create.jsp";
+            forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

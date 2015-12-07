@@ -1,6 +1,8 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,8 +22,11 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	private String extraTextLabel2;
 	private String extraTextValue2;
 	
-	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
+	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
+	/**
+	 * Default constructor.  Designated public so Task.getTaskType() can be accessed outside of the package.
+	 */
 	public TaskTwoTextBoxes(){
 		super();
 	}
@@ -70,6 +75,10 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 				extraTextLabel2, extraTextValue2);
 	}
 	
+	public static Task convertFromGeneric(TaskGeneric genericTask){
+		return addDataToGenericTask(genericTask, null, null, null, null);
+	}
+	
 	public String getExtraTextLabel1() {
 		return extraTextLabel1;
 	}
@@ -102,30 +111,19 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 		this.extraTextValue2 = extraTextValue2;
 	}
 
-	/*public static Task load(int taskID) throws DatabaseException {
-		return databaseActionHandler.taskTwoTextBoxesLoad(taskID);
-		//this method currently uses a SQL query that joins the generic and two-textbox table so can do in one call.  
-		//If wanted to break it up into separate calls then would probably load general data here and then call loadAdditionalData() 
-	}*/
-	
-	//XXX see note for loadAdditionalData()
 	@Override
-	protected void saveNewAdditionalData() throws DatabaseException, ValidationException{
-		//databaseActionHandler.taskTwoTextBoxesSaveNewAdditionalData(this);
+	protected void createAdditionalData(Connection cn) throws ValidationException, SQLException{
+		dao.taskTwoTextBoxesCreateAdditionalData(cn, this);
 	}
 	
 	@Override
-	protected boolean updateAdditionalData() throws DatabaseException, ValidationException {
-		return databaseActionHandler.taskTwoTextBoxesUpdateAdditionalData(this);
+	protected boolean updateAdditionalData(Connection cn) throws ValidationException, SQLException {
+		return dao.taskTwoTextBoxesUpdateAdditionalData(cn, this);
 	}
 
 	@Override
-	public Task loadAdditionalData() {
-		/*XXX - this is doing nothing now and is not ever called.  If I change the DAO so that the connection is passed 
-		 * around the models, then I will need to update this so there is a call to the TwoTextBoxes db table 
-		 * here and the load for this is a 2-step process vs being a one-step process using a join in the SQL*/
-		return this;
-
+	protected void loadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException {
+		transferAdditionalData(dao.taskTwoTextBoxesLoadAdditionalData(cn, genericTask));
 	}
 	
 	@Override
@@ -151,8 +149,10 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	@Override
 	public Task copyAndSave(int stageID, int userID) throws DatabaseException, ValidationException {
 		TaskTwoTextBoxes task =  (TaskTwoTextBoxes)copy();
+		task.setStageID(stageID);
+		task.setUserID(userID);
 		
-		return task.saveNew();
+		return task.create();
 	}
 
 

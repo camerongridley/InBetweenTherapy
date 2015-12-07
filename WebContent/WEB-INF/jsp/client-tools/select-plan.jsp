@@ -10,18 +10,18 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
     <div class="page-header">
         <h1>Main Menu</h1>
     </div>
-    <c:import url="/jsp/message-modal.jsp"/>
+    <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 
 	<h3>Continue a plan.</h3>
-	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="client-execute-plan">
-
+		<input type="hidden" name="initialize" value="no">
 		
         <div class="form-group">
             <label for="selectedPlanID" class="col-sm-3 control-label">Plans in Progress:</label>
@@ -45,9 +45,10 @@
 	</form>
 
 	<h3>Start a new plan.</h3>
-	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="client-execute-plan">
+		<input type="hidden" name="initialize" value="yes">
 
 		
         <div class="form-group">
@@ -72,9 +73,10 @@
 	</form>
 	
 	<h3>View Completed Plans.</h3>
-	<form class="form-horizontal" action="./ClientSelectPlan" method="POST">
+	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
 		<input type="hidden" name="path" value="client-execute-plan">
+		<input type="hidden" name="initialize" value="no">
 
 		
         <div class="form-group">
@@ -98,4 +100,4 @@
         </div>
 	</form>
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

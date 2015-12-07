@@ -1,6 +1,7 @@
 package com.cggcoding.utils.database;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,19 +42,20 @@ public interface DatabaseActionHandler {
 	//****************************** Treatment Plan Methods *************************************
 	//**************************************************************************************************
 
-	TreatmentPlan treatmentPlanValidateAndCreate(TreatmentPlan treatmentPlan) throws ValidationException, DatabaseException;
-	
-	public TreatmentPlan treatmentPlanLoad(int treatmentPlanID) throws DatabaseException, ValidationException;
-	
-	/**Gets basic TreatmentPlan based on treatmentPlanID with none of it's lists (stages, etc.) populated.  If treatmentPlanID=1, return null because the TreatmentPlan.treatmentPlanID=1 is the TreatmentPlan that holds all Stage templates and should not ever be loaded.
-	 * @param treatmentPlanID
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ValidationException 
-	 */
-	TreatmentPlan treatmentPlanLoadWithEmpyLists(int treatmentPlanID) throws DatabaseException, ValidationException;
-	
-	public TreatmentPlan treatmentPlanCopy(int userID, int treatmentPlanID, boolean isTemplate) throws ValidationException, DatabaseException;
+	TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+
+	List<Stage> treatmentPlanLoadStages(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+
+	boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle)
+			throws ValidationException, SQLException;
+
+	TreatmentPlan treatmentPlanCreateBasic(Connection cn, TreatmentPlan treatmentPlan)
+			throws SQLException, ValidationException;
+
+	boolean treatmentPlanValidateUpdatedTitle(Connection cn, TreatmentPlan treatmentPlan)
+			throws ValidationException, SQLException;
+
+	void treatmentPlanUpdateBasic(Connection cn, TreatmentPlan treatmentPlan) throws SQLException, ValidationException;
 	
 	/**Gets all of the "default" TreatmentPlans, which means it returns all the the TreatmentPlans that have been created by an Admin user and can be copied for use by Therapist and Client users.
 	 * It returns all TreatmentPlans that are owned by users of type Admin and have isTemplate as true.  It specifically excludes TreatmentPlan with id=0 since that TreatmentPlan is designated
@@ -64,35 +66,30 @@ public interface DatabaseActionHandler {
 	 */
 	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException;
 	
-	void treatmentPlanValidateAndUpdateBasic(TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException;
-
-	void treatmentPlanDelete(int treatmentPlanID) throws DatabaseException, ValidationException;
+	void treatmentPlanDelete(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 	
-	void treatmentPlanDeleteStage(int stageID, List<Stage> stages) throws DatabaseException, ValidationException;
-
+	List<Stage> treatmentPlanLoadStageTemplates(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+	
+	List<Stage> treatmentPlanUpdateStageTemplates(Connection cn, int treatmentPlanID, List<Stage> stageTemplates)
+			throws SQLException;
+	
 	//**************************************************************************************************
 	//****************************************** Stage Methods *****************************************
 	//**************************************************************************************************
 	
-	Stage stageLoad(int stageID) throws DatabaseException, ValidationException;
+	List<StageGoal> stageLoadGoals(Connection cn, int stageID) throws SQLException, ValidationException;
+
+	List<Task> stageLoadTasks(Connection cn, int stageID) throws SQLException;
+
+	Stage stageLoadBasic(Connection cn, int stageID) throws SQLException, ValidationException;
 	
-	/**Validates and if passes, creates stage.  If the Stage.isTemplate=true, then the treatmentPlanID foreign key is set to null before inserting into the database.
-	 * @param stage
-	 * @return
-	 * @throws ValidationException
-	 * @throws DatabaseException
-	 */
-	Stage stageValidateAndCreate(Stage stage) throws ValidationException, DatabaseException;
-	
-	boolean stageValidateAndUpdateBasic(Stage newStageTemplate) throws ValidationException, DatabaseException;
-	
-	/**Gets basic Stage based on stageID with none of it's lists (goals, tasks, etc.) populated.  If stageID=1, return null because the Stage.stageID=1 is the Stage that holds all Task templates and should not ever be loaded. 
-	 * @param stageID
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ValidationException
-	 */
-	Stage stageLoadWithEmplyLists(int stageID) throws DatabaseException, ValidationException;
+	boolean stageValidateNewTitle(Connection cn, Stage newStage) throws ValidationException, SQLException;
+
+	Stage stageCreateBasic(Connection cn, Stage newStage) throws ValidationException, SQLException;
+
+	boolean stageValidateUpdatedTitle(Connection cn, Stage newStage) throws ValidationException, SQLException;
+
+	boolean stageUpdateBasic(Connection cn, Stage stage) throws ValidationException, SQLException;
 	
 	/**Gets all of the "default" Stages, which means it returns all the the Stages that have been created by an Admin user and can be copied for use by Therapist and Client users.
 	 * It returns all Stages that are owned by users of type Admin and have isTemplate as true.  It specifically excludes Stage with id=0 since that Stage is designated
@@ -103,52 +100,107 @@ public interface DatabaseActionHandler {
 	 */
 	List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException;
 	
-	StageGoal stageGoalValidateAndCreate(StageGoal goal) throws DatabaseException, ValidationException;
+	List<Task> stageLoadTaskTemplates(Connection cn, int stageID) throws SQLException;
 	
-	//List<Integer> stageGetTaskIDs(int stageID) throws DatabaseException, ValidationException;
+	List<Task> stageUpdateTaskTemplates(Connection cn, int stageID, List<Task> taskTemplates) throws SQLException;
 	
-	//List<StageGoal> stageLoadGoals(int stageID) throws DatabaseException, ValidationException;
+	//**************************************************************************************************
+	//*************************************** Stage Goal Methods ***************************************
+	//**************************************************************************************************
+	StageGoal stageGoalCreate(Connection cn, StageGoal stageGoal) throws SQLException, ValidationException;
 	
-	void stageDelete(int stageID) throws DatabaseException, ValidationException;
+	void stageDelete(Connection cn, int stageID) throws SQLException, ValidationException;
+
+	boolean stageGoalUpdate(Connection cn, StageGoal goal) throws ValidationException, SQLException;
+
+	void stageGoalDelete(Connection cn, int stageGoalID) throws SQLException, ValidationException;
+	
 
 	//**************************************************************************************************
 	//*************************************** Treatment Issue Methods **********************************
 	//**************************************************************************************************
 
-	TreatmentIssue treatmentIssueValidateAndCreate(TreatmentIssue treatmentIssue, int userID) throws ValidationException, DatabaseException;
+	TreatmentIssue treatmentIssueCreate(Connection cn, TreatmentIssue treatmentIssue, int userID) throws ValidationException, SQLException;
 
+	boolean treatmentIssueValidateNewName(Connection cn, String issueName, int userID)
+			throws ValidationException, SQLException;
+	
+	boolean treatmentIssueValidateUpdatedName(Connection cn, TreatmentIssue issue)
+			throws ValidationException, SQLException;
+	
 	ArrayList<TreatmentIssue> treatmentIssueGetDefaults() throws DatabaseException;
 
 	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
+
+	boolean treatmentIssueUpdate(Connection cn, TreatmentIssue issue) throws ValidationException, SQLException;
+
+	void treatmentIssueDelete(Connection cn, int treatmentIssueID) throws SQLException, ValidationException;
 
 	//**************************************************************************************************
 	//*************************************** Task Methods **********************************
 	//**************************************************************************************************
 	List<Task> taskGetDefaults() throws DatabaseException;
 	
-	/**Validates and if passes, creates task.  If the Task.isTemplate=true, then the stageID foreign key is set to null before inserting into the database.
-	 * @param newTask
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ValidationException
-	 */
-	Task taskValidateAndCreate(Task newTask) throws DatabaseException, ValidationException;
-	
-	Task taskLoad(int taskID) throws DatabaseException;
-	
-	boolean taskTwoTextBoxesUpdateAdditionalData(TaskTwoTextBoxes twoTextBoxesTask) throws DatabaseException, ValidationException;
-	
-	/**Updates task with new data.  If taskToUpdate.isTemplate == true, then stageID foreign key is set to null before inserting
-	 * @param taskToUpdate
-	 * @return
-	 * @throws DatabaseException
-	 * @throws ValidationException
-	 */
-	boolean taskGenericUpdate(Task taskToUpdate) throws DatabaseException, ValidationException;
+	Task taskGenericLoad(Connection cn, int taskID) throws SQLException;
 	
 	Map<Integer, String> taskTypesLoad() throws DatabaseException;
 
-	void taskDelete(int taskID) throws DatabaseException, ValidationException;
+	void taskDelete(Connection cn, int taskID) throws SQLException;
+
+	Task taskTwoTextBoxesLoadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException;
+
+	void taskTwoTextBoxesCreateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws SQLException;
+
+	boolean taskValidate(Connection cn, Task newTask) throws ValidationException, SQLException;
+
+	Task taskGenericCreate(Connection cn, Task newTask) throws SQLException;
+
+	boolean taskGenericUpdate(Connection cn, Task taskToUpdate) throws SQLException;
+
+	boolean taskTwoTextBoxesUpdateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask)
+			throws SQLException, ValidationException;
+
+	
+	
+	
+	//**************************************************************************************************
+	//*************************************** Misc Methods **********************************
+	//**************************************************************************************************
+	boolean throwValidationExceptionIfTemplateHolderID(int templateHolderObjectID) throws ValidationException;
+
+	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
+
+	void mapsTaskStageTemplateCreate(Connection cn, int taskTemplateID, int stageTemplateID, int taskOrder) throws SQLException;
+
+	boolean mapsTaskStageTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID)
+			throws ValidationException, SQLException;
+
+	void mapsStageTreatmentPlanTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder)
+			throws SQLException;
+
+	boolean mapsStageTreatmentPlanTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
+			throws ValidationException, SQLException;
+
+	void mapsTaskStageTemplateDelete(Connection cn, int taskID) throws SQLException;
+
+	void mapsStageTreatmentPlanTemplateDelete(Connection cn, int stageID) throws SQLException;
+
+	
+
+	
+
+	
+
+
+	
+
+
+
+
+
+
+
+	
 
 	
 

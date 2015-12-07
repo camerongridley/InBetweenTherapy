@@ -47,7 +47,4 @@ public class UserTherapist extends User implements Serializable{
     	return clientMap;
     }
     
-    public TreatmentPlan copyTreatmentPlanForClient(int clientUserID, int treatmentPlanID) throws ValidationException, DatabaseException{
-    	return databaseActionHandler.treatmentPlanCopy(clientUserID, treatmentPlanID, false);
-    }
 }

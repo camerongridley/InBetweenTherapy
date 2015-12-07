@@ -1,6 +1,8 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,8 +16,11 @@ public class TaskGeneric extends Task implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
+	/**
+	 * Default constructor.  Designated public so Task.getTaskType() can be accessed outside of the package.
+	 */
 	public TaskGeneric(){
 		super();
 	}
@@ -71,19 +76,22 @@ public class TaskGeneric extends Task implements Serializable{
 				title, instructions, resourceLink, false, null, 0, extraTask, true, 0, 1);
 	}
 	
+	protected static TaskGeneric loadGeneric(Connection cn, int taskID) throws SQLException{
+		return (TaskGeneric)dao.taskGenericLoad(cn, taskID);
+	}
+	
 	@Override
-	protected boolean updateAdditionalData () {
+	protected boolean updateAdditionalData (Connection cn) throws SQLException {
 		return true;//there is no additional data in GenericTask to update
 	}
 
 	@Override
-	public Task loadAdditionalData() {
+	protected void loadAdditionalData(Connection cn, TaskGeneric genericTask) {
 		//there is no additional data to load for GenericTask
-		return this;
 	}
 
 	@Override
-	protected void saveNewAdditionalData() throws DatabaseException, ValidationException {
+	protected void createAdditionalData(Connection cn) throws ValidationException {
 		//there is no additional data to save for GenericTask
 		
 	}
@@ -103,7 +111,7 @@ public class TaskGeneric extends Task implements Serializable{
 		copy.setStageID(stageID);
 		copy.setUserID(userID);
 		
-		return copy.saveNew();
+		return copy.create();
 	}
 
 	@Override

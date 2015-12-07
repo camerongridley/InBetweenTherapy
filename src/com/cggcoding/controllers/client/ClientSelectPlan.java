@@ -1,6 +1,8 @@
-package com.cggcoding.controllers.client.tools;
+package com.cggcoding.controllers.client;
 
 import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +22,7 @@ import com.cggcoding.utils.ParameterUtils;
 /**
  * Servlet implementation class ClientSelectPlan
  */
-@WebServlet("/ClientSelectPlan")
+@WebServlet("/secure/ClientSelectPlan")
 public class ClientSelectPlan extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -52,31 +54,49 @@ public class ClientSelectPlan extends HttpServlet {
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
 		
+		List<TreatmentPlan> assignedPlansList = null;
+		List<TreatmentPlan> inProgressPlansList = null;
+		List<TreatmentPlan> completedPlansList = null;
+		
 		try {
 			if(user.hasRole(Constants.USER_CLIENT)){
 				UserClient client = (UserClient)user;
+				assignedPlansList = client.getAssignedTreatmentPlans();
+				inProgressPlansList = client.getInProgressTreatmentPlans();
+				completedPlansList = client.getCompletedTreatmentPlans();
 				
 				switch(requestedAction){
-				case "select-plan-load":
-					int assignedTreatmentPlanID = ParameterUtils.parseIntParameter(request, "selectedPlanID");
-					TreatmentPlan selectedPlan = TreatmentPlan.load(assignedTreatmentPlanID);
-					selectedPlan.initialize();
-					
-					client.addTreatmentPlan(selectedPlan);
-					client.setActiveTreatmentPlanId(assignedTreatmentPlanID);
-					
-					Stage activeStage = selectedPlan.getActiveViewStage();
-					
-					request.setAttribute("activeStage", activeStage);
-					request.setAttribute("treatmentPlan", selectedPlan);
-					forwardTo = "/jsp/client-tools/run-treatment-plan.jsp";
-					break;
+					case "select-plan-start":
+						request.setAttribute("assignedPlansList", assignedPlansList);
+						request.setAttribute("inProgressPlansList", inProgressPlansList);
+						request.setAttribute("completedPlansList", completedPlansList);
+						
+						forwardTo = "/WEB-INF/jsp/client-tools/select-plan.jsp";
+						break;
+					case "select-plan-load":
+						int assignedTreatmentPlanID = ParameterUtils.parseIntParameter(request, "selectedPlanID");
+						TreatmentPlan selectedPlan = TreatmentPlan.load(assignedTreatmentPlanID);
+						if(request.getParameter("initialize").equals("yes")){
+							selectedPlan.initialize();
+						}
+						
+						client.setActiveTreatmentPlanId(assignedTreatmentPlanID);
+						
+						Stage activeStage = selectedPlan.getActiveViewStage();
+						
+						request.setAttribute("activeStage", activeStage);
+						request.setAttribute("treatmentPlan", selectedPlan);
+						forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
+						break;
 				}
 			}
 		} catch (DatabaseException | ValidationException e) {
 			request.setAttribute("errorMessage", e.getMessage());
-			e.printStackTrace();
-			forwardTo = "/jsp/client-tools/client-main-menu.jsp";
+			request.setAttribute("assignedPlansList", assignedPlansList);
+			request.setAttribute("inProgressPlansList", inProgressPlansList);
+			request.setAttribute("completedPlansList", completedPlansList);
+			//e.printStackTrace();
+			forwardTo = "/WEB-INF/jsp/client-tools/select-plan.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

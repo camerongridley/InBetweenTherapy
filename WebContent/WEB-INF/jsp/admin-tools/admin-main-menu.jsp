@@ -10,85 +10,85 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
 	<h1>Admin Main Menu</h1>
 </div>
 
-<c:import url="/jsp/message-modal.jsp" />
+<c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
 <div class="row">
 	<div class="col-md-6">
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="./CreateTreatmentPlan"
+			<form class="form-inline" action="/secure/CreateTreatmentPlan"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary">Create
 						Treatment Plan Template</button>
 				</div>
 				<input type="hidden" name="requestedAction"	value="plan-create-start">
-				<input type="hidden" name="path" value="creatingPlanTemplate">
+				<input type="hidden" name="path" value="treatmentPlanTemplate">
 			</form>
 			</p>
 
 			<p>
-			<form class="form-inline" action="./EditTreatmentPlan" method="POST">
+			<form class="form-inline" action="/secure/EditTreatmentPlan" method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary">Edit
 						Treatment Plan Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="plan-edit-start">
-				<input type="hidden" name="path" value="editingPlanTemplate">
+				<input type="hidden" name="path" value="treatmentPlanTemplate">
 			</form>
 			</p>
 		</div>
 
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="./CreateStage"
+			<form class="form-inline" action="/secure/CreateStage"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary">Create Stage
 						Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="stage-create-start">
-				<input type="hidden" name="path" value="creatingStageTemplate">
+				<input type="hidden" name="path" value="stageTemplate">
 			</form>
 			</p>
 			<p>
-			<form class="form-inline" action="./EditStage"
+			<form class="form-inline" action="/secure/EditStage"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Edit
 						Stage Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="stage-edit-start">
-				<input type="hidden" name="path" value="editingStageTemplate">
+				<input type="hidden" name="path" value="stageTemplate">
 			</form>
 			</p>
 		</div>
 
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="./CreateTask" method="POST">
+			<form class="form-inline" action="/secure/CreateTask" method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Create
 						Task Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="create-task-start">
-				<input type="hidden" name="path" value="creatingTaskTemplate">
+				<input type="hidden" name="path" value="taskTemplate">
 			</form>
 			</p>
 			<p>
-			<form class="form-inline" action="./EditTask" method="POST">
+			<form class="form-inline" action="/secure/EditTask" method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Edit
 						Task Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="edit-task-start">
-				<input type="hidden" name="path" value="editingTaskTemplate">
+				<input type="hidden" name="path" value="taskTemplate">
 			</form>
 			</p>
 		</div>
@@ -107,4 +107,4 @@
 
 
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

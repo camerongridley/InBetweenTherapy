@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
@@ -19,7 +19,7 @@ import com.cggcoding.utils.ParameterUtils;
 /**
  * Servlet implementation class AssignTreatmentPlan
  */
-@WebServlet("/AssignTreatmentPlan")
+@WebServlet("/secure/AssignTreatmentPlan")
 public class AssignTreatmentPlan extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -62,24 +62,25 @@ public class AssignTreatmentPlan extends HttpServlet {
 				request.setAttribute("clientMap", therapistUser.loadClients());
 						
 				//set the default treatment plans and the custom plans for this therapist into the request
-				request.setAttribute("defaultTreatmentPlanList", DefaultDatabaseCalls.getDefaultTreatmentPlans());
+				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
 				switch(requestedAction){
 					case "assign-treatment-plan-start":
 
-						forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+						forwardTo = "/WEB-INF/jsp/therapist-tools/assign-treatment-plan.jsp";
 						break;
 					case "select-client":
 						
-						forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+						forwardTo = "/WEB-INF/jsp/therapist-tools/assign-treatment-plan.jsp";
 						break;
 					case "select-treatment-plan":
 
-						forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+						forwardTo = "/WEB-INF/jsp/therapist-tools/assign-treatment-plan.jsp";
 						break;
 					case "copy-plan-to-client":
-						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID);
+						boolean isTemplate = false;
+						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
 						
-						forwardTo = "/jsp/therapist-tools/therapist-main-menu.jsp";
+						forwardTo = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
 						break;
 				}
 				
@@ -89,7 +90,7 @@ public class AssignTreatmentPlan extends HttpServlet {
 			}
 		
 		}catch(DatabaseException | ValidationException e){
-			forwardTo = "/jsp/therapist-tools/assign-treatment-plan.jsp";
+			forwardTo = "/WEB-INF/jsp/therapist-tools/assign-treatment-plan.jsp";
 			request.setAttribute("errorMessage", e.getMessage());
 			System.out.println(e.getMessage());
 		}

@@ -14,7 +14,7 @@
 
   <div class="row">
     <div class="col-md-12">
-      <form class="form-inline" action="./LoadData" method="POST">
+      <form class="form-inline" action="/secure/LoadData" method="POST">
         <div style="margin-bottom:20px;">To get started testing, load the test data by clicking below.</div>
         <div><button type="submit" class="btn btn-primary">Load Data</button></div>
       </form>

@@ -1,13 +1,18 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
-public class StageGoal implements Serializable{
+public class StageGoal implements Serializable, DatabaseModel{
 	/**
 	 * 
 	 */
@@ -17,7 +22,7 @@ public class StageGoal implements Serializable{
 	private String description;
 	private int associatedTaskID;
 	
-	private static DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
+	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
 	private StageGoal(int stageID, String description){
 		this.stageGoalID = 0;
@@ -46,10 +51,6 @@ public class StageGoal implements Serializable{
 	
 	public static StageGoal getInstanceWithoutID(int stageID, String description){
 		return new StageGoal(stageID, description);
-	}
-	
-	public static StageGoal saveNewInDatabase(int stageID, String description) throws DatabaseException, ValidationException{
-		return databaseActionHandler.stageGoalValidateAndCreate(new StageGoal(stageID, description));
 	}
 	
 	public int getStageGoalID() {
@@ -84,9 +85,109 @@ public class StageGoal implements Serializable{
 		this.associatedTaskID = associatedTaskID;
 	}
 
+	/**Copies the goal and sets stageGoalID to 0.  DOES NOT SAVE TO DATABASE
+	 * @return
+	 */
 	public StageGoal copy(){
 		return new StageGoal(0, this.stageID, this.getDescription(), this.associatedTaskID);
 	}
 
+	public boolean isValidGoal() throws ValidationException{
+		if(getStageID() != 0 && !getDescription().isEmpty()){
+        	return true;
+    	} else {
+    		throw new ValidationException(ErrorMessages.STAGE_GOAL_VALIDATION_ERROR);
+    	}
+	}
+
+	@Override
+	public StageGoal create() throws ValidationException, DatabaseException {
+		Connection cn = null;
+		
+		try{
+			cn = dao.getConnection();
+			
+			create(cn);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+		
+		return this;
+	}
+	
+	protected StageGoal create(Connection cn) throws ValidationException, SQLException {
+		if(isValidGoal()){
+			dao.stageGoalCreate(cn, this);
+		}
+		return this;
+	}
+
+	@Override
+	public void update() throws ValidationException, DatabaseException {
+		if(isValidGoal()){
+			Connection cn = null;
+			
+			try{
+				cn = dao.getConnection();
+				
+				update(cn);
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }
+
+		}
+		
+	}
+	
+	protected void update(Connection cn) throws ValidationException, SQLException {
+		dao.stageGoalUpdate(cn, this);
+	}
+
+	@Override
+	public void delete() throws ValidationException, DatabaseException {
+		Connection cn = null;
+		
+		try{
+			cn = dao.getConnection();
+			
+			delete(cn);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+		
+	}
+	
+	protected void delete(Connection cn) throws ValidationException, SQLException {
+		dao.stageGoalDelete(cn, this.stageGoalID);	
+	}
+	
+	public static void delete(int goalID) throws ValidationException, DatabaseException {
+		Connection cn = null;
+		
+		try{
+			cn = dao.getConnection();
+			
+			dao.stageGoalDelete(cn, goalID);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+		
+	}
 
 }

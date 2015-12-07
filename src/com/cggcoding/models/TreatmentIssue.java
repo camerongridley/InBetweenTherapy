@@ -1,12 +1,18 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
  * Created by cgrid_000 on 8/7/2015.
@@ -20,7 +26,7 @@ public class TreatmentIssue implements Serializable, DatabaseModel{
     private String treatmentIssueName;
     private int userID;
     
-    private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+    private static DatabaseActionHandler dao= new MySQLActionHandler();
 
     public TreatmentIssue(int treatmentIssueID, String treatmentIssueName) {
         this.treatmentIssueID = treatmentIssueID;
@@ -61,24 +67,83 @@ public class TreatmentIssue implements Serializable, DatabaseModel{
 	}
 
 	@Override
-	public Object saveNew() throws ValidationException, DatabaseException {
-		TreatmentIssue savedIssue = databaseActionHandler.treatmentIssueValidateAndCreate(this, userID);
-		this.treatmentIssueID = savedIssue.getTreatmentIssueID();
+	public Object create() throws ValidationException, DatabaseException {
+		Connection cn = null;
+		TreatmentIssue savedIssue = null;
+		
+		if(isIssuePresent()){
+		
+			try{
+				cn = dao.getConnection();
+				
+				if(dao.treatmentIssueValidateNewName(cn, this.treatmentIssueName, userID)){
+					dao.treatmentIssueCreate(cn, this, userID);
+				}
+				
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }
+		
+		}
+		
 		return savedIssue;
 		
 	}
 
 	@Override
 	public void update() throws ValidationException, DatabaseException {
-		// TODO implement method
+		if(isIssuePresent()){
+			Connection cn = null;
+			
+			try{
+				cn = dao.getConnection();
+				
+				if(dao.treatmentIssueValidateUpdatedName(cn, this)){
+					dao.treatmentIssueUpdate(cn, this);
+				}
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }
+
+		}
 		
+	}
+
+	private boolean isIssuePresent() throws ValidationException {
+		if(this.treatmentIssueName.isEmpty() || this.treatmentIssueName ==""){
+    		throw new ValidationException(ErrorMessages.ISSUE_NAME_MISSING);
+    	}else {
+    		return true;
+    	}
 	}
 
 	@Override
 	public void delete() throws ValidationException, DatabaseException {
-		// TODO implement method
+		Connection cn = null;
+		
+		try{
+			cn = dao.getConnection();
+			
+			dao.treatmentIssueDelete(cn, this.treatmentIssueID);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
 		
 	}
     
-    
+	public static ArrayList<TreatmentIssue> getDefaultTreatmentIssues() throws DatabaseException {
+		return dao.treatmentIssueGetDefaults();
+	}
 }

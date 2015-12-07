@@ -8,21 +8,17 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" href="/favicon.ico">
 
     <title>Do It Right!</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="./css/custom.css" rel="stylesheet">
+    <link href="/css/custom.css" rel="stylesheet">
 
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
-
-	<script src="./js/jquery-1.11.3.min.js"></script>
+	<script src="/js/jquery-1.11.3.min.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -43,46 +39,28 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="./index.jsp">Do It Right!</a>
+          <a class="navbar-brand" href="/index.jsp">Do It Right!</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-          <li class="active">
-          	<c:choose>
-          		<c:when test="${user==null }">
-          			<a href="/index.jsp">
-          		</c:when>
-          		<c:when test="${user.role=='admin' }">
-          			<a href="/jsp/admin-tools/admin-main-menu.jsp">
-          		</c:when>
-          		<c:when test="${user.role=='therapist' }">
-          			<a href="/jsp/therapist-tools/therapist-main-menu.jsp">
-          		</c:when>
-          		<c:when test="${user.role=='client' }">
-          			<a href="/jsp/client-tools/client-main-menu.jsp">
-          		</c:when>
-          		<c:otherwise>
-          			<a href="/index.jsp">
-          		</c:otherwise>
-          	</c:choose>
-            Home</a></li>
-            <li><a href="./#contact">Contact</a></li>
+          <li class="active"><a href="/secure/MenuNav?destination=home">Home</a></li>
+            <li><a href="/#contact">Contact</a></li>
             <li class="dropdown">
               <a href="/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="./task-review.jsp">Record Exercise</a></li>
-                <li><a href="./#">Another action</a></li>
-                <li><a href="./#">Something else here</a></li>
+                <li><a href="/task-review.jsp">Record Exercise</a></li>
+                <li><a href="/#">Another action</a></li>
+                <li><a href="/#">Something else here</a></li>
                 <li role="separator" class="divider"></li>
                 <li class="dropdown-header">Nav header</li>
-                <li><a href="./#">Separated link</a></li>
-                <li><a href="./#">One more separated link</a></li>
+                <li><a href="/#">Separated link</a></li>
+                <li><a href="/#">One more separated link</a></li>
               </ul>
             </li>
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="./">Logged in as: ${user.email} (<c:forEach items="${user.roles}" var="role">${role}</c:forEach>)</a></li>
+            <li><a href="/">Logged in as: ${user.email} (<c:forEach items="${user.roles}" var="role">${role}</c:forEach>)</a></li>
           </ul>
 
         </div><!--/.nav-collapse -->

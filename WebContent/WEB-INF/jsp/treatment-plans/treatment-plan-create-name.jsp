@@ -10,16 +10,16 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"  %>
 
-<c:import url="/jsp/header.jsp" />
+<c:import url="/WEB-INF/jsp/header.jsp" />
 
     <div class="page-header">
         <h1>Create a Treatment Plan</h1>
         <h2>Name and describe the plan</h2>
     </div>
     
-	<c:import url="/jsp/message-modal.jsp"/>
+	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
     
-    <form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
+    <form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
         <input type="hidden" name="requestedAction" value="plan-create-name" >
         <input type="hidden" name="path" value="${path }" >
         <div class="form-group">
@@ -97,7 +97,7 @@
 	<div class="modal fade" id="newDefaultTreatmentIssueModal" tabindex="-1" role="dialog" aria-labelledby="newDefaultTreatmentIssueModalLabel">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
-		    <form class="form-horizontal" action="./CreateTreatmentPlan" method="POST">
+		    <form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
 		    <input type="hidden" name="requestedAction" value="create-default-treatment-issue">
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >
@@ -122,4 +122,4 @@
 	  </div>
 	</div>
 
-<c:import url="/jsp/footer.jsp" />
+<c:import url="/WEB-INF/jsp/footer.jsp" />

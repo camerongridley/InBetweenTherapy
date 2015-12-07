@@ -10,20 +10,22 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.helpers.DefaultDatabaseCalls;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
+import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
+import com.cggcoding.utils.messaging.WarningMessages;
 
 /**
  * Servlet implementation class EditStage
  */
-@WebServlet("/EditStage")
+@WebServlet("/secure/EditStage")
 public class EditStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -63,17 +65,23 @@ public class EditStage extends HttpServlet {
 		String stageTitle = request.getParameter("stageTitle");
 		String stageDescription = request.getParameter("stageDescription");
 		Stage editedStage = null;
-		
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+		/*This variable helps remember where to send the user back to when they are done editing the Task.
+		If the Task being edited is a template the stageID will be TEMPLATE_HOLDER_ID, and not the Stage template being working on.
+		If the Task being edited is part of a client's plan, then the stageID will be the stageID that is contained within the task.
+		Need to maintain it between requests*/
+		int planToReturnTo = treatmentPlanID;
+		request.setAttribute("treatmentPlanID", planToReturnTo);
 		
 		try{
-			request.setAttribute("defaultStageList", DefaultDatabaseCalls.getDefaultStages());
+			request.setAttribute("defaultStageList", Stage.getDefaultStages());
 			
 			if(user.hasRole("admin")){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								
 				switch (requestedAction){
 		            case "stage-edit-start" :
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-select-stage" :
 		            	int selectedDefaultStageID = ParameterUtils.parseIntParameter(request, "selectedDefaultStageID");
@@ -83,37 +91,57 @@ public class EditStage extends HttpServlet {
 		            		request.setAttribute("stage", null);
 		            	}
 		            	
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		            	if(path.equals("treatmentPlanTemplate")){
+							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
+						}
+		            	
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
 		            case "stage-edit-name" :
+		            	if(stageID==0){
+		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+		            	}
 		            	editedStage = Stage.load(stageID);
 		            	editedStage.setTitle(stageTitle);
 		            	editedStage.setDescription(stageDescription);
+		            	
+		            	for(StageGoal goal: editedStage.getGoals()){
+		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
+		            	}
+		            	
 		            	editedStage.update();
 		            	
 		            	request.setAttribute("stage", editedStage);
-		            	if(path.equals("editingPlanTemplate") || path.equals("creatingPlanTemplate")){
+		            	if(path.equals("treatmentPlanTemplate")){
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
-		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(editedStage.getTreatmentPlanID()));
-		            		request.setAttribute("defaultTreatmentIssues", DefaultDatabaseCalls.getDefaultTreatmentIssues());
-		            		forwardTo = "/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(planToReturnTo));
+		            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
+		            		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+		            		forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	}else{
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
-		            		forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+		            		forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 		            	}
 
 		            	break;
 		            case "stage-edit-add-goal" :
 		            	String goalDescription = request.getParameter("newStageGoalDescription");
-		            	StageGoal.saveNewInDatabase(stageID, goalDescription);
+		            	StageGoal goal = StageGoal.getInstanceWithoutID(stageID, goalDescription);
+		            	goal.create();
 		            	request.setAttribute("stage", Stage.load(stageID));
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
-		            	
+		            
+		            //TODO remove this and have calling forms use stage-edit-select-stage instead
 		            case "stage-edit":
 						editedStage = Stage.load(stageID);
 						request.setAttribute("stage", editedStage);
-						forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+						
+						if(path.equals("treatmentPlanTemplate")){
+							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
+						}
+						
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;	
 						
 					case("delete-task"):
@@ -122,12 +150,20 @@ public class EditStage extends HttpServlet {
 						editedStage.deleteTask(taskToDeleteID);
 						
 						request.setAttribute("stage", editedStage);
-		            	forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						break;
+					case("delete-goal"):
+						int goalID = ParameterUtils.parseIntParameter(request, "stageGoalID");
+						StageGoal.delete(goalID);
+						
+						editedStage = Stage.load(stageID);
+						request.setAttribute("stage", editedStage);
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;
 					
 		            default:
 
-		                forwardTo = "/jsp/admin-tools/admin-main-menu.jsp";
+		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 				}
 			}
 			
@@ -138,7 +174,8 @@ public class EditStage extends HttpServlet {
 			request.setAttribute("stage", editedStage);
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
-            forwardTo = "/jsp/treatment-plans/stage-edit.jsp";
+			request.setAttribute("treatmentPlanID", planToReturnTo);
+            forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
