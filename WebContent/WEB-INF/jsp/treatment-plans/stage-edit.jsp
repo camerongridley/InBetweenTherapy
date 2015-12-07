@@ -90,9 +90,9 @@
 				  	<input type="hidden" name="taskID" value="${task.taskID}"/>
 				  	<input type="hidden" name="taskTitle" value="${task.title}"/>
 					<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
-			          ${task.taskOrderForUserDisplay } - <span class="">${task.title } (${task.repetitions})</span>
+			          ${task.taskOrderForUserDisplay } - <span class="">${task.title } </span><span class="badge" title="Number of repetitions.">${task.repetitions}</span>
 			        </a>
-			        <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+			        
 			        <a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete task:${task.title }">
 					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 					</a>
