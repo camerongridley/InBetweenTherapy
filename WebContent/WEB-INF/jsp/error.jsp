@@ -19,6 +19,7 @@
       <p>Our apologies.  We seem to be having some trouble on our end.
         The error has been logged and will be researched.  Please try again later.
       </p>
+      Exception Message: ${errorMessage }
       Error: ${pageContext.exception.message} <br/>
       Error Code: ${pageContext.errorData.statusCode} : ${pageContext.errorData.servletName}
     </div>
