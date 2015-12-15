@@ -11,6 +11,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
@@ -32,14 +33,15 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	private boolean isTemplate;
 	private boolean completed;
 	private int templateID;
+	private int assignedByUserID;
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
-	private TreatmentPlan(int userID, String title, String description, int treatmentPlanID){
+	private TreatmentPlan(int userID, String title, String description, int treatmentIssueID){
 		this.title = title;
 		this.userID = userID;
 		this.description = description;
-		this.treatmentIssueID = treatmentPlanID;
+		this.treatmentIssueID = treatmentIssueID;
 		this.stages = new ArrayList<>();
 		this.currentStageIndex = 0;
 		this.activeViewStageIndex = 0;
@@ -47,10 +49,11 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		this.isTemplate = false;
 		this.completed = false;
 		this.templateID = 0;
+		this.assignedByUserID = Constants.ADMIN_ROLE_ID;
 	}	
 
 	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
-			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID){
+			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID, int assignedByUserID){
 		this.treatmentPlanID = treatmentPlanID;
 		this.title = title;
 		this.description = description;
@@ -63,15 +66,16 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		this.isTemplate = isTemplate;
 		this.completed = completed;
 		this.templateID = templateID;
+		this.assignedByUserID = assignedByUserID;
 	}
 	
-	public static TreatmentPlan getInstanceWithoutID(String title, int userID, String description, int treatmentPlanID){
-		return new TreatmentPlan(userID, title, description, treatmentPlanID);
+	public static TreatmentPlan getInstanceWithoutID(String title, int userID, String description, int treatmentIssueID){
+		return new TreatmentPlan(userID, title, description, treatmentIssueID);
 	}
 	
 	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
-			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID){
-		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed, currentStageIndex, activeViewStageIndex, templateID);
+			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID, int assignedByUserID){
+		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed, currentStageIndex, activeViewStageIndex, templateID, assignedByUserID);
 	}
 
 	/**Run first time a client loads a plan.  Sets inProgress=true for the TreatmentPlan itself and for the first stage of the plan
@@ -205,7 +209,15 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	public void setTemplateID(int templateID) {
 		this.templateID = templateID;
 	}
+	
+	public int getAssignedByUserID() {
+		return assignedByUserID;
+	}
 
+	public void setAssignedByUserID(int assignedByUserID) {
+		this.assignedByUserID = assignedByUserID;
+	}
+	
 	public int getNumberOfStages(){
 		return stages.size();
 	}

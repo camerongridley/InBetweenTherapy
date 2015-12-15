@@ -1,13 +1,8 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.dbutils.DbUtils;
-import org.apache.tomcat.jdbc.pool.DataSource;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -26,6 +21,7 @@ public abstract class User implements Serializable{
 	private List<String> roles;
 	String role;
 	private List<TreatmentPlan> treatmentPlanList;
+	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
 	public User (int userID, String email){
@@ -98,7 +94,7 @@ public abstract class User implements Serializable{
 		this.treatmentPlanList.add(treatmentPlan);
 	}
 
-	public TreatmentPlan getTreatmentPlan(int treatmentPlanID){
+	public TreatmentPlan getTreatmentPlan(int treatmentPlanID) throws ValidationException{
 		TreatmentPlan planFound = null;
 		for(TreatmentPlan plan : treatmentPlanList){
 			if(plan.getTreatmentPlanID()==treatmentPlanID){
@@ -107,16 +103,12 @@ public abstract class User implements Serializable{
 		}
 		
 		if(planFound == null){
-			try {
-				throw new Exception("There was an error loading your treatment plan. (User.getTreamentPlan())");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			throw new ValidationException(ErrorMessages.NO_PLAN_FOUND_FOR_USER);
 		}
 		return planFound;
  
 	}
-	
+
 	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID){
 		//TODO implement
 		return true;
@@ -138,6 +130,7 @@ public abstract class User implements Serializable{
     	planToCopy.setTemplate(isTemplate);
     	planToCopy.setTemplateID(planToCopy.getTreatmentPlanID());
     	planToCopy.setUserID(userIDTakingNewPlan);
+    	planToCopy.setAssignedByUserID(this.userID);
     	//loop through and change all the userIDs to the userID supplied by the method argument
     	//OPTIMIZE O(N3) complexity here with 3 nested for loops.  Is there a better way to do this?
     	for(Stage stage : planToCopy.getStages()){

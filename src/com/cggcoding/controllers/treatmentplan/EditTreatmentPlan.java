@@ -16,6 +16,7 @@ import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
@@ -185,7 +186,7 @@ public class EditTreatmentPlan extends HttpServlet {
     		request.setAttribute("errorMessage", e.getMessage());
     		
     		//create a temporary treatmentPlan to hold title and description info that might be changed for plan that is in the process of creation - UNSURE if this will cause accidental replacement of the other fields that I am just supplying false and 0 to
-    		treatmentPlan = TreatmentPlan.getInstanceBasic(ParameterUtils.parseIntParameter(request, "treatmentPlanID"), user.getUserID(), request.getParameter("planTitle"), request.getParameter("planDescription"), 0, false, false, false,0,0,0);
+    		treatmentPlan = TreatmentPlan.getInstanceBasic(ParameterUtils.parseIntParameter(request, "treatmentPlanID"), user.getUserID(), request.getParameter("planTitle"), request.getParameter("planDescription"), 0, false, false, false,0,0,0, Constants.ADMIN_ROLE_ID);
     		request.setAttribute("treatmentPlan", treatmentPlan);
     		request.setAttribute("defaultTreatmentIssue", defaultIssueID);
     		request.setAttribute("existingCustomTreatmentIssue", customIssueID);
