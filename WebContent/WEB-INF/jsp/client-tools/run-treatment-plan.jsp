@@ -13,7 +13,7 @@
 
 <div class="row">
 
-	<div class="col-md-12">
+
 
 	<!-- depending on the accessibility of the stage, set the proper css class -->
 	<c:forEach var="stage" items="${treatmentPlan.stages }"
@@ -74,7 +74,7 @@
 
 
 
-	</div>
+
 </div>
 
 <!-- Modal popup for information about stage currently being viewed -->
@@ -107,7 +107,7 @@
 <!-- End modal -->
 
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-sm-12">
 
 		<form action="/secure/UpdateTaskCompletion" method="post"
 			class="form-inline">
@@ -134,14 +134,12 @@
 				<div class="panel panel-default panel-task"
 					title="Click the task title to expand and see task details.">
 					<div class="panel-heading panel-heading-task">
-						<input type="hidden" name="allTaskIDs" value="${task.taskID}" /> <input
-							type="hidden" name="taskTypeName${task.taskID}"
-							value="${task.taskTypeName}" /> <input type="checkbox"
-							id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]"
-							aria-label="Task: ${task.title }"> <a role="button"
-							data-toggle="collapse" href="#collapse${task.taskID }"
-							aria-expanded="true" aria-controls="collapse${task.taskID }">
-							${task.title } - Task Type: ${task.taskTypeName } </a>
+						<input type="hidden" name="allTaskIDs" value="${task.taskID}" /> 
+						<input type="hidden" name="taskTypeName${task.taskID}" value="${task.taskTypeName}" /> 
+						<input class="responsive-checkbox" type="checkbox" id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]" aria-label="Task: ${task.title }"/> 
+						<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
+							${task.title } - Task Type: ${task.taskTypeName } 
+						</a>
 
 					</div>
 					<!--Generic Task Detail-->
@@ -192,7 +190,7 @@
 					<div class="panel-heading panel-heading-task">
 						<input type="hidden" name="allTaskIDs" value="${task.taskID}" /> <input
 							type="hidden" name="taskTypeName${task.taskID}"
-							value="${task.taskTypeName}" /> <input type="checkbox"
+							value="${task.taskTypeName}" /> <input class="responsive-checkbox" type="checkbox"
 							id="${task.taskID }" aria-label="Task: ${task.title }"
 							value="${task.taskID }" name="taskChkBx[]" checked> <a
 							role="button" data-toggle="collapse"
@@ -233,7 +231,7 @@
 			<div class="panel panel-default panel-task"
 				title="Click the task title to expand and see task details.">
 				<div class="panel-heading panel-heading-task">
-					<input type="checkbox" id="0" aria-label="Task: Temp Extra Task"
+					<input class="responsive-checkbox" type="checkbox" id="0" aria-label="Task: Temp Extra Task"
 						value="0" name="taskChkBx[]"> <a role="button"
 						data-toggle="collapse" href="#collapse121212" aria-expanded="true"
 						aria-controls="collapse121212"> Sample Extra Task </a>

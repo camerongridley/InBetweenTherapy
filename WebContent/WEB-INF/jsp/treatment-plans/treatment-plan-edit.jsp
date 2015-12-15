@@ -174,7 +174,7 @@
 					href="#collapse${stage.stageID }" aria-expanded="true"
 					aria-controls="collapse${stage.stageID }">
 					${stage.stageOrderForUserDisplay } - <span class="">${stage.title }</span>
-				</a> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+				</a> 
 				<a role="button"
 					href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
 					class="btn btn-default btn-xs pull-right"
@@ -201,8 +201,8 @@
 							<c:forEach items="${stage.tasks }" var="task">
 								<tr>
 									<!-- <th scope="row">${task.taskOrder}</th>-->
-									<td>${task.title} (${task.repetitions }) <span
-										class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+									<td>${task.title} <span class="badge" title="Number of repetitions.">${task.repetitions }</span>
+									
 										<!-- <a role="button"
 										href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
 										class="btn btn-default btn-xs pull-right"
