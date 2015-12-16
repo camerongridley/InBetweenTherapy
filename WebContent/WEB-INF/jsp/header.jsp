@@ -60,7 +60,16 @@
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="/">Logged in as: ${user.email} (<c:forEach items="${user.roles}" var="role">${role}</c:forEach>)</a></li>
+            	<c:choose>
+				  <c:when test="${user == null }">
+				  	<li class="active"><a href="/login.jsp">Sign In</a></li>
+				  </c:when>
+
+				  <c:otherwise>
+				    <li><a href="/secure/AccountManagement">Hello, ${user.email} (${user.role})</a></li>
+				    <li title="Sign Out"><a href="/secure/LogOut"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></li>
+				  </c:otherwise>
+				</c:choose>
           </ul>
 
         </div><!--/.nav-collapse -->
