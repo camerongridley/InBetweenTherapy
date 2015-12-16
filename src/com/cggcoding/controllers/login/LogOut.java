@@ -49,7 +49,9 @@ public class LogOut extends HttpServlet {
 		/*-----------End Common Servlet variables---------------*/
 		
 		session.invalidate();		
-
+		
+		forwardTo = "/login.jsp";
+		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 
     }
