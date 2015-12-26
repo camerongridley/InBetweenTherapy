@@ -269,6 +269,41 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return assignedTreatmentPlans;
 	}
     
+    @Override
+	public List<TreatmentPlan> userGetTherapistAssignedPlans(int clientUserID, int assignedByUserID) throws DatabaseException, ValidationException {
+		Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<TreatmentPlan> assignedTreatmentPlans = new ArrayList<>();
+        
+        try {
+        	cn = getConnection();
+
+    		ps = cn.prepareStatement("SELECT * FROM treatment_plan WHERE treatment_plan_user_id_fk=? AND treatment_plan_assigned_by_user_id_fk=?");
+    		ps.setInt(1, clientUserID);
+    		ps.setInt(2, assignedByUserID);
+            
+    		rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	assignedTreatmentPlans.add(treatmentPlanLoadBasic(cn, rs.getInt("treatment_plan_id")));
+            	
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+        
+        
+        return assignedTreatmentPlans;
+	}
+    
 	@Override
 	public List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException {
 		Connection cn = null;
@@ -590,6 +625,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	    }
 
 	}
+	
+	
 	
 	/** Validating a new Stage title involves checking is there is already a match for the combination of the new title and the userID.
 	 * If there is a match then the new title is invalid

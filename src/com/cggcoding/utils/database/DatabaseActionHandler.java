@@ -37,6 +37,9 @@ public interface DatabaseActionHandler {
 	
 	List<TreatmentPlan> userGetClientTreatmentPlans(int clientUserID, boolean inProgress, boolean isCompleted)
 			throws DatabaseException, ValidationException;
+	
+	List<TreatmentPlan> userGetTherapistAssignedPlans(int clientUserID, int assignedByUserID)
+			throws DatabaseException, ValidationException;
 
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
@@ -184,6 +187,8 @@ public interface DatabaseActionHandler {
 	void mapsTaskStageTemplateDelete(Connection cn, int taskID) throws SQLException;
 
 	void mapsStageTreatmentPlanTemplateDelete(Connection cn, int stageID) throws SQLException;
+
+	
 
 	
 
