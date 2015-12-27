@@ -85,29 +85,52 @@
 
 		</label>
 			<c:forEach items="${stage.tasks }" var="task">
-				<div class="panel panel-default panel-task" id="stageList" title="Click the task title to expand and see details.">
-				  <div class="panel-heading">
-				  	<input type="hidden" name="taskID" value="${task.taskID}"/>
-				  	<input type="hidden" name="taskTitle" value="${task.title}"/>
-					<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
-			          ${task.taskOrderForUserDisplay } - <span class="">${task.title } </span>
-			        </a>
-			        <span class="badge" title="Number of repetitions.">${task.repetitions}</span>
-			        <a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete task:${task.title }">
-					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-					</a>
+				
+				
+						<div class="panel panel-default panel-task" id="stageList" title="Click the task title to expand and see details.">
+						  <div class="panel-heading">
+							  <div class="row">
+									<div class="col-sm-11">
+
+									  	<input type="hidden" name="taskID" value="${task.taskID}"/>
+									  	<input type="hidden" name="taskTitle" value="${task.title}"/>
+										<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
+								          ${task.taskOrderForUserDisplay } - <span class="">${task.title }</span>
+								        </a>
+								        &nbsp;
+								        <select class="input-sm task-repetition-dropdown" title="Number of repetitions." id="repetitions${task.taskID }" name="repetitions${task.taskID }">
+						                    <option  value="1" <c:if test="${task.repetitions==1 }">selected</c:if>>1</option>
+											<option  value="2" <c:if test="${task.repetitions==2 }">selected</c:if>>2</option>
+											<option  value="3" <c:if test="${task.repetitions==3}">selected</c:if>>3</option>
+											<option  value="4" <c:if test="${task.repetitions==4 }">selected</c:if>>4</option>
+											<option  value="5" <c:if test="${task.repetitions==5 }">selected</c:if>>5</option>
+											<option  value="6" <c:if test="${task.repetitions==6 }">selected</c:if>>6</option>
+											<option  value="7" <c:if test="${task.repetitions==7 }">selected</c:if>>7</option>
+											<option  value="8" <c:if test="${task.repetitions==8 }">selected</c:if>>8</option>
+											<option  value="9" <c:if test="${task.repetitions==9 }">selected</c:if>>9</option>
+											<option  value="10" <c:if test="${task.repetitions==10 }">selected</c:if>>10</option>
+						                </select>
+  									</div>
+  									<div class="col-sm-1">
+								        <!-- <span class="badge" title="Number of repetitions.">${task.repetitions}</span> -->
+								        <a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Delete task:${task.title }">
+										  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+										</a>
+										
+								        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }">
+										  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+										</a>
+									</div>
+							  </div><!-- end row -->
+						  </div><!-- end panel-heading -->
+						  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID}">
+							  <div class="panel-body">
+							    ${task.instructions } 
+							  </div>
+						  </div>
+						</div>
 					
-			        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit task: ${task.title }">
-					  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-					</a>
 					
-				  </div>
-				  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID}">
-					  <div class="panel-body">
-					    ${task.instructions } 
-					  </div>
-				  </div>
-				</div>
 			</c:forEach>
 
         <div class="form-group">

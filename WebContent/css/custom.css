@@ -56,6 +56,7 @@ h2{
 .panel-body-task {
 	padding: 10px;
 }
+
 /* Login css */
 .form-signin {
   max-width: 330px;
@@ -139,6 +140,11 @@ h2{
 .task-repetition {
     color: orangered;
     font-weight: bold;
+}
+
+.task-repetition-dropdown {
+	width:55px;
+	height:25px;
 }
 
 .responsive-checkbox {
