@@ -144,7 +144,9 @@ h2{
 
 .task-repetition-dropdown {
 	width:55px;
-	height:25px;
+	height:22px;
+	border-radius: 3px;
+	color: black;
 }
 
 .responsive-checkbox {

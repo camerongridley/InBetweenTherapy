@@ -104,6 +104,9 @@ public class EditStage extends HttpServlet {
 		            	if(stageID==0){
 		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
 		            	}
+		            	
+		            	retrieveStageTaskDetails(request, 0);
+		            	
 		            	editedStage = Stage.load(stageID);
 		            	editedStage.setTitle(stageTitle);
 		            	editedStage.setDescription(stageDescription);
@@ -185,6 +188,12 @@ public class EditStage extends HttpServlet {
 	}
 	
 	private List<StageTaskDetail> retrieveStageTaskDetails(HttpServletRequest request, int stageID){
+		String[] taskIDs = request.getParameterValues("allTaskIDs");
+		for(int i = 0; i < taskIDs.length; i++){
+			System.out.println(taskIDs[i]);
+		}
+		
+		return null;
 		
 	}
 
