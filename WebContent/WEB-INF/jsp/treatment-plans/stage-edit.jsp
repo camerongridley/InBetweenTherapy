@@ -56,23 +56,23 @@
 			<div class="col-sm-12">
 				<label for="stageGoalList" class="control-label">Stage Goals
 					<button type="button" class="btn btn-default btn-xs" aria-label="Left Align" data-toggle="modal" data-target="#newStageGoalModal" title="Add a goal to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
-					
-					  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 					</button>
 					
 				</label>
 			</div>
 				
 			<c:forEach items="${stage.goals }" var="goal">
-	            <div class="col-xs-11">
-	                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
-	            </div>
-	            <div class="col-xs-1">    
-	                <a role="button" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" class="btn btn-default btn-xs pull-right" title="Delete goal:${goal.description }">
-					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-					</a>
+					<div class="col-sm-11">
+		                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
+		            </div>
+		            <div class="col-sm-1">    
+		                <a role="button" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" class="btn btn-default btn-xs pull-right" title="Delete goal:${goal.description }">
+						  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+						</a>
+		            </div>
+
 	            
-	            </div>
 			</c:forEach>
 				
 		</div>
@@ -84,8 +84,12 @@
 				</a>
 
 		</label>
+		
+		<ul class="list-group" id="taskList">
+            
+		
 			<c:forEach items="${stage.tasks }" var="task">
-				
+				<li class="list-group-item">
 				
 						<div class="panel panel-default panel-task" id="stageList" title="Click the task title to expand and see details.">
 						  <div class="panel-heading">
@@ -130,9 +134,9 @@
 						  </div>
 						</div>
 					
-					
+				</li>	
 			</c:forEach>
-
+		</ul>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-default">Save</button>

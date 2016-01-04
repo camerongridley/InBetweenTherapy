@@ -1,6 +1,8 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +14,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
+import com.cggcoding.models.StageTaskDetail;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -179,6 +182,10 @@ public class EditStage extends HttpServlet {
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
+	}
+	
+	private List<StageTaskDetail> retrieveStageTaskDetails(HttpServletRequest request, int stageID){
+		
 	}
 
 }
