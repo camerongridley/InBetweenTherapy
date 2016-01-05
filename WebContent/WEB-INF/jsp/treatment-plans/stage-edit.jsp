@@ -96,6 +96,7 @@
 								
 								  	<input type="hidden" name="taskID" value="${task.taskID}"/>
 								  	<input type="hidden" name="taskTitle" value="${task.title}"/>
+								  	<a href="/secure/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>&nbsp;<a href="/secure/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
 									<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							          ${task.taskOrderForUserDisplay } - <span class="">${task.title }</span>
 							        </a>   
@@ -123,7 +124,7 @@
 			<div class="col-sm-2">
 				<div class="panel panel-primary panel-task" id="taskReps" title="Number of repetitions.">
 				<div class="panel-heading">
-				  Reps:<select class="task-repetition-dropdown" title="Number of repetitions." id="repetitions${task.taskID }" name="repetitions${task.taskID }">
+				  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="repetitions${task.taskID }" name="repetitions${task.taskID }">
                     <option  value="1" <c:if test="${task.repetitions==1 }">selected</c:if>>1</option>
 					<option  value="2" <c:if test="${task.repetitions==2 }">selected</c:if>>2</option>
 					<option  value="3" <c:if test="${task.repetitions==3}">selected</c:if>>3</option>
