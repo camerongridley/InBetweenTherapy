@@ -679,6 +679,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return taskBeingCopied.create();
 	}
 	
+	//XXX rename to deleteTaskTemplate?
 	public Stage deleteTask(int taskToDeleteID) throws ValidationException, DatabaseException{
 		Connection cn = null;
 		

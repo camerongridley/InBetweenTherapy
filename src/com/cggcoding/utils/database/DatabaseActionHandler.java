@@ -11,6 +11,7 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
+import com.cggcoding.models.StageTaskDetail;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
@@ -118,6 +119,12 @@ public interface DatabaseActionHandler {
 
 	void stageGoalDelete(Connection cn, int stageGoalID) throws SQLException, ValidationException;
 	
+	
+	//**************************************************************************************************
+	//*************************************** StageTaskDetail Methods ***************************************
+	//**************************************************************************************************
+	Map<Integer, StageTaskDetail> stageTaskDetailsLoad(Connection cn, int stageID)
+			throws SQLException, ValidationException;
 
 	//**************************************************************************************************
 	//*************************************** Treatment Issue Methods **********************************
@@ -187,6 +194,8 @@ public interface DatabaseActionHandler {
 	void mapsTaskStageTemplateDelete(Connection cn, int taskID) throws SQLException;
 
 	void mapsStageTreatmentPlanTemplateDelete(Connection cn, int stageID) throws SQLException;
+
+	
 
 	
 

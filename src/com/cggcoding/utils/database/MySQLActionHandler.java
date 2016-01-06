@@ -1075,6 +1075,35 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	
 	}
 	
+	//UNSURE do I replace the mapsTaskStage... methods with stageTaskDetail methods?
+	@Override
+	public Map<Integer, StageTaskDetail> stageTaskDetailsLoad(Connection cn, int stageID) throws SQLException, ValidationException{
+    	PreparedStatement ps = null;
+    	ResultSet rs = null;
+        Map<Integer, StageTaskDetail> stageTaskDetailMap = new HashMap<>();
+        
+        throwValidationExceptionIfTemplateHolderID(stageID);
+        
+        try {
+            ps = cn.prepareStatement("SELECT * FROM task_template_id_stage_template_id_maps WHERE stage_id=?");
+            ps.setInt(1, stageID);
+
+            rs = ps.executeQuery();
+
+            while (rs.next()){
+            	StageTaskDetail detail = new StageTaskDetail(rs.getInt("task_generic_template_id_fk"), rs.getInt("stage_template_id_fk"), rs.getInt("task_order"), rs.getInt("template_repetitions"));
+            	stageTaskDetailMap.put(rs.getInt("task_generic_template_id_fk"), detail);
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+    	
+    	return stageTaskDetailMap;
+	
+	}
+	
 	@Override
 	public List<Task> taskGetDefaults() throws DatabaseException{
 		Connection cn = null;
