@@ -635,15 +635,17 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
-	public void addTaskTemplate(int taskTemplateID) throws DatabaseException, ValidationException{
+	public void addTaskTemplate(int taskTemplateID, int templateRepetitions) throws DatabaseException, ValidationException{
 		Connection cn = null;
 	
 		if(this.isTemplate()){
 			try {
 				
 	        	cn = dao.getConnection();
-	        	if(dao.mapsTaskStageTemplateValidate(cn, taskTemplateID, this.getStageID())){
-	        		dao.mapsTaskStageTemplateCreate(cn, taskTemplateID, this.stageID, this.getTaskOrderDefaultValue());
+	        	if(dao.mapStageTaskTemplateValidate(cn, taskTemplateID, this.getStageID())){
+	        		MapStageTaskTemplate map = new MapStageTaskTemplate(this.stageID, taskTemplateID, this.getTaskOrderDefaultValue(), templateRepetitions);
+	        		map.create(cn);
+	        		
 	        	}
 
 			} catch (SQLException e) {
@@ -693,7 +695,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				if(task.getTaskID() == taskToDeleteID){
 					
 					if(task.isTemplate()){ //UNSURE Does it matter if I check use Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
-						dao.mapsTaskStageTemplateDelete(cn, taskToDeleteID);
+						dao.mapStageTaskTemplateDelete(cn, taskToDeleteID);
 					}else{
 						task.delete(cn);
 					}

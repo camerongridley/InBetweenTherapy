@@ -1077,10 +1077,10 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	
 	//UNSURE do I replace the mapsTaskStage... methods with stageTaskDetail methods?
 	@Override
-	public Map<Integer, StageTaskDetail> stageTaskDetailsLoad(Connection cn, int stageID) throws SQLException, ValidationException{
+	public Map<Integer, MapStageTaskTemplate> stageTaskDetailsLoad(Connection cn, int stageID) throws SQLException, ValidationException{
     	PreparedStatement ps = null;
     	ResultSet rs = null;
-        Map<Integer, StageTaskDetail> stageTaskDetailMap = new HashMap<>();
+        Map<Integer, MapStageTaskTemplate> stageTaskDetailMap = new HashMap<>();
         
         throwValidationExceptionIfTemplateHolderID(stageID);
         
@@ -1091,7 +1091,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
 
             while (rs.next()){
-            	StageTaskDetail detail = new StageTaskDetail(rs.getInt("task_generic_template_id_fk"), rs.getInt("stage_template_id_fk"), rs.getInt("task_order"), rs.getInt("template_repetitions"));
+            	MapStageTaskTemplate detail = new MapStageTaskTemplate(rs.getInt("task_generic_template_id_fk"), rs.getInt("stage_template_id_fk"), rs.getInt("task_order"), rs.getInt("template_repetitions"));
             	stageTaskDetailMap.put(rs.getInt("task_generic_template_id_fk"), detail);
             }
 
@@ -1640,19 +1640,20 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
-	public void mapsTaskStageTemplateCreate(Connection cn, int taskTemplateID, int stageTemplateID, int taskOrder) throws SQLException{
+	public void mapStageTaskTemplateCreate(Connection cn, MapStageTaskTemplate map) throws SQLException{
 		PreparedStatement ps = null;
         
         try {
-        	String sql = "INSERT INTO task_template_id_stage_template_id_maps (task_generic_template_id_fk, stage_template_id_fk, task_order) "
-        			+ "VALUES (?, ?, ?)";
+        	String sql = "INSERT INTO task_template_id_stage_template_id_maps (task_generic_template_id_fk, stage_template_id_fk, task_order, template_repetitions) "
+        			+ "VALUES (?, ?, ?, ?)";
 
         	
             ps = cn.prepareStatement(sql);
             
-            ps.setInt(1, taskTemplateID);
-            ps.setInt(2, stageTemplateID);
-            ps.setInt(3, taskOrder);
+            ps.setInt(1, map.getTaskID());
+            ps.setInt(2, map.getStageID());
+            ps.setInt(3, map.getTaskOrder());
+            ps.setInt(4, map.getTemplateRepetitions());
 
             int success = ps.executeUpdate();
  	
@@ -1663,7 +1664,31 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-	public boolean mapsTaskStageTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID) throws ValidationException, SQLException{
+	public void mapStageTaskTemplateUpdate(Connection cn, MapStageTaskTemplate map) throws SQLException{
+		PreparedStatement ps = null;
+        
+        try {
+        	String sql = "UPDATE task_template_id_stage_template_id_maps SET task_generic_template_id_fk = ?, stage_template_id_fk = ?, "
+        			+ "task_order = ?, template_repetitions = ?)";
+
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, map.getTaskID());
+            ps.setInt(2, map.getStageID());
+            ps.setInt(3, map.getTaskOrder());
+            ps.setInt(4, map.getTemplateRepetitions());
+
+            int success = ps.executeUpdate();
+ 	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+
+	}
+    
+    @Override
+	public boolean mapStageTaskTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID) throws ValidationException, SQLException{
 		PreparedStatement ps = null;
         ResultSet rsStageCount = null;
         int comboExists = 0;
@@ -1693,7 +1718,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-	public void mapsTaskStageTemplateDelete(Connection cn, int taskID) throws SQLException {
+	public void mapStageTaskTemplateDelete(Connection cn, int taskID) throws SQLException {
 		PreparedStatement ps = null;
 
 		try {
@@ -1711,7 +1736,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     //TODO add an updateMapsTaskStage method to update taskOrder that takes List<Task> as arg and loops through updating order
     
     @Override
-	public void mapsStageTreatmentPlanTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder) throws SQLException{
+	public void mapTreatmentPlanStageTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder) throws SQLException{
 		PreparedStatement ps = null;
         
         try {
@@ -1734,7 +1759,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-	public boolean mapsStageTreatmentPlanTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID) throws ValidationException, SQLException{
+	public boolean mapTreatmentPlanStageTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID) throws ValidationException, SQLException{
 		PreparedStatement ps = null;
         ResultSet rsStageCount = null;
         int comboExists = 0;
@@ -1764,7 +1789,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-	public void mapsStageTreatmentPlanTemplateDelete(Connection cn, int stageID) throws SQLException {
+	public void mapTreatmentPlanStageTemplateDelete(Connection cn, int stageID) throws SQLException {
 		PreparedStatement ps = null;
 
 		try {

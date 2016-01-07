@@ -516,6 +516,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	
+	//TODO rename to deleteStageTemplate and refactor to use MapTreatmentPlanStageTemplate class
 	public TreatmentPlan deleteStage(int stageID) throws ValidationException, DatabaseException {
 		
 		Connection cn = null;
@@ -530,7 +531,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 				if(stage.getStageID()==stageID){
 					
 					if(stage.isTemplate()){
-						dao.mapsStageTreatmentPlanTemplateDelete(cn, stageID);
+						dao.mapTreatmentPlanStageTemplateDelete(cn, stageID);
 					}else{
 						Stage.delete(cn, stageID);
 					}	
@@ -591,6 +592,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		}
 	}
 	
+	//TODO refactor to use MapTreatmentPlanStageTemplate class - also do for other methods that use this new class
 	/**Adds a stage template to a treatment plan template.  Inserts into stageTemplate-treatmentPlanTemplate mapping table. Both the Stage and TreatmentPlan must be templates to be valid.
 	 * @param stageTemplateID
 	 * @throws DatabaseException
@@ -603,9 +605,9 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			try {
 				
 	        	cn = dao.getConnection();
-	        	if(dao.mapsStageTreatmentPlanTemplateValidate(cn, stageTemplateID, this.getTreatmentPlanID())){
+	        	if(dao.mapTreatmentPlanStageTemplateValidate(cn, stageTemplateID, this.getTreatmentPlanID())){
 	        		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
-	        		dao.mapsStageTreatmentPlanTemplateCreate(cn, stageTemplateID, this.getTreatmentPlanID(), this.getNumberOfStages());
+	        		dao.mapTreatmentPlanStageTemplateCreate(cn, stageTemplateID, this.getTreatmentPlanID(), this.getNumberOfStages());
 	        	}
 
 			} catch (SQLException e) {

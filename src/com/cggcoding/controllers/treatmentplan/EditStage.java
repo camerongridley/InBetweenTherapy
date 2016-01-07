@@ -15,7 +15,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
-import com.cggcoding.models.StageTaskDetail;
+import com.cggcoding.models.MapStageTaskTemplate;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
@@ -189,8 +189,8 @@ public class EditStage extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 	}
 	
-	private List<StageTaskDetail> retrieveStageTaskDetails(HttpServletRequest request, Stage stage){
-		List<StageTaskDetail> stageTaskDetails = new ArrayList<>();
+	private List<MapStageTaskTemplate> retrieveStageTaskDetails(HttpServletRequest request, Stage stage){
+		List<MapStageTaskTemplate> stageTaskDetails = new ArrayList<>();
 		String[] taskIDs = request.getParameterValues("allTaskIDs");
 		for(int i = 0; i < taskIDs.length; i++){
 			System.out.println(taskIDs[i]);
@@ -200,7 +200,7 @@ public class EditStage extends HttpServlet {
 		for(Task task : stage.getTasks()){
 			int order = ParameterUtils.parseIntParameter(request, "taskOrder" + task.getTaskID());
 			int repetitions = ParameterUtils.parseIntParameter(request, "taskRep" + task.getTaskID());;
-			stageTaskDetails.add(new StageTaskDetail(stage.getStageID(), task.getTaskID(), order, repetitions));
+			stageTaskDetails.add(new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), order, repetitions));
 		}
 		
 		return null;

@@ -11,7 +11,7 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
-import com.cggcoding.models.StageTaskDetail;
+import com.cggcoding.models.MapStageTaskTemplate;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
@@ -123,7 +123,7 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	//*************************************** StageTaskDetail Methods ***************************************
 	//**************************************************************************************************
-	Map<Integer, StageTaskDetail> stageTaskDetailsLoad(Connection cn, int stageID)
+	Map<Integer, MapStageTaskTemplate> stageTaskDetailsLoad(Connection cn, int stageID)
 			throws SQLException, ValidationException;
 
 	//**************************************************************************************************
@@ -180,20 +180,25 @@ public interface DatabaseActionHandler {
 
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
-	void mapsTaskStageTemplateCreate(Connection cn, int taskTemplateID, int stageTemplateID, int taskOrder) throws SQLException;
+	void mapStageTaskTemplateCreate(Connection cn, MapStageTaskTemplate map) throws SQLException;
 
-	boolean mapsTaskStageTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID)
+	boolean mapStageTaskTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID)
 			throws ValidationException, SQLException;
 
-	void mapsStageTreatmentPlanTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder)
+	void mapStageTaskTemplateDelete(Connection cn, int taskID) throws SQLException;
+	
+	void mapStageTaskTemplateUpdate(Connection cn, MapStageTaskTemplate map) throws SQLException;
+	
+	void mapTreatmentPlanStageTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder)
 			throws SQLException;
 
-	boolean mapsStageTreatmentPlanTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
+	boolean mapTreatmentPlanStageTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
 			throws ValidationException, SQLException;
 
-	void mapsTaskStageTemplateDelete(Connection cn, int taskID) throws SQLException;
 
-	void mapsStageTreatmentPlanTemplateDelete(Connection cn, int stageID) throws SQLException;
+	void mapTreatmentPlanStageTemplateDelete(Connection cn, int stageID) throws SQLException;
+
+	
 
 	
 

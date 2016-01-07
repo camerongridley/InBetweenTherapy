@@ -88,7 +88,8 @@ public class CreateTask extends HttpServlet {
 
 					if(taskToCreate.getTaskID() != 0){
 						//TODO delete? stage = Stage.load(stageID);
-						stage.addTaskTemplate(taskToCreate.getTaskID());
+						int taskReps = ParameterUtils.parseIntParameter(request, "taskReps");
+						stage.addTaskTemplate(taskToCreate.getTaskID(), taskReps);
 						//stage.copyTaskIntoStage(taskToCreate.getTaskID());
 						
 						if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){

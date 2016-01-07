@@ -1,15 +1,25 @@
 package com.cggcoding.models;
 
-//TODO rename class to StageTaskTemplateDetail or StageTaskTemplateMapping
-public class StageTaskDetail {
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import com.cggcoding.utils.database.DatabaseActionHandler;
+import com.cggcoding.utils.database.MySQLActionHandler;
+
+/**This class is always to be accessed through a Stage object since it is an extension of a Stage's functions
+ * @author cgrid
+ *
+ */
+public class MapStageTaskTemplate {
 
 	private int stageID;
 	private int taskID;
 	private int taskOrder;
 	private int templateRepetitions;
 	
+	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
-	public StageTaskDetail(int stageID, int taskID, int taskOrder, int templateRepetitions) {
+	public MapStageTaskTemplate(int stageID, int taskID, int taskOrder, int templateRepetitions) {
 		this.stageID = stageID;
 		this.taskID = taskID;
 		this.taskOrder = taskOrder;
@@ -56,7 +66,9 @@ public class StageTaskDetail {
 		this.templateRepetitions = templateRepetitions;
 	}
 	
-	
+	protected void create(Connection cn) throws SQLException{
+		dao.mapStageTaskTemplateCreate(cn, this);
+	}
 	
 
 }
