@@ -484,21 +484,13 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return dateCompleted;
 	}
 	
+	//TODO remove these methods and delete taskOrder from class
 	public int getTaskOrder() {
 		return taskOrder;
 	}
 
 	public void setTaskOrder(int taskOrder) {
 		this.taskOrder = taskOrder;
-	}
-	
-	//FIXME currently not being used since linking Stage templates directly to Task templates and Task templates all have an order value of 0. The order for these tasks is stored in the task-stage mapping table.
-	/**Since taskOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
-	 *the order values start with 1.
-	 * @return
-	 */
-	public int getTaskOrderForUserDisplay(){
-		return taskOrder + 1;
 	}
 
 	public boolean isExtraTask() {

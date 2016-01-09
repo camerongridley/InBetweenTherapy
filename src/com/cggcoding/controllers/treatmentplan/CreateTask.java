@@ -60,6 +60,7 @@ public class CreateTask extends HttpServlet {
 		userID =  user.getUserID();
 		int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		Stage stage = null;
+		int taskReps = ParameterUtils.parseIntParameter(request, "taskReps");
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
 		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
@@ -88,7 +89,6 @@ public class CreateTask extends HttpServlet {
 
 					if(taskToCreate.getTaskID() != 0){
 						//TODO delete? stage = Stage.load(stageID);
-						int taskReps = ParameterUtils.parseIntParameter(request, "taskReps");
 						stage.addTaskTemplate(taskToCreate.getTaskID(), taskReps);
 						//stage.copyTaskIntoStage(taskToCreate.getTaskID());
 						
@@ -129,7 +129,7 @@ public class CreateTask extends HttpServlet {
 					} else {
 						newTask = Task.createTemplate(taskToCreate);
 						//TODO delete? stage = Stage.load(stageID);
-						stage.addTaskTemplate(newTask.getTaskID());
+						stage.addTaskTemplate(newTask.getTaskID(), taskReps);//TODO make sure this is working right
 						/*stage = Stage.load(stageID);
 						stage.createNewTask(taskToCreate);
 						

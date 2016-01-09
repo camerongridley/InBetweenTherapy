@@ -5,6 +5,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -902,6 +903,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return tasks;
 	}
 	
+	//TODO delete - was replaced by mapStageTaskTemplateLoad
 	//OPTIMIZE instead of calling Task.load() for each record, could change SELECT statement to return all records from Task that match and build each Task inside this method.
 	@Override
 	public List<Task> stageLoadTaskTemplates(Connection cn, int stageID) throws SQLException {
@@ -1075,34 +1077,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	
 	}
 	
-	//UNSURE do I replace the mapsTaskStage... methods with stageTaskDetail methods?
-	@Override
-	public Map<Integer, MapStageTaskTemplate> stageTaskDetailsLoad(Connection cn, int stageID) throws SQLException, ValidationException{
-    	PreparedStatement ps = null;
-    	ResultSet rs = null;
-        Map<Integer, MapStageTaskTemplate> stageTaskDetailMap = new HashMap<>();
-        
-        throwValidationExceptionIfTemplateHolderID(stageID);
-        
-        try {
-            ps = cn.prepareStatement("SELECT * FROM task_template_id_stage_template_id_maps WHERE stage_id=?");
-            ps.setInt(1, stageID);
 
-            rs = ps.executeQuery();
-
-            while (rs.next()){
-            	MapStageTaskTemplate detail = new MapStageTaskTemplate(rs.getInt("task_generic_template_id_fk"), rs.getInt("stage_template_id_fk"), rs.getInt("task_order"), rs.getInt("template_repetitions"));
-            	stageTaskDetailMap.put(rs.getInt("task_generic_template_id_fk"), detail);
-            }
-
-        } finally {
-        	DbUtils.closeQuietly(rs);
-			DbUtils.closeQuietly(ps);
-        }
-    	
-    	return stageTaskDetailMap;
 	
-	}
 	
 	@Override
 	public List<Task> taskGetDefaults() throws DatabaseException{
@@ -1168,7 +1144,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
             			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
             			dateCompleted, rs.getInt("task_order"), rs.getBoolean("is_extra_task"), 
-            			rs.getBoolean("task_is_template"), rs.getInt("task_template_id"), rs.getInt("repetitions"));
+            			rs.getBoolean("task_is_template"), rs.getInt("task_template_id"), rs.getInt("client_repetition"));
             }
 
         } finally {
@@ -1278,7 +1254,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         try {
 
 	    		String sql = "UPDATE task_generic SET task_generic_task_type_id_fk=?, task_generic_stage_id_fk=?, task_generic_user_id_fk=?, parent_task_id=?, task_title=?, instructions=?, resource_link=?, "
-	    				+ "task_completed=?, task_date_completed=?, task_order=?, is_extra_task=?, task_is_template=?, task_template_id=?, repetitions=? WHERE task_generic_id=?";
+	    				+ "task_completed=?, task_date_completed=?, task_order=?, is_extra_task=?, task_is_template=?, task_template_id=?, client_repetition=? WHERE task_generic_id=?";
 	        	
 	            ps = cn.prepareStatement(sql);
 	            
@@ -1353,7 +1329,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         	String sql = "INSERT INTO task_generic (task_generic_task_type_id_fk, task_generic_stage_id_fk, task_generic_user_id_fk, parent_task_id, task_title, "
-        			+ "instructions, resource_link, task_completed, task_date_completed, task_order, is_extra_task, task_is_template, task_template_id, repetitions) "
+        			+ "instructions, resource_link, task_completed, task_date_completed, task_order, is_extra_task, task_is_template, task_template_id, client_repetition) "
     				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -1640,6 +1616,34 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
+	public LinkedHashMap<Integer, MapStageTaskTemplate> mapStageTaskTemplateLoad(Connection cn, int stageID) throws SQLException, ValidationException{
+    	PreparedStatement ps = null;
+    	ResultSet rs = null;
+    	LinkedHashMap<Integer, MapStageTaskTemplate> stageTaskDetailMap = new LinkedHashMap<>();
+        
+        throwValidationExceptionIfTemplateHolderID(stageID);
+        
+        try {
+            ps = cn.prepareStatement("SELECT * FROM task_template_id_stage_template_id_maps WHERE stage_template_id_fk=? ORDER BY task_order");
+            ps.setInt(1, stageID);
+
+            rs = ps.executeQuery();
+
+            while (rs.next()){
+            	MapStageTaskTemplate detail = new MapStageTaskTemplate(rs.getInt("task_generic_template_id_fk"), rs.getInt("stage_template_id_fk"), rs.getInt("task_order"), rs.getInt("template_repetitions"));
+            	stageTaskDetailMap.put(rs.getInt("task_generic_template_id_fk"), detail);
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+    	
+    	return stageTaskDetailMap;
+	
+	}
+    
+    @Override
 	public void mapStageTaskTemplateCreate(Connection cn, MapStageTaskTemplate map) throws SQLException{
 		PreparedStatement ps = null;
         
@@ -1718,12 +1722,13 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-	public void mapStageTaskTemplateDelete(Connection cn, int taskID) throws SQLException {
+	public void mapStageTaskTemplateDelete(Connection cn, int taskID, int stageID) throws SQLException {
 		PreparedStatement ps = null;
 
 		try {
-            ps = cn.prepareStatement("DELETE FROM task_template_id_stage_template_id_maps WHERE task_generic_template_id_fk=?");
+            ps = cn.prepareStatement("DELETE FROM task_template_id_stage_template_id_maps WHERE task_generic_template_id_fk=? AND stage_template_id_fk=?");
             ps.setInt(1, taskID);
+            ps.setInt(2, stageID);
 
             ps.executeUpdate();
 

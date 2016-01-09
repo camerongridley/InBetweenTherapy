@@ -29,6 +29,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	private int stageOrder; //the order of the stage within its treatment plan - if present decides the index it will be in the TreatmentPlan's List of Stages
 	private List<Task> tasks;
 	private List<Task> extraTasks; //for when user chooses to do more tasks than asked of - won't count toward progress meter but can be saved for review or other analysis (e.g. themes)
+	private LinkedHashMap<Integer, MapStageTaskTemplate> mapStageTaskTemplates;
 	private boolean completed;
 	private double percentComplete;
 	private List<StageGoal> goals;
@@ -47,6 +48,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.stageOrder = stageOrder;
 		this.tasks = new ArrayList<>();;
 		this.extraTasks = new ArrayList<>();
+		this.mapStageTaskTemplates = new LinkedHashMap<>();
 		this.completed = false;
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
@@ -67,6 +69,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.stageOrder = stageOrder;
 		this.tasks = tasks;
 		this.extraTasks = extraTasks;
+		this.mapStageTaskTemplates = new LinkedHashMap<>();
 		this.completed = completed;
 		this.percentComplete = percentComplete;
 		this.goals = goals;
@@ -149,6 +152,14 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 
 	public void setExtraTasks(List<Task> extraTasks) {
 		this.extraTasks = extraTasks;
+	}
+
+	public LinkedHashMap<Integer, MapStageTaskTemplate> getMapStageTaskTemplates() {
+		return mapStageTaskTemplates;
+	}
+
+	public void setMapStageTaskTemplates(LinkedHashMap<Integer, MapStageTaskTemplate> mapStageTaskTemplates) {
+		this.mapStageTaskTemplates = mapStageTaskTemplates;
 	}
 
 	public Task getTaskByID(int taskID){
@@ -361,6 +372,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 		return null;
 	}
+	
+	public MapStageTaskTemplate getMappedTaskTemplate(int taskID){
+		return mapStageTaskTemplates.get(taskID);
+	}
 
 	/**Loads the stage and all associated Tasks.  Checks if the Stage is a template.  If so, then it's Tasks are also templates and 
 	 * the database loads the Tasks using the task_template_stage_template_mapping table to get the taskIDs to load.  If not a template then it 
@@ -409,7 +424,14 @@ public class Stage implements Serializable, Completable, DatabaseModel {
     	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
     	
     	if(stage.isTemplate()){
-    		stage.setTasks(dao.stageLoadTaskTemplates(cn, stageID));
+    		//get map of templates and set local map variable
+    		LinkedHashMap<Integer, MapStageTaskTemplate> taskMap = dao.mapStageTaskTemplateLoad(cn, stageID);
+    		stage.setMapStageTaskTemplates(taskMap);
+    		
+    		//loop through map and load Task templates to local List
+    		for(Integer taskID : taskMap.keySet()){
+    			stage.addTask(Task.load(cn, taskID));
+    		}
     	}else{
     		stage.setTasks(dao.stageLoadTasks(cn, stage.getStageID()));
     	}
@@ -645,7 +667,6 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	        	if(dao.mapStageTaskTemplateValidate(cn, taskTemplateID, this.getStageID())){
 	        		MapStageTaskTemplate map = new MapStageTaskTemplate(this.stageID, taskTemplateID, this.getTaskOrderDefaultValue(), templateRepetitions);
 	        		map.create(cn);
-	        		
 	        	}
 
 			} catch (SQLException e) {
@@ -694,8 +715,8 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				task = tasks.get(i);
 				if(task.getTaskID() == taskToDeleteID){
 					
-					if(task.isTemplate()){ //UNSURE Does it matter if I check use Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
-						dao.mapStageTaskTemplateDelete(cn, taskToDeleteID);
+					if(task.isTemplate()){ //UNSURE Does it matter if I check Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
+						MapStageTaskTemplate.delete(cn, taskToDeleteID, this.stageID);
 					}else{
 						task.delete(cn);
 					}

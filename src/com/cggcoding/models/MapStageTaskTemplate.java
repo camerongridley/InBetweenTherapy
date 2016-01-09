@@ -56,6 +56,13 @@ public class MapStageTaskTemplate {
 		this.taskOrder = taskOrder;
 	}
 
+	/**Since taskOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
+	 *the order values start with 1.
+	 * @return
+	 */
+	public int getTaskOrderForUserDisplay(){
+		return taskOrder + 1;
+	}
 
 	public int getTemplateRepetitions() {
 		return templateRepetitions;
@@ -68,6 +75,10 @@ public class MapStageTaskTemplate {
 	
 	protected void create(Connection cn) throws SQLException{
 		dao.mapStageTaskTemplateCreate(cn, this);
+	}
+	
+	protected static void delete(Connection cn, int taskID, int stageID) throws SQLException{
+		dao.mapStageTaskTemplateDelete(cn, taskID, stageID);
 	}
 	
 

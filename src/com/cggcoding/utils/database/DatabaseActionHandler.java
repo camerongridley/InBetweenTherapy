@@ -3,6 +3,7 @@ package com.cggcoding.utils.database;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -121,10 +122,29 @@ public interface DatabaseActionHandler {
 	
 	
 	//**************************************************************************************************
-	//*************************************** StageTaskDetail Methods ***************************************
+	//*************************************** Mapping Methods ***************************************
 	//**************************************************************************************************
-	Map<Integer, MapStageTaskTemplate> stageTaskDetailsLoad(Connection cn, int stageID)
+	LinkedHashMap<Integer, MapStageTaskTemplate> mapStageTaskTemplateLoad(Connection cn, int stageID)
 			throws SQLException, ValidationException;
+	
+	void mapStageTaskTemplateCreate(Connection cn, MapStageTaskTemplate map) throws SQLException;
+
+	boolean mapStageTaskTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID)
+			throws ValidationException, SQLException;
+
+	void mapStageTaskTemplateDelete(Connection cn, int taskID, int stageID) throws SQLException;
+	
+	void mapStageTaskTemplateUpdate(Connection cn, MapStageTaskTemplate map) throws SQLException;
+	
+	void mapTreatmentPlanStageTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder)
+			throws SQLException;
+
+	boolean mapTreatmentPlanStageTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
+			throws ValidationException, SQLException;
+
+
+	void mapTreatmentPlanStageTemplateDelete(Connection cn, int stageID) throws SQLException;
+
 
 	//**************************************************************************************************
 	//*************************************** Treatment Issue Methods **********************************
@@ -180,24 +200,7 @@ public interface DatabaseActionHandler {
 
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
-	void mapStageTaskTemplateCreate(Connection cn, MapStageTaskTemplate map) throws SQLException;
-
-	boolean mapStageTaskTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID)
-			throws ValidationException, SQLException;
-
-	void mapStageTaskTemplateDelete(Connection cn, int taskID) throws SQLException;
 	
-	void mapStageTaskTemplateUpdate(Connection cn, MapStageTaskTemplate map) throws SQLException;
-	
-	void mapTreatmentPlanStageTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder)
-			throws SQLException;
-
-	boolean mapTreatmentPlanStageTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
-			throws ValidationException, SQLException;
-
-
-	void mapTreatmentPlanStageTemplateDelete(Connection cn, int stageID) throws SQLException;
-
 	
 
 	
