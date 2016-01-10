@@ -155,6 +155,9 @@ h2{
     margin-top: 2px;
 }
 
+.save-button{
+	margin-top:10px;
+}
 
 /* For Large Screen Width */
 @media (min-width: 768px){

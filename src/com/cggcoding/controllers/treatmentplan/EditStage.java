@@ -2,7 +2,9 @@ package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -102,7 +104,7 @@ public class EditStage extends HttpServlet {
 		            	
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
-		            case "stage-edit-name" :
+		            case "stage-edit-basic-info" :
 		            	if(stageID==0){
 		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
 		            	}
@@ -114,6 +116,12 @@ public class EditStage extends HttpServlet {
 		            	for(StageGoal goal: editedStage.getGoals()){
 		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
 		            	}
+		            	
+		            	for(MapStageTaskTemplate stageTaskInfo : editedStage.getMapStageTaskTemplates().values()){
+		            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
+		            		stageTaskInfo.setTemplateRepetitions(templateReps);
+		            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
+		            	}	      
 		            	
 		            	editedStage.update();
 		            	

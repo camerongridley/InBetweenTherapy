@@ -34,7 +34,7 @@
 	</form>
 	
 	<form class="form-horizontal" action="/secure/EditStage" method="POST">
-		<input type="hidden" name="requestedAction" value="stage-edit-name">
+		<input type="hidden" name="requestedAction" value="stage-edit-basic-info">
 		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">	
@@ -63,6 +63,7 @@
 			</div>
 				
 			<c:forEach items="${stage.goals }" var="goal">
+			<div class="form-horizontal">
 					<div class="col-sm-11">
 		                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
 		            </div>
@@ -71,7 +72,7 @@
 						  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 						</a>
 		            </div>
-
+			</div>
 	            
 			</c:forEach>
 				
@@ -124,7 +125,7 @@
 			<div class="col-sm-2">
 				<div class="panel panel-primary panel-task" id="taskReps" title="Number of repetitions.">
 				<div class="panel-heading">
-				  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="repetitions${task.taskID }" name="repetitions${task.taskID }">
+				  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="taskTemplateRepetitions${task.taskID }" name="taskTemplateRepetitions${task.taskID }">
                     <option  value="1" <c:if test="${mappedStageTaskInfo.templateRepetitions==1 }">selected</c:if>>1</option>
 					<option  value="2" <c:if test="${mappedStageTaskInfo.templateRepetitions==2 }">selected</c:if>>2</option>
 					<option  value="3" <c:if test="${mappedStageTaskInfo.templateRepetitions==3}">selected</c:if>>3</option>
@@ -144,8 +145,8 @@
 			</div><!-- end row -->
 				
 			</c:forEach>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+        <div class="row">
+            <div class="col-sm-12 save-button">
                 <button type="submit" class="btn btn-default">Save</button>
             </div>
         </div>

@@ -73,6 +73,10 @@ public class MapStageTaskTemplate {
 		this.templateRepetitions = templateRepetitions;
 	}
 	
+	protected void update(Connection cn) throws SQLException{
+		dao.mapStageTaskTemplateUpdate(cn, this);
+	}
+	
 	protected void create(Connection cn) throws SQLException{
 		dao.mapStageTaskTemplateCreate(cn, this);
 	}

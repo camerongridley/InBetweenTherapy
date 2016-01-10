@@ -573,6 +573,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         		goal.update(cn);
         	}
         	
+        	for(MapStageTaskTemplate stageTaskTemplate : this.mapStageTaskTemplates.values()){
+        		stageTaskTemplate.update(cn);
+        	}
+        	
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
