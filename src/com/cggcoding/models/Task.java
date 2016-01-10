@@ -42,7 +42,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private boolean extraTask;
 	private boolean template;
 	private int templateID;
-	int repetitions;
+	int repetitions;//TODO refactor to clientRepetition
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	

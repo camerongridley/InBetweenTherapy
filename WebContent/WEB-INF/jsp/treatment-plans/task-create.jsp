@@ -26,28 +26,52 @@
 					<h3>Add a Predefined Task</h3>
 				</div>
 				
-		        <div class="form-group">
-		            <label for="defaultStage" class="col-sm-2 control-label">Default Task</label>
-		            <div class="col-sm-10">
-		                <select class="form-control" id="defaultTaskList" name="taskID">
-		                    <option  value="">Select a default task.</option>
-		                    <c:forEach items="${defaultTasks}" var="defaultTask">
-		                        <option value="${defaultTask.taskID}">${fn:escapeXml(defaultTask.title)}</option>
-		                    </c:forEach>
-		                </select>
-		            </div>
-		        </div>
-		        <div class="form-group">
-		        <div class="col-sm-offset-2 col-sm-10">
-		        <p>Preview of selected task goes here.</p>
-		        </div>
-		        </div>
-		
-		        <div class="form-group">
-		            <div class="col-sm-offset-2 col-sm-10">
-		                <button type="submit" class="btn btn-default">Save</button>
-		            </div>
-		        </div>
+				<div class="form-horizontal">
+			        <div class="form-group">
+			            <label for="defaultStage" class="col-sm-2 control-label">Default Task</label>
+			            <div class="col-sm-10">
+			                <select class="form-control" id="defaultTaskList" name="taskID">
+			                    <option  value="">Select a default task.</option>
+			                    <c:forEach items="${defaultTasks}" var="defaultTask">
+			                        <option value="${defaultTask.taskID}">${fn:escapeXml(defaultTask.title)}</option>
+			                    </c:forEach>
+			                </select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+				        <div class="col-sm-offset-2 col-sm-2">
+				        	<div class="panel panel-primary panel-task" id="taskReps" title="Number of repetitions.">
+								<div class="panel-heading">
+								  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="taskReps" name="taskReps">
+				                    <option  value="1" <c:if test="${mappedStageTaskInfo.templateRepetitions==1 }">selected</c:if>>1</option>
+									<option  value="2" <c:if test="${mappedStageTaskInfo.templateRepetitions==2 }">selected</c:if>>2</option>
+									<option  value="3" <c:if test="${mappedStageTaskInfo.templateRepetitions==3}">selected</c:if>>3</option>
+									<option  value="4" <c:if test="${mappedStageTaskInfo.templateRepetitions==4 }">selected</c:if>>4</option>
+									<option  value="5" <c:if test="${mappedStageTaskInfo.templateRepetitions==5 }">selected</c:if>>5</option>
+									<option  value="6" <c:if test="${mappedStageTaskInfo.templateRepetitions==6 }">selected</c:if>>6</option>
+									<option  value="7" <c:if test="${mappedStageTaskInfo.templateRepetitions==7 }">selected</c:if>>7</option>
+									<option  value="8" <c:if test="${mappedStageTaskInfo.templateRepetitions==8 }">selected</c:if>>8</option>
+									<option  value="9" <c:if test="${mappedStageTaskInfo.templateRepetitions==9 }">selected</c:if>>9</option>
+									<option  value="10" <c:if test="${mappedStageTaskInfo.templateRepetitions==10 }">selected</c:if>>10</option>
+				                </select>
+				
+				                </div>
+				            </div>
+				        </div>
+			        </div>
+			        
+			        <div class="form-group">
+				        <div class="col-sm-offset-2 col-sm-10">
+				        	<p>Preview of selected task goes here.</p>
+				        </div>
+			        </div>
+			
+			        <div class="form-group">
+			            <div class="col-sm-offset-2 col-sm-10">
+			                <button type="submit" class="btn btn-default">Save</button>
+			            </div>
+			        </div>
+			    </div>
 		    </form>
 		</div>
 		

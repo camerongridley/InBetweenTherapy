@@ -68,7 +68,7 @@
 		                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
 		            </div>
 		            <div class="col-sm-1">    
-		                <a role="button" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" class="btn btn-default btn-xs pull-right" title="Delete goal:${goal.description }">
+		                <a role="button" class="btn btn-default btn-sm" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" title="Delete goal:${goal.description }">
 						  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 						</a>
 		            </div>
