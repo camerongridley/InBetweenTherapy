@@ -41,13 +41,13 @@ public class CommonServletFunctions {
 		String resourceLink = request.getParameter("resourceLink");
 		//boolean completed = request.getParameter("requestedAction");
 		//LocalDateTime dateCompleted = request.getParameter("requestedAction"); - set in the service layer when task is marked complete
-		int taskOrder =  ParameterUtils.parseIntParameter(request, "taskOrder");
+		int clientTaskOrder =  ParameterUtils.parseIntParameter(request, "clientTaskOrder");
 		boolean extraTask = ParameterUtils.getBooleanParameter(request, "isExtraTask"); 
 		boolean template = ParameterUtils.getBooleanParameter(request, "isTemplate"); 
 		int templateID = ParameterUtils.parseIntParameter(request, "templateID");
-		int repetitions = ParameterUtils.parseIntParameterDefaultIsOne(request, "repetitions");
+		int clientRepetition = ParameterUtils.parseIntParameterDefaultIsOne(request, "clientRepetition");
 		
-		TaskGeneric genericTask = TaskGeneric.getInstanceWithoutTaskID(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template, templateID, repetitions);
+		TaskGeneric genericTask = TaskGeneric.getInstanceWithoutTaskID(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, clientTaskOrder, extraTask, template, templateID, clientRepetition);
 		genericTask.setTaskID(taskID);
 		
 		switch(taskTypeID){

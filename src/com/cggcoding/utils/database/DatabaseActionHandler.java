@@ -84,7 +84,7 @@ public interface DatabaseActionHandler {
 	
 	List<StageGoal> stageLoadGoals(Connection cn, int stageID) throws SQLException, ValidationException;
 
-	List<Task> stageLoadTasks(Connection cn, int stageID) throws SQLException;
+	List<Task> stageLoadClientTasks(Connection cn, int stageID) throws SQLException;
 
 	Stage stageLoadBasic(Connection cn, int stageID) throws SQLException, ValidationException;
 	
@@ -105,9 +105,9 @@ public interface DatabaseActionHandler {
 	 */
 	List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException;
 	
-	List<Task> stageLoadTaskTemplates(Connection cn, int stageID) throws SQLException;
+	List<Task> stageLoadTemplateTasks(Connection cn, int stageID) throws SQLException;
 	
-	List<Task> stageUpdateTaskTemplates(Connection cn, int stageID, List<Task> taskTemplates) throws SQLException;
+	List<Task> stageUpdateTemplateTasks(Connection cn, int stageID, List<Task> taskTemplates) throws SQLException;
 	
 	//**************************************************************************************************
 	//*************************************** Stage Goal Methods ***************************************

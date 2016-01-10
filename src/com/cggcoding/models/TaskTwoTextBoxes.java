@@ -32,12 +32,12 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	}
 	
 	private TaskTwoTextBoxes(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,
-			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,
-			boolean extraTask, boolean template, int templateID, int repetitions,
+			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int clientTaskOrder,
+			boolean extraTask, boolean template, int templateID, int clientRepetition,
 			String extraTextLabel1, String extraTextValue1,
 			String extraTextLabel2, String extraTextValue2) {
 		super(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed,
-				dateCompleted, taskOrder, extraTask, template, templateID, repetitions);
+				dateCompleted, clientTaskOrder, extraTask, template, templateID, clientRepetition);
 		this.extraTextLabel1 = extraTextLabel1;
 		this.extraTextValue1 = extraTextValue1;
 		this.extraTextLabel2 = extraTextLabel2;
@@ -57,20 +57,20 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	}
 	
 	public static TaskTwoTextBoxes getInstanceFull(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,	String instructions, 
-			String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder,boolean extraTask, boolean template, int templateID, int repetitions,
+			String resourceLink, boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition,
 			String extraTextLabel1, String extraTextValue1,
 			String extraTextLabel2, String extraTextValue2){
 		
 		return new TaskTwoTextBoxes(taskID, stageID, userID, taskTypeID, parentTaskID, title,instructions, 
-			resourceLink, completed, dateCompleted, taskOrder, extraTask, template, templateID, repetitions,
+			resourceLink, completed, dateCompleted, clientTaskOrder, extraTask, template, templateID, clientRepetition,
 			extraTextLabel1, extraTextValue1,
 			extraTextLabel2, extraTextValue2);
 	}
 	
 	public static TaskTwoTextBoxes addDataToGenericTask(TaskGeneric genericTask, String extraTextLabel1, String extraTextValue1,String extraTextLabel2, String extraTextValue2){
 		return new TaskTwoTextBoxes(genericTask.getTaskID(), genericTask.getStageID(), genericTask.getUserID(), genericTask.getTaskTypeID(), genericTask.getParentTaskID(), genericTask.getTitle(),
-				genericTask.getInstructions(), genericTask.getResourceLink(), genericTask.isCompleted(), genericTask.getDateCompleted(), genericTask.getTaskOrder(),
-				genericTask.isExtraTask(), genericTask.isTemplate(), genericTask.getTemplateID(), genericTask.getRepetitions(),
+				genericTask.getInstructions(), genericTask.getResourceLink(), genericTask.isCompleted(), genericTask.getDateCompleted(), genericTask.getClientTaskOrder(),
+				genericTask.isExtraTask(), genericTask.isTemplate(), genericTask.getTemplateID(), genericTask.getClientRepetition(),
 				extraTextLabel1, extraTextValue1,
 				extraTextLabel2, extraTextValue2);
 	}
@@ -140,7 +140,7 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	@Override
 	public Task copy(){
 		TaskTwoTextBoxes task =  getInstanceFull(0, getStageID(), getUserID(), getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
-					isCompleted(), getDateCompleted(), getTaskOrder(), isExtraTask(), false, getTemplateID(), getRepetitions(),
+					isCompleted(), getDateCompleted(), getClientTaskOrder(), isExtraTask(), false, getTemplateID(), getClientRepetition(),
 					extraTextLabel1, extraTextValue1, extraTextLabel2, extraTextValue2);
 		
 		return task;

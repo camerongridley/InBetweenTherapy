@@ -38,27 +38,6 @@
 			                </select>
 			            </div>
 			        </div>
-			        <div class="form-group">
-				        <div class="col-sm-offset-2 col-sm-2">
-				        	<div class="panel panel-primary panel-task" id="taskReps" title="Number of repetitions.">
-								<div class="panel-heading">
-								  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="taskReps" name="taskReps">
-				                    <option  value="1" <c:if test="${mappedStageTaskInfo.templateRepetitions==1 }">selected</c:if>>1</option>
-									<option  value="2" <c:if test="${mappedStageTaskInfo.templateRepetitions==2 }">selected</c:if>>2</option>
-									<option  value="3" <c:if test="${mappedStageTaskInfo.templateRepetitions==3}">selected</c:if>>3</option>
-									<option  value="4" <c:if test="${mappedStageTaskInfo.templateRepetitions==4 }">selected</c:if>>4</option>
-									<option  value="5" <c:if test="${mappedStageTaskInfo.templateRepetitions==5 }">selected</c:if>>5</option>
-									<option  value="6" <c:if test="${mappedStageTaskInfo.templateRepetitions==6 }">selected</c:if>>6</option>
-									<option  value="7" <c:if test="${mappedStageTaskInfo.templateRepetitions==7 }">selected</c:if>>7</option>
-									<option  value="8" <c:if test="${mappedStageTaskInfo.templateRepetitions==8 }">selected</c:if>>8</option>
-									<option  value="9" <c:if test="${mappedStageTaskInfo.templateRepetitions==9 }">selected</c:if>>9</option>
-									<option  value="10" <c:if test="${mappedStageTaskInfo.templateRepetitions==10 }">selected</c:if>>10</option>
-				                </select>
-				
-				                </div>
-				            </div>
-				        </div>
-			        </div>
 			        
 			        <div class="form-group">
 				        <div class="col-sm-offset-2 col-sm-10">
@@ -129,25 +108,7 @@
 	                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${fn:escapeXml(task.resourceLink) }"/>" placeholder="Add a link to related resources for this task.">
 	            </div>
 	        </div>
-	        
-			<div class="form-group">
-	            <label for="repetitions" class="col-sm-2 control-label">Repetitions</label>
-	            <div class="col-sm-2">
-	            	<select class="form-control" id="repetitions" name="repetitions">
-	                    <option  value="1">1</option>
-						<option  value="2">2</option>
-						<option  value="3">3</option>
-						<option  value="4">4</option>
-						<option  value="5">5</option>
-						<option  value="6">6</option>
-						<option  value="7">7</option>
-						<option  value="8">8</option>
-						<option  value="9">9</option>
-						<option  value="10">10</option>
-	                </select>
-	              
-	            </div>
-	        </div>
+
 	        </c:if>
 	        
 			<c:if test="${task.taskTypeID==2 }">

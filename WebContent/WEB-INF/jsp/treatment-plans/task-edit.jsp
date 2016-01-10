@@ -59,7 +59,7 @@
 		<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
-		<input type="hidden" name="taskOrder" value="${task.taskOrder }">
+		<input type="hidden" name="clientTaskOrder" value="${task.clientTaskOrder }">
 		<input type="hidden" name="stageToReturnTo" value="${stageToReturnTo }">
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 				
@@ -83,22 +83,7 @@
         </div>
         <c:if test="${task.template }">
         	<div class="form-group">
-	            <label for="repetitions" class="col-sm-2 control-label">Repetitions</label>
-	            <div class="col-sm-2">
-	            	<select class="form-control" id="repetitions" name="repetitions">
-	                    <option  value="1" <c:if test="${task.repetitions==1 }">selected</c:if>>1</option>
-						<option  value="2" <c:if test="${task.repetitions==2 }">selected</c:if>>2</option>
-						<option  value="3" <c:if test="${task.repetitions==3}">selected</c:if>>3</option>
-						<option  value="4" <c:if test="${task.repetitions==4 }">selected</c:if>>4</option>
-						<option  value="5" <c:if test="${task.repetitions==5 }">selected</c:if>>5</option>
-						<option  value="6" <c:if test="${task.repetitions==6 }">selected</c:if>>6</option>
-						<option  value="7" <c:if test="${task.repetitions==7 }">selected</c:if>>7</option>
-						<option  value="8" <c:if test="${task.repetitions==8 }">selected</c:if>>8</option>
-						<option  value="9" <c:if test="${task.repetitions==9 }">selected</c:if>>9</option>
-						<option  value="10" <c:if test="${task.repetitions==10 }">selected</c:if>>10</option>
-	                </select>
-	              
-	            </div>
+	            
 	        </div>
         </c:if>
         <c:if test="${task.taskTypeID==2 }">

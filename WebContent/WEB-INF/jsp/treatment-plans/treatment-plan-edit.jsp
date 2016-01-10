@@ -199,9 +199,10 @@
 						</thead>
 						<tbody>
 							<c:forEach items="${stage.tasks }" var="task">
+							<c:set var="mappedStageTaskInfo" value="${stage.mapStageTaskTemplates[task.taskID]}" />
 								<tr>
-									<!-- <th scope="row">${task.taskOrder}</th>-->
-									<td>${task.title} <span class="badge" title="Number of repetitions.">${task.repetitions }</span>
+									<!-- <th scope="row">${task.clientTaskOrder}</th>-->
+									<td>${task.title} <span class="badge" title="Number of repetitions.">${mappedStageTaskInfo.templateRepetitions }</span>
 									
 										<!-- <a role="button"
 										href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"

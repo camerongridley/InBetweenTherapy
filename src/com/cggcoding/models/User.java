@@ -142,14 +142,14 @@ public abstract class User implements Serializable{
     			task.setUserID(userIDTakingNewPlan);
     			task.setTemplate(false);
     			task.setTemplateID(task.getTaskID());
-    			for(int i = 0; i < task.getRepetitions(); i++){
+    			for(int i = 0; i < task.getClientRepetition(); i++){//TODO change this and other references to StageTaskMap templateRepetitions
     				Task taskRep = task.copy();
     				
-    				if(task.getRepetitions() > 1){
+    				if(task.getClientRepetition() > 1){
     					taskRep.setTitle(task.getTitle() + " (" + (i+1) + ")");
     				}
     				
-    				taskRep.setTaskOrder(taskRepetitionsAdded.size());
+    				taskRep.setClientTaskOrder(taskRepetitionsAdded.size());
     				taskRepetitionsAdded.add(taskRep);
     			}
     			

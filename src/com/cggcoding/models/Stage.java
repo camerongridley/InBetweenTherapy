@@ -15,6 +15,7 @@ import java.util.*;
 
 import org.apache.commons.dbutils.DbUtils;
 
+//UNSURE Consider creating subclasses of Stage: ClientStage and TemplateStage since some vairables and methods are only valid for use with each type - now they are all housed in one class, so would be cleaner if they were split up
 public class Stage implements Serializable, Completable, DatabaseModel {
 
 	/**
@@ -433,7 +434,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
     			stage.addTask(Task.load(cn, taskID));
     		}
     	}else{
-    		stage.setTasks(dao.stageLoadTasks(cn, stage.getStageID()));
+    		stage.setTasks(dao.stageLoadClientTasks(cn, stage.getStageID()));
     	}
 		
 
@@ -690,7 +691,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		task.setTemplate(false);
 		task.setUserID(this.userID);
 		task.setStageID(this.stageID);
-		task.setTaskOrder(this.getTaskOrderDefaultValue());
+		task.setClientTaskOrder(this.getTaskOrderDefaultValue());
 		
 		task.create();
 		this.addTask(task);
@@ -701,7 +702,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public Task createNewTask(Task taskBeingCopied) throws DatabaseException, ValidationException{
 		taskBeingCopied.setUserID(this.userID);
 		taskBeingCopied.setStageID(this.stageID);
-		taskBeingCopied.setTaskOrder(this.getTaskOrderDefaultValue());
+		taskBeingCopied.setClientTaskOrder(this.getTaskOrderDefaultValue());
 		
 		return taskBeingCopied.create();
 	}
@@ -770,12 +771,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	protected List<Task> updateTaskTemplateList(Connection cn, List<Task> taskTemplates) throws SQLException{
-		return dao.stageUpdateTaskTemplates(cn, this.stageID, taskTemplates);
+		return dao.stageUpdateTemplateTasks(cn, this.stageID, taskTemplates);
 	}
 	
 	private void reorderTasks(){
 		for(int i=0; i < this.tasks.size(); i++){
-			tasks.get(i).setTaskOrder(i);
+			tasks.get(i).setClientTaskOrder(i);
 		}
 	}
 	

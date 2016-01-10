@@ -14,15 +14,15 @@ public class MapStageTaskTemplate {
 
 	private int stageID;
 	private int taskID;
-	private int taskOrder;
+	private int templateTaskOrder;
 	private int templateRepetitions;
 	
 	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
-	public MapStageTaskTemplate(int stageID, int taskID, int taskOrder, int templateRepetitions) {
+	public MapStageTaskTemplate(int stageID, int taskID, int templateTaskOrder, int templateRepetitions) {
 		this.stageID = stageID;
 		this.taskID = taskID;
-		this.taskOrder = taskOrder;
+		this.templateTaskOrder = templateTaskOrder;
 		this.templateRepetitions = templateRepetitions;
 	}
 
@@ -47,21 +47,21 @@ public class MapStageTaskTemplate {
 	}
 
 
-	public int getTaskOrder() {
-		return taskOrder;
+	public int getTemplateTaskOrder() {
+		return templateTaskOrder;
 	}
 
 
-	public void setTaskOrder(int taskOrder) {
-		this.taskOrder = taskOrder;
+	public void setTemplateTaskOrder(int templateTaskOrder) {
+		this.templateTaskOrder = templateTaskOrder;
 	}
 
-	/**Since taskOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
+	/**Since templateTaskOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
 	 *the order values start with 1.
 	 * @return
 	 */
-	public int getTaskOrderForUserDisplay(){
-		return taskOrder + 1;
+	public int getTemplateTaskOrderForUserDisplay(){
+		return templateTaskOrder + 1;
 	}
 
 	public int getTemplateRepetitions() {

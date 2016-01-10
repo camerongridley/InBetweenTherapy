@@ -38,11 +38,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private String resourceLink;
 	private boolean completed;
 	private LocalDateTime dateCompleted;
-	private int taskOrder;
+	private int clientTaskOrder;
 	private boolean extraTask;
 	private boolean template;
 	private int templateID;
-	int repetitions;//TODO refactor to clientRepetition
+	int clientRepetition;
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
@@ -62,11 +62,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.resourceLink = null;
 		this.completed = false;
 		this.dateCompleted = null;
-		this.taskOrder = 0;
+		this.clientTaskOrder = 0;
 		this.extraTask = false;
 		this.template = false;
 		this.templateID = 0;
-		this.repetitions = 1;
+		this.clientRepetition = 1;
 
 	}
 	
@@ -79,11 +79,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @param title
 	 * @param instructions
 	 * @param resourceLink
-	 * @param taskOrder
+	 * @param clientTaskOrder
 	 * @param extraTask
 	 * @param template
 	 */
-	protected Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template, int templateID, int repetitions){
+	protected Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition){
 		this.taskID = 0;
 		this.stageID = stageID;
 		this.userID = userID;
@@ -94,11 +94,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.resourceLink = resourceLink;
 		this.completed = false;
 		this.dateCompleted = null;
-		this.taskOrder = taskOrder;
+		this.clientTaskOrder = clientTaskOrder;
 		this.extraTask = extraTask;
 		this.template = template;
 		this.templateID = templateID;
-		this.repetitions = repetitions;
+		this.clientRepetition = clientRepetition;
 	}
 	
 	
@@ -113,11 +113,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @param resourceLink
 	 * @param completed
 	 * @param dateCompleted
-	 * @param taskOrder
+	 * @param clientTaskOrder
 	 * @param extraTask
 	 * @param template
 	 */
-	protected Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template, int templateID, int repetitions){
+	protected Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition){
 		this.taskID = taskID;
 		this.stageID = stageID;
 		this.userID = userID;
@@ -128,16 +128,16 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.resourceLink = resourceLink;
 		this.completed = completed;
 		this.dateCompleted = dateCompleted;
-		this.taskOrder = taskOrder;
+		this.clientTaskOrder = clientTaskOrder;
 		this.extraTask = extraTask;
 		this.template = template;
 		this.templateID = templateID;
-		this.repetitions = repetitions;
+		this.clientRepetition = clientRepetition;
 	}
 	
 	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
 		taskTemplate.setStageID(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID);
-		taskTemplate.setTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
+		taskTemplate.setClientTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
 		taskTemplate.setTemplate(true);
 		
 		taskTemplate.create();
@@ -349,7 +349,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @param resourceLink
 	 * @param completed
 	 * @param dateCompleted
-	 * @param taskOrder
+	 * @param clientTaskOrder
 	 * @param extraTask
 	 * @param template
 	 * @return
@@ -484,22 +484,21 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return dateCompleted;
 	}
 	
-	//TODO rename to reflect that this order is only for when they are client-owned tasks or for use in a client's plan
-	public int getTaskOrder() {
-		return taskOrder;
+	public int getClientTaskOrder() {
+		return clientTaskOrder;
 	}
 
-	public void setTaskOrder(int taskOrder) {
-		this.taskOrder = taskOrder;
+	public void setClientTaskOrder(int clientTaskOrder) {
+		this.clientTaskOrder = clientTaskOrder;
 	}
 	
 	//FIXME currently not being used since linking Stage templates directly to Task templates and Task templates all have an order value of 0. The order for these tasks is stored in the task-stage mapping table.
-	/**Since taskOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
+	/**Since clientTaskOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
 	 *the order values start with 1.
 	 * @return
 	 */
-	public int getTaskOrderForUserDisplay(){
-		return taskOrder + 1;
+	public int getClientTaskOrderForUserDisplay(){
+		return clientTaskOrder + 1;
 	}
 
 	public boolean isExtraTask() {
@@ -518,12 +517,12 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.templateID = templateID;
 	}
 
-	public int getRepetitions() {
-		return repetitions;
+	public int getClientRepetition() {
+		return clientRepetition;
 	}
 
-	public void setRepetitions(int repetitions) {
-		this.repetitions = repetitions;
+	public void setClientRepetition(int clientRepetition) {
+		this.clientRepetition = clientRepetition;
 	}
 
 	public boolean isTemplate() {
@@ -602,7 +601,6 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		} else {
 			return 0;
 		}
-		//return (int)(((double)repetitionsCompleted/(double)repetitions) * 100);
 	}
 
 	public String getTaskTypeName(){

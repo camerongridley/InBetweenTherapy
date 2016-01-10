@@ -206,9 +206,9 @@ public class EditStage extends HttpServlet {
 		}
 		
 		for(Task task : stage.getTasks()){
-			int order = ParameterUtils.parseIntParameter(request, "taskOrder" + task.getTaskID());
-			int repetitions = ParameterUtils.parseIntParameter(request, "taskRep" + task.getTaskID());;
-			stageTaskDetails.add(new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), order, repetitions));
+			int templateOrder = ParameterUtils.parseIntParameter(request, "templateTaskOrder" + task.getTaskID());
+			int templateRepetitions = ParameterUtils.parseIntParameter(request, "taskRep" + task.getTaskID());;
+			stageTaskDetails.add(new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), templateOrder, templateRepetitions));
 		}
 		
 		return null;
