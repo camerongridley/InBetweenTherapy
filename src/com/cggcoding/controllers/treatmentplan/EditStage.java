@@ -67,7 +67,8 @@ public class EditStage extends HttpServlet {
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
 		
-		
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
+		int originalOrder = ParameterUtils.parseIntParameter(request, "templateTaskOrder");
 		int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		String stageTitle = request.getParameter("stageTitle");
 		String stageDescription = request.getParameter("stageDescription");
@@ -123,7 +124,7 @@ public class EditStage extends HttpServlet {
 		            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
 		            	}	      
 		            	
-		            	editedStage.update();
+		            	editedStage.update();//OPTIMIZE could create a new method that takes all relevant info and calls static method in stage that loads and updates all with the same connection
 		            	
 		            	retrieveStageTaskDetails(request, editedStage);
 		            	
@@ -176,7 +177,27 @@ public class EditStage extends HttpServlet {
 						request.setAttribute("stage", editedStage);
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;
+					case("increase-task-order"):					
+						
+						editedStage = Stage.load(stageID);
+						
+						editedStage.orderIncrementTemplateTask(taskID, originalOrder);
+						
+						editedStage = Stage.load(stageID);//FIXME delete this once I've properly updated Stage.orderIncrementTemplateTask() to reorder the LinkedHashMap
+						
+						request.setAttribute("stage", editedStage);
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						break;
+					case("decrease-task-order"):
+						editedStage = Stage.load(stageID);
 					
+						editedStage.orderDecrementTemplateTask(taskID, originalOrder);
+						
+						editedStage = Stage.load(stageID);//FIXME delete this once I've properly updated Stage.orderIncrementTemplateTask() to reorder the LinkedHashMap
+						
+						request.setAttribute("stage", editedStage);
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						break;
 		            default:
 
 		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";

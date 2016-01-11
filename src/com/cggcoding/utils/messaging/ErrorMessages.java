@@ -46,6 +46,9 @@ public final class ErrorMessages {
 	//User
 	public static final String NO_PLAN_FOUND_FOR_USER = "That treatment plan cannot be found for this user.  Please try again or contact customer support";
 	
+	//StageTaskTemplateMap
+	public static final String TASK_IS_FIRST = "You cannot increase this tasks order any more as it is already first.";
+	public static final String TASK_IS_LAST = "You cannot decrease this tasks order any more as it is already last.";
 	//Other
 	
 	

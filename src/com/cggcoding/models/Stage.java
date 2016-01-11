@@ -561,6 +561,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return createTemplate(templateStage.getUserID(), templateStage.getTitle(), templateStage.getDescription());
 	}
 	
+	//TODO rename to updateTemplates
 	@Override
 	public void update()  throws ValidationException, DatabaseException {
 		Connection cn = null;
@@ -568,15 +569,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         try {
         	cn = dao.getConnection();
         	
-        	updateBasic(cn);
-        	
-        	for(StageGoal goal : goals){
-        		goal.update(cn);
-        	}
-        	
-        	for(MapStageTaskTemplate stageTaskTemplate : this.mapStageTaskTemplates.values()){
-        		stageTaskTemplate.update(cn);
-        	}
+        	update(cn);
         	
         } catch (SQLException e) {
             e.printStackTrace();
@@ -585,6 +578,21 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 
 			DbUtils.closeQuietly(cn);
         }
+		
+	}
+	
+	//TODO update to updateTemplates
+	public void update(Connection cn)  throws SQLException, ValidationException {
+
+    	updateBasic(cn);
+    	
+    	for(StageGoal goal : goals){
+    		goal.update(cn);
+    	}
+    	
+    	for(MapStageTaskTemplate stageTaskTemplate : this.mapStageTaskTemplates.values()){
+    		stageTaskTemplate.update(cn);
+    	}   	
 		
 	}
 	
@@ -778,6 +786,83 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		for(int i=0; i < this.tasks.size(); i++){
 			tasks.get(i).setClientTaskOrder(i);
 		}
+	}
+	
+	public void orderIncrementTemplateTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
+		Connection cn = null;
+		
+		if(originalOrder <= 0){
+			throw new ValidationException(ErrorMessages.TASK_IS_FIRST);
+		}
+		
+		try {
+			
+        	cn = dao.getConnection();
+        	
+        	int prevTaskID = 0;
+        	
+        	for(MapStageTaskTemplate mapStageTaskTemplate : this.mapStageTaskTemplates.values()){
+        		//loop through map to find the task after the main one so
+        		if(mapStageTaskTemplate.getTemplateTaskOrder()==originalOrder-1){
+        			prevTaskID = mapStageTaskTemplate.getTaskID();
+        			break;
+        		}
+        	}
+        	
+        	this.mapStageTaskTemplates.get(mainTaskID).setTemplateTaskOrder(originalOrder-1);
+        	this.mapStageTaskTemplates.get(prevTaskID).setTemplateTaskOrder(originalOrder);
+        	
+        	dao.mapStageTaskTemplateUpdate(cn, this.getMappedTaskTemplate(mainTaskID));
+        	dao.mapStageTaskTemplateUpdate(cn, this.getMappedTaskTemplate(prevTaskID));
+        	
+        	//FIXME need to reorder the LinkedHashMap here - Use comparator?
+        	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }		
+			
+	}
+	
+	//FIXME check if order is being set to an invalid number such as more than the size of the map
+	public void orderDecrementTemplateTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
+		Connection cn = null;
+		
+		if(originalOrder == this.getMapStageTaskTemplates().size()-1){
+			throw new ValidationException(ErrorMessages.TASK_IS_LAST);
+		}
+		
+		try {
+			
+        	cn = dao.getConnection();
+        	
+        	int nextTaskID = 0;
+        	
+        	for(MapStageTaskTemplate mapStageTaskTemplate : this.mapStageTaskTemplates.values()){
+        		//loop through map to find the task after the main one so
+        		if(mapStageTaskTemplate.getTemplateTaskOrder()==originalOrder+1){
+        			nextTaskID = mapStageTaskTemplate.getTaskID();
+        			break;
+        		}
+        	}
+        	
+        	this.mapStageTaskTemplates.get(mainTaskID).setTemplateTaskOrder(originalOrder+1);
+        	this.mapStageTaskTemplates.get(nextTaskID).setTemplateTaskOrder(originalOrder);
+        	
+        	dao.mapStageTaskTemplateUpdate(cn, this.getMappedTaskTemplate(mainTaskID));
+        	dao.mapStageTaskTemplateUpdate(cn, this.getMappedTaskTemplate(nextTaskID));
+        	
+        	//FIXME need to reorder the LinkedHashMap here - Use comparator?
+        	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }	
+		
 	}
 	
 	/**Creates a copy of the Stage and sets the copy's stageID to 0.  DOES NOT save anything to database.

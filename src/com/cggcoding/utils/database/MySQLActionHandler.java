@@ -1668,7 +1668,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-	public void mapStageTaskTemplateUpdate(Connection cn, MapStageTaskTemplate map) throws SQLException{
+	public void mapStageTaskTemplateUpdate(Connection cn, MapStageTaskTemplate stageTaskTemplateMap) throws SQLException{
 		PreparedStatement ps = null;
         
         try {
@@ -1678,10 +1678,10 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         	
             ps = cn.prepareStatement(sql);
             
-            ps.setInt(1, map.getTemplateTaskOrder());
-            ps.setInt(2, map.getTemplateRepetitions());
-            ps.setInt(3, map.getStageID());
-            ps.setInt(4, map.getTaskID());
+            ps.setInt(1, stageTaskTemplateMap.getTemplateTaskOrder());
+            ps.setInt(2, stageTaskTemplateMap.getTemplateRepetitions());
+            ps.setInt(3, stageTaskTemplateMap.getStageID());
+            ps.setInt(4, stageTaskTemplateMap.getTaskID());
 
             int success = ps.executeUpdate();
  	
