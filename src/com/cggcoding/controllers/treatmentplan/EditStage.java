@@ -118,7 +118,7 @@ public class EditStage extends HttpServlet {
 		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
 		            	}
 		            	
-		            	for(MapStageTaskTemplate stageTaskInfo : editedStage.getMapStageTaskTemplates().values()){
+		            	for(MapStageTaskTemplate stageTaskInfo : editedStage.getMapStageTaskTemplates()){
 		            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
 		            		stageTaskInfo.setTemplateRepetitions(templateReps);
 		            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
@@ -183,8 +183,6 @@ public class EditStage extends HttpServlet {
 						
 						editedStage.orderIncrementTemplateTask(taskID, originalOrder);
 						
-						editedStage = Stage.load(stageID);//FIXME delete this once I've properly updated Stage.orderIncrementTemplateTask() to reorder the LinkedHashMap
-						
 						request.setAttribute("stage", editedStage);
 						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;
@@ -192,8 +190,6 @@ public class EditStage extends HttpServlet {
 						editedStage = Stage.load(stageID);
 					
 						editedStage.orderDecrementTemplateTask(taskID, originalOrder);
-						
-						editedStage = Stage.load(stageID);//FIXME delete this once I've properly updated Stage.orderIncrementTemplateTask() to reorder the LinkedHashMap
 						
 						request.setAttribute("stage", editedStage);
 						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";

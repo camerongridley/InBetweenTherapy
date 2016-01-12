@@ -5,7 +5,6 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -1616,10 +1615,10 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
-	public LinkedHashMap<Integer, MapStageTaskTemplate> mapStageTaskTemplateLoad(Connection cn, int stageID) throws SQLException, ValidationException{
+	public List<MapStageTaskTemplate> mapStageTaskTemplateLoad(Connection cn, int stageID) throws SQLException, ValidationException{
     	PreparedStatement ps = null;
     	ResultSet rs = null;
-    	LinkedHashMap<Integer, MapStageTaskTemplate> stageTaskDetailMap = new LinkedHashMap<>();
+    	List<MapStageTaskTemplate> stageTaskDetailMap = new ArrayList<>();
         
         throwValidationExceptionIfTemplateHolderID(stageID);
         
@@ -1631,7 +1630,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 
             while (rs.next()){
             	MapStageTaskTemplate detail = new MapStageTaskTemplate(rs.getInt("stage_template_id_fk"), rs.getInt("task_generic_template_id_fk"), rs.getInt("template_task_order"), rs.getInt("template_repetitions"));
-            	stageTaskDetailMap.put(rs.getInt("task_generic_template_id_fk"), detail);
+            	stageTaskDetailMap.add(detail);
             }
 
         } finally {

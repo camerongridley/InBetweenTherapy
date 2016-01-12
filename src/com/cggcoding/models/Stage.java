@@ -30,7 +30,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	private int stageOrder; //the order of the stage within its treatment plan - if present decides the index it will be in the TreatmentPlan's List of Stages
 	private List<Task> tasks;
 	private List<Task> extraTasks; //for when user chooses to do more tasks than asked of - won't count toward progress meter but can be saved for review or other analysis (e.g. themes)
-	private LinkedHashMap<Integer, MapStageTaskTemplate> mapStageTaskTemplates;
+	private List<MapStageTaskTemplate> stageTaskTemplateMapList;
 	private boolean completed;
 	private double percentComplete;
 	private List<StageGoal> goals;
@@ -49,7 +49,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.stageOrder = stageOrder;
 		this.tasks = new ArrayList<>();;
 		this.extraTasks = new ArrayList<>();
-		this.mapStageTaskTemplates = new LinkedHashMap<>();
+		this.stageTaskTemplateMapList = new ArrayList<>();
 		this.completed = false;
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
@@ -70,7 +70,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.stageOrder = stageOrder;
 		this.tasks = tasks;
 		this.extraTasks = extraTasks;
-		this.mapStageTaskTemplates = new LinkedHashMap<>();
+		this.stageTaskTemplateMapList = new ArrayList<>();
 		this.completed = completed;
 		this.percentComplete = percentComplete;
 		this.goals = goals;
@@ -155,12 +155,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.extraTasks = extraTasks;
 	}
 
-	public LinkedHashMap<Integer, MapStageTaskTemplate> getMapStageTaskTemplates() {
-		return mapStageTaskTemplates;
+	public List<MapStageTaskTemplate> getMapStageTaskTemplates() {
+		return stageTaskTemplateMapList;
 	}
 
-	public void setMapStageTaskTemplates(LinkedHashMap<Integer, MapStageTaskTemplate> mapStageTaskTemplates) {
-		this.mapStageTaskTemplates = mapStageTaskTemplates;
+	public void setMapStageTaskTemplates(List<MapStageTaskTemplate> mapStageTaskTemplates) {
+		this.stageTaskTemplateMapList = mapStageTaskTemplates;
 	}
 
 	public Task getTaskByID(int taskID){
@@ -374,8 +374,14 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return null;
 	}
 	
-	public MapStageTaskTemplate getMappedTaskTemplate(int taskID){
-		return mapStageTaskTemplates.get(taskID);
+	public MapStageTaskTemplate getMappedTaskTemplateByTaskID(int taskID){
+		MapStageTaskTemplate found = null;
+		for(MapStageTaskTemplate stageTaskTemplate : stageTaskTemplateMapList){
+			if(taskID == stageTaskTemplate.getTaskID()){
+				found = stageTaskTemplate;
+			}
+		}
+		return found;
 	}
 
 	/**Loads the stage and all associated Tasks.  Checks if the Stage is a template.  If so, then it's Tasks are also templates and 
@@ -425,13 +431,13 @@ public class Stage implements Serializable, Completable, DatabaseModel {
     	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
     	
     	if(stage.isTemplate()){
-    		//get map of templates and set local map variable
-    		LinkedHashMap<Integer, MapStageTaskTemplate> taskMap = dao.mapStageTaskTemplateLoad(cn, stageID);
+    		//get list of templates and set local variable
+    		List<MapStageTaskTemplate> taskMap = dao.mapStageTaskTemplateLoad(cn, stageID);
     		stage.setMapStageTaskTemplates(taskMap);
     		
     		//loop through map and load Task templates to local List
-    		for(Integer taskID : taskMap.keySet()){
-    			stage.addTask(Task.load(cn, taskID));
+    		for(MapStageTaskTemplate stageTaskTempaltes : taskMap){
+    			stage.addTask(Task.load(cn, stageTaskTempaltes.getTaskID()));
     		}
     	}else{
     		stage.setTasks(dao.stageLoadClientTasks(cn, stage.getStageID()));
@@ -581,7 +587,6 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 	}
 	
-	//TODO update to updateTemplates
 	public void update(Connection cn)  throws SQLException, ValidationException {
 
     	updateBasic(cn);
@@ -590,7 +595,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
     		goal.update(cn);
     	}
     	
-    	for(MapStageTaskTemplate stageTaskTemplate : this.mapStageTaskTemplates.values()){
+    	for(MapStageTaskTemplate stageTaskTemplate : this.stageTaskTemplateMapList){
     		stageTaskTemplate.update(cn);
     	}   	
 		
@@ -788,6 +793,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		}
 	}
 	
+	//TODO decide if I want to keep int mainTaskID as an argument.  It isn't being used right now.
 	public void orderIncrementTemplateTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
 		Connection cn = null;
 		
@@ -797,25 +803,28 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 		try {
 			
+			MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
+			MapStageTaskTemplate prevStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder-1);
+			
+			//swap order values in objects
+			mainStageTaskMap.setTemplateTaskOrder(originalOrder-1);
+			prevStageTaskMap.setTemplateTaskOrder(originalOrder);
+			
+			//swap places in both the stageTaskMap and tasks List
+			this.stageTaskTemplateMapList.set(originalOrder-1, mainStageTaskMap);
+			this.stageTaskTemplateMapList.set(originalOrder, prevStageTaskMap);
+			
+			Task holder = tasks.get(originalOrder-1);
+			this.tasks.set(originalOrder-1, tasks.get(originalOrder));
+			this.tasks.set(originalOrder, holder);
+
+			
+			//update in database
         	cn = dao.getConnection();
+        		
+        	dao.mapStageTaskTemplateUpdate(cn, mainStageTaskMap);
+        	dao.mapStageTaskTemplateUpdate(cn, prevStageTaskMap);
         	
-        	int prevTaskID = 0;
-        	
-        	for(MapStageTaskTemplate mapStageTaskTemplate : this.mapStageTaskTemplates.values()){
-        		//loop through map to find the task after the main one so
-        		if(mapStageTaskTemplate.getTemplateTaskOrder()==originalOrder-1){
-        			prevTaskID = mapStageTaskTemplate.getTaskID();
-        			break;
-        		}
-        	}
-        	
-        	this.mapStageTaskTemplates.get(mainTaskID).setTemplateTaskOrder(originalOrder-1);
-        	this.mapStageTaskTemplates.get(prevTaskID).setTemplateTaskOrder(originalOrder);
-        	
-        	dao.mapStageTaskTemplateUpdate(cn, this.getMappedTaskTemplate(mainTaskID));
-        	dao.mapStageTaskTemplateUpdate(cn, this.getMappedTaskTemplate(prevTaskID));
-        	
-        	//FIXME need to reorder the LinkedHashMap here - Use comparator?
         	
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -826,7 +835,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			
 	}
 	
-	//FIXME check if order is being set to an invalid number such as more than the size of the map
+	//TODO decide if I want to keep int mainTaskID as an argument.  It isn't being used right now.
 	public void orderDecrementTemplateTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
 		Connection cn = null;
 		
@@ -836,25 +845,27 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 		try {
 			
+			MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
+			MapStageTaskTemplate nextStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder+1);
+			
+			//swap order values in objects
+			mainStageTaskMap.setTemplateTaskOrder(originalOrder+1);
+			nextStageTaskMap.setTemplateTaskOrder(originalOrder);
+
+			Task holder = tasks.get(originalOrder+1);
+			this.tasks.set(originalOrder+1, tasks.get(originalOrder));
+			this.tasks.set(originalOrder, holder);
+
+			
+			//swap places in the List
+			this.stageTaskTemplateMapList.set(originalOrder+1, mainStageTaskMap);
+			this.stageTaskTemplateMapList.set(originalOrder, nextStageTaskMap);
+			
+			//update in database
         	cn = dao.getConnection();
-        	
-        	int nextTaskID = 0;
-        	
-        	for(MapStageTaskTemplate mapStageTaskTemplate : this.mapStageTaskTemplates.values()){
-        		//loop through map to find the task after the main one so
-        		if(mapStageTaskTemplate.getTemplateTaskOrder()==originalOrder+1){
-        			nextTaskID = mapStageTaskTemplate.getTaskID();
-        			break;
-        		}
-        	}
-        	
-        	this.mapStageTaskTemplates.get(mainTaskID).setTemplateTaskOrder(originalOrder+1);
-        	this.mapStageTaskTemplates.get(nextTaskID).setTemplateTaskOrder(originalOrder);
-        	
-        	dao.mapStageTaskTemplateUpdate(cn, this.getMappedTaskTemplate(mainTaskID));
-        	dao.mapStageTaskTemplateUpdate(cn, this.getMappedTaskTemplate(nextTaskID));
-        	
-        	//FIXME need to reorder the LinkedHashMap here - Use comparator?
+        		
+        	dao.mapStageTaskTemplateUpdate(cn, mainStageTaskMap);
+        	dao.mapStageTaskTemplateUpdate(cn, nextStageTaskMap);
         	
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -892,4 +903,5 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public static List<Stage> getDefaultStages() throws DatabaseException, ValidationException{
 		return dao.stagesGetDefaults();
 	}
+	
 }

@@ -3,7 +3,6 @@ package com.cggcoding.utils.database;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,7 +123,7 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	//*************************************** Mapping Methods ***************************************
 	//**************************************************************************************************
-	LinkedHashMap<Integer, MapStageTaskTemplate> mapStageTaskTemplateLoad(Connection cn, int stageID)
+	List<MapStageTaskTemplate> mapStageTaskTemplateLoad(Connection cn, int stageID)
 			throws SQLException, ValidationException;
 	
 	void mapStageTaskTemplateCreate(Connection cn, MapStageTaskTemplate map) throws SQLException;

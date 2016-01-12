@@ -87,7 +87,7 @@
 		</label>
 	
 			<c:forEach items="${stage.tasks }" var="task">
-			<c:set var="mappedStageTaskInfo" value="${stage.mapStageTaskTemplates[task.taskID]}" />
+			<c:set var="mappedStageTaskInfo" value="${stage.getMappedTaskTemplateByTaskID(task.taskID)}" />
 			<input type="hidden" name="allTaskIDs" value="listItem${task.taskID }">
 			<div class="row">
 			<div class="col-sm-10">
