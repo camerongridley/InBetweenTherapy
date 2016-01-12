@@ -22,7 +22,7 @@ public class UserTherapist extends User implements Serializable{
 	private Map<Integer, UserClient> clientMap;
     private List<TreatmentIssue> defaultTreatmentIssues;
 
-    private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+    private static DatabaseActionHandler dao= new MySQLActionHandler();
         
     public UserTherapist(int userID, String email){
         super(userID, email);
@@ -43,8 +43,12 @@ public class UserTherapist extends User implements Serializable{
     }
     
     public Map<Integer, UserClient> loadClients() throws DatabaseException{
-    	this.clientMap = databaseActionHandler.userGetClientsByTherapistID(this.getUserID());
+    	this.clientMap = dao.userGetClientsByTherapistID(this.getUserID());
     	return clientMap;
+    }
+    
+    public List<TreatmentPlan> getAssignedClientTreatmentPlans(int clientID) throws DatabaseException, ValidationException{
+    	return dao.userGetTherapistAssignedPlans(clientID, this.getUserID());
     }
     
 }

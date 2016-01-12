@@ -379,6 +379,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		for(MapStageTaskTemplate stageTaskTemplate : stageTaskTemplateMapList){
 			if(taskID == stageTaskTemplate.getTaskID()){
 				found = stageTaskTemplate;
+				break;
 			}
 		}
 		return found;

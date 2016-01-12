@@ -7,7 +7,7 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Edit A Task</h1>
+	<h1>Edit Task <c:if test="${task.template}">Template</c:if></h1>
 </div>
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
