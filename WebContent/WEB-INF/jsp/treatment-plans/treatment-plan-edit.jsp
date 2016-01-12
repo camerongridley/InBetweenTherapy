@@ -199,7 +199,7 @@
 						</thead>
 						<tbody>
 							<c:forEach items="${stage.tasks }" var="task">
-							<c:set var="mappedStageTaskInfo" value="${stage.mapStageTaskTemplates[task.taskID]}" />
+							<c:set var="mappedStageTaskInfo" value="${stage.getMappedTaskTemplateByTaskID(task.taskID)}" />
 								<tr>
 									<!-- <th scope="row">${task.clientTaskOrder}</th>-->
 									<td>${task.title} <span class="badge" title="Number of repetitions.">${mappedStageTaskInfo.templateRepetitions }</span>
