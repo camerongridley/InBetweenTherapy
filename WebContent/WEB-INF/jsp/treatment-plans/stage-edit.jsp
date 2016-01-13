@@ -34,7 +34,7 @@
 	</form>
 	
 	<form class="form-horizontal" action="/secure/EditStage" method="POST">
-		<input type="hidden" name="requestedAction" value="stage-edit-name">
+		<input type="hidden" name="requestedAction" value="stage-edit-basic-info">
 		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">	
@@ -56,62 +56,98 @@
 			<div class="col-sm-12">
 				<label for="stageGoalList" class="control-label">Stage Goals
 					<button type="button" class="btn btn-default btn-xs" aria-label="Left Align" data-toggle="modal" data-target="#newStageGoalModal" title="Add a goal to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
-					
-					  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 					</button>
 					
 				</label>
 			</div>
 				
 			<c:forEach items="${stage.goals }" var="goal">
-	            <div class="col-xs-11">
-	                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
-	            </div>
-	            <div class="col-xs-1">    
-	                <a role="button" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" class="btn btn-default btn-xs pull-right" title="Delete goal:${goal.description }">
-					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-					</a>
+			<div class="form-horizontal">
+					<div class="col-sm-11">
+		                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
+		            </div>
+		            <div class="col-sm-1">    
+		                <a role="button" class="btn btn-default btn-sm" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" title="Delete goal:${goal.description }">
+						  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+						</a>
+		            </div>
+			</div>
 	            
-	            </div>
 			</c:forEach>
 				
 		</div>
 		
-		<label for="stageList" class="control-label">Tasks
+		<label for="taskList" class="control-label">Tasks
 
        			<a role="button" href="/secure/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</a>
 
 		</label>
+	
 			<c:forEach items="${stage.tasks }" var="task">
-				<div class="panel panel-default panel-task" id="stageList" title="Click the task title to expand and see details.">
-				  <div class="panel-heading">
-				  	<input type="hidden" name="taskID" value="${task.taskID}"/>
-				  	<input type="hidden" name="taskTitle" value="${task.title}"/>
-					<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
-			          ${task.taskOrderForUserDisplay } - <span class="">${task.title } </span>
-			        </a>
-			        <span class="badge" title="Number of repetitions.">${task.repetitions}</span>
-			        <a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Delete task:${task.title }">
-					  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-					</a>
-					
-			        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-right" title="Edit task: ${task.title }">
-					  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-					</a>
-					
-				  </div>
-				  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID}">
-					  <div class="panel-body">
-					    ${task.instructions } 
+			<c:set var="mappedStageTaskInfo" value="${stage.getMappedTaskTemplateByTaskID(task.taskID)}" />
+			<input type="hidden" name="allTaskIDs" value="listItem${task.taskID }">
+			<div class="row">
+			<div class="col-sm-10">
+				<div class="panel panel-default panel-task" id="taskList" title="Click the task title to expand and see details.">
+					  <div class="panel-heading">
+						  <div class="row">
+								<div class="col-sm-11">
+								
+								  	<input type="hidden" name="taskID" value="${task.taskID}"/>
+								  	<input type="hidden" name="taskTitle" value="${task.title}"/>
+								  	<a href="/secure/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&templateTaskOrder=${mappedStageTaskInfo.templateTaskOrder}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
+								  	&nbsp;<a href="/secure/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&templateTaskOrder=${mappedStageTaskInfo.templateTaskOrder}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
+									<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
+							          ${mappedStageTaskInfo.templateTaskOrderForUserDisplay } - <span class="">${task.title }</span>
+							        </a>   
+								</div>
+								<div class="col-sm-1">
+							        <a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Delete task:${task.title }">
+									  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+									</a>
+									
+							        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }">
+									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+									</a>
+								</div>
+						  </div><!-- end row -->
+					  </div><!-- end panel-heading -->
+					  
+					  <div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID}">
+						  <div class="panel-body">
+						    ${task.instructions } 
+						  </div>
 					  </div>
-				  </div>
 				</div>
-			</c:forEach>
+			</div>
+			<div class="col-sm-2">
+				<div class="panel panel-primary panel-task" id="taskReps" title="Number of repetitions.">
+				<div class="panel-heading">
+				  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="taskTemplateRepetitions${task.taskID }" name="taskTemplateRepetitions${task.taskID }">
+                    <option  value="1" <c:if test="${mappedStageTaskInfo.templateRepetitions==1 }">selected</c:if>>1</option>
+					<option  value="2" <c:if test="${mappedStageTaskInfo.templateRepetitions==2 }">selected</c:if>>2</option>
+					<option  value="3" <c:if test="${mappedStageTaskInfo.templateRepetitions==3}">selected</c:if>>3</option>
+					<option  value="4" <c:if test="${mappedStageTaskInfo.templateRepetitions==4 }">selected</c:if>>4</option>
+					<option  value="5" <c:if test="${mappedStageTaskInfo.templateRepetitions==5 }">selected</c:if>>5</option>
+					<option  value="6" <c:if test="${mappedStageTaskInfo.templateRepetitions==6 }">selected</c:if>>6</option>
+					<option  value="7" <c:if test="${mappedStageTaskInfo.templateRepetitions==7 }">selected</c:if>>7</option>
+					<option  value="8" <c:if test="${mappedStageTaskInfo.templateRepetitions==8 }">selected</c:if>>8</option>
+					<option  value="9" <c:if test="${mappedStageTaskInfo.templateRepetitions==9 }">selected</c:if>>9</option>
+					<option  value="10" <c:if test="${mappedStageTaskInfo.templateRepetitions==10 }">selected</c:if>>10</option>
+                </select>
 
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+                </div>
+                </div>
+			</div>
+			
+			</div><!-- end row -->
+				
+			</c:forEach>
+        <div class="row">
+            <div class="col-sm-12 save-button">
                 <button type="submit" class="btn btn-default">Save</button>
             </div>
         </div>

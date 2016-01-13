@@ -127,7 +127,7 @@ public abstract class User implements Serializable{
 	
 	 public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
     	TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
-    	planToCopy.setTemplate(isTemplate);
+    	planToCopy.setTemplate(isTemplate);//XXX won't this always be false since plans owned by clients can never be templates?
     	planToCopy.setTemplateID(planToCopy.getTreatmentPlanID());
     	planToCopy.setUserID(userIDTakingNewPlan);
     	planToCopy.setAssignedByUserID(this.userID);
@@ -142,16 +142,25 @@ public abstract class User implements Serializable{
     			task.setUserID(userIDTakingNewPlan);
     			task.setTemplate(false);
     			task.setTemplateID(task.getTaskID());
-    			for(int i = 0; i < task.getRepetitions(); i++){
+    			
+    			//
+    			int taskReps = stage.getMappedTaskTemplateByTaskID(task.getTaskID()).getTemplateRepetitions();
+    			for(int i = 0; i<taskReps; i++){
     				Task taskRep = task.copy();
+    				taskRep.setClientRepetition(i+1);
     				
-    				if(task.getRepetitions() > 1){
+    				if(taskReps > 1){
     					taskRep.setTitle(task.getTitle() + " (" + (i+1) + ")");
     				}
     				
-    				taskRep.setTaskOrder(taskRepetitionsAdded.size());
+    				taskRep.setClientTaskOrder(taskRepetitionsAdded.size());
+    				
     				taskRepetitionsAdded.add(taskRep);
     			}
+    			
+    			
+    			
+    			
     			
     		}//end Task loop
     		

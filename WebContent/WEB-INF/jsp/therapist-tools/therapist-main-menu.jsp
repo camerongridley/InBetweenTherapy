@@ -41,10 +41,10 @@
   </p>
 
   <p>
-    <form class="form-inline" action="/secure/LoadData" method="POST">
-      <div><button type="submit" class="btn btn-primary" disabled>Manage Clients</button></div>
-      <input type="hidden" name="requestedAction" value="manage-clients">
-      <input type="hidden" name="path" value="assignClientTreatmentPlan">
+    <form class="form-inline" action="/secure/ManageClients" method="POST">
+      <div><button type="submit" class="btn btn-primary">Manage Clients</button></div>
+      <input type="hidden" name="requestedAction" value="client-management-menu">
+      <input type="hidden" name="path" value="manageClients">
     </form>
   </p>
 

@@ -1,6 +1,11 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +17,8 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
+import com.cggcoding.models.MapStageTaskTemplate;
+import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -60,7 +67,8 @@ public class EditStage extends HttpServlet {
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
 		
-		
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
+		int originalOrder = ParameterUtils.parseIntParameter(request, "templateTaskOrder");
 		int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		String stageTitle = request.getParameter("stageTitle");
 		String stageDescription = request.getParameter("stageDescription");
@@ -97,10 +105,11 @@ public class EditStage extends HttpServlet {
 		            	
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
-		            case "stage-edit-name" :
+		            case "stage-edit-basic-info" :
 		            	if(stageID==0){
 		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
 		            	}
+
 		            	editedStage = Stage.load(stageID);
 		            	editedStage.setTitle(stageTitle);
 		            	editedStage.setDescription(stageDescription);
@@ -109,7 +118,15 @@ public class EditStage extends HttpServlet {
 		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
 		            	}
 		            	
-		            	editedStage.update();
+		            	for(MapStageTaskTemplate stageTaskInfo : editedStage.getMapStageTaskTemplates()){
+		            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
+		            		stageTaskInfo.setTemplateRepetitions(templateReps);
+		            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
+		            	}	      
+		            	
+		            	editedStage.update();//OPTIMIZE could create a new method that takes all relevant info and calls static method in stage that loads and updates all with the same connection
+		            	
+		            	retrieveStageTaskDetails(request, editedStage);
 		            	
 		            	request.setAttribute("stage", editedStage);
 		            	if(path.equals("treatmentPlanTemplate")){
@@ -160,7 +177,23 @@ public class EditStage extends HttpServlet {
 						request.setAttribute("stage", editedStage);
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;
+					case("increase-task-order"):					
+						
+						editedStage = Stage.load(stageID);
+						
+						editedStage.orderIncrementTemplateTask(taskID, originalOrder);
+						
+						request.setAttribute("stage", editedStage);
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						break;
+					case("decrease-task-order"):
+						editedStage = Stage.load(stageID);
 					
+						editedStage.orderDecrementTemplateTask(taskID, originalOrder);
+						
+						request.setAttribute("stage", editedStage);
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						break;
 		            default:
 
 		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
@@ -179,6 +212,24 @@ public class EditStage extends HttpServlet {
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
+	}
+	
+	private List<MapStageTaskTemplate> retrieveStageTaskDetails(HttpServletRequest request, Stage stage){
+		List<MapStageTaskTemplate> stageTaskDetails = new ArrayList<>();
+		String[] taskIDs = request.getParameterValues("allTaskIDs");
+		for(int i = 0; i < taskIDs.length; i++){
+			System.out.println(taskIDs[i]);
+			
+		}
+		
+		for(Task task : stage.getTasks()){
+			int templateOrder = ParameterUtils.parseIntParameter(request, "templateTaskOrder" + task.getTaskID());
+			int templateRepetitions = ParameterUtils.parseIntParameter(request, "taskRep" + task.getTaskID());;
+			stageTaskDetails.add(new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), templateOrder, templateRepetitions));
+		}
+		
+		return null;
+		
 	}
 
 }

@@ -62,7 +62,7 @@
           <ul class="nav navbar-nav navbar-right">
             	<c:choose>
 				  <c:when test="${user == null }">
-				  	<li class="active"><a href="/login.jsp">Sign In</a></li>
+				  	<li><a href="/login.jsp">Sign In<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></a></li>
 				  </c:when>
 
 				  <c:otherwise>

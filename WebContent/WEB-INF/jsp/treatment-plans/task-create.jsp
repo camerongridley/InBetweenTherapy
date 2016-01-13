@@ -26,28 +26,31 @@
 					<h3>Add a Predefined Task</h3>
 				</div>
 				
-		        <div class="form-group">
-		            <label for="defaultStage" class="col-sm-2 control-label">Default Task</label>
-		            <div class="col-sm-10">
-		                <select class="form-control" id="defaultTaskList" name="taskID">
-		                    <option  value="">Select a default task.</option>
-		                    <c:forEach items="${defaultTasks}" var="defaultTask">
-		                        <option value="${defaultTask.taskID}">${fn:escapeXml(defaultTask.title)}</option>
-		                    </c:forEach>
-		                </select>
-		            </div>
-		        </div>
-		        <div class="form-group">
-		        <div class="col-sm-offset-2 col-sm-10">
-		        <p>Preview of selected task goes here.</p>
-		        </div>
-		        </div>
-		
-		        <div class="form-group">
-		            <div class="col-sm-offset-2 col-sm-10">
-		                <button type="submit" class="btn btn-default">Save</button>
-		            </div>
-		        </div>
+				<div class="form-horizontal">
+			        <div class="form-group">
+			            <label for="defaultStage" class="col-sm-2 control-label">Default Task</label>
+			            <div class="col-sm-10">
+			                <select class="form-control" id="defaultTaskList" name="taskID">
+			                    <option  value="">Select a default task.</option>
+			                    <c:forEach items="${defaultTasks}" var="defaultTask">
+			                        <option value="${defaultTask.taskID}">${fn:escapeXml(defaultTask.title)}</option>
+			                    </c:forEach>
+			                </select>
+			            </div>
+			        </div>
+			        
+			        <div class="form-group">
+				        <div class="col-sm-offset-2 col-sm-10">
+				        	<p>Preview of selected task goes here.</p>
+				        </div>
+			        </div>
+			
+			        <div class="form-group">
+			            <div class="col-sm-offset-2 col-sm-10">
+			                <button type="submit" class="btn btn-default">Save</button>
+			            </div>
+			        </div>
+			    </div>
 		    </form>
 		</div>
 		
@@ -105,25 +108,7 @@
 	                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${fn:escapeXml(task.resourceLink) }"/>" placeholder="Add a link to related resources for this task.">
 	            </div>
 	        </div>
-	        
-			<div class="form-group">
-	            <label for="repetitions" class="col-sm-2 control-label">Repetitions</label>
-	            <div class="col-sm-2">
-	            	<select class="form-control" id="repetitions" name="repetitions">
-	                    <option  value="1">1</option>
-						<option  value="2">2</option>
-						<option  value="3">3</option>
-						<option  value="4">4</option>
-						<option  value="5">5</option>
-						<option  value="6">6</option>
-						<option  value="7">7</option>
-						<option  value="8">8</option>
-						<option  value="9">9</option>
-						<option  value="10">10</option>
-	                </select>
-	              
-	            </div>
-	        </div>
+
 	        </c:if>
 	        
 			<c:if test="${task.taskTypeID==2 }">

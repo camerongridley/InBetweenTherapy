@@ -11,6 +11,7 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
+import com.cggcoding.models.MapStageTaskTemplate;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
@@ -82,7 +83,7 @@ public interface DatabaseActionHandler {
 	
 	List<StageGoal> stageLoadGoals(Connection cn, int stageID) throws SQLException, ValidationException;
 
-	List<Task> stageLoadTasks(Connection cn, int stageID) throws SQLException;
+	List<Task> stageLoadClientTasks(Connection cn, int stageID) throws SQLException;
 
 	Stage stageLoadBasic(Connection cn, int stageID) throws SQLException, ValidationException;
 	
@@ -103,9 +104,9 @@ public interface DatabaseActionHandler {
 	 */
 	List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException;
 	
-	List<Task> stageLoadTaskTemplates(Connection cn, int stageID) throws SQLException;
+	List<Task> stageLoadTemplateTasks(Connection cn, int stageID) throws SQLException;
 	
-	List<Task> stageUpdateTaskTemplates(Connection cn, int stageID, List<Task> taskTemplates) throws SQLException;
+	List<Task> stageUpdateTemplateTasks(Connection cn, int stageID, List<Task> taskTemplates) throws SQLException;
 	
 	//**************************************************************************************************
 	//*************************************** Stage Goal Methods ***************************************
@@ -118,6 +119,31 @@ public interface DatabaseActionHandler {
 
 	void stageGoalDelete(Connection cn, int stageGoalID) throws SQLException, ValidationException;
 	
+	
+	//**************************************************************************************************
+	//*************************************** Mapping Methods ***************************************
+	//**************************************************************************************************
+	List<MapStageTaskTemplate> mapStageTaskTemplateLoad(Connection cn, int stageID)
+			throws SQLException, ValidationException;
+	
+	void mapStageTaskTemplateCreate(Connection cn, MapStageTaskTemplate map) throws SQLException;
+
+	boolean mapStageTaskTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID)
+			throws ValidationException, SQLException;
+
+	void mapStageTaskTemplateDelete(Connection cn, int taskID, int stageID) throws SQLException;
+	
+	void mapStageTaskTemplateUpdate(Connection cn, MapStageTaskTemplate map) throws SQLException;
+	
+	void mapTreatmentPlanStageTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder)
+			throws SQLException;
+
+	boolean mapTreatmentPlanStageTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
+			throws ValidationException, SQLException;
+
+
+	void mapTreatmentPlanStageTemplateDelete(Connection cn, int stageID) throws SQLException;
+
 
 	//**************************************************************************************************
 	//*************************************** Treatment Issue Methods **********************************
@@ -173,20 +199,10 @@ public interface DatabaseActionHandler {
 
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
-	void mapsTaskStageTemplateCreate(Connection cn, int taskTemplateID, int stageTemplateID, int taskOrder) throws SQLException;
+	
+	
 
-	boolean mapsTaskStageTemplateValidate(Connection cn, int taskTemplateID, int stageTemplateID)
-			throws ValidationException, SQLException;
-
-	void mapsStageTreatmentPlanTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder)
-			throws SQLException;
-
-	boolean mapsStageTreatmentPlanTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
-			throws ValidationException, SQLException;
-
-	void mapsTaskStageTemplateDelete(Connection cn, int taskID) throws SQLException;
-
-	void mapsStageTreatmentPlanTemplateDelete(Connection cn, int stageID) throws SQLException;
+	
 
 	
 

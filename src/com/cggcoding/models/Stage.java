@@ -15,6 +15,7 @@ import java.util.*;
 
 import org.apache.commons.dbutils.DbUtils;
 
+//UNSURE Consider creating subclasses of Stage: ClientStage and TemplateStage since some vairables and methods are only valid for use with each type - now they are all housed in one class, so would be cleaner if they were split up
 public class Stage implements Serializable, Completable, DatabaseModel {
 
 	/**
@@ -29,6 +30,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	private int stageOrder; //the order of the stage within its treatment plan - if present decides the index it will be in the TreatmentPlan's List of Stages
 	private List<Task> tasks;
 	private List<Task> extraTasks; //for when user chooses to do more tasks than asked of - won't count toward progress meter but can be saved for review or other analysis (e.g. themes)
+	private List<MapStageTaskTemplate> stageTaskTemplateMapList;
 	private boolean completed;
 	private double percentComplete;
 	private List<StageGoal> goals;
@@ -47,6 +49,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.stageOrder = stageOrder;
 		this.tasks = new ArrayList<>();;
 		this.extraTasks = new ArrayList<>();
+		this.stageTaskTemplateMapList = new ArrayList<>();
 		this.completed = false;
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
@@ -67,6 +70,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.stageOrder = stageOrder;
 		this.tasks = tasks;
 		this.extraTasks = extraTasks;
+		this.stageTaskTemplateMapList = new ArrayList<>();
 		this.completed = completed;
 		this.percentComplete = percentComplete;
 		this.goals = goals;
@@ -149,6 +153,14 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 
 	public void setExtraTasks(List<Task> extraTasks) {
 		this.extraTasks = extraTasks;
+	}
+
+	public List<MapStageTaskTemplate> getMapStageTaskTemplates() {
+		return stageTaskTemplateMapList;
+	}
+
+	public void setMapStageTaskTemplates(List<MapStageTaskTemplate> mapStageTaskTemplates) {
+		this.stageTaskTemplateMapList = mapStageTaskTemplates;
 	}
 
 	public Task getTaskByID(int taskID){
@@ -361,6 +373,17 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 		return null;
 	}
+	
+	public MapStageTaskTemplate getMappedTaskTemplateByTaskID(int taskID){
+		MapStageTaskTemplate found = null;
+		for(MapStageTaskTemplate stageTaskTemplate : stageTaskTemplateMapList){
+			if(taskID == stageTaskTemplate.getTaskID()){
+				found = stageTaskTemplate;
+				break;
+			}
+		}
+		return found;
+	}
 
 	/**Loads the stage and all associated Tasks.  Checks if the Stage is a template.  If so, then it's Tasks are also templates and 
 	 * the database loads the Tasks using the task_template_stage_template_mapping table to get the taskIDs to load.  If not a template then it 
@@ -409,9 +432,16 @@ public class Stage implements Serializable, Completable, DatabaseModel {
     	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
     	
     	if(stage.isTemplate()){
-    		stage.setTasks(dao.stageLoadTaskTemplates(cn, stageID));
+    		//get list of templates and set local variable
+    		List<MapStageTaskTemplate> taskMap = dao.mapStageTaskTemplateLoad(cn, stageID);
+    		stage.setMapStageTaskTemplates(taskMap);
+    		
+    		//loop through map and load Task templates to local List
+    		for(MapStageTaskTemplate stageTaskTempaltes : taskMap){
+    			stage.addTask(Task.load(cn, stageTaskTempaltes.getTaskID()));
+    		}
     	}else{
-    		stage.setTasks(dao.stageLoadTasks(cn, stage.getStageID()));
+    		stage.setTasks(dao.stageLoadClientTasks(cn, stage.getStageID()));
     	}
 		
 
@@ -538,6 +568,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return createTemplate(templateStage.getUserID(), templateStage.getTitle(), templateStage.getDescription());
 	}
 	
+	//TODO rename to updateTemplates
 	@Override
 	public void update()  throws ValidationException, DatabaseException {
 		Connection cn = null;
@@ -545,11 +576,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         try {
         	cn = dao.getConnection();
         	
-        	updateBasic(cn);
-        	
-        	for(StageGoal goal : goals){
-        		goal.update(cn);
-        	}
+        	update(cn);
         	
         } catch (SQLException e) {
             e.printStackTrace();
@@ -558,6 +585,20 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 
 			DbUtils.closeQuietly(cn);
         }
+		
+	}
+	
+	public void update(Connection cn)  throws SQLException, ValidationException {
+
+    	updateBasic(cn);
+    	
+    	for(StageGoal goal : goals){
+    		goal.update(cn);
+    	}
+    	
+    	for(MapStageTaskTemplate stageTaskTemplate : this.stageTaskTemplateMapList){
+    		stageTaskTemplate.update(cn);
+    	}   	
 		
 	}
 	
@@ -635,15 +676,16 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
-	public void addTaskTemplate(int taskTemplateID) throws DatabaseException, ValidationException{
+	public void addTaskTemplate(int taskTemplateID, int templateRepetitions) throws DatabaseException, ValidationException{
 		Connection cn = null;
 	
 		if(this.isTemplate()){
 			try {
 				
 	        	cn = dao.getConnection();
-	        	if(dao.mapsTaskStageTemplateValidate(cn, taskTemplateID, this.getStageID())){
-	        		dao.mapsTaskStageTemplateCreate(cn, taskTemplateID, this.stageID, this.getTaskOrderDefaultValue());
+	        	if(dao.mapStageTaskTemplateValidate(cn, taskTemplateID, this.getStageID())){
+	        		MapStageTaskTemplate map = new MapStageTaskTemplate(this.stageID, taskTemplateID, this.getTaskOrderDefaultValue(), templateRepetitions);
+	        		map.create(cn);
 	        	}
 
 			} catch (SQLException e) {
@@ -663,7 +705,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		task.setTemplate(false);
 		task.setUserID(this.userID);
 		task.setStageID(this.stageID);
-		task.setTaskOrder(this.getTaskOrderDefaultValue());
+		task.setClientTaskOrder(this.getTaskOrderDefaultValue());
 		
 		task.create();
 		this.addTask(task);
@@ -674,11 +716,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public Task createNewTask(Task taskBeingCopied) throws DatabaseException, ValidationException{
 		taskBeingCopied.setUserID(this.userID);
 		taskBeingCopied.setStageID(this.stageID);
-		taskBeingCopied.setTaskOrder(this.getTaskOrderDefaultValue());
+		taskBeingCopied.setClientTaskOrder(this.getTaskOrderDefaultValue());
 		
 		return taskBeingCopied.create();
 	}
 	
+	//XXX rename to deleteTaskTemplate?
 	public Stage deleteTask(int taskToDeleteID) throws ValidationException, DatabaseException{
 		Connection cn = null;
 		
@@ -691,8 +734,8 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				task = tasks.get(i);
 				if(task.getTaskID() == taskToDeleteID){
 					
-					if(task.isTemplate()){ //UNSURE Does it matter if I check use Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
-						dao.mapsTaskStageTemplateDelete(cn, taskToDeleteID);
+					if(task.isTemplate()){ //UNSURE Does it matter if I check Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
+						MapStageTaskTemplate.delete(cn, taskToDeleteID, this.stageID);
 					}else{
 						task.delete(cn);
 					}
@@ -742,13 +785,96 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	protected List<Task> updateTaskTemplateList(Connection cn, List<Task> taskTemplates) throws SQLException{
-		return dao.stageUpdateTaskTemplates(cn, this.stageID, taskTemplates);
+		return dao.stageUpdateTemplateTasks(cn, this.stageID, taskTemplates);
 	}
 	
 	private void reorderTasks(){
 		for(int i=0; i < this.tasks.size(); i++){
-			tasks.get(i).setTaskOrder(i);
+			tasks.get(i).setClientTaskOrder(i);
 		}
+	}
+	
+	//TODO decide if I want to keep int mainTaskID as an argument.  It isn't being used right now.
+	public void orderIncrementTemplateTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
+		Connection cn = null;
+		
+		if(originalOrder <= 0){
+			throw new ValidationException(ErrorMessages.TASK_IS_FIRST);
+		}
+		
+		try {
+			
+			MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
+			MapStageTaskTemplate prevStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder-1);
+			
+			//swap order values in objects
+			mainStageTaskMap.setTemplateTaskOrder(originalOrder-1);
+			prevStageTaskMap.setTemplateTaskOrder(originalOrder);
+			
+			//swap places in both the stageTaskMap and tasks List
+			this.stageTaskTemplateMapList.set(originalOrder-1, mainStageTaskMap);
+			this.stageTaskTemplateMapList.set(originalOrder, prevStageTaskMap);
+			
+			Task holder = tasks.get(originalOrder-1);
+			this.tasks.set(originalOrder-1, tasks.get(originalOrder));
+			this.tasks.set(originalOrder, holder);
+
+			
+			//update in database
+        	cn = dao.getConnection();
+        		
+        	dao.mapStageTaskTemplateUpdate(cn, mainStageTaskMap);
+        	dao.mapStageTaskTemplateUpdate(cn, prevStageTaskMap);
+        	
+        	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }		
+			
+	}
+	
+	//TODO decide if I want to keep int mainTaskID as an argument.  It isn't being used right now.
+	public void orderDecrementTemplateTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
+		Connection cn = null;
+		
+		if(originalOrder == this.getMapStageTaskTemplates().size()-1){
+			throw new ValidationException(ErrorMessages.TASK_IS_LAST);
+		}
+		
+		try {
+			
+			MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
+			MapStageTaskTemplate nextStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder+1);
+			
+			//swap order values in objects
+			mainStageTaskMap.setTemplateTaskOrder(originalOrder+1);
+			nextStageTaskMap.setTemplateTaskOrder(originalOrder);
+
+			Task holder = tasks.get(originalOrder+1);
+			this.tasks.set(originalOrder+1, tasks.get(originalOrder));
+			this.tasks.set(originalOrder, holder);
+
+			
+			//swap places in the List
+			this.stageTaskTemplateMapList.set(originalOrder+1, mainStageTaskMap);
+			this.stageTaskTemplateMapList.set(originalOrder, nextStageTaskMap);
+			
+			//update in database
+        	cn = dao.getConnection();
+        		
+        	dao.mapStageTaskTemplateUpdate(cn, mainStageTaskMap);
+        	dao.mapStageTaskTemplateUpdate(cn, nextStageTaskMap);
+        	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }	
+		
 	}
 	
 	/**Creates a copy of the Stage and sets the copy's stageID to 0.  DOES NOT save anything to database.
@@ -778,4 +904,5 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public static List<Stage> getDefaultStages() throws DatabaseException, ValidationException{
 		return dao.stagesGetDefaults();
 	}
+	
 }
