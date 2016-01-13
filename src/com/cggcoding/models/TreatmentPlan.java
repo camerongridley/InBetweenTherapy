@@ -222,6 +222,21 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		return stages.size();
 	}
 	
+	public int percentComplete(){
+		double stagesComplete = 0;
+		for(Stage stage : stages){
+			if(stage.isCompleted()){
+				stagesComplete = stagesComplete + 1;
+			}
+		}
+		
+		if(stagesComplete!=0){
+			return (int) (stagesComplete/getNumberOfStages()*100);
+		} else {
+			return 0;
+		}
+	}
+	
 	public Stage nextStage() throws DatabaseException, ValidationException{
 
 		if(activeViewStageIndex == currentStageIndex){

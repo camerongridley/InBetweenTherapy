@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
@@ -38,13 +39,17 @@ public class ManageClients extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+		processRequest(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		processRequest(request, response);
+	}
+	
+	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
@@ -82,9 +87,14 @@ public class ManageClients extends HttpServlet {
 						request.setAttribute("assignedClientPlans", assignedClientPlans);
 						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
 						break;
-					case "select-treatment-plan":
-
-						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-clients-main.jsp";
+					case "load-client-view-treatment-plan":
+						int clientTreatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+						TreatmentPlan selectedPlan = TreatmentPlan.load(clientTreatmentPlanID);
+						Stage activeStage = selectedPlan.getActiveViewStage();
+						
+						request.setAttribute("activeStage", activeStage);
+						request.setAttribute("treatmentPlan", selectedPlan);
+						forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
 						break;
 					case "copy-plan-to-client":
 						boolean isTemplate = false;

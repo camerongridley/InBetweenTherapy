@@ -286,7 +286,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     		rs = ps.executeQuery();
    
             while (rs.next()){
-            	assignedTreatmentPlans.add(treatmentPlanLoadBasic(cn, rs.getInt("treatment_plan_id")));
+            	assignedTreatmentPlans.add(TreatmentPlan.load(cn, rs.getInt("treatment_plan_id")));
             	
             }
 
