@@ -92,6 +92,8 @@ public class ManageClients extends HttpServlet {
 						TreatmentPlan selectedPlan = TreatmentPlan.load(clientTreatmentPlanID);
 						Stage activeStage = selectedPlan.getActiveViewStage();
 						
+						selectedPlan.setTasksDisabledStatus(therapistUser.getUserID());
+						
 						request.setAttribute("activeStage", activeStage);
 						request.setAttribute("treatmentPlan", selectedPlan);
 						forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";

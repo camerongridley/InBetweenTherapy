@@ -35,7 +35,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	private int templateID;
 	private int assignedByUserID;
 	
-	private static DatabaseActionHandler dao= new MySQLActionHandler();
+	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
 	private TreatmentPlan(int userID, String title, String description, int treatmentIssueID){
 		this.title = title;
@@ -282,6 +282,30 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	
 	private int getStageOrderDefaultValue(){
 		return this.stages.size();
+	}
+	
+	//OPTIMIZE move this logic to when the TreatmentPlan's Stages are loaded
+	public void setTasksDisabledStatus(int loggedInUserID){
+		/*if the userID of the TreatmentPlan doesn't equal the userID of the user logged in 
+		 * (e.g. plan belongs to a client and the logged in user is the therapist of the client)
+		 * then all tasks should be disabled.  If the logged in user also owns the plan, then all
+		 * tasks that are in Stages that haven't been started yet should be disabled (i.e. stages where completed==false and inProgress==false)
+		*/
+		if(this.userID != loggedInUserID){
+			for(Stage stage : this.stages){
+				for(Task task : stage.getTasks()){
+					task.setDisabled(true);
+				}
+			}
+		}else{
+			for(Stage stage : this.stages){
+				if(!stage.isCompleted() && !stage.isInProgress()){
+					for(Task task : stage.getTasks()){
+						task.setDisabled(true);
+					}
+				}
+			}
+		}
 	}
 	
 	@Override

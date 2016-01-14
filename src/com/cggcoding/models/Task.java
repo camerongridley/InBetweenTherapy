@@ -43,6 +43,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private boolean template;
 	private int templateID;
 	int clientRepetition;
+	boolean disabled; //this property is not maintained in the database and is set upon or after loading.  It's purpose is to tell the view if assiciated control should be disabled
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
@@ -539,6 +540,14 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 
 	public boolean isParentTask(){
 		return parentTaskID == 0;
+	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
 	}
 
 	public String getDateCompletedFormatted(){

@@ -136,7 +136,7 @@
 					<div class="panel-heading panel-heading-task">
 						<input type="hidden" name="allTaskIDs" value="${task.taskID}" /> 
 						<input type="hidden" name="taskTypeName${task.taskID}" value="${task.taskTypeName}" /> 
-						<input class="responsive-checkbox" type="checkbox" id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]" aria-label="Task: ${task.title }"/> 
+						<input class="responsive-checkbox" type="checkbox" id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]" aria-label="Task: ${task.title }" <c:if test="${task.disabled }">disabled</c:if>/> 
 						<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							${task.title } - Task Type: ${task.taskTypeName } 
 						</a>
@@ -166,13 +166,15 @@
 								${task.extraTextLabel1 }<input type="text" class="form-control"
 									placeholder="${task.extraTextLabel1 }"
 									name="extraTextValue1${task.taskID }"
-									value="${task.extraTextValue1 }">
+									value="${task.extraTextValue1 }" 
+									<c:if test="${task.disabled }">disabled</c:if>>
 							</div>
 							<div class="panel-body panel-body-task">
 								${task.extraTextLabel2 }<input type="text" class="form-control"
 									placeholder="${task.extraTextLabel2 }"
 									name="extraTextValue2${task.taskID }"
-									value="${task.extraTextValue2 }">
+									value="${task.extraTextValue2 }" 
+									<c:if test="${task.disabled }">disabled</c:if>>
 							</div>
 						</div>
 					</c:if>
@@ -192,7 +194,8 @@
 							type="hidden" name="taskTypeName${task.taskID}"
 							value="${task.taskTypeName}" /> <input class="responsive-checkbox" type="checkbox"
 							id="${task.taskID }" aria-label="Task: ${task.title }"
-							value="${task.taskID }" name="taskChkBx[]" checked> <a
+							value="${task.taskID }" name="taskChkBx[]" checked
+							<c:if test="${task.disabled }">disabled</c:if>> <a
 							role="button" data-toggle="collapse"
 							href="#collapse${task.taskID }" aria-expanded="true"
 							aria-controls="collapse${task.taskID }"> <span
@@ -210,13 +213,15 @@
 								${task.extraTextLabel1 }<input type="text" class="form-control"
 									placeholder="${task.extraTextLabel1 }"
 									name="extraTextValue1${task.taskID }"
-									value="${task.extraTextValue1 }">
+									value="${task.extraTextValue1 }"
+									<c:if test="${task.disabled }">disabled</c:if>>
 							</div>
 							<div class="panel-body panel-body-task">
 								${task.extraTextLabel2 }<input type="text" class="form-control"
 									placeholder="${task.extraTextLabel2 }"
 									name="extraTextValue2${task.taskID }"
-									value="${task.extraTextValue2 }">
+									value="${task.extraTextValue2 }"
+									<c:if test="${task.disabled }">disabled</c:if>>
 							</div>
 						</c:if>
 					</div>
@@ -232,7 +237,7 @@
 				title="Click the task title to expand and see task details.">
 				<div class="panel-heading panel-heading-task">
 					<input class="responsive-checkbox" type="checkbox" id="0" aria-label="Task: Temp Extra Task"
-						value="0" name="taskChkBx[]"> <a role="button"
+						value="0" name="taskChkBx[]" <c:if test="${task.disabled }">disabled</c:if>> <a role="button"
 						data-toggle="collapse" href="#collapse121212" aria-expanded="true"
 						aria-controls="collapse121212"> Sample Extra Task </a>
 				</div>
