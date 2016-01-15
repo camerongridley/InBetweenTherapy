@@ -11,65 +11,49 @@
 
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
-<div class="row">
+<div class="form-horizontal">
 
 
 
 	<!-- depending on the accessibility of the stage, set the proper css class -->
-	<c:forEach var="stage" items="${treatmentPlan.stages }"
-		varStatus="stageStatus">
+	<c:forEach var="stage" items="${treatmentPlan.stages }" varStatus="stageStatus">
+		<form id="stageNode${stage.stageID }" action="/secure/ChangeStage" method="POST">
 
+			<input type="hidden" name="stageIndex" value=${stage.stageOrder } >
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >
+			<input type="hidden" name="requestedAction" value="change-stage">
+			<input type="hidden" name="path" value="${path }">
+			
 		<!--For stage that is currently being viewed (enabled-active)-->
 
-		<c:if
-			test="${stage.stageOrder == treatmentPlan.activeViewStageIndex }">
-			<div
-				class="progress-stage progress-stage-enabled-active col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
-				<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex }">
-					<form action="/secure/ChangeStage" method="POST">
-				</c:if>
-				${stage.title } <a href="#" type="button" data-toggle="modal"
-					data-target="#stageInfoModal"> <span
-					class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-				</a> <input type="hidden" name="stageIndex" value=${stage.stageOrder } /><input
-					type="hidden" name="treatmentPlanID"
-					value="${treatmentPlan.treatmentPlanID}" />
-				<c:if
-					test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }">
-					</form>
-				</c:if>
+		<c:if test="${stage.stageOrder == treatmentPlan.activeViewStageIndex && stage.inProgress}">
+			<div class="progress-stage progress-stage-enabled-active col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
+				${stage.title } <a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal"> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
 			</div>
-
 		</c:if>
+		
 		<!--For stage that is accessible but NOT the active view (enabled-inactive)-->
-		<c:if
-			test="${stage.stageOrder != treatmentPlan.activeViewStageIndex && stage.stageOrder <= treatmentPlan.currentStageIndex}">
-			<div
-				class="progress-stage progress-stage-enabled-inactive col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
-				<c:if
-					test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }">
-					<form action="/secure/ChangeStage" method="POST">
-						<a href='#' onclick='this.parentNode.submit(); return false;'>
-				</c:if>
-				${stage.title }<input type="hidden" name="stageIndex"
-					value=${stage.stageOrder } /><input type="hidden"
-					name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-				<c:if
-					test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }">
-					</a>
-					</form>
-				</c:if>
+		<c:if test="${stage.stageOrder != treatmentPlan.activeViewStageIndex && stage.stageOrder <= treatmentPlan.currentStageIndex}">
+			<div class="progress-stage progress-stage-enabled-inactive col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
+				<a href='#' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
 			</div>
 		</c:if>
-		<!--For stage that is inaccssible at this time (disabled)-->
-		<c:if test="${!stage.inProgress}">
-			<div
-				class="progress-stage progress-stage-disabled col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
-				${stage.title }<input type="hidden" name="stageIndex"
-					value=${stage.stageOrder } />
+		
+		<!--For stage that is disabled at this time and active as current view (disabled-active)-->
+		<c:if test="${stage.stageOrder == treatmentPlan.activeViewStageIndex && !stage.inProgress}">
+			<div class="progress-stage progress-stage-disabled-active col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
+				${stage.title } <a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal"> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
 			</div>
 		</c:if>
-
+		
+		<!--For stage that is disabled at this time and inactive as current view (disabled-inactive)-->
+		<c:if test="${!stage.inProgress && stage.stageOrder != treatmentPlan.activeViewStageIndex}">
+			<div class="progress-stage progress-stage-disabled-inactive col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
+				<a href='#' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
+			</div>
+		</c:if>
+		
+		</form>
 	</c:forEach>
 
 
@@ -109,8 +93,7 @@
 <div class="row">
 	<div class="col-sm-12">
 
-		<form action="/secure/UpdateTaskCompletion" method="post"
-			class="form-inline">
+		<form action="/secure/UpdateTaskCompletion" method="post" class="form-inline">
 			<input type="hidden" name="treatmentPlanID"
 				value="${treatmentPlan.treatmentPlanID}" />
 			<c:set var="activeViewStagePercentComplete"
@@ -250,7 +233,10 @@
 
 			<!--COMPLETED EXTRA TASKS-->
 
-			<button type="submit" class="btn btn-primary">Save</button>
+			<c:if test='${!path.equals("manageClients") }'>
+				<button type="submit" class="btn btn-primary">Save</button>
+			</c:if>
+			
 
 		</form>
 

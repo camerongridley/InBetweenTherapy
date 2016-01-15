@@ -109,6 +109,7 @@ public abstract class User implements Serializable{
  
 	}
 
+	//UNSURE make these methods abstract
 	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID){
 		//TODO implement
 		return true;

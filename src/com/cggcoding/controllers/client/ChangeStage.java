@@ -35,6 +35,9 @@ public class ChangeStage extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User)request.getSession().getAttribute("user");
         String forwardTo = "index.jsp";
+        String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
         int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
         TreatmentPlan treatmentPlan = null;
         Stage activeStage  = null;

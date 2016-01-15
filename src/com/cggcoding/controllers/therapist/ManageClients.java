@@ -20,6 +20,7 @@ import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
  * Servlet implementation class ManageClients
@@ -75,6 +76,9 @@ public class ManageClients extends HttpServlet {
 				
 				//set the default treatment plans and the custom plans for this therapist into the request
 				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+				
+				//based on the client retrieved from the request, load all plans that the therapist has access to
+				
 				switch(requestedAction){
 					case "client-management-menu":
 						//get list of clients for the therapist who is logged in and put that list in the request
@@ -83,8 +87,7 @@ public class ManageClients extends HttpServlet {
 						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-clients-main.jsp";
 						break;
 					case "select-client":
-						List<TreatmentPlan> assignedClientPlans = therapistUser.getAssignedClientTreatmentPlans(clientUserID);
-						request.setAttribute("assignedClientPlans", assignedClientPlans);
+						
 						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
 						break;
 					case "load-client-view-treatment-plan":
@@ -98,13 +101,19 @@ public class ManageClients extends HttpServlet {
 						request.setAttribute("treatmentPlan", selectedPlan);
 						forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
 						break;
+					case "select-treatment-plan-for-assignment":
+						//TODO load the preview of the selected treatment plan and put into request
+						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
+						break;
 					case "copy-plan-to-client":
 						boolean isTemplate = false;
 						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
-						
-						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-clients-main.jsp";
+						request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COPIED_TO_CLIENT);
+						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
 						break;
 				}
+				
+				putClientPlansInRequest(request, therapistUser, clientUserID);
 				
 				//put these back in the request so other forms can maintain selections of other forms as well as display selected items of the dropdown boxes
 				request.setAttribute("clientUserID", clientUserID);
@@ -120,5 +129,9 @@ public class ManageClients extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 	}
 	
+	private void putClientPlansInRequest(HttpServletRequest request, UserTherapist therapistUser, int clientUserID) throws DatabaseException, ValidationException{
+		List<TreatmentPlan> assignedClientPlans = therapistUser.getAssignedClientTreatmentPlans(clientUserID);
+		request.setAttribute("assignedClientPlans", assignedClientPlans);
+	}
 
 }

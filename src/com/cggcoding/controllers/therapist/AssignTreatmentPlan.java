@@ -16,6 +16,8 @@ import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 
+
+//TODO delete this class once procs fully moved over to ManageCLients
 /**
  * Servlet implementation class AssignTreatmentPlan
  */
