@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cggcoding.models.User;
+
 /**
  * Servlet Filter implementation class SessionTimeout
  */
@@ -43,11 +45,13 @@ public class SessionTimeout implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpSession session = request.getSession(false);
         
+        User user = (User)session.getAttribute("user");
+        
         System.out.println("Request URI: " + request.getRequestURI() + " || Path: " + request.getParameter("path") + " || RequestedAction: " + request.getParameter("requestedAction"));
         //System.out.println("Context Path: " + request.getContextPath());
 
 
-        	if (session == null || session.getAttribute("user") == null) {
+        	if (session == null || user == null) {
         		System.out.println("No logged-in user found, redirecting to login page.");
         		
         		request.setAttribute("errorMessage", "No logged-in user found, redirecting to login page.");

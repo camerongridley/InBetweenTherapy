@@ -67,7 +67,7 @@
 
 				  <c:otherwise>
 				    <li><a href="/secure/AccountManagement">Hello, ${user.email} (${user.role})</a></li>
-				    <li title="Sign Out"><a href="/secure/LogOut"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></li>
+				    <li title="Sign Out"><a href="/LogOut"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></li>
 				  </c:otherwise>
 				</c:choose>
           </ul>
