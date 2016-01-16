@@ -24,7 +24,7 @@
 	            <div class="panel-body">
 		            <div class="form-horizontal">
 		                <c:forEach items="${activeAssignedClientPlans}" var="activePlan">
-		                <div class="col-md-4">
+		                <div class="col-sm-6 col-md-4 col-lg-3">
 			                <div class="panel panel-primary">
 							  <div class="panel-heading">
 							    <h3 class="panel-title">${activePlan.title}</h3>
@@ -68,7 +68,7 @@
 	            <div class="panel-body">
 		            <div class="form-horizontal">
 		                <c:forEach items="${unstartedAssignedClientPlans}" var="unstartedPlan">
-		                <div class="col-md-4">
+		                <div class="col-sm-6 col-md-4 col-lg-3">
 			                <div class="panel panel-primary">
 							  <div class="panel-heading">
 							    <h3 class="panel-title">${unstartedPlan.title}</h3>
@@ -148,7 +148,7 @@
 	            <div class="panel-body">
 		            <div class="form-horizontal">
 		                <c:forEach items="${completedAssignedClientPlans}" var="completedPlan">
-		                <div class="col-md-4">
+		                <div class="col-sm-6 col-md-4 col-lg-3">
 			                <div class="panel panel-primary">
 							  <div class="panel-heading">
 							    <h3 class="panel-title">${completedPlan.title}</h3>
