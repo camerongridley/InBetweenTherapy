@@ -24,6 +24,7 @@ import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
@@ -84,7 +85,7 @@ public class EditStage extends HttpServlet {
 		try{
 			request.setAttribute("defaultStageList", Stage.getDefaultStages());
 			
-			if(user.hasRole("admin")){
+			if(user.hasRole(Constants.USER_ADMIN)){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 								
 				switch (requestedAction){

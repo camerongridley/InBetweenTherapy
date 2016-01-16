@@ -22,11 +22,11 @@
 	        <div class="panel panel-default">
 	            <div class="panel-heading"><h4>Active Plans</h4></div>
 	            <div class="panel-body">
-		            <div class="form-horizontal">
+		            <div class="form-horizontal hide-overflow">
 		                <c:forEach items="${activeAssignedClientPlans}" var="activePlan">
 		                <div class="col-sm-6 col-md-4 col-lg-3">
 			                <div class="panel panel-primary">
-							  <div class="panel-heading">
+							  <div class="panel-heading" title="${activePlan.title}">
 							    <h3 class="panel-title">${activePlan.title}</h3>
 							  </div>
 							  <div class="panel-body">
@@ -40,7 +40,7 @@
 								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
 								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 								</a>
-								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
+								<a href="/secure/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
 								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">

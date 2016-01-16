@@ -25,14 +25,14 @@
 <div class="row">
 	<div class="form-group">
 		<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
-			<input type="hidden" name="requestedAction" value="plan-edit-select-plan"> 
+			<input type="hidden" name="requestedAction" value="plan-edit-load-plan"> 
 			<input type="hidden" name="path" value="${path }">
 			
 				<label for="selectedDefaultTreatmentPlanID"
 					class="col-sm-2 control-label">Select a Treatment Plan</label>
 				<div class="col-sm-8">
 					<select class="form-control" id="selectedDefaultTreatmentPlanID"
-						name="selectedDefaultTreatmentPlanID">
+						name="treatmentPlanID">
 						<option value="">Select a treatment plan to edit.</option>
 						<c:forEach var="defaultPlan" items="${defaultTreatmentPlanList }">
 							<option value="${defaultPlan.treatmentPlanID}"
@@ -69,6 +69,7 @@
 	<input type="hidden" name="requestedAction" value="plan-edit-update">
 	<input type="hidden" name="path" value="${path }"> 
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+	<input type="hidden" name="clientUserID" value="${client.userID}">
 	
 	<div class="row form-group">
 		<label for="planName" class="col-sm-2 control-label">Plan Name</label>

@@ -6,6 +6,7 @@ import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
@@ -63,11 +64,11 @@ public class LogIn extends HttpServlet {
 					user = databaseActionHandler.userLoadInfo(email, password);
 					request.getSession().setAttribute("user", user);
 					
-					if(user.hasRole("admin")){
+					if(user.hasRole(Constants.USER_ADMIN)){
 						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
-					} else if(user.hasRole("therapist")){
+					} else if(user.hasRole(Constants.USER_THERAPIST)){
 						forwardTo = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
-					}if(user.hasRole("client")){
+					}if(user.hasRole(Constants.USER_CLIENT)){
 						forwardTo = "/WEB-INF/jsp/client-tools/client-main-menu.jsp";
 					}
 					

@@ -1,6 +1,8 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,6 +17,8 @@ import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.models.UserClient;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
@@ -79,23 +83,51 @@ public class EditTreatmentPlan extends HttpServlet {
     		//set default lists in the request
     		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
     		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
-    		if(treatmentPlanID != 0) {
-    			loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
-    		}
     		
-			if(user.hasRole("client")){
+    		//TODO Remember why I do this here!  Either delete it or add a comment so I don't have to figure it out again :)
+    		//if(treatmentPlanID != 0) {
+    		//	loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
+    		//}
+    		
+			if(user.hasRole(Constants.USER_CLIENT)){
 				//UserClient userClient = (UserClient)session.getAttribute("user");
 				forwardTo = "clientMainMenu.jsp";
 	
-			} else if(user.hasRole("therapist")){
-				//UserTherapist userTherapist = (UserTherapist)session.getAttribute("user");
+			} else if(user.hasRole(Constants.USER_THERAPIST)){
+				UserTherapist therapistUser = (UserTherapist)user;
+				Map<Integer, UserClient> clientMap = therapistUser.loadClients();
+				
+				int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
+				
+				User client = clientMap.get(clientUserID);
+				request.setAttribute("client", client);
+				
+				//set the default treatment plans and the custom plans for this therapist into the request
+				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
 				switch (requestedAction){
-	            	case "plan-create-name-and-issue":
-	                
-	            	default:
+					case "plan-edit-load-plan":
+		        		loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
+	
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	break;
+					case "plan-edit-update":
+		                //detect which treatment issue source was used and validate
+		                int treatmentIssueID = determineTreatmentIssueID(defaultIssueID, customIssueID);
+		                
+		                updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
+
+		                therapistUser.loadAllAssignedClientTreatmentPlans(clientUserID);
+	            		request.setAttribute("activeAssignedClientPlans", therapistUser.getActiveAssignedClientTreatmentPlans());
+	            		request.setAttribute("unstartedAssignedClientPlans", therapistUser.getUnstartedAssignedClientTreatmentPlans());
+	            		request.setAttribute("completedAssignedClientPlans", therapistUser.getCompletedAssignedClientTreatmentPlans());
+		                
+		                forwardTo = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
+
+		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
+		            	break;
 				}
 				
-			} else if(user.hasRole("admin")){
+			} else if(user.hasRole(Constants.USER_ADMIN)){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 					
 				
@@ -104,50 +136,17 @@ public class EditTreatmentPlan extends HttpServlet {
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            case "plan-edit-update":
-
-		            	if(treatmentPlanID==0){
-		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
-		            	}
-		            	
-		                if(planTitle.isEmpty() || planDescription.isEmpty()){
-		                	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
-		                }
-		                
 		                //detect which treatment issue source was used and validate
-		                int treatmentIssueID = 0;
-		                if(defaultIssueID == 0 && customIssueID == 0){
-		                	throw new ValidationException(ErrorMessages.ISSUE_NONE_SELECTED);
-		                }
-		                if(defaultIssueID > 0 && customIssueID > 0){
-		                	throw new ValidationException(ErrorMessages.ISSUE_MULTIPLE_SELECTED);
-		                }
-		                if(defaultIssueID > 0 && customIssueID <= 0){
-		                	treatmentIssueID = defaultIssueID;
-		                }
-		                if(defaultIssueID <= 0 && customIssueID > 0){
-		                	treatmentIssueID = customIssueID;
-		                }
+		                int treatmentIssueID = determineTreatmentIssueID(defaultIssueID, customIssueID);
 		                
-		                treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-		                
-		                treatmentPlan.setTitle(planTitle);
-		                treatmentPlan.setDescription(planDescription);
-		                treatmentPlan.setTreatmentIssueID(treatmentIssueID);
-		                
-		                
-		                treatmentPlan.update();
-		
-		                request.setAttribute("treatmentPlan", treatmentPlan);
+		                updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
+
 		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
 		            	break;
-		            case "plan-edit-select-plan":
-		        		int selectedDefaultTreatmentPlanID = ParameterUtils.parseIntParameter(request, "selectedDefaultTreatmentPlanID");
-		        		if(selectedDefaultTreatmentPlanID != 0){
-		        			loadSelectedTreatmentPlanInRequest(request, selectedDefaultTreatmentPlanID);
-		        		} else {
-		        			request.setAttribute("treatmentPlan", null);
-		        		}
+		            case "plan-edit-load-plan":
+		        		loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
+
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 		            	break;
 		            case "create-default-treatment-issue":
@@ -199,13 +198,69 @@ public class EditTreatmentPlan extends HttpServlet {
 	}
 	
 	private TreatmentPlan loadSelectedTreatmentPlanInRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException, ValidationException{
-
-    	TreatmentPlan treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-    	request.setAttribute("treatmentPlan", treatmentPlan);
+		TreatmentPlan treatmentPlan = null;
+		if(treatmentPlanID != 0){
+			treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+	    	request.setAttribute("treatmentPlan", treatmentPlan);
+		} else {
+			request.setAttribute("treatmentPlan", null);
+		}
+    	
     	return treatmentPlan;
 	}
+
+	/**Validates that there are values for planID, title, and description.  Constructs TreatmentPlan with new data and calls update method.  Finally puts the updated plan back in the request as"treatmentPlan".
+	 * @param request
+	 * @param treatmentPlan
+	 * @param treatmentPlanID
+	 * @param planTitle
+	 * @param planDescription
+	 * @param treatmentIssueID
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	private void updateTreatmentPlan(HttpServletRequest request, TreatmentPlan treatmentPlan, int treatmentPlanID, String planTitle, String planDescription, int treatmentIssueID) throws ValidationException, DatabaseException{
+		if(treatmentPlanID==0){
+    		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+    	}
+    	
+        if(planTitle.isEmpty() || planDescription.isEmpty()){
+        	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
+        }
+        
+        
+        
+        //TODO possibly change this to use a static method TreatmentPlan.updateBasic(planTitle, planDescription, treatmentIssueID);???
+        treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+        
+        treatmentPlan.setTitle(planTitle);
+        treatmentPlan.setDescription(planDescription);
+        treatmentPlan.setTreatmentIssueID(treatmentIssueID);
+        
+        
+        treatmentPlan.update();
+
+        request.setAttribute("treatmentPlan", treatmentPlan);
+	}
 	
-	
+	private int determineTreatmentIssueID(int defaultIssueID, int customIssueID) throws ValidationException{
+		//detect which treatment issue source was used and validate
+        int treatmentIssueID = 0;
+        if(defaultIssueID == 0 && customIssueID == 0){
+        	throw new ValidationException(ErrorMessages.ISSUE_NONE_SELECTED);
+        }
+        if(defaultIssueID > 0 && customIssueID > 0){
+        	throw new ValidationException(ErrorMessages.ISSUE_MULTIPLE_SELECTED);
+        }
+        if(defaultIssueID > 0 && customIssueID <= 0){
+        	treatmentIssueID = defaultIssueID;
+        }
+        if(defaultIssueID <= 0 && customIssueID > 0){
+        	treatmentIssueID = customIssueID;
+        }
+        
+        return treatmentIssueID;
+	}
 	
 	/**
      * Gets the appropriate treatment issue id in the process of creating falsa new Treatment Plan.

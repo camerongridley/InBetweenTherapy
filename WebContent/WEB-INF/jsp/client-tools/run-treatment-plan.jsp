@@ -94,10 +94,10 @@
 	<div class="col-sm-12">
 
 		<form action="/secure/UpdateTaskCompletion" method="post" class="form-inline">
-			<input type="hidden" name="treatmentPlanID"
-				value="${treatmentPlan.treatmentPlanID}" />
-			<c:set var="activeViewStagePercentComplete"
-				value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
+			<c:import url="/WEB-INF/jsp/includes/common-hidden-form-inputs.jsp" />
+			<input type="hidden" name="requestedAction" value="update-client-plan">
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
+			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
 			<div class="progress-stage-detail">
 				<strong>
 					Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${activeViewStagePercentComplete}% Complete
@@ -214,34 +214,46 @@
 			<hr>
 
 			<!--INCOMPLETE EXTRA TASKS-->
-			<strong>Extra Tasks (Placeholder text - Functionality not
-				yet implemented)</strong>
-			<div class="panel panel-default panel-task"
-				title="Click the task title to expand and see task details.">
+			<strong>Extra Tasks (Placeholder text - Functionality not yet implemented)</strong>
+			<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 				<div class="panel-heading panel-heading-task">
 					<input class="responsive-checkbox" type="checkbox" id="0" aria-label="Task: Temp Extra Task"
 						value="0" name="taskChkBx[]" <c:if test="${task.disabled }">disabled</c:if>> <a role="button"
 						data-toggle="collapse" href="#collapse121212" aria-expanded="true"
 						aria-controls="collapse121212"> Sample Extra Task </a>
 				</div>
-				<div id="collapse121212" class="panel-collapse collapse"
-					role="tabpanel" aria-labelledby="heading121212">
+				<div id="collapse121212" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading121212">
 					<div class="panel-body panel-body-task">Extra task
 						instructions would go here.</div>
 				</div>
 			</div>
 
 			<!--COMPLETED EXTRA TASKS-->
-
-			<c:if test='${!path.equals("manageClients") }'>
-				<button type="submit" class="btn btn-primary">Save</button>
-			</c:if>
 			
+			<c:choose>
+				<c:when test='${path.equals("manageClients") }'>
+				<!--  -->
+					<button type="button" class="btn btn-primary" onclick="">Done</button>
+				</c:when>
+				<c:otherwise>
+					<button type="submit" class="btn btn-primary">Save</button>
+				</c:otherwise>
+			</c:choose>
 
 		</form>
-
+		
+		
 
 	</div>
 </div>
+
+<script>
+	$(function() {
+	    $('#defaultTreatmentPlanID').change(function() {
+	    	this.form.submit();
+	    });
+	    
+	});
+</script>
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />

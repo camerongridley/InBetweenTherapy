@@ -7,6 +7,7 @@ import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
@@ -59,11 +60,11 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
     	TreatmentPlan treatmentPlan = null;
     	
     	try {
-			if(user.hasRole("client")){
+			if(user.hasRole(Constants.USER_CLIENT)){
 				//UserClient userClient = (UserClient)session.getAttribute("user");
 				forwardTo = "clientMainMenu.jsp";
 	
-			} else if(user.hasRole("therapist")){
+			} else if(user.hasRole(Constants.USER_THERAPIST)){
 				//UserTherapist userTherapist = (UserTherapist)session.getAttribute("user");
 				switch (requestedAction){
 	            case "plan-create-name-and-issue":
@@ -71,7 +72,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 	            default:
 				}
 				
-			} else if(user.hasRole("admin")){
+			} else if(user.hasRole(Constants.USER_ADMIN)){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
 				ArrayList<TreatmentIssue> defaultreatmentIssues = TreatmentIssue.getDefaultTreatmentIssues();		
 				request.setAttribute("defaultTreatmentIssues", defaultreatmentIssues);

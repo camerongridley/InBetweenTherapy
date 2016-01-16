@@ -168,6 +168,13 @@ h2{
 	margin-top:10px;
 }
 
+.hide-overflow
+{
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+
 /* For Large Screen Width */
 @media (min-width: 768px){
     .form-inline .form-control {

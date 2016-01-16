@@ -16,6 +16,7 @@ import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 
 /**
@@ -77,7 +78,7 @@ public class CreateTask extends HttpServlet {
 				stage = Stage.load(stageID);
 			}
 	
-			if(user.hasRole("admin")){
+			if(user.hasRole(Constants.USER_ADMIN)){
 				UserAdmin admin = (UserAdmin)user;
 				switch(requestedAction){
 				case ("create-task-start"):
