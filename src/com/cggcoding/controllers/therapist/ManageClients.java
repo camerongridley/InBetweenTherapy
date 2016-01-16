@@ -60,14 +60,15 @@ public class ManageClients extends HttpServlet {
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
 		
-		
+		int clientUserID = 0;
+		UserTherapist therapistUser = null;;
 		
 		try {
 			if(user.hasRole(Constants.USER_THERAPIST)){
-				UserTherapist therapistUser = (UserTherapist)user;
+				therapistUser = (UserTherapist)user;
 				Map<Integer, UserClient> clientMap = therapistUser.loadClients();
 				
-				int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
+				clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
 				
 				User client = clientMap.get(clientUserID);
 				request.setAttribute("client", client);
@@ -121,6 +122,10 @@ public class ManageClients extends HttpServlet {
 			}
 		
 		}catch(DatabaseException | ValidationException e){
+			request.setAttribute("activeAssignedClientPlans", therapistUser.getActiveAssignedClientTreatmentPlans());
+			request.setAttribute("unstartedAssignedClientPlans", therapistUser.getUnstartedAssignedClientTreatmentPlans());
+			request.setAttribute("completedAssignedClientPlans", therapistUser.getCompletedAssignedClientTreatmentPlans());
+			
 			forwardTo = "/WEB-INF/jsp/therapist-tools/manage-clients-main.jsp";
 			request.setAttribute("errorMessage", e.getMessage());
 			System.out.println(e.getMessage());
@@ -130,8 +135,10 @@ public class ManageClients extends HttpServlet {
 	}
 	
 	private void putClientPlansInRequest(HttpServletRequest request, UserTherapist therapistUser, int clientUserID) throws DatabaseException, ValidationException{
-		List<TreatmentPlan> assignedClientPlans = therapistUser.getAssignedClientTreatmentPlans(clientUserID);
-		request.setAttribute("assignedClientPlans", assignedClientPlans);
+		therapistUser.loadAllAssignedClientTreatmentPlans(clientUserID);
+		request.setAttribute("activeAssignedClientPlans", therapistUser.getActiveAssignedClientTreatmentPlans());
+		request.setAttribute("unstartedAssignedClientPlans", therapistUser.getUnstartedAssignedClientTreatmentPlans());
+		request.setAttribute("completedAssignedClientPlans", therapistUser.getCompletedAssignedClientTreatmentPlans());
 	}
 
 }

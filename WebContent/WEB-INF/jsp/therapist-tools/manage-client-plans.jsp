@@ -23,21 +23,58 @@
 	            <div class="panel-heading"><h4>Active Plans</h4></div>
 	            <div class="panel-body">
 		            <div class="form-horizontal">
-		                <c:forEach items="${assignedClientPlans}" var="assignedPlan">
+		                <c:forEach items="${activeAssignedClientPlans}" var="activePlan">
 		                <div class="col-md-4">
 			                <div class="panel panel-primary">
 							  <div class="panel-heading">
-							    <h3 class="panel-title">${assignedPlan.title}</h3>
+							    <h3 class="panel-title">${activePlan.title}</h3>
 							  </div>
 							  <div class="panel-body">
-							    <div class="progress" title="This plan is ${assignedPlan.percentComplete()}% complete.">
-								  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${assignedPlan.percentComplete()}" aria-valuemin="0" aria-valuemax="100" style="width: ${assignedPlan.percentComplete()}%;">
-								    ${assignedPlan.percentComplete()}%
+							    <div class="progress" title="This plan is ${activePlan.percentComplete()}% complete.">
+								  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${activePlan.percentComplete()}" aria-valuemin="0" aria-valuemax="100" style="width: ${activePlan.percentComplete()}%;">
+								    ${activePlan.percentComplete()}%
 								  </div>
 								</div>
 								<p><strong>Current Stage: </strong></p>
-								${assignedPlan.currentStage.title } (${assignedPlan.currentStage.percentComplete*100}%)</p>
-								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&treatmentPlanID=${assignedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+								<p>${activePlan.currentStage.title } (${activePlan.currentStage.percentComplete*100}%)</p>
+								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+								</a>
+								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
+								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+								</a>
+								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
+								  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+								</a>
+							  </div>
+							</div>
+						</div>	
+		                </c:forEach>
+		            </div>
+	            </div>
+	        </div>    
+        </div>
+
+    </form>
+    
+    <form class="form-horizontal" action="/secure/ManageClients" method="POST">
+		<input type="hidden" name="requestedAction" value="select-client">
+		<input type="hidden" name="path" value="${path }">
+		<input type="hidden" name="defaultTreatmentPlanID" value="${defaultTreatmentPlanID }">
+		
+        <div class="form-horizontal">
+	        <div class="panel panel-default">
+	            <div class="panel-heading"><h4>Unstarted Plans</h4></div>
+	            <div class="panel-body">
+		            <div class="form-horizontal">
+		                <c:forEach items="${unstartedAssignedClientPlans}" var="unstartedPlan">
+		                <div class="col-md-4">
+			                <div class="panel panel-primary">
+							  <div class="panel-heading">
+							    <h3 class="panel-title">${unstartedPlan.title}</h3>
+							  </div>
+							  <div class="panel-body">
+								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&treatmentPlanID=${unstartedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
 								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 								</a>
 								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
@@ -99,6 +136,48 @@
 	    
 	    </div>
 	</div>
+	
+	<form class="form-horizontal" action="/secure/ManageClients" method="POST">
+		<input type="hidden" name="requestedAction" value="select-client">
+		<input type="hidden" name="path" value="${path }">
+		<input type="hidden" name="defaultTreatmentPlanID" value="${defaultTreatmentPlanID }">
+		
+        <div class="form-horizontal">
+	        <div class="panel panel-default">
+	            <div class="panel-heading"><h4>Completed Plans</h4></div>
+	            <div class="panel-body">
+		            <div class="form-horizontal">
+		                <c:forEach items="${completedAssignedClientPlans}" var="completedPlan">
+		                <div class="col-md-4">
+			                <div class="panel panel-primary">
+							  <div class="panel-heading">
+							    <h3 class="panel-title">${completedPlan.title}</h3>
+							  </div>
+							  <div class="panel-body">
+							    <div class="progress" title="This plan is ${completedPlan.percentComplete()}% complete.">
+								  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${completedPlan.percentComplete()}" aria-valuemin="0" aria-valuemax="100" style="width: ${completedPlan.percentComplete()}%;">
+								    ${completedPlan.percentComplete()}%
+								  </div>
+								</div>
+								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&treatmentPlanID=${completedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+								</a>
+								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
+								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+								</a>
+								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
+								  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+								</a>
+							  </div>
+							</div>
+						</div>	
+		                </c:forEach>
+		            </div>
+	            </div>
+	        </div>    
+        </div>
+
+    </form>
     
 	<script>
 		$(function() {

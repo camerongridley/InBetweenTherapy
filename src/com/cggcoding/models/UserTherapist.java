@@ -21,6 +21,10 @@ public class UserTherapist extends User implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private Map<Integer, UserClient> clientMap;
     private List<TreatmentIssue> defaultTreatmentIssues;
+    private List<TreatmentPlan> allAssignedClientPlans;
+    private List<TreatmentPlan> activeAssignedClientPlans;
+    private List<TreatmentPlan> unstartedAssignedClientPlans;
+    private List<TreatmentPlan> completedAssignedClientPlans;
 
     private static DatabaseActionHandler dao= new MySQLActionHandler();
         
@@ -28,6 +32,7 @@ public class UserTherapist extends User implements Serializable{
         super(userID, email);
         this.clientMap = new HashMap<>();
         this.defaultTreatmentIssues = new ArrayList<>();
+        this.allAssignedClientPlans = new ArrayList<>();
     }
 
 	public Map<Integer, UserClient> getClientMap() {
@@ -47,8 +52,43 @@ public class UserTherapist extends User implements Serializable{
     	return clientMap;
     }
     
-    public List<TreatmentPlan> getAssignedClientTreatmentPlans(int clientID) throws DatabaseException, ValidationException{
-    	return dao.userGetTherapistAssignedPlans(clientID, this.getUserID());
+    public List<TreatmentPlan> loadAllAssignedClientTreatmentPlans(int clientID) throws DatabaseException, ValidationException{
+    	this.activeAssignedClientPlans = new ArrayList<>();
+        this.unstartedAssignedClientPlans = new ArrayList<>();
+        this.completedAssignedClientPlans = new ArrayList<>();
+    	this.allAssignedClientPlans =  dao.userGetTherapistAssignedPlans(clientID, this.getUserID());
+    	
+    	return allAssignedClientPlans;
+    }
+    
+    public List<TreatmentPlan> getActiveAssignedClientTreatmentPlans(){
+    	for(TreatmentPlan plan : allAssignedClientPlans){
+    		if(plan.isInProgress()){
+    			activeAssignedClientPlans.add(plan);
+    		}
+    	}
+    	
+    	return activeAssignedClientPlans;
+    }
+    
+    public List<TreatmentPlan> getCompletedAssignedClientTreatmentPlans(){
+    	for(TreatmentPlan plan : allAssignedClientPlans){
+    		if(plan.isCompleted()){
+    			completedAssignedClientPlans.add(plan);
+    		}
+    	}
+    	
+    	return completedAssignedClientPlans;
+    }
+    
+    public List<TreatmentPlan> getUnstartedAssignedClientTreatmentPlans(){
+    	for(TreatmentPlan plan : allAssignedClientPlans){
+    		if(!plan.isCompleted() && !plan.isInProgress()){
+    			unstartedAssignedClientPlans.add(plan);
+    		}
+    	}
+    	
+    	return unstartedAssignedClientPlans;
     }
     
 }

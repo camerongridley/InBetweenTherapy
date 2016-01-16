@@ -62,11 +62,11 @@
           <ul class="nav navbar-nav navbar-right">
             	<c:choose>
 				  <c:when test="${user == null }">
-				  	<li><a href="/login.jsp">Sign In<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></a></li>
+				  	<li><a href="/login.jsp">Sign In&nbsp;<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></a></li>
 				  </c:when>
 
 				  <c:otherwise>
-				    <li><a href="/secure/AccountManagement">Hello, ${user.email} (${user.role})</a></li>
+				    <li><a href="/secure/AccountManagement" style="padding-right:0px;">Hello, ${user.email} (${user.role})</a></li>
 				    <li title="Sign Out"><a href="/LogOut"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></li>
 				  </c:otherwise>
 				</c:choose>

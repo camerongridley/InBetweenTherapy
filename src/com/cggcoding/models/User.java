@@ -19,7 +19,7 @@ public abstract class User implements Serializable{
 	private String email;
 	private int roleID;
 	private List<String> roles;
-	String role;
+	private String role;
 	private List<TreatmentPlan> treatmentPlanList;
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
