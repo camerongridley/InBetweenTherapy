@@ -101,7 +101,7 @@
 			<form class="form-horizontal" action="/secure/ManageClients" method="POST">
 				<input type="hidden" name="requestedAction" value="select-treatment-plan-for-assignment">
 				<input type="hidden" name="path" value="${path }">
-				<input type="hidden" name="clientUserID" value="${clientUserID }">
+				<input type="hidden" name="clientUserID" value="${client.userID }">
 				
 				<div class="form-group">
 					<label for="selectedDefaultTreatmentPlanID" class="col-sm-2 control-label">Select Default Treatment Plan</label>
@@ -124,7 +124,7 @@
 		     <form class="form-horizontal" action="/secure/ManageClients" method="POST">
 				<input type="hidden" name="requestedAction" value="copy-plan-to-client">
 				<input type="hidden" name="path" value="${path }">
-				<input type="hidden" name="clientUserID" value="${clientUserID }">
+				<input type="hidden" name="clientUserID" value="${client.userID }">
 				<input type="hidden" name="defaultTreatmentPlanID" value="${defaultTreatmentPlanID }">
 				
 		        <div class="form-group">

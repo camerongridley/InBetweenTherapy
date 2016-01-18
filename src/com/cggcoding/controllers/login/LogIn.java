@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -67,6 +68,8 @@ public class LogIn extends HttpServlet {
 					if(user.hasRole(Constants.USER_ADMIN)){
 						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 					} else if(user.hasRole(Constants.USER_THERAPIST)){
+						UserTherapist userTherapist = (UserTherapist)user;
+						userTherapist.setClientMap(userTherapist.loadClients());
 						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 					}if(user.hasRole(Constants.USER_CLIENT)){
 						forwardTo = Constants.URL_CLIENT_MAIN_MENU;

@@ -39,7 +39,7 @@
 					<button type="submit" class="btn btn-primary">Edit
 						Treatment Plan Template</button>
 				</div>
-				<input type="hidden" name="requestedAction" value="plan-edit-start">
+				<input type="hidden" name="requestedAction" value="plan-edit-selection">
 				<input type="hidden" name="path" value="treatmentPlanTemplate">
 			</form>
 			</p>

@@ -47,6 +47,10 @@ public class UserTherapist extends User implements Serializable{
     	this.clientMap.put(client.getUserID(), client);
     }
     
+    public UserClient getClient(int clientUserID){
+    	return clientMap.get(clientUserID);
+    }
+    
     public Map<Integer, UserClient> loadClients() throws DatabaseException{
     	this.clientMap = dao.userGetClientsByTherapistID(this.getUserID());
     	return clientMap;

@@ -17,7 +17,10 @@ public final class ErrorMessages {
 	
 	//Log in
 	public static final String INVALID_USERNAME_OR_PASSWORD = "Login failed.  The email and password combination is not found in our records.  Please try again.";
-
+	
+	//Authorization
+	public static final String UNAUTHORIZED_ACCESS = "You are not authorized for access this the data you are requesting.  If you need further assistance, plase contact customer support.";
+	
 	//Treatment Plan Creation Stage One - Choosing plan name, description, and treatment issue
 	public static final String PLAN_MISSING_INFO = "You must enter a plan name and description.";
 	public static final String PLAN_TITLE_EXISTS = "That treatment plan name already exists in your profile.  Please choose another one.";

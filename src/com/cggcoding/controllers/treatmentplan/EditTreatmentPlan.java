@@ -63,22 +63,26 @@ public class EditTreatmentPlan extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		
+		//TODO update the common servlet variable with these in all other servlets
+		int treatmentPlanID = 0;
+		int stageID = 0;
+		int taskID = 0;
 		/*-----------End Common Servlet variables---------------*/
 
-    	int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
-    	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
-		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
+    	treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+    	stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		taskID = ParameterUtils.parseIntParameter(request, "taskID");
     	String planTitle = request.getParameter("planTitle");
     	String planDescription = request.getParameter("planDescription");
     	int defaultIssueID = ParameterUtils.parseIntParameter(request, "defaultTreatmentIssue");
     	int customIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
-
+    	
+    	int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
+    	
     	TreatmentPlan treatmentPlan = null;
     	
     	try {
-    		if(user==null){
-    			throw new ValidationException("Your session has expired.  Please log back in.");
-    		}
     		
     		//set default lists in the request
     		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
@@ -89,64 +93,55 @@ public class EditTreatmentPlan extends HttpServlet {
     		//	loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
     		//}
     		
-			if(user.hasRole(Constants.USER_CLIENT)){
-				//UserClient userClient = (UserClient)session.getAttribute("user");
-				forwardTo = "clientMainMenu.jsp";
-	
-			} else if(user.hasRole(Constants.USER_THERAPIST)){
-				UserTherapist therapistUser = (UserTherapist)user;
-				Map<Integer, UserClient> clientMap = therapistUser.loadClients();
+			if(user.hasRole(Constants.USER_ADMIN)|| user.hasRole(Constants.USER_THERAPIST)){
 				
-				int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
-				
-				User client = clientMap.get(clientUserID);
-				request.setAttribute("client", client);
-				
-				//set the default treatment plans and the custom plans for this therapist into the request
-				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
-				switch (requestedAction){
-					case "plan-edit-load-plan":
-		        		loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
-	
-		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
-		            	break;
-					case "plan-edit-update":
-		                //detect which treatment issue source was used and validate
-		                int treatmentIssueID = determineTreatmentIssueID(defaultIssueID, customIssueID);
-		                
-		                updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
-
-		                therapistUser.loadAllAssignedClientTreatmentPlans(clientUserID);
-	            		request.setAttribute("activeAssignedClientPlans", therapistUser.getActiveAssignedClientTreatmentPlans());
-	            		request.setAttribute("unstartedAssignedClientPlans", therapistUser.getUnstartedAssignedClientTreatmentPlans());
-	            		request.setAttribute("completedAssignedClientPlans", therapistUser.getCompletedAssignedClientTreatmentPlans());
-		                
-		                forwardTo = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
-
-		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
-		            	break;
-				}
-				
-			} else if(user.hasRole(Constants.USER_ADMIN)){
-				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
+				//First perform role actions desired regardless of the requestedAction
+				if(user.hasRole(Constants.USER_ADMIN)){
 					
-				
+                }
+                
+                if(user.hasRole(Constants.USER_THERAPIST)){
+                	UserTherapist userTherapist = (UserTherapist)user;
+    				setClientInRequest(request, userTherapist, clientUserID);
+                }
+                
+                //Now run actions specific to requestedAction
 				switch (requestedAction){
-		            case "plan-edit-start":
+					//Forwards to page that allows for selecting the plan user wants to edit
+		            case "plan-edit-selection"://
 		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
+		            //Updates the plan's basic info
 		            case "plan-edit-update":
 		                //detect which treatment issue source was used and validate
 		                int treatmentIssueID = determineTreatmentIssueID(defaultIssueID, customIssueID);
 		                
 		                updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
 
-		                forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
+		                
+		                if(user.hasRole(Constants.USER_ADMIN)){
+		                	forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+		                }
+		                
+		                if(user.hasRole(Constants.USER_THERAPIST)){
+		                	UserTherapist userTherapist = (UserTherapist)user;
+		    				
+		    				//set the default treatment plans and the custom plans for this therapist into the request
+		    				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+		    				
+		                	userTherapist.loadAllAssignedClientTreatmentPlans(clientUserID);
+		            		request.setAttribute("activeAssignedClientPlans", userTherapist.getActiveAssignedClientTreatmentPlans());
+		            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.getUnstartedAssignedClientTreatmentPlans());
+		            		request.setAttribute("completedAssignedClientPlans", userTherapist.getCompletedAssignedClientTreatmentPlans());
+			                
+			                forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
+		                }
+		                
 		            	break;
 		            case "plan-edit-load-plan":
 		        		loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
-
+		        		
 		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 		            case "create-default-treatment-issue":
@@ -178,6 +173,11 @@ public class EditTreatmentPlan extends HttpServlet {
 		            	break;
 		            
 				}
+			} else if(user.hasRole(Constants.USER_CLIENT)){
+				//UserClient userClient = (UserClient)session.getAttribute("user");
+				forwardTo = "clientMainMenu.jsp";
+				request.setAttribute("erorMessage", ErrorMessages.UNAUTHORIZED_ACCESS);
+				//UNSURE consider creating a UnauthorizedAccessException and throwing that here
 			}
 			
 			
@@ -195,6 +195,15 @@ public class EditTreatmentPlan extends HttpServlet {
 		}
     	
 		request.getRequestDispatcher(forwardTo).forward(request,response);
+	}
+	
+	/**Get the clientUserID from request and uses that along with UserTherapist argument to get and set a Client object in the request
+	 * @param request
+	 * @param userTherapist
+	 */
+	private void setClientInRequest(HttpServletRequest request, UserTherapist userTherapist, int clientUserID){
+		User client = userTherapist.getClient(clientUserID);;
+		request.setAttribute("client", client);
 	}
 	
 	private TreatmentPlan loadSelectedTreatmentPlanInRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException, ValidationException{

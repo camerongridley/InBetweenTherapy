@@ -89,7 +89,7 @@ public class ManageClients extends HttpServlet {
 						break;
 					case "select-client":
 						
-						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
+						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
 					case "load-client-view-treatment-plan":
 						int clientTreatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
@@ -104,20 +104,20 @@ public class ManageClients extends HttpServlet {
 						break;
 					case "select-treatment-plan-for-assignment":
 						//TODO load the preview of the selected treatment plan and put into request
-						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
+						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
 					case "copy-plan-to-client":
 						boolean isTemplate = false;
 						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
 						request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COPIED_TO_CLIENT);
-						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
+						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
 				}
 				
 				putClientPlansInRequest(request, therapistUser, clientUserID);
 				
 				//put these back in the request so other forms can maintain selections of other forms as well as display selected items of the dropdown boxes
-				request.setAttribute("clientUserID", clientUserID);
+				request.setAttribute("client", client);
 				request.setAttribute("defaultTreatmentPlanID", defaultTreatmentPlanID);
 			}
 		
