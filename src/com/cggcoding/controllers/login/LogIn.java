@@ -65,11 +65,11 @@ public class LogIn extends HttpServlet {
 					request.getSession().setAttribute("user", user);
 					
 					if(user.hasRole(Constants.USER_ADMIN)){
-						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 					} else if(user.hasRole(Constants.USER_THERAPIST)){
-						forwardTo = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
+						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 					}if(user.hasRole(Constants.USER_CLIENT)){
-						forwardTo = "/WEB-INF/jsp/client-tools/client-main-menu.jsp";
+						forwardTo = Constants.URL_CLIENT_MAIN_MENU;
 					}
 					
 				} else {

@@ -81,11 +81,11 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 					case "create-default-treatment-issue":
 		            	CommonServletFunctions.createDefaultTreatmentIssue(request, user.getUserID());
 	
-						forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-create-name.jsp";
+						forwardTo = Constants.URL_CREATE_TREATMENT_PLAN;
 		            	break;
 					case "plan-create-start":
 
-						forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-create-name.jsp";
+						forwardTo = Constants.URL_CREATE_TREATMENT_PLAN;
 						break;
 		            case "plan-create-name":
 		            	
@@ -120,7 +120,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 		                treatmentPlan.create();
 		
 		                request.setAttribute("treatmentPlan", treatmentPlan);
-		                forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+		                forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		                break;
 				}
 
@@ -138,7 +138,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
     		request.setAttribute("selectedDefaultIssueID", selectedDefaultIssueID);
     		request.setAttribute("selectedCustomTreatmentIssue", selectedCustomIssueID);
 
-    		forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-create-name.jsp";
+    		forwardTo = Constants.URL_CREATE_TREATMENT_PLAN;
 			//e.printStackTrace();
 		}
     	

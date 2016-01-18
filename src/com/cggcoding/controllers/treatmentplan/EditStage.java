@@ -90,7 +90,7 @@ public class EditStage extends HttpServlet {
 								
 				switch (requestedAction){
 		            case "stage-edit-start" :
-		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = Constants.URL_EDIT_STAGE;
 		            	break;
 		            	
 		            case "stage-edit-select-stage" :
@@ -105,7 +105,7 @@ public class EditStage extends HttpServlet {
 							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
 						}
 		            	
-		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = Constants.URL_EDIT_STAGE;
 		            	break;
 		            	
 		            case "stage-edit-basic-info" :
@@ -139,17 +139,17 @@ public class EditStage extends HttpServlet {
 		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(planToReturnTo));
 		            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
 		            		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
-		            		forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	}else{
 		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
-		            		forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+		            		forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 		            	}
 
 		            	break;
 		            	
 		            case "stage-edit-add-goal" :
 		            	addGoal(request, stageID);
-		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = Constants.URL_EDIT_STAGE;
 		            	break;
 		            	
 		            case("delete-goal"):
@@ -158,7 +158,7 @@ public class EditStage extends HttpServlet {
 						
 						editedStage = Stage.load(stageID);
 						request.setAttribute("stage", editedStage);
-		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 						
 		            //TODO remove this and have calling forms use stage-edit-select-stage instead
@@ -170,13 +170,13 @@ public class EditStage extends HttpServlet {
 							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
 						}
 						
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						forwardTo = Constants.URL_EDIT_STAGE;
 						break;	
 						
 					case("delete-task"):
 						deleteTask(request, stageID);
 					
-		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+		            	forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 					
 					case("increase-task-order"):					
@@ -186,7 +186,7 @@ public class EditStage extends HttpServlet {
 						editedStage.orderIncrementTemplateTask(taskID, originalOrder);
 						
 						request.setAttribute("stage", editedStage);
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 						
 					case("decrease-task-order"):
@@ -195,11 +195,11 @@ public class EditStage extends HttpServlet {
 						editedStage.orderDecrementTemplateTask(taskID, originalOrder);
 						
 						request.setAttribute("stage", editedStage);
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 		            default:
 
-		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+		                forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 				}
 			} else if(user.hasRole(Constants.USER_THERAPIST)){
 				switch(requestedAction){
@@ -212,7 +212,7 @@ public class EditStage extends HttpServlet {
 							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
 						}
 						
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						forwardTo = Constants.URL_EDIT_STAGE;
 						break;	
 					}
 			}
@@ -226,7 +226,7 @@ public class EditStage extends HttpServlet {
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
 			request.setAttribute("treatmentPlanID", planToReturnTo);
-            forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+            forwardTo = Constants.URL_EDIT_STAGE;
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

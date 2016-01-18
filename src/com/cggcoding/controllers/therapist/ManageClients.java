@@ -85,7 +85,7 @@ public class ManageClients extends HttpServlet {
 						//get list of clients for the therapist who is logged in and put that list in the request
 						request.setAttribute("clientMap", clientMap);
 						
-						forwardTo = "/WEB-INF/jsp/therapist-tools/manage-clients-main.jsp";
+						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_MAIN;
 						break;
 					case "select-client":
 						
@@ -126,7 +126,7 @@ public class ManageClients extends HttpServlet {
 			request.setAttribute("unstartedAssignedClientPlans", therapistUser.getUnstartedAssignedClientTreatmentPlans());
 			request.setAttribute("completedAssignedClientPlans", therapistUser.getCompletedAssignedClientTreatmentPlans());
 			
-			forwardTo = "/WEB-INF/jsp/therapist-tools/manage-clients-main.jsp";
+			forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_MAIN;
 			request.setAttribute("errorMessage", e.getMessage());
 			System.out.println(e.getMessage());
 		}

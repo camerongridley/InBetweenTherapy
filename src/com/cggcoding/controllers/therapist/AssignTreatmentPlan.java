@@ -82,7 +82,7 @@ public class AssignTreatmentPlan extends HttpServlet {
 						boolean isTemplate = false;
 						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
 						
-						forwardTo = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
+						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 						break;
 				}
 				

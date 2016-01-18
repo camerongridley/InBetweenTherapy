@@ -86,7 +86,7 @@ public class CreateStage extends HttpServlet {
 				switch (requestedAction){
 					case "stage-create-start":
 
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
+						forwardTo = Constants.URL_CREATE_STAGE;
 						break;
 					case "stage-add-default-template":
 						
@@ -105,7 +105,7 @@ public class CreateStage extends HttpServlet {
 			                	//OPTIMIZE loading the plan twice here - possible improvement would be to have plan.addStageTemplate add the stage to the local stages List so would need to have the dao method return a stage 
 			                	//need to reload the plan with the newly added stage
 			                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-			                	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                }
 						}
 		            	break;
@@ -136,17 +136,17 @@ public class CreateStage extends HttpServlet {
 		                }else{
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
 		                }
-		                forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+		                forwardTo = Constants.URL_EDIT_STAGE;
 		                break;
 		            case("add-stage-to-treatment-plan"):
 						//set all user-independent lists into request
 						request.setAttribute("defaultStages", defaultStages);
 		            	//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
+						forwardTo = Constants.URL_CREATE_STAGE;
 						break;
 		            default:
 
-		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+		                forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 		                break;
 				}
 				
@@ -164,7 +164,7 @@ public class CreateStage extends HttpServlet {
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("defaultStages", defaultStages);
 			
-            forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
+            forwardTo = Constants.URL_CREATE_STAGE;
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

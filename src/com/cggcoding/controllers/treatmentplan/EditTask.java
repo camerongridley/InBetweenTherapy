@@ -84,7 +84,7 @@ public class EditTask extends HttpServlet {
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", tempTask);
 					
-					forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
+					forwardTo = Constants.URL_EDIT_TASK;
 					break;
 				case ("edit-task-select-task"):
 					int selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
@@ -95,14 +95,14 @@ public class EditTask extends HttpServlet {
 						request.setAttribute("warningMessage", WarningMessages.EDITING_TASK_TEMPLATE);
 					}
 					
-					forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
+					forwardTo = Constants.URL_EDIT_TASK;
 					break;
 				case ("edit-task-select-task-type"):
 					// most of the work for this case was moved to CommonServletFunctions.getTaskParametersFromRequest, so now it just needs to set forwardTo
 					
 					
 					
-					forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
+					forwardTo = Constants.URL_EDIT_TASK;
 					break;
 				case ("edit-task-update"):
 					if(tempTask.getTaskID()==0){
@@ -115,9 +115,9 @@ public class EditTask extends HttpServlet {
 						request.setAttribute("stage", Stage.load(stageToReturnTo));
 						request.setAttribute("defaultStageList", Stage.getDefaultStages());
 						
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						forwardTo = Constants.URL_EDIT_STAGE;
 					}else{
-						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 					}
 				
 					break;
@@ -132,7 +132,7 @@ public class EditTask extends HttpServlet {
 			request.setAttribute("treatmentPlanID", planToReturnTo);
 			request.setAttribute("errorMessage", e.getMessage());
 
-			forwardTo = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
+			forwardTo = Constants.URL_EDIT_TASK;
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

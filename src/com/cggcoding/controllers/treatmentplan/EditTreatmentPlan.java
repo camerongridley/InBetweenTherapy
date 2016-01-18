@@ -108,7 +108,7 @@ public class EditTreatmentPlan extends HttpServlet {
 					case "plan-edit-load-plan":
 		        		loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
 	
-		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 					case "plan-edit-update":
 		                //detect which treatment issue source was used and validate
@@ -133,7 +133,7 @@ public class EditTreatmentPlan extends HttpServlet {
 				
 				switch (requestedAction){
 		            case "plan-edit-start":
-		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 		            case "plan-edit-update":
 		                //detect which treatment issue source was used and validate
@@ -141,25 +141,25 @@ public class EditTreatmentPlan extends HttpServlet {
 		                
 		                updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
 
-		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+		                forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
 		            	break;
 		            case "plan-edit-load-plan":
 		        		loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
 
-		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 		            case "create-default-treatment-issue":
 		            	CommonServletFunctions.createDefaultTreatmentIssue(request, user.getUserID());
 
-						forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+						forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 		            case "stage-delete":
 						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						treatmentPlan.deleteStage(stageID);
 				    	request.setAttribute("treatmentPlan", treatmentPlan);
 						
-						forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+						forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 						break;
 						
 		            case "delete-plan":
@@ -174,7 +174,7 @@ public class EditTreatmentPlan extends HttpServlet {
 			            	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
 		            	}
 		            	
-		            	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 		            
 				}
@@ -190,7 +190,7 @@ public class EditTreatmentPlan extends HttpServlet {
     		request.setAttribute("defaultTreatmentIssue", defaultIssueID);
     		request.setAttribute("existingCustomTreatmentIssue", customIssueID);
     		
-    		forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+    		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			//e.printStackTrace();
 		}
     	

@@ -84,7 +84,7 @@ public class CreateTask extends HttpServlet {
 				case ("create-task-start"):
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", taskToCreate);
-					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
+					forwardTo = Constants.URL_CREATE_TASK;
 					break;
 				case "task-add-default-template" :
 
@@ -96,9 +96,9 @@ public class CreateTask extends HttpServlet {
 						if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
 							request.setAttribute("stage", stage);//XXX right now this is redundant as loadStageAndPutInRequest is called later
 							request.setAttribute("defaultStageList", Stage.getDefaultStages());
-							forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+							forwardTo = Constants.URL_EDIT_STAGE;
 						}else{
-							forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+							forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 						}
 					}
 					
@@ -106,7 +106,7 @@ public class CreateTask extends HttpServlet {
 				case "task-type-select":
 					request.setAttribute("task", taskToCreate);
 					request.setAttribute("defaultTasks", Task.getDefaultTasks());
-					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
+					forwardTo = Constants.URL_CREATE_TASK;
 					break;
 				case ("create-new-task"):
 					Task newTask = null;
@@ -143,9 +143,9 @@ public class CreateTask extends HttpServlet {
 					}
 										
 					if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						forwardTo = Constants.URL_EDIT_STAGE;
 					}else{
-						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 					}
 
 					break;
@@ -167,7 +167,7 @@ public class CreateTask extends HttpServlet {
 			request.setAttribute("treatmentPlanID", planToReturnTo);
 			request.setAttribute("errorMessage", e.getMessage());
 
-			forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
+			forwardTo = Constants.URL_CREATE_TASK;
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

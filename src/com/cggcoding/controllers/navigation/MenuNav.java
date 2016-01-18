@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cggcoding.models.User;
+import com.cggcoding.utils.Constants;
 
 /**
  * Servlet implementation class MenuNav
@@ -53,13 +54,13 @@ public class MenuNav extends HttpServlet {
 		if(user!=null){
 			switch(user.getRole()){
 			case "admin":
-				forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+				forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 				break;
 			case "therapist":
-				forwardTo = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
+				forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 				break;
 			case "client":
-				forwardTo = "/WEB-INF/jsp/client-tools/client-main-menu.jsp";
+				forwardTo = Constants.URL_CLIENT_MAIN_MENU;
 				break;
 			default:
 				
