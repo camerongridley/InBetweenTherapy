@@ -37,7 +37,27 @@ public class Constants {
 		return TASK_TYPE_NAME_TASK_TWO_TEXTBOXES;
 	}
 	
-	public static String PATH_CREATE_TREATMENT_PLAN = "creatingPlanTemplate";
+	//Paths
+	public static String PATH_TEMPLATE_TREATMENT_PLAN = "templateTreatmentPlan";
+	public static String PATH_TEMPLATE_STAGE = "templateStage";
+	public static String PATH_TEMPLATE_TASK = "templateTask";
+	
+	public static String PATH_CLIENT_TREATMENT_PLAN = "clientTreatmentPlan";
+
+	//URLs
+	public static String ADMIN_MAIN_MENU = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+	public static String THERAPIST_MAIN_MENU = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
+	public static String CLIENT_MAIN_MENU = "/WEB-INF/jsp/client-tools/client-main-menu.jsp";
+	
+	public static String THERAPIST_MANAGE_CLIENT_MAIN = "/WEB-INF/jsp/therapist-tools/manage-clients-main.jsp";
+	
+	public static String CREATE_TREATMENT_PLAN = "/WEB-INF/jsp/treatment-plans/treatment-plan-create.jsp";
+	public static String CREATE_STAGE = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
+	public static String CREATE_TASK = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
+	public static String EDIT_TREATMENT_PLAN = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+	public static String EDIT_STAGE = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+	public static String EDIT_TASK = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
+	
 
 	
 	

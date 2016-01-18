@@ -92,6 +92,7 @@ public class EditStage extends HttpServlet {
 		            case "stage-edit-start" :
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
+		            	
 		            case "stage-edit-select-stage" :
 		            	int selectedDefaultStageID = ParameterUtils.parseIntParameter(request, "selectedDefaultStageID");
 		            	if(selectedDefaultStageID != 0){
@@ -106,6 +107,7 @@ public class EditStage extends HttpServlet {
 		            	
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
+		            	
 		            case "stage-edit-basic-info" :
 		            	if(stageID==0){
 		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
@@ -119,6 +121,8 @@ public class EditStage extends HttpServlet {
 		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
 		            	}
 		            	
+		            	//For Admin/Templates
+		            	//get the repetition value for each task template inside this stage template and set it the edited stage to be updated when stage.update() is called
 		            	for(MapStageTaskTemplate stageTaskInfo : editedStage.getMapStageTaskTemplates()){
 		            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
 		            		stageTaskInfo.setTemplateRepetitions(templateReps);
@@ -127,7 +131,7 @@ public class EditStage extends HttpServlet {
 		            	
 		            	editedStage.update();//OPTIMIZE could create a new method that takes all relevant info and calls static method in stage that loads and updates all with the same connection
 		            	
-		            	retrieveStageTaskDetails(request, editedStage);
+		            	//TODO deprecated?  delete? retrieveStageTaskDetails(request, editedStage);
 		            	
 		            	request.setAttribute("stage", editedStage);
 		            	if(path.equals("treatmentPlanTemplate")){
@@ -142,14 +146,21 @@ public class EditStage extends HttpServlet {
 		            	}
 
 		            	break;
+		            	
 		            case "stage-edit-add-goal" :
-		            	String goalDescription = request.getParameter("newStageGoalDescription");
-		            	StageGoal goal = StageGoal.getInstanceWithoutID(stageID, goalDescription);
-		            	goal.create();
-		            	request.setAttribute("stage", Stage.load(stageID));
+		            	addGoal(request, stageID);
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		            	break;
-		            
+		            	
+		            case("delete-goal"):
+						int goalID = ParameterUtils.parseIntParameter(request, "stageGoalID");
+						StageGoal.delete(goalID);
+						
+						editedStage = Stage.load(stageID);
+						request.setAttribute("stage", editedStage);
+		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						break;
+						
 		            //TODO remove this and have calling forms use stage-edit-select-stage instead
 		            case "stage-edit":
 						editedStage = Stage.load(stageID);
@@ -163,21 +174,11 @@ public class EditStage extends HttpServlet {
 						break;	
 						
 					case("delete-task"):
-						editedStage = Stage.load(stageID);
-						int taskToDeleteID = ParameterUtils.parseIntParameter(request, "taskID");
-						editedStage.deleteTask(taskToDeleteID);
-						
-						request.setAttribute("stage", editedStage);
+						deleteTask(request, stageID);
+					
 		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;
-					case("delete-goal"):
-						int goalID = ParameterUtils.parseIntParameter(request, "stageGoalID");
-						StageGoal.delete(goalID);
-						
-						editedStage = Stage.load(stageID);
-						request.setAttribute("stage", editedStage);
-		            	forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
-						break;
+					
 					case("increase-task-order"):					
 						
 						editedStage = Stage.load(stageID);
@@ -187,6 +188,7 @@ public class EditStage extends HttpServlet {
 						request.setAttribute("stage", editedStage);
 						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 						break;
+						
 					case("decrease-task-order"):
 						editedStage = Stage.load(stageID);
 					
@@ -199,7 +201,22 @@ public class EditStage extends HttpServlet {
 
 		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 				}
+			} else if(user.hasRole(Constants.USER_THERAPIST)){
+				switch(requestedAction){
+					//TODO XXX  DON'T KEEP THIS! - First address the todo tag earlier that address getting rid of the requestedAction "stage-edit"
+					case "stage-edit":
+						editedStage = Stage.load(stageID);
+						request.setAttribute("stage", editedStage);
+						
+						if(path.equals("treatmentPlanTemplate")){
+							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
+						}
+						
+						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+						break;	
+					}
 			}
+				
 			
 		} catch (ValidationException | DatabaseException e){
 			//in case of error and user is sent back to page - re-populate the forms
@@ -215,6 +232,12 @@ public class EditStage extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 	}
 	
+	//TODO deprecated? delete?
+	/**Gets all data that is associated with stageTaskDetailsMaps - i.e. tasks that are part of a stage template
+	 * @param request
+	 * @param stage
+	 * @return
+	 */
 	private List<MapStageTaskTemplate> retrieveStageTaskDetails(HttpServletRequest request, Stage stage){
 		List<MapStageTaskTemplate> stageTaskDetails = new ArrayList<>();
 		String[] taskIDs = request.getParameterValues("allTaskIDs");
@@ -231,6 +254,38 @@ public class EditStage extends HttpServlet {
 		
 		return null;
 		
+	}
+	
+	private void updateStageBasicInfo(){
+		
+	}
+	
+	/**Deletes task from the stage (Stage determines if deleted from task table or mapping table).  This method gets the taskID to delete from the request.
+	 * @param request
+	 * @param stageID
+	 * @param taskID
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	private void deleteTask(HttpServletRequest request, int stageID) throws DatabaseException, ValidationException{
+		Stage editedStage = Stage.load(stageID);
+		int taskToDeleteID = ParameterUtils.parseIntParameter(request, "taskID");
+		editedStage.deleteTask(taskToDeleteID);
+		
+		request.setAttribute("stage", editedStage);
+	}
+	
+	/**Gets the new goal description from the request and creates the new goal for the stage specified by stageID.  Finally it puts the updated stage in the request as attribute "stage".
+	 * @param request
+	 * @param stageID
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	private void addGoal(HttpServletRequest request, int stageID) throws ValidationException, DatabaseException{
+		String goalDescription = request.getParameter("newStageGoalDescription");
+    	StageGoal goal = StageGoal.getInstanceWithoutID(stageID, goalDescription);
+    	goal.create();
+    	request.setAttribute("stage", Stage.load(stageID));
 	}
 
 }

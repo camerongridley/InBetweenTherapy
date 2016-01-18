@@ -169,20 +169,17 @@
 		<div class="panel panel-default panel-task" id="stageList"
 			title="Click the stage title to expand and see the stage details.">
 			<div class="panel-heading">
-				<input type="hidden" name="stageID" value="${stage.stageID}" /> <input
-					type="hidden" name="stageTitle${stage.stageID}"
-					value="${stage.title}" /> <a role="button" data-toggle="collapse"
-					href="#collapse${stage.stageID }" aria-expanded="true"
-					aria-controls="collapse${stage.stageID }">
+				<input type="hidden" name="stageID" value="${stage.stageID}" /> 
+				<input type="hidden" name="stageTitle${stage.stageID}" value="${stage.title}" /> 
+				<a role="button" data-toggle="collapse" href="#collapse${stage.stageID }" aria-expanded="true" aria-controls="collapse${stage.stageID }">
 					${stage.stageOrderForUserDisplay } - <span class="">${stage.title }</span>
 				</a> 
-				<a role="button"
-					href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
+				<a role="button" href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
 					class="btn btn-default btn-xs pull-right"
-					title="Delete this stage."> <span
-					class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+					title="Delete this stage."> 
+					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 				</a> <a role="button"
-					href="/secure/EditStage?requestedAction=stage-edit&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
+					href="/secure/EditStage?requestedAction=stage-edit&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&clientUserID=${client.userID}" 
 					class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 				</a>

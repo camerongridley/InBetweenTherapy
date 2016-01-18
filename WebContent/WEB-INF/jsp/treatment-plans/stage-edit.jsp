@@ -101,7 +101,15 @@
 								  	<a href="/secure/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&templateTaskOrder=${mappedStageTaskInfo.templateTaskOrder}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
 								  	&nbsp;<a href="/secure/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&templateTaskOrder=${mappedStageTaskInfo.templateTaskOrder}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
 									<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
-							          ${mappedStageTaskInfo.templateTaskOrderForUserDisplay } - <span class="">${task.title }</span>
+							          <c:choose>
+							          	<c:when test='${path.equals("manageClients") }'>
+							          		${task.clientTaskOrderForUserDisplay }
+							          	</c:when>
+							          	<c:otherwise>
+							          		${mappedStageTaskInfo.templateTaskOrderForUserDisplay }
+							          	</c:otherwise>
+							          </c:choose> 
+							           - <span class="">${task.title }</span>
 							        </a>   
 								</div>
 								<div class="col-sm-1">
