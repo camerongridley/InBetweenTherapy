@@ -94,7 +94,6 @@
 	<div class="col-sm-12">
 
 		<form action="/secure/UpdateTaskCompletion" method="post" class="form-inline">
-			<c:import url="/WEB-INF/jsp/includes/common-hidden-form-inputs.jsp" />
 			<input type="hidden" name="requestedAction" value="update-client-plan">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
 			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>

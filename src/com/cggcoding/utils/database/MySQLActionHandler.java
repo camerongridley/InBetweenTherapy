@@ -50,7 +50,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 		return cn;
     }
 	
-	//TODO Move these 2 methods to CommonValidation.java?
+	//TODO Move these 3 methods to CommonValidation.java?
 	@Override
 	public boolean throwValidationExceptionIfTemplateHolderID(int templateHolderObjectID) throws ValidationException{
 		if(templateHolderObjectID == Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID){
@@ -64,6 +64,15 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	public boolean throwValidationExceptionIfNull(Object o) throws ValidationException{
 		if(o == null){
 			throw new ValidationException(ErrorMessages.OBJECT_IS_NULL);
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public boolean throwValidationExceptionIfZero(int id) throws ValidationException{
+		if(id == 0){
+			throw new ValidationException(ErrorMessages.INVALID_SELECTION);
 		}
 		
 		return true;

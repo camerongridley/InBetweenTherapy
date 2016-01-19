@@ -43,7 +43,7 @@
 								<a href="/secure/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
-								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
+								<a href="/secure/ManageClients?requestedAction=delete-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
 								  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 								</a>
 							  </div>
@@ -77,10 +77,10 @@
 								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&treatmentPlanID=${unstartedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
 								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 								</a>
-								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
+								<a href="/secure/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${unstartedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
-								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
+								<a href="/secure/ManageClients?requestedAction=delete-plan&path=${path}&treatmentPlanID=${unstartedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
 								  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 								</a>
 							  </div>
@@ -162,10 +162,10 @@
 								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&treatmentPlanID=${completedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
 								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 								</a>
-								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
+								<a href="/secure/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${completedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
-								<a href="http://www.google.com" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
+								<a href="/secure/ManageClients?requestedAction=delete-plan&path=${path}&treatmentPlanID=${completedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
 								  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 								</a>
 							  </div>

@@ -473,6 +473,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	public static void delete(int treatmentPlanID) throws DatabaseException, ValidationException{
 		Connection cn = null;
         
+		dao.throwValidationExceptionIfZero(treatmentPlanID);
 		dao.throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
 		
         try {

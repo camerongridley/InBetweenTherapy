@@ -91,7 +91,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 			e.printStackTrace();
 			request.setAttribute("errorMessage", ErrorMessages.GENERAL_DB_ERROR);
 		} catch (ValidationException e) {
-			request.setAttribute("errorMessage", ErrorMessages.VALIDATION_ERROR_UPDATING_DATA);
+			request.setAttribute("errorMessage", e.getMessage());
 			e.printStackTrace();
 		}
 		

@@ -120,11 +120,13 @@
 				</select>
 			</div>
 			<div class="col-sm-1">
-				<button type="button" class="btn btn-default" title="Add a new default treatment issue."
-					aria-label="Left Align" data-toggle="modal"
-					data-target="#newDefaultTreatmentIssueModal">
-					<span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
-				</button>
+				<c:if test='${user.role.equals("admin") }'>
+					<button type="button" class="btn btn-default" title="Add a new default treatment issue."
+						aria-label="Left Align" data-toggle="modal"
+						data-target="#newDefaultTreatmentIssueModal">
+						<span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
+					</button>
+				</c:if>	
 			</div>
 		</div>
 

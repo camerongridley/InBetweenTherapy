@@ -58,6 +58,10 @@ public class ManageClients extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+    	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
 		/*-----------End Common Servlet variables---------------*/
 		
 		int clientUserID = 0;
@@ -112,6 +116,13 @@ public class ManageClients extends HttpServlet {
 						request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COPIED_TO_CLIENT);
 						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
+						
+					case "delete-plan":
+						TreatmentPlan.delete(treatmentPlanID);
+		    
+		            	request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_DELETED);
+		            	forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
+						break;
 				}
 				
 				putClientPlansInRequest(request, therapistUser, clientUserID);
@@ -122,11 +133,17 @@ public class ManageClients extends HttpServlet {
 			}
 		
 		}catch(DatabaseException | ValidationException e){
-			request.setAttribute("activeAssignedClientPlans", therapistUser.getActiveAssignedClientTreatmentPlans());
-			request.setAttribute("unstartedAssignedClientPlans", therapistUser.getUnstartedAssignedClientTreatmentPlans());
-			request.setAttribute("completedAssignedClientPlans", therapistUser.getCompletedAssignedClientTreatmentPlans());
-			
-			forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_MAIN;
+			if(requestedAction.equals("select-client")){
+				request.setAttribute("clientMap", therapistUser.getClientMap());
+				forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_MAIN;
+			} else {
+				request.setAttribute("activeAssignedClientPlans", therapistUser.loadActiveAssignedClientTreatmentPlans());
+				request.setAttribute("unstartedAssignedClientPlans", therapistUser.loadUnstartedAssignedClientTreatmentPlans());
+				request.setAttribute("completedAssignedClientPlans", therapistUser.loadCompletedAssignedClientTreatmentPlans());
+				
+				forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
+			}
+
 			request.setAttribute("errorMessage", e.getMessage());
 			System.out.println(e.getMessage());
 		}
@@ -136,9 +153,9 @@ public class ManageClients extends HttpServlet {
 	
 	private void putClientPlansInRequest(HttpServletRequest request, UserTherapist therapistUser, int clientUserID) throws DatabaseException, ValidationException{
 		therapistUser.loadAllAssignedClientTreatmentPlans(clientUserID);
-		request.setAttribute("activeAssignedClientPlans", therapistUser.getActiveAssignedClientTreatmentPlans());
-		request.setAttribute("unstartedAssignedClientPlans", therapistUser.getUnstartedAssignedClientTreatmentPlans());
-		request.setAttribute("completedAssignedClientPlans", therapistUser.getCompletedAssignedClientTreatmentPlans());
+		request.setAttribute("activeAssignedClientPlans", therapistUser.loadActiveAssignedClientTreatmentPlans());
+		request.setAttribute("unstartedAssignedClientPlans", therapistUser.loadUnstartedAssignedClientTreatmentPlans());
+		request.setAttribute("completedAssignedClientPlans", therapistUser.loadCompletedAssignedClientTreatmentPlans());
 	}
 
 }

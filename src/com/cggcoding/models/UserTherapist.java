@@ -57,15 +57,13 @@ public class UserTherapist extends User implements Serializable{
     }
     
     public List<TreatmentPlan> loadAllAssignedClientTreatmentPlans(int clientID) throws DatabaseException, ValidationException{
-    	this.activeAssignedClientPlans = new ArrayList<>();
-        this.unstartedAssignedClientPlans = new ArrayList<>();
-        this.completedAssignedClientPlans = new ArrayList<>();
     	this.allAssignedClientPlans =  dao.userGetTherapistAssignedPlans(clientID, this.getUserID());
     	
     	return allAssignedClientPlans;
     }
     
-    public List<TreatmentPlan> getActiveAssignedClientTreatmentPlans(){
+    public List<TreatmentPlan> loadActiveAssignedClientTreatmentPlans(){
+    	this.activeAssignedClientPlans = new ArrayList<>();
     	for(TreatmentPlan plan : allAssignedClientPlans){
     		if(plan.isInProgress()){
     			activeAssignedClientPlans.add(plan);
@@ -75,7 +73,8 @@ public class UserTherapist extends User implements Serializable{
     	return activeAssignedClientPlans;
     }
     
-    public List<TreatmentPlan> getCompletedAssignedClientTreatmentPlans(){
+    public List<TreatmentPlan> loadCompletedAssignedClientTreatmentPlans(){
+    	this.unstartedAssignedClientPlans = new ArrayList<>();
     	for(TreatmentPlan plan : allAssignedClientPlans){
     		if(plan.isCompleted()){
     			completedAssignedClientPlans.add(plan);
@@ -85,7 +84,8 @@ public class UserTherapist extends User implements Serializable{
     	return completedAssignedClientPlans;
     }
     
-    public List<TreatmentPlan> getUnstartedAssignedClientTreatmentPlans(){
+    public List<TreatmentPlan> loadUnstartedAssignedClientTreatmentPlans(){
+    	this.completedAssignedClientPlans = new ArrayList<>();
     	for(TreatmentPlan plan : allAssignedClientPlans){
     		if(!plan.isCompleted() && !plan.isInProgress()){
     			unstartedAssignedClientPlans.add(plan);

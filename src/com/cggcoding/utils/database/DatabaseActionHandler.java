@@ -199,6 +199,8 @@ public interface DatabaseActionHandler {
 
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
+	boolean throwValidationExceptionIfZero(int arg) throws ValidationException;
+
 	
 	
 

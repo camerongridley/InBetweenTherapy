@@ -65,14 +65,11 @@ public class EditTreatmentPlan extends HttpServlet {
 		request.setAttribute("path", path);
 		
 		//TODO update the common servlet variable with these in all other servlets
-		int treatmentPlanID = 0;
-		int stageID = 0;
-		int taskID = 0;
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+    	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
 		/*-----------End Common Servlet variables---------------*/
 
-    	treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
-    	stageID = ParameterUtils.parseIntParameter(request, "stageID");
-		taskID = ParameterUtils.parseIntParameter(request, "taskID");
     	String planTitle = request.getParameter("planTitle");
     	String planDescription = request.getParameter("planDescription");
     	int defaultIssueID = ParameterUtils.parseIntParameter(request, "defaultTreatmentIssue");
@@ -95,7 +92,7 @@ public class EditTreatmentPlan extends HttpServlet {
     		
 			if(user.hasRole(Constants.USER_ADMIN)|| user.hasRole(Constants.USER_THERAPIST)){
 				
-				//First perform role actions desired regardless of the requestedAction
+				//First perform actions desired that are independent of the requestedAction
 				if(user.hasRole(Constants.USER_ADMIN)){
 					
                 }
@@ -131,9 +128,9 @@ public class EditTreatmentPlan extends HttpServlet {
 		    				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
 		    				
 		                	userTherapist.loadAllAssignedClientTreatmentPlans(clientUserID);
-		            		request.setAttribute("activeAssignedClientPlans", userTherapist.getActiveAssignedClientTreatmentPlans());
-		            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.getUnstartedAssignedClientTreatmentPlans());
-		            		request.setAttribute("completedAssignedClientPlans", userTherapist.getCompletedAssignedClientTreatmentPlans());
+		            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
+		            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
+		            		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
 			                
 			                forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 		                }

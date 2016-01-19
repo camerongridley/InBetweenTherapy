@@ -14,6 +14,8 @@ public final class ErrorMessages {
 	public static final String DEFAULTS_HOLDER_ID_SELECTED = "It appears you are trying to access restricted data.  Please be sure to make a valid selection and try again.";
 	public static final String OBJECT_IS_NULL = "It appears there is no database record for what you are looking for.  Please be sure to make a valid selection and try again.  If you have further problems please contact customer support.";
 	public static final String NOTHING_SELECTED = "You have not selected anything to update.  Please make a selection and try again.";
+	public static final String INVALID_SELECTION = "Something is missing!  There seems to be some missing information on our end that is needed to do what you're asking.  Please try again or contact customer support.";
+	
 	
 	//Log in
 	public static final String INVALID_USERNAME_OR_PASSWORD = "Login failed.  The email and password combination is not found in our records.  Please try again.";
