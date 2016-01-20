@@ -15,13 +15,14 @@
 	<form class="form-horizontal" action="/secure/EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-select-stage">
 		<input type="hidden" name="path" value="${path }">
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 		
 		<c:if test="${path=='stageTemplate'}">
 			<div class="well well-sm">
 				<div class="form-group">
 					<label for="selectedDefaultStageID" class="col-sm-2 control-label">Select Default Stage</label>
 			        <div class="col-sm-5">
-			            <select class="form-control" id="selectedDefaultStageID" name="selectedDefaultStageID">
+			            <select class="form-control" id="selectedDefaultStageID" name="stageID">
 			                <option  value="">Select a stage to edit.</option>
 			                <c:forEach var="defaultStage" items="${defaultStageList }">
 			                    <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == stage.stageID }">selected</c:if> >${defaultStage.title}</option>
@@ -38,6 +39,7 @@
 		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">	
+		<input type="hidden" name="clientUserID" value="${clientUserID }">
 		
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
@@ -113,12 +115,11 @@
 							        </a>   
 								</div>
 								<div class="col-sm-1">
-							        <a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Delete task:${task.title }">
-									  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-									</a>
-									
 							        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }">
 									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+									</a>
+									<a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Delete task (${task.title }) from this stage.">
+									  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 									</a>
 								</div>
 						  </div><!-- end row -->
@@ -132,23 +133,25 @@
 				</div>
 			</div>
 			<div class="col-sm-2">
-				<div class="panel panel-primary panel-task" id="taskReps" title="Number of repetitions.">
-				<div class="panel-heading">
-				  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="taskTemplateRepetitions${task.taskID }" name="taskTemplateRepetitions${task.taskID }">
-                    <option  value="1" <c:if test="${mappedStageTaskInfo.templateRepetitions==1 }">selected</c:if>>1</option>
-					<option  value="2" <c:if test="${mappedStageTaskInfo.templateRepetitions==2 }">selected</c:if>>2</option>
-					<option  value="3" <c:if test="${mappedStageTaskInfo.templateRepetitions==3}">selected</c:if>>3</option>
-					<option  value="4" <c:if test="${mappedStageTaskInfo.templateRepetitions==4 }">selected</c:if>>4</option>
-					<option  value="5" <c:if test="${mappedStageTaskInfo.templateRepetitions==5 }">selected</c:if>>5</option>
-					<option  value="6" <c:if test="${mappedStageTaskInfo.templateRepetitions==6 }">selected</c:if>>6</option>
-					<option  value="7" <c:if test="${mappedStageTaskInfo.templateRepetitions==7 }">selected</c:if>>7</option>
-					<option  value="8" <c:if test="${mappedStageTaskInfo.templateRepetitions==8 }">selected</c:if>>8</option>
-					<option  value="9" <c:if test="${mappedStageTaskInfo.templateRepetitions==9 }">selected</c:if>>9</option>
-					<option  value="10" <c:if test="${mappedStageTaskInfo.templateRepetitions==10 }">selected</c:if>>10</option>
-                </select>
-
-                </div>
-                </div>
+				<c:if test='${user.role.equals("admin") }'>
+					<div class="panel panel-primary panel-task" id="taskReps" title="Number of repetitions.">
+					<div class="panel-heading">
+					  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="taskTemplateRepetitions${task.taskID }" name="taskTemplateRepetitions${task.taskID }">
+	                    <option  value="1" <c:if test="${mappedStageTaskInfo.templateRepetitions==1 }">selected</c:if>>1</option>
+						<option  value="2" <c:if test="${mappedStageTaskInfo.templateRepetitions==2 }">selected</c:if>>2</option>
+						<option  value="3" <c:if test="${mappedStageTaskInfo.templateRepetitions==3}">selected</c:if>>3</option>
+						<option  value="4" <c:if test="${mappedStageTaskInfo.templateRepetitions==4 }">selected</c:if>>4</option>
+						<option  value="5" <c:if test="${mappedStageTaskInfo.templateRepetitions==5 }">selected</c:if>>5</option>
+						<option  value="6" <c:if test="${mappedStageTaskInfo.templateRepetitions==6 }">selected</c:if>>6</option>
+						<option  value="7" <c:if test="${mappedStageTaskInfo.templateRepetitions==7 }">selected</c:if>>7</option>
+						<option  value="8" <c:if test="${mappedStageTaskInfo.templateRepetitions==8 }">selected</c:if>>8</option>
+						<option  value="9" <c:if test="${mappedStageTaskInfo.templateRepetitions==9 }">selected</c:if>>9</option>
+						<option  value="10" <c:if test="${mappedStageTaskInfo.templateRepetitions==10 }">selected</c:if>>10</option>
+	                </select>
+	
+	                </div>
+	                </div>
+	            </c:if>
 			</div>
 			
 			</div><!-- end row -->
@@ -170,6 +173,7 @@
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="stageID" value="${stage.stageID}" >
 		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+		    <input type="hidden" name="clientUserID" value="${clientUserID }">
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		        <h4 class="modal-title" id="newStageGoalModalLabel">Enter a new stage goal.</h4>

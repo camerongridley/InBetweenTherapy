@@ -68,6 +68,8 @@ public class EditTreatmentPlan extends HttpServlet {
 		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
     	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
+		int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
+		request.setAttribute("clientUserID", clientUserID);
 		/*-----------End Common Servlet variables---------------*/
 
     	String planTitle = request.getParameter("planTitle");
@@ -75,12 +77,11 @@ public class EditTreatmentPlan extends HttpServlet {
     	int defaultIssueID = ParameterUtils.parseIntParameter(request, "defaultTreatmentIssue");
     	int customIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
     	
-    	int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
-    	
     	TreatmentPlan treatmentPlan = null;
     	
     	try {
     		
+    		//OPTIMIZE re-consider use of CommonServletFunctions - maybe make another class that is CommonServletDatabaseCalls and passes a connection. In this page it is possible that in 1 request, CommonServletFunctions will open and close 3 connections
     		//set default lists in the request
     		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
     		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
@@ -99,7 +100,7 @@ public class EditTreatmentPlan extends HttpServlet {
                 
                 if(user.hasRole(Constants.USER_THERAPIST)){
                 	UserTherapist userTherapist = (UserTherapist)user;
-    				setClientInRequest(request, userTherapist, clientUserID);
+    				CommonServletFunctions.setClientInRequest(request, userTherapist, clientUserID);
                 }
                 
                 //Now run actions specific to requestedAction
@@ -194,14 +195,6 @@ public class EditTreatmentPlan extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request,response);
 	}
 	
-	/**Get the clientUserID from request and uses that along with UserTherapist argument to get and set a Client object in the request
-	 * @param request
-	 * @param userTherapist
-	 */
-	private void setClientInRequest(HttpServletRequest request, UserTherapist userTherapist, int clientUserID){
-		User client = userTherapist.getClient(clientUserID);;
-		request.setAttribute("client", client);
-	}
 	
 	private TreatmentPlan loadSelectedTreatmentPlanInRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException, ValidationException{
 		TreatmentPlan treatmentPlan = null;

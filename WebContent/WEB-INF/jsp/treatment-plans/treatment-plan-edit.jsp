@@ -178,10 +178,10 @@
 				</a> 
 				<a role="button" href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
 					class="btn btn-default btn-xs pull-right"
-					title="Delete this stage."> 
+					title="Delete stage from this treatment plan."> 
 					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 				</a> <a role="button"
-					href="/secure/EditStage?requestedAction=stage-edit&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&clientUserID=${client.userID}" 
+					href="/secure/EditStage?requestedAction=stage-edit-select-stage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&clientUserID=${client.userID}" 
 					class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 				</a>

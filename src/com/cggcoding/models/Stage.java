@@ -596,9 +596,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
     		goal.update(cn);
     	}
     	
-    	for(MapStageTaskTemplate stageTaskTemplate : this.stageTaskTemplateMapList){
-    		stageTaskTemplate.update(cn);
-    	}   	
+    	if(this.template){
+    		for(MapStageTaskTemplate stageTaskTemplate : this.stageTaskTemplateMapList){
+        		stageTaskTemplate.update(cn);
+        	}  
+    	}
+    	 	
 		
 	}
 	

@@ -23,6 +23,7 @@ import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
@@ -66,27 +67,30 @@ public class EditStage extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+    	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
+		int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
+		request.setAttribute("clientUserID", clientUserID);
 		/*-----------End Common Servlet variables---------------*/
 		
-		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
 		int originalOrder = ParameterUtils.parseIntParameter(request, "templateTaskOrder");
-		int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		String stageTitle = request.getParameter("stageTitle");
 		String stageDescription = request.getParameter("stageDescription");
 		Stage editedStage = null;
-		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 		/*This variable helps remember where to send the user back to when they are done editing the Task.
 		If the Task being edited is a template the stageID will be TEMPLATE_HOLDER_ID, and not the Stage template being working on.
 		If the Task being edited is part of a client's plan, then the stageID will be the stageID that is contained within the task.
 		Need to maintain it between requests*/
 		int planToReturnTo = treatmentPlanID;
+		String mainMenu = "";
 		request.setAttribute("treatmentPlanID", planToReturnTo);
 		
 		try{
 			request.setAttribute("defaultStageList", Stage.getDefaultStages());
 			
-			if(user.hasRole(Constants.USER_ADMIN)){
-				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
+			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
 								
 				switch (requestedAction){
 		            case "stage-edit-start" :
@@ -94,9 +98,8 @@ public class EditStage extends HttpServlet {
 		            	break;
 		            	
 		            case "stage-edit-select-stage" :
-		            	int selectedDefaultStageID = ParameterUtils.parseIntParameter(request, "selectedDefaultStageID");
-		            	if(selectedDefaultStageID != 0){
-		            		request.setAttribute("stage", Stage.load(selectedDefaultStageID));
+		            	if(stageID != 0){
+		            		request.setAttribute("stage", Stage.load(stageID));
 		            	} else {
 		            		request.setAttribute("stage", null);
 		            	}
@@ -121,28 +124,53 @@ public class EditStage extends HttpServlet {
 		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
 		            	}
 		            	
-		            	//For Admin/Templates
-		            	//get the repetition value for each task template inside this stage template and set it the edited stage to be updated when stage.update() is called
-		            	for(MapStageTaskTemplate stageTaskInfo : editedStage.getMapStageTaskTemplates()){
-		            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
-		            		stageTaskInfo.setTemplateRepetitions(templateReps);
-		            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
-		            	}	      
+		            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
+		            		//get the repetition value for each task template inside this stage template and set it the edited stage to be updated when stage.update() is called
+			            	for(MapStageTaskTemplate stageTaskInfo : editedStage.getMapStageTaskTemplates()){
+			            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
+			            		stageTaskInfo.setTemplateRepetitions(templateReps);
+			            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
+			            	}	
+		            	}
 		            	
 		            	editedStage.update();//OPTIMIZE could create a new method that takes all relevant info and calls static method in stage that loads and updates all with the same connection
 		            	
-		            	//TODO deprecated?  delete? retrieveStageTaskDetails(request, editedStage);
-		            	
 		            	request.setAttribute("stage", editedStage);
+		            	request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
+		            	
+		            	
+		            	//FIXME  This is all fucked up.  Really need to reorganize this.  They are not using the right logic or evaluating the proper conditions.
 		            	if(path.equals("treatmentPlanTemplate")){
-		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
+		            		
 		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(planToReturnTo));
 		            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
 		            		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+		            		
 		            		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
-		            	}else{
-		            		request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
-		            		forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+		            	}else if(path.equals(Constants.PATH_CLIENT_TREATMENT_PLAN)){
+		            		if(user.hasRole(Constants.USER_THERAPIST)){
+			            		UserTherapist userTherapist = (UserTherapist)user;
+			    				
+			    				//set the default treatment plans and the custom plans for this therapist into the request
+			    				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+			    				
+			                	userTherapist.loadAllAssignedClientTreatmentPlans(clientUserID);
+			            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
+			            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
+			            		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
+			            		
+			            		CommonServletFunctions.setClientInRequest(request, userTherapist, clientUserID);
+			            		
+			            		mainMenu = Constants.URL_EDIT_TREATMENT_PLAN;
+			            	}
+						}else{
+							if(user.hasRole(Constants.USER_ADMIN)){
+								forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+							}
+							
+							if(user.hasRole(Constants.USER_THERAPIST)){
+								forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
+							}
 		            	}
 
 		            	break;
@@ -160,18 +188,6 @@ public class EditStage extends HttpServlet {
 						request.setAttribute("stage", editedStage);
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 						break;
-						
-		            //TODO remove this and have calling forms use stage-edit-select-stage instead
-		            case "stage-edit":
-						editedStage = Stage.load(stageID);
-						request.setAttribute("stage", editedStage);
-						
-						if(path.equals("treatmentPlanTemplate")){
-							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
-						}
-						
-						forwardTo = Constants.URL_EDIT_STAGE;
-						break;	
 						
 					case("delete-task"):
 						deleteTask(request, stageID);
@@ -201,20 +217,10 @@ public class EditStage extends HttpServlet {
 
 		                forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 				}
-			} else if(user.hasRole(Constants.USER_THERAPIST)){
-				switch(requestedAction){
-					//TODO XXX  DON'T KEEP THIS! - First address the todo tag earlier that address getting rid of the requestedAction "stage-edit"
-					case "stage-edit":
-						editedStage = Stage.load(stageID);
-						request.setAttribute("stage", editedStage);
-						
-						if(path.equals("treatmentPlanTemplate")){
-							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
-						}
-						
-						forwardTo = Constants.URL_EDIT_STAGE;
-						break;	
-					}
+			} else if(user.hasRole(Constants.USER_CLIENT)){
+				forwardTo = "clientMainMenu.jsp";
+				request.setAttribute("erorMessage", ErrorMessages.UNAUTHORIZED_ACCESS);
+				//UNSURE consider creating a UnauthorizedAccessException and throwing that here
 			}
 				
 			

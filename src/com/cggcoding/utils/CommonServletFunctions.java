@@ -8,6 +8,8 @@ import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
+import com.cggcoding.models.User;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.models.TaskTwoTextBoxes;
 
 public class CommonServletFunctions {
@@ -78,5 +80,14 @@ public class CommonServletFunctions {
 	
 	public static void setDefaultTreatmentPlansInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
 		request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+	}
+	
+	/**Get the clientUserID from request and uses that along with UserTherapist argument to get and set a Client object in the request as "client"
+	 * @param request
+	 * @param userTherapist
+	 */
+	public static void setClientInRequest(HttpServletRequest request, UserTherapist userTherapist, int clientUserID){
+		User client = userTherapist.getClient(clientUserID);;
+		request.setAttribute("client", client);
 	}
 }
