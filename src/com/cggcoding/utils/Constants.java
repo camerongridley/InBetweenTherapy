@@ -42,7 +42,9 @@ public class Constants {
 	public static final String PATH_TEMPLATE_STAGE = "templateStage";
 	public static final String PATH_TEMPLATE_TASK = "templateTask";
 	
+	public static final String PATH_MANAGE_CLIENT = "manageClients";
 	public static final String PATH_CLIENT_TREATMENT_PLAN = "clientTreatmentPlan";
+	public static final String PATH_CLIENT_STAGE = "clientStage";
 
 	//URLs
 	public static final String URL_ADMIN_MAIN_MENU = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
@@ -58,6 +60,8 @@ public class Constants {
 	public static final String URL_EDIT_TREATMENT_PLAN = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
 	public static final String URL_EDIT_STAGE = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 	public static final String URL_EDIT_TASK = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
+
+	public static final String URL_INDEX = "/index.jsp";;
 	
 
 	

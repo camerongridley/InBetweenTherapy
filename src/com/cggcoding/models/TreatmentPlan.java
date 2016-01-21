@@ -634,7 +634,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	//TODO refactor to use MapTreatmentPlanStageTemplate class - also do for other methods that use this new class
-	/**Adds a stage template to a treatment plan template.  Inserts into stageTemplate-treatmentPlanTemplate mapping table. Both the Stage and TreatmentPlan must be templates to be valid.
+	/**Adds a stage template to a treatment plan template.  Inserts into stageTemplate-Constants.PATH_TEMPLATE_TREATMENT_PLAN mapping table. Both the Stage and TreatmentPlan must be templates to be valid.
 	 * @param stageTemplateID
 	 * @throws DatabaseException
 	 * @throws ValidationException

@@ -21,7 +21,7 @@
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
 
-<c:if test="${path=='treatmentPlanTemplate' }">
+<c:if test="${path=='templateTreatmentPlan' }">
 <div class="row">
 	<div class="form-group">
 		<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
@@ -46,7 +46,7 @@
 		<div class="col-xs-1">
 			<form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
 				<input type="hidden" name="requestedAction" value="plan-create-start"> 
-				<input type="hidden" name="path" value="treatmentPlanTemplate">
+				<input type="hidden" name="path" value="templateTreatmentPlan">
 				<button type="submit" class="btn btn-default glyphicon glyphicon-plus" aria-hidden="true" title="Add a new treatment plan."></button>
 			</form>
 		</div>	

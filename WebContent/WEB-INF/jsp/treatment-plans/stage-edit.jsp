@@ -17,7 +17,7 @@
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 		
-		<c:if test="${path=='stageTemplate'}">
+		<c:if test="${path=='templateStage'}">
 			<div class="well well-sm">
 				<div class="form-group">
 					<label for="selectedDefaultStageID" class="col-sm-2 control-label">Select Default Stage</label>

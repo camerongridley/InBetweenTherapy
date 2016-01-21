@@ -52,7 +52,7 @@ public class CreateTask extends HttpServlet {
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
@@ -93,7 +93,7 @@ public class CreateTask extends HttpServlet {
 						stage.addTaskTemplate(taskToCreate.getTaskID(), taskReps);
 						//stage.copyTaskIntoStage(taskToCreate.getTaskID());
 						
-						if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
+						if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN") || path.equals("Constants.PATH_TEMPLATE_STAGE")){
 							request.setAttribute("stage", stage);//XXX right now this is redundant as loadStageAndPutInRequest is called later
 							request.setAttribute("defaultStageList", Stage.getDefaultStages());
 							forwardTo = Constants.URL_EDIT_STAGE;
@@ -116,7 +116,7 @@ public class CreateTask extends HttpServlet {
 						case "taskTemplate":
 							Task.createTemplate(taskToCreate);
 							break;
-						case "stageTemplate":
+						case "Constants.PATH_TEMPLATE_STAGE":
 							newTask = Task.createTemplate(taskToCreate);
 							stage = Stage.load(stageID);
 							stage.addTaskTemplate(newTask.getTaskID());
@@ -142,7 +142,7 @@ public class CreateTask extends HttpServlet {
 						request.setAttribute("stage", Stage.load(stageID));
 					}
 										
-					if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
+					if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN") || path.equals("Constants.PATH_TEMPLATE_STAGE")){
 						forwardTo = Constants.URL_EDIT_STAGE;
 					}else{
 						forwardTo = Constants.URL_ADMIN_MAIN_MENU;

@@ -52,7 +52,7 @@ public class EditTask extends HttpServlet {
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
@@ -91,7 +91,7 @@ public class EditTask extends HttpServlet {
 					
 					request.setAttribute("task", Task.load(selectedTaskID));
 					
-					if(path.equals("treatmentPlanTemplate")|| path.equals("stageTemplate")){
+					if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN")|| path.equals("Constants.PATH_TEMPLATE_STAGE")){
 						request.setAttribute("warningMessage", WarningMessages.EDITING_TASK_TEMPLATE);
 					}
 					
@@ -111,7 +111,7 @@ public class EditTask extends HttpServlet {
 					tempTask.update();
 					
 					stageToReturnTo = ParameterUtils.parseIntParameter(request, "stageToReturnTo");
-					if(path.equals("treatmentPlanTemplate")|| path.equals("stageTemplate")){
+					if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN")|| path.equals("Constants.PATH_TEMPLATE_STAGE")){
 						request.setAttribute("stage", Stage.load(stageToReturnTo));
 						request.setAttribute("defaultStageList", Stage.getDefaultStages());
 						

@@ -8,13 +8,13 @@
 
     <div class="page-header">
     
-        <c:if test="${path == 'stageTemplate' }"><h1>Create a Stage Template</h1></c:if>
-        <c:if test="${path != 'stageTemplate' }"><h2>Add a Stage to: ${treatmentPlan.title} (${treatmentPlan.treatmentPlanID })</h2></c:if>
+        <c:if test="${path == 'templateStage' }"><h1>Create a Stage Template</h1></c:if>
+        <c:if test="${path != 'templateStage' }"><h2>Add a Stage to: ${treatmentPlan.title} (${treatmentPlan.treatmentPlanID })</h2></c:if>
     </div>
     
 	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 
-	<c:if test="${path != 'stageTemplate' }">
+	<c:if test="${path != 'templateStage' }">
 		<div class="well well-sm">
 			<form class="form-horizontal" action="/secure/CreateStage" method="POST">
 				<input type="hidden" name="requestedAction" value="stage-add-default-template">

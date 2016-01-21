@@ -45,7 +45,7 @@ public class LogIn extends HttpServlet {
     	/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
@@ -81,7 +81,7 @@ public class LogIn extends HttpServlet {
 			} catch (DatabaseException e) {
 				e.printStackTrace();
 				request.setAttribute("errorMessage", e.getMessage());
-				//response.sendRedirect("index.jsp");
+				//response.sendRedirect(Constants.URL_INDEX);
 			    request.getRequestDispatcher("/index.jsp").forward(request, response);
 			}
 	        

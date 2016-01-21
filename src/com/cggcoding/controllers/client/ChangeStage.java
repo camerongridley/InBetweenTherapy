@@ -34,7 +34,7 @@ public class ChangeStage extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User)request.getSession().getAttribute("user");
-        String forwardTo = "index.jsp";
+        String forwardTo = Constants.URL_INDEX;
         String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);

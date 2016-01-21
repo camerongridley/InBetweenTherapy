@@ -35,7 +35,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
     	/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
@@ -46,7 +46,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
@@ -110,7 +110,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 
 		                treatmentPlan = TreatmentPlan.getInstanceWithoutID(planTitle, user.getUserID(), planDescription, treatmentIssueID);
 		                
-		                if(path.equals("treatmentPlanTemplate")){
+		                if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN")){
 		                	treatmentPlan.setTemplate(true);
 		                }else{
 		                	treatmentPlan.setTemplate(false);

@@ -63,7 +63,7 @@ public class EditStage extends HttpServlet {
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
@@ -104,7 +104,7 @@ public class EditStage extends HttpServlet {
 		            		request.setAttribute("stage", null);
 		            	}
 		            	
-		            	if(path.equals("treatmentPlanTemplate")){
+		            	if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN")){
 							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
 						}
 		            	
@@ -138,9 +138,55 @@ public class EditStage extends HttpServlet {
 		            	request.setAttribute("stage", editedStage);
 		            	request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
 		            	
+		            	switch(path){
+		            		//case for both Client and Template TreatmentPlan  as well as ManageClient is the same
+		            		case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
+		            		case Constants.PATH_CLIENT_TREATMENT_PLAN:
+		            		case Constants.PATH_MANAGE_CLIENT:
+		            			request.setAttribute("treatmentPlan", TreatmentPlan.load(planToReturnTo));
+			            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
+			            		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+			            		
+			            		//forward to same place regardless of if user is an admin or therapist
+			            		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
+		            			break;
+			            		
+		            		
+		            		case Constants.PATH_TEMPLATE_STAGE:
+		            			if(user.getRole().equals(Constants.USER_ADMIN)){
+			            			forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+			            		} else if(user.getRole().equals(Constants.USER_THERAPIST)){
+			            			forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
+			            		}
+
+		            			break;
+
+		            		case Constants.PATH_CLIENT_STAGE:
+		            			//this should only be a therapist, so only 1 place to forwardTo
+		            			if(user.getRole().equals(Constants.USER_THERAPIST)){
+		            				UserTherapist userTherapist = (UserTherapist)user;
+				    				
+				    				//set the default treatment plans and the custom plans for this therapist into the request
+				    				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+				    				
+				                	userTherapist.loadAllAssignedClientTreatmentPlans(clientUserID);
+				            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
+				            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
+				            		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
+				            		
+				            		CommonServletFunctions.setClientInRequest(request, userTherapist, clientUserID);
+				            		
+			            			forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
+			            		} else {
+			            			forwardTo = Constants.URL_INDEX;
+			            		}
+		            			
+		            			break;
+		            	}
+		            	
 		            	
 		            	//FIXME  This is all fucked up.  Really need to reorganize this.  They are not using the right logic or evaluating the proper conditions.
-		            	if(path.equals("treatmentPlanTemplate")){
+		            	/*if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN")){
 		            		
 		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(planToReturnTo));
 		            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
@@ -172,7 +218,8 @@ public class EditStage extends HttpServlet {
 								forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 							}
 		            	}
-
+		            	*/
+		            	
 		            	break;
 		            	
 		            case "stage-edit-add-goal" :
