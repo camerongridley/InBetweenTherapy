@@ -34,6 +34,8 @@ public interface DatabaseActionHandler {
 	//**************************************************
 	// *************** User Methods *******************
 	//**************************************************
+	User userLoadByID(int userID) throws DatabaseException, ValidationException;
+	
 	public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException;
 	
 	List<TreatmentPlan> userGetClientTreatmentPlans(int clientUserID, boolean inProgress, boolean isCompleted)
@@ -200,6 +202,8 @@ public interface DatabaseActionHandler {
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
 	boolean throwValidationExceptionIfZero(int arg) throws ValidationException;
+
+	
 
 	
 	

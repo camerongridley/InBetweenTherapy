@@ -82,12 +82,4 @@ public class CommonServletFunctions {
 		request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
 	}
 	
-	/**Get the clientUserID from request and uses that along with UserTherapist argument to get and set a Client object in the request as "client"
-	 * @param request
-	 * @param userTherapist
-	 */
-	public static void setClientInRequest(HttpServletRequest request, UserTherapist userTherapist, int clientUserID){
-		User client = userTherapist.getClient(clientUserID);;
-		request.setAttribute("client", client);
-	}
 }

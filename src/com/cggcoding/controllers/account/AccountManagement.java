@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cggcoding.models.User;
+import com.cggcoding.utils.Constants;
 
 /**
  * Servlet implementation class AccountManagement

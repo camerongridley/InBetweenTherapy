@@ -172,6 +172,40 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return user;
     }
     
+    @Override
+	public User userLoadByID(int userID) throws DatabaseException, ValidationException{
+    	Connection cn = null;
+    	PreparedStatement ps = null;
+        ResultSet rsUserInfo = null;
+        User user = null;
+        
+        try {
+        	cn = getConnection();
+            ps = cn.prepareStatement("SELECT * FROM user_role WHERE user_id = ?");
+            ps.setInt(1, userID);
+
+            rsUserInfo = ps.executeQuery();
+            
+            while (rsUserInfo.next()){
+            	user = new UserAdmin(rsUserInfo.getInt("user_id"), rsUserInfo.getString("email"));
+            }
+            
+            if(user==null){
+            	throw new ValidationException(ErrorMessages.USER_NOT_FOUND);
+            }
+
+        } catch (SQLException e) {
+        	e.printStackTrace();
+        	throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+        } finally {
+        	DbUtils.closeQuietly(rsUserInfo);
+			DbUtils.closeQuietly(ps);
+			DbUtils.closeQuietly(cn);
+        }
+
+        return user;
+    }
+    
     //XXX Make this public and called from User class?
     private List<Integer> userGetAdminIDs(Connection cn) throws DatabaseException{
     	PreparedStatement ps = null;

@@ -54,7 +54,9 @@ public final class ErrorMessages {
 	//StageTaskTemplateMap
 	public static final String TASK_IS_FIRST = "You cannot increase this tasks order any more as it is already first.";
 	public static final String TASK_IS_LAST = "You cannot decrease this tasks order any more as it is already last.";
+	
 	//Other
+	public static final String USER_NOT_FOUND = "We cannont find the user you are looking for.  Please try again or contact customer support.";
 	
 	
 	

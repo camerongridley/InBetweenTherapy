@@ -68,9 +68,10 @@ public class EditTreatmentPlan extends HttpServlet {
 		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
     	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
-		int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
-		request.setAttribute("clientUserID", clientUserID);
 		/*-----------End Common Servlet variables---------------*/
+		
+		int ownerUserID = 0;
+		User owner = null;
 
     	String planTitle = request.getParameter("planTitle");
     	String planDescription = request.getParameter("planDescription");
@@ -80,17 +81,31 @@ public class EditTreatmentPlan extends HttpServlet {
     	TreatmentPlan treatmentPlan = null;
     	
     	try {
+    		//TODO remove all other calls to TreatmentPlan.load() and confirm that doing it once here is ok
+    		
+    		//TODO make sure to remove ownerUserID and clientUserID from edit jsps since I have switched things to not need to maintain this value - get it from treatmentPlan/stage/task
+    		if(!requestedAction.equals("plan-edit-selection")){
+    			treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+        		ownerUserID = treatmentPlan.getUserID();
+        		
+        		//Set the User var "owner". If the owner of the plan that is being edited is different than the logged in user, then load the appropriate owner info
+	    		if(ownerUserID==user.getUserID()){
+	    			owner = user;
+	    		} else {
+	    			owner = User.loadBasic(treatmentPlan.getUserID());
+	    		}
+	    		
+	    		request.setAttribute("owner", owner);
+    		}
+    		
+    		
+    		
     		
     		//OPTIMIZE re-consider use of CommonServletFunctions - maybe make another class that is CommonServletDatabaseCalls and passes a connection. In this page it is possible that in 1 request, CommonServletFunctions will open and close 3 connections
     		//set default lists in the request
     		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
     		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
-    		
-    		//TODO Remember why I do this here!  Either delete it or add a comment so I don't have to figure it out again :)
-    		//if(treatmentPlanID != 0) {
-    		//	loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
-    		//}
-    		
+
 			if(user.hasRole(Constants.USER_ADMIN)|| user.hasRole(Constants.USER_THERAPIST)){
 				
 				//First perform actions desired that are independent of the requestedAction
@@ -99,8 +114,7 @@ public class EditTreatmentPlan extends HttpServlet {
                 }
                 
                 if(user.hasRole(Constants.USER_THERAPIST)){
-                	UserTherapist userTherapist = (UserTherapist)user;
-    				CommonServletFunctions.setClientInRequest(request, userTherapist, clientUserID);
+
                 }
                 
                 //Now run actions specific to requestedAction
@@ -114,10 +128,28 @@ public class EditTreatmentPlan extends HttpServlet {
 		                //detect which treatment issue source was used and validate
 		                int treatmentIssueID = determineTreatmentIssueID(defaultIssueID, customIssueID);
 		                
-		                updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
+		                //updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
+		                if(treatmentPlanID==0){
+		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+		            	}
+		            	
+		                if(planTitle.isEmpty() || planDescription.isEmpty()){
+		                	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
+		                }
 
+		                //TODO possibly change this to use a static method TreatmentPlan.updateBasic(planTitle, planDescription, treatmentIssueID);???
+		                
+		                //treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		                
+		                treatmentPlan.setTitle(planTitle);
+		                treatmentPlan.setDescription(planDescription);
+		                treatmentPlan.setTreatmentIssueID(treatmentIssueID);
+		                
+		                treatmentPlan.update();
+		                
 		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
 		                
+		                //TODO eval path first?
 		                if(user.hasRole(Constants.USER_ADMIN)){
 		                	forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 		                }
@@ -128,7 +160,7 @@ public class EditTreatmentPlan extends HttpServlet {
 		    				//set the default treatment plans and the custom plans for this therapist into the request
 		    				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
 		    				
-		                	userTherapist.loadAllAssignedClientTreatmentPlans(clientUserID);
+		                	userTherapist.loadAllAssignedClientTreatmentPlans(ownerUserID);
 		            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
 		            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
 		            		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
@@ -138,8 +170,7 @@ public class EditTreatmentPlan extends HttpServlet {
 		                
 		            	break;
 		            case "plan-edit-load-plan":
-		        		loadSelectedTreatmentPlanInRequest(request, treatmentPlanID);
-		        		
+
 		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 		            case "create-default-treatment-issue":
@@ -148,7 +179,7 @@ public class EditTreatmentPlan extends HttpServlet {
 						forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 		            case "stage-delete":
-						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+						//TODO delete: treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						treatmentPlan.deleteStage(stageID);
 				    	request.setAttribute("treatmentPlan", treatmentPlan);
 						
@@ -171,6 +202,12 @@ public class EditTreatmentPlan extends HttpServlet {
 		            	break;
 		            
 				}
+				
+				
+	    		
+				request.setAttribute("treatmentPlan", treatmentPlan);
+				
+				
 			} else if(user.hasRole(Constants.USER_CLIENT)){
 				//UserClient userClient = (UserClient)session.getAttribute("user");
 				forwardTo = "clientMainMenu.jsp";
@@ -195,8 +232,8 @@ public class EditTreatmentPlan extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request,response);
 	}
 	
-	
-	private TreatmentPlan loadSelectedTreatmentPlanInRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException, ValidationException{
+	//TODO delete?
+	/*private TreatmentPlan loadSelectedTreatmentPlanInRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException, ValidationException{
 		TreatmentPlan treatmentPlan = null;
 		if(treatmentPlanID != 0){
 			treatmentPlan = TreatmentPlan.load(treatmentPlanID);
@@ -206,8 +243,9 @@ public class EditTreatmentPlan extends HttpServlet {
 		}
     	
     	return treatmentPlan;
-	}
+	}*/
 
+	//TODO delete?
 	/**Validates that there are values for planID, title, and description.  Constructs TreatmentPlan with new data and calls update method.  Finally puts the updated plan back in the request as"treatmentPlan".
 	 * @param request
 	 * @param treatmentPlan
@@ -218,7 +256,7 @@ public class EditTreatmentPlan extends HttpServlet {
 	 * @throws ValidationException
 	 * @throws DatabaseException
 	 */
-	private void updateTreatmentPlan(HttpServletRequest request, TreatmentPlan treatmentPlan, int treatmentPlanID, String planTitle, String planDescription, int treatmentIssueID) throws ValidationException, DatabaseException{
+	/*private void updateTreatmentPlan(HttpServletRequest request, TreatmentPlan treatmentPlan, int treatmentPlanID, String planTitle, String planDescription, int treatmentIssueID) throws ValidationException, DatabaseException{
 		if(treatmentPlanID==0){
     		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
     	}
@@ -230,7 +268,7 @@ public class EditTreatmentPlan extends HttpServlet {
         
         
         //TODO possibly change this to use a static method TreatmentPlan.updateBasic(planTitle, planDescription, treatmentIssueID);???
-        treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+        //treatmentPlan = TreatmentPlan.load(treatmentPlanID);
         
         treatmentPlan.setTitle(planTitle);
         treatmentPlan.setDescription(planDescription);
@@ -240,7 +278,7 @@ public class EditTreatmentPlan extends HttpServlet {
         treatmentPlan.update();
 
         request.setAttribute("treatmentPlan", treatmentPlan);
-	}
+	}*/
 	
 	private int determineTreatmentIssueID(int defaultIssueID, int customIssueID) throws ValidationException{
 		//detect which treatment issue source was used and validate

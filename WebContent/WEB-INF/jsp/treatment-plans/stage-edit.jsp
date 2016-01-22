@@ -39,7 +39,7 @@
 		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">	
-		<input type="hidden" name="clientUserID" value="${clientUserID }">
+		<input type="hidden" name="clientUserID" value="${client.userID }">
 		
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>

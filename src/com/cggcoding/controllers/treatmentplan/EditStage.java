@@ -75,19 +75,33 @@ public class EditStage extends HttpServlet {
 		request.setAttribute("clientUserID", clientUserID);
 		/*-----------End Common Servlet variables---------------*/
 		
+		int ownerUserID = 0;
+		User owner = null;
 		int originalOrder = ParameterUtils.parseIntParameter(request, "templateTaskOrder");
 		String stageTitle = request.getParameter("stageTitle");
 		String stageDescription = request.getParameter("stageDescription");
-		Stage editedStage = null;
+		Stage stage = null;
 		/*This variable helps remember where to send the user back to when they are done editing the Task.
 		If the Task being edited is a template the stageID will be TEMPLATE_HOLDER_ID, and not the Stage template being working on.
 		If the Task being edited is part of a client's plan, then the stageID will be the stageID that is contained within the task.
 		Need to maintain it between requests*/
 		int planToReturnTo = treatmentPlanID;
-		String mainMenu = "";
 		request.setAttribute("treatmentPlanID", planToReturnTo);
 		
 		try{
+			stage = Stage.load(stageID);
+    		ownerUserID = stage.getUserID();
+    		
+    		//Set the User var "owner". If the owner of the plan that is being edited is different than the logged in user, then load the appropriate owner info
+    		if(ownerUserID==user.getUserID()){
+    			owner = user;
+    		} else {
+    			owner = User.loadBasic(stage.getUserID());
+    		}
+    		
+    		request.setAttribute("owner", owner);
+			
+    		
 			request.setAttribute("defaultStageList", Stage.getDefaultStages());
 			
 			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
@@ -98,11 +112,11 @@ public class EditStage extends HttpServlet {
 		            	break;
 		            	
 		            case "stage-edit-select-stage" :
-		            	if(stageID != 0){
+		            	/*TODO delete? if(stageID != 0){
 		            		request.setAttribute("stage", Stage.load(stageID));
 		            	} else {
 		            		request.setAttribute("stage", null);
-		            	}
+		            	}*/
 		            	
 		            	if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN")){
 							request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
@@ -116,26 +130,26 @@ public class EditStage extends HttpServlet {
 		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
 		            	}
 
-		            	editedStage = Stage.load(stageID);
-		            	editedStage.setTitle(stageTitle);
-		            	editedStage.setDescription(stageDescription);
+		            	//TODO delete? stage = Stage.load(stageID);
+		            	stage.setTitle(stageTitle);
+		            	stage.setDescription(stageDescription);
 		            	
-		            	for(StageGoal goal: editedStage.getGoals()){
+		            	for(StageGoal goal: stage.getGoals()){
 		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
 		            	}
 		            	
 		            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
 		            		//get the repetition value for each task template inside this stage template and set it the edited stage to be updated when stage.update() is called
-			            	for(MapStageTaskTemplate stageTaskInfo : editedStage.getMapStageTaskTemplates()){
+			            	for(MapStageTaskTemplate stageTaskInfo : stage.getMapStageTaskTemplates()){
 			            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
 			            		stageTaskInfo.setTemplateRepetitions(templateReps);
 			            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
 			            	}	
 		            	}
 		            	
-		            	editedStage.update();//OPTIMIZE could create a new method that takes all relevant info and calls static method in stage that loads and updates all with the same connection
+		            	stage.update();//OPTIMIZE could create a new method that takes all relevant info and calls static method in stage that loads and updates all with the same connection
 		            	
-		            	request.setAttribute("stage", editedStage);
+		            	//TODO delete? request.setAttribute("stage", stage);
 		            	request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
 		            	
 		            	switch(path){
@@ -174,7 +188,7 @@ public class EditStage extends HttpServlet {
 				            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
 				            		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
 				            		
-				            		CommonServletFunctions.setClientInRequest(request, userTherapist, clientUserID);
+				            		//TODO delete? CommonServletFunctions.setClientInRequest(request, userTherapist, clientUserID);
 				            		
 			            			forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 			            		} else {
@@ -223,7 +237,12 @@ public class EditStage extends HttpServlet {
 		            	break;
 		            	
 		            case "stage-edit-add-goal" :
-		            	addGoal(request, stageID);
+		            	//TODO delete? addGoal(request, stageID);
+		            	String goalDescription = request.getParameter("newStageGoalDescription");
+		            	StageGoal goal = StageGoal.getInstanceWithoutID(stageID, goalDescription);
+		            	goal.create();
+		            	stage.addGoal(goal);
+		            	
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 		            	break;
 		            	
@@ -231,39 +250,42 @@ public class EditStage extends HttpServlet {
 						int goalID = ParameterUtils.parseIntParameter(request, "stageGoalID");
 						StageGoal.delete(goalID);
 						
-						editedStage = Stage.load(stageID);
-						request.setAttribute("stage", editedStage);
+						//TODO delete? stage = Stage.load(stageID);
+						//TODO delete? request.setAttribute("stage", stage);
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 						
 					case("delete-task"):
-						deleteTask(request, stageID);
+						deleteTask(request, stage);
 					
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 					
 					case("increase-task-order"):					
 						
-						editedStage = Stage.load(stageID);
+						//TODO delete? stage = Stage.load(stageID);
 						
-						editedStage.orderIncrementTemplateTask(taskID, originalOrder);
+						stage.orderIncrementTemplateTask(taskID, originalOrder);
 						
-						request.setAttribute("stage", editedStage);
+						//TODO delete? request.setAttribute("stage", stage);
 						forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 						
 					case("decrease-task-order"):
-						editedStage = Stage.load(stageID);
+						//TODO delete? stage = Stage.load(stageID);
 					
-						editedStage.orderDecrementTemplateTask(taskID, originalOrder);
+						stage.orderDecrementTemplateTask(taskID, originalOrder);
 						
-						request.setAttribute("stage", editedStage);
+						//TODO delete? request.setAttribute("stage", stage);
 						forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 		            default:
 
 		                forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 				}
+				
+		    	request.setAttribute("stage", stage);
+				
 			} else if(user.hasRole(Constants.USER_CLIENT)){
 				forwardTo = "clientMainMenu.jsp";
 				request.setAttribute("erorMessage", ErrorMessages.UNAUTHORIZED_ACCESS);
@@ -275,7 +297,7 @@ public class EditStage extends HttpServlet {
 			//in case of error and user is sent back to page - re-populate the forms
 			request.setAttribute("errorMessage", e.getMessage());
 			
-			request.setAttribute("stage", editedStage);
+			request.setAttribute("stage", stage);
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
 			request.setAttribute("treatmentPlanID", planToReturnTo);
@@ -291,7 +313,7 @@ public class EditStage extends HttpServlet {
 	 * @param stage
 	 * @return
 	 */
-	private List<MapStageTaskTemplate> retrieveStageTaskDetails(HttpServletRequest request, Stage stage){
+	/*private List<MapStageTaskTemplate> retrieveStageTaskDetails(HttpServletRequest request, Stage stage){
 		List<MapStageTaskTemplate> stageTaskDetails = new ArrayList<>();
 		String[] taskIDs = request.getParameterValues("allTaskIDs");
 		for(int i = 0; i < taskIDs.length; i++){
@@ -307,11 +329,8 @@ public class EditStage extends HttpServlet {
 		
 		return null;
 		
-	}
+	}*/
 	
-	private void updateStageBasicInfo(){
-		
-	}
 	
 	/**Deletes task from the stage (Stage determines if deleted from task table or mapping table).  This method gets the taskID to delete from the request.
 	 * @param request
@@ -320,12 +339,11 @@ public class EditStage extends HttpServlet {
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
-	private void deleteTask(HttpServletRequest request, int stageID) throws DatabaseException, ValidationException{
-		Stage editedStage = Stage.load(stageID);
+	private void deleteTask(HttpServletRequest request, Stage stage) throws DatabaseException, ValidationException{
 		int taskToDeleteID = ParameterUtils.parseIntParameter(request, "taskID");
-		editedStage.deleteTask(taskToDeleteID);
+		stage.deleteTask(taskToDeleteID);
 		
-		request.setAttribute("stage", editedStage);
+		request.setAttribute("stage", stage);
 	}
 	
 	/**Gets the new goal description from the request and creates the new goal for the stage specified by stageID.  Finally it puts the updated stage in the request as attribute "stage".

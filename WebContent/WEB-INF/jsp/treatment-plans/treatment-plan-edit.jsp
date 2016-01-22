@@ -69,7 +69,7 @@
 	<input type="hidden" name="requestedAction" value="plan-edit-update">
 	<input type="hidden" name="path" value="${path }"> 
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-	<input type="hidden" name="clientUserID" value="${client.userID}">
+	<input type="hidden" name="ownerUserID" value="${treatmentPlan.userID}">
 	
 	<div class="row form-group">
 		<label for="planName" class="col-sm-2 control-label">Plan Name</label>

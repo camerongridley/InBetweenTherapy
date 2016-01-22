@@ -176,6 +176,10 @@ public abstract class User implements Serializable{
     	
     }
 	
+	public static User loadBasic(int userID) throws DatabaseException, ValidationException{
+		return dao.userLoadByID(userID);
+	}
+	
 	@Override
 	public String toString(){
 		return "User id:" + email + ", User email: " + email;
