@@ -7,13 +7,15 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Edit a Stage</h1>
+	<h1>Edit Stage: ${stage.title }</h1>
+	<h3>Treatment Plan: ${treatmentPlan.title}</h3>
+	<h3>Stage Owner: ${owner.email}</h3>
 </div>
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 	
 	<form class="form-horizontal" action="/secure/EditStage" method="POST">
-		<input type="hidden" name="requestedAction" value="stage-edit-select-stage">
+		<input type="hidden" name="requestedAction" value="select-stage">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 		
@@ -70,7 +72,7 @@
 		                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
 		            </div>
 		            <div class="col-sm-1">    
-		                <a role="button" class="btn btn-default btn-sm" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" title="Delete goal:${goal.description }">
+		                <a role="button" class="btn btn-default btn-sm" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" title="Delete goal:${goal.description }">
 						  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 						</a>
 		            </div>
@@ -133,7 +135,7 @@
 				</div>
 			</div>
 			<div class="col-sm-2">
-				<c:if test='${user.role.equals("admin") }'>
+				<c:if test='${path.equals("templateTreatmentPlan") }'>
 					<div class="panel panel-primary panel-task" id="taskReps" title="Number of repetitions.">
 					<div class="panel-heading">
 					  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="taskTemplateRepetitions${task.taskID }" name="taskTemplateRepetitions${task.taskID }">

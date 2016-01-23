@@ -81,10 +81,10 @@ public class EditTreatmentPlan extends HttpServlet {
     	TreatmentPlan treatmentPlan = null;
     	
     	try {
-    		//TODO remove all other calls to TreatmentPlan.load() and confirm that doing it once here is ok
     		
-    		//TODO make sure to remove ownerUserID and clientUserID from edit jsps since I have switched things to not need to maintain this value - get it from treatmentPlan/stage/task
-    		if(!requestedAction.equals("plan-edit-selection")){
+    		//Here we check that a treatmentPlan has been selected (currently the only time this is true is with path plan-edit-selection).
+    		//If so, then load it and use it's userID prop to get it's owner
+    		if(treatmentPlanID != 0){
     			treatmentPlan = TreatmentPlan.load(treatmentPlanID);
         		ownerUserID = treatmentPlan.getUserID();
         		
@@ -202,9 +202,8 @@ public class EditTreatmentPlan extends HttpServlet {
 		            	break;
 		            
 				}
-				
-				
 	    		
+				//set the TreatmentPlan in the request after all actions with it have been completed
 				request.setAttribute("treatmentPlan", treatmentPlan);
 				
 				

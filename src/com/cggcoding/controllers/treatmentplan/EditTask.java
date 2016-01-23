@@ -77,6 +77,32 @@ public class EditTask extends HttpServlet {
 			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
 			request.setAttribute("taskTemplateList", Task.getDefaultTasks());
 			
+			//TODO uncomment this once finished moving Task.load() up here
+//			if(task.isTemplate()){
+//				request.setAttribute("warningMessage", WarningMessages.EDITING_TASK_TEMPLATE);
+//			}
+			//TODO make sure to remove ownerUserID and clientUserID from edit jsps since I have switched things to not need to maintain this value - get it from treatmentPlan/stage/task			
+			//Here we check that a stage has been selected (currently the only time this is true is with path plan-edit-selection).
+    		//If so, then load it and use it's userID prop to get it's owner
+//    		if(stageID != 0){
+//    			stage = Stage.load(stageID);
+//        		ownerUserID = stage.getUserID();
+//        		
+//        		//Set the User var "owner". If the owner of the plan that is being edited is different than the logged in user, then load the appropriate owner info
+//	    		if(ownerUserID==user.getUserID()){
+//	    			owner = user;
+//	    		} else {
+//	    			owner = User.loadBasic(stage.getUserID());
+//	    		}
+//	    		
+//	    		request.setAttribute("owner", owner);
+//	    		
+//	    		//if this Stage is a template, remind the user that all instances of this stage will be changed
+//	    		if(stage.isTemplate()){
+//					request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
+//				}
+//    		}
+			
 			if(user.hasRole(Constants.USER_ADMIN)){
 				switch(requestedAction){
 				case ("edit-task-start"):
@@ -90,11 +116,7 @@ public class EditTask extends HttpServlet {
 					int selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
 					
 					request.setAttribute("task", Task.load(selectedTaskID));
-					
-					if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN")|| path.equals("Constants.PATH_TEMPLATE_STAGE")){
-						request.setAttribute("warningMessage", WarningMessages.EDITING_TASK_TEMPLATE);
-					}
-					
+
 					forwardTo = Constants.URL_EDIT_TASK;
 					break;
 				case ("edit-task-select-task-type"):

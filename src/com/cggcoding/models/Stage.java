@@ -360,10 +360,6 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return completeTasks;
 	}
 	
-	public void addGoal(StageGoal goal){
-		this.goals.add(goal);
-	}
-	
 	public StageGoal getGoalByID(int stageGoalID){
 		for(StageGoal goal : goals){
 			if(goal.getStageGoalID() == stageGoalID){
@@ -385,6 +381,34 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return found;
 	}
 
+	/**Inserts the new goal into the database, then adds it the this Stage's goal list.
+	 * @param goal
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	public void saveNewGoal(StageGoal goal) throws ValidationException, DatabaseException{
+		goal.create();
+		this.goals.add(goal);
+	}
+	
+	/**Deletes goal from the database then removes it from this instance of Stage
+	 * @param goalID
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	public void deleteGoal(int goalID) throws ValidationException, DatabaseException{
+		StageGoal.delete(goalID);
+		int indexToRemove = 0;
+		for(int i=0; i<goals.size(); i++){
+			if(goals.get(i).getStageGoalID() == goalID){
+				indexToRemove = i;
+				break;
+			}
+		}
+		
+		goals.remove(indexToRemove);
+	}
+	
 	/**Loads the stage and all associated Tasks.  Checks if the Stage is a template.  If so, then it's Tasks are also templates and 
 	 * the database loads the Tasks using the task_template_stage_template_mapping table to get the taskIDs to load.  If not a template then it 
 	 * just loads tasks straight from the task_generic table
@@ -893,7 +917,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		Stage copiedStage = getInstanceWithoutID(this.treatmentPlanID, this.userID, this.title, this.description, this.stageOrder, falseForTemplate);
 
 		for(StageGoal goal : this.goals){
-			copiedStage.addGoal(goal.copy());
+			copiedStage.getGoals().add(goal.copy());
 		}
 		
 		for(Task task : this.tasks){
@@ -907,5 +931,6 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public static List<Stage> getDefaultStages() throws DatabaseException, ValidationException{
 		return dao.stagesGetDefaults();
 	}
+
 	
 }

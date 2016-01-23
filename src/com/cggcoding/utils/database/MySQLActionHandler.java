@@ -181,7 +181,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         	cn = getConnection();
-            ps = cn.prepareStatement("SELECT * FROM user_role WHERE user_id = ?");
+            ps = cn.prepareStatement("SELECT * FROM user WHERE user_id = ?");
             ps.setInt(1, userID);
 
             rsUserInfo = ps.executeQuery();
