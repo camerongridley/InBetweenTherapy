@@ -78,7 +78,7 @@
 						Task Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="create-task-start">
-				<input type="hidden" name="path" value="taskTemplate">
+				<input type="hidden" name="path" value="templateTask">
 			</form>
 			</p>
 			<p>
@@ -88,7 +88,7 @@
 						Task Template</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="edit-task-start">
-				<input type="hidden" name="path" value="taskTemplate">
+				<input type="hidden" name="path" value="templateTask">
 			</form>
 			</p>
 		</div>

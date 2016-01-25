@@ -7,13 +7,13 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<c:if test="${path=='taskTemplate' }"><h1>Create A Task Template</h1></c:if>
-	<c:if test="${path!='taskTemplate' }"><h1>Create a Task for the Stage: ${stage.title}</h1></c:if>
+	<c:if test='${path=="templateTask" }'><h1>Create A Task Template</h1></c:if>
+	<c:if test='${path!="templateTask" }'><h1>Create a Task for the Stage: ${stage.title}</h1></c:if>
 </div>
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 	
-	<c:if test="${path!='taskTemplate' }">
+	<c:if test='${path!="templateTask" }'>
 		<div class="well well-sm">
 			<form class="form-horizontal" action="/secure/CreateTask" method="POST">
 				<input type="hidden" name="requestedAction" value="task-add-default-template">

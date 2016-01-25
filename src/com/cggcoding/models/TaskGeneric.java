@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -57,6 +58,12 @@ public class TaskGeneric extends Task implements Serializable{
 			boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition){
 		return new TaskGeneric(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed, dateCompleted, clientTaskOrder, extraTask, template, templateID, clientRepetition);
 	}	
+	
+	public static TaskGeneric convertToGeneric(Task task){
+		return getInstanceFull(task.getTaskID(), task.getStageID(), task.getUserID(), Constants.TASK_TYPE_ID_GENERIC_TASK, task.getParentTaskID(), task.getTitle(), task.getInstructions(), 
+				task.getResourceLink(), task.isCompleted(), task.getDateCompleted(), task.getClientTaskOrder(), task.isExtraTask(), task.isTemplate(), task.getTemplateID(), 
+				task.getClientRepetition());
+	}
 	
 
 	/**This class is a concretized version of Task to map up with the GenericTask table in the database.  There is no "Task" table in the database

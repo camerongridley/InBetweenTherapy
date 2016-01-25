@@ -179,7 +179,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 
 		TaskGeneric genericTask = TaskGeneric.loadGeneric(cn, taskID);
 		
-		task = convertToType(genericTask);
+		task = castGenericToType(genericTask);
 		
 		task.loadAdditionalData(cn, genericTask);
 
@@ -189,12 +189,12 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	protected abstract void loadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException;
 	
 	
-	
+	//TODO can I merge functionality of this method and converToType()
 	/**This is used to determine the task type, primarily for when loading a task based solely on taskID and, therefore, the taskType would be unknown.
 	 * @param genericTask
 	 * @return
 	 */
-	private static Task convertToType(TaskGeneric genericTask){
+	private static Task castGenericToType(TaskGeneric genericTask){
 		Task task = null;
 		switch(genericTask.getTaskTypeID()){
 			case Constants.TASK_TYPE_ID_GENERIC_TASK:
@@ -208,6 +208,25 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return task;
 	}
 	
+	public static Task convertToType(Task task, int taskTypeIDtoConvertTo){
+		if(task instanceof TaskGeneric){
+			TaskGeneric genericTask = (TaskGeneric)task;
+			if(taskTypeIDtoConvertTo == Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK){
+				task = TaskTwoTextBoxes.convertFromGeneric(genericTask);
+				//TODO create a row in db table for taskTwoTextboxes AND update taskTypeID
+			}
+		}
+		
+		if(task instanceof TaskTwoTextBoxes){
+			if(taskTypeIDtoConvertTo == Constants.TASK_TYPE_ID_GENERIC_TASK){
+				task = TaskGeneric.convertToGeneric(task);
+				//TODO delete row from db table taskTwoTextboxes AND update taskTypeID
+			}
+			
+		}
+
+		return task;
+	}
 	
 	@Override
 	public Task create()throws DatabaseException, ValidationException{

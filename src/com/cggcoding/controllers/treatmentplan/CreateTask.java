@@ -64,7 +64,7 @@ public class CreateTask extends HttpServlet {
 		int taskReps = ParameterUtils.parseIntParameter(request, "taskReps");
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
-		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
+		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);//TODO change this to use updateTaskParametersFromRequest
 
 		int planToReturnTo = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 		request.setAttribute("treatmentPlanID", planToReturnTo);
@@ -74,7 +74,7 @@ public class CreateTask extends HttpServlet {
 			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
 			request.setAttribute("defaultTasks", Task.getDefaultTasks());
 			
-			if(!path.equals("taskTemplate")){
+			if(!path.equals(Constants.PATH_TEMPLATE_TASK)){
 				stage = Stage.load(stageID);
 			}
 	
@@ -93,7 +93,7 @@ public class CreateTask extends HttpServlet {
 						stage.addTaskTemplate(taskToCreate.getTaskID(), taskReps);
 						//stage.copyTaskIntoStage(taskToCreate.getTaskID());
 						
-						if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN") || path.equals("Constants.PATH_TEMPLATE_STAGE")){
+						if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
 							request.setAttribute("stage", stage);//XXX right now this is redundant as loadStageAndPutInRequest is called later
 							request.setAttribute("defaultStageList", Stage.getDefaultStages());
 							forwardTo = Constants.URL_EDIT_STAGE;
@@ -113,10 +113,10 @@ public class CreateTask extends HttpServlet {
 				
 					//TODO implement this?
 					/*switch(path){
-						case "taskTemplate":
+						case Constants.PATH_TEMPLATE_TASK:
 							Task.createTemplate(taskToCreate);
 							break;
-						case "Constants.PATH_TEMPLATE_STAGE":
+						case Constants.PATH_TEMPLATE_STAGE:
 							newTask = Task.createTemplate(taskToCreate);
 							stage = Stage.load(stageID);
 							stage.addTaskTemplate(newTask.getTaskID());
@@ -125,7 +125,7 @@ public class CreateTask extends HttpServlet {
 							
 							
 					}*/
-					if(path.equals("taskTemplate")){
+					if(path.equals(Constants.PATH_TEMPLATE_TASK)){
 						Task.createTemplate(taskToCreate);
 					} else {
 						newTask = Task.createTemplate(taskToCreate);
@@ -142,7 +142,7 @@ public class CreateTask extends HttpServlet {
 						request.setAttribute("stage", Stage.load(stageID));
 					}
 										
-					if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN") || path.equals("Constants.PATH_TEMPLATE_STAGE")){
+					if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
 						forwardTo = Constants.URL_EDIT_STAGE;
 					}else{
 						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
@@ -152,7 +152,7 @@ public class CreateTask extends HttpServlet {
 				}
 				
 				
-				if(path.equals("taskTemplate")){
+				if(path.equals(Constants.PATH_TEMPLATE_TASK)){
 					
 				}else{
 					stage = loadStageAndPutInRequest(request, stageID);

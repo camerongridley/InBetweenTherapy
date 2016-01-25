@@ -25,7 +25,6 @@ import com.cggcoding.utils.messaging.WarningMessages;
 @WebServlet("/secure/EditTask")
 public class EditTask extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	int userID = 0;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -56,103 +55,124 @@ public class EditTask extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+    	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
 		/*-----------End Common Servlet variables---------------*/
 		
-		userID =  user.getUserID();
-
-		//performed here to get parameters for all tasks run below
-		Task tempTask = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
+		//TODO delete? int userID =  user.getUserID();
+		int ownerUserID = 0;
+		User owner = null;
+		Task task = null;
+		
+		
 		
 		/*These variables helps remember where to send the user back to when they are done editing the Task.
 		If the Task being edited is a template the stageID will be TEMPLATE_HOLDER_ID, and not the Stage template being working on.
 		If the Task being edited is part of a client's plan, then the stageID will be the stageID that is contained within the task.
 		Need to maintain it between requests*/
-		int stageToReturnTo = tempTask.getStageID();
-		request.setAttribute("stageToReturnTo", stageToReturnTo);
-		int planToReturnTo = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
-		request.setAttribute("treatmentPlanID", planToReturnTo);
+		request.setAttribute("stageID", stageID);
+		request.setAttribute("treatmentPlanID", treatmentPlanID);
 
 		try {
 			//put user-independent attributes acquired from database in the request
 			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
 			request.setAttribute("taskTemplateList", Task.getDefaultTasks());
 			
-			//TODO uncomment this once finished moving Task.load() up here
-//			if(task.isTemplate()){
-//				request.setAttribute("warningMessage", WarningMessages.EDITING_TASK_TEMPLATE);
-//			}
 			//TODO make sure to remove ownerUserID and clientUserID from edit jsps since I have switched things to not need to maintain this value - get it from treatmentPlan/stage/task			
-			//Here we check that a stage has been selected (currently the only time this is true is with path plan-edit-selection).
+			//Here we check that a task has been selected (currently the only time this isn't true is with path plan-edit-selection).
     		//If so, then load it and use it's userID prop to get it's owner
-//    		if(stageID != 0){
-//    			stage = Stage.load(stageID);
-//        		ownerUserID = stage.getUserID();
-//        		
-//        		//Set the User var "owner". If the owner of the plan that is being edited is different than the logged in user, then load the appropriate owner info
-//	    		if(ownerUserID==user.getUserID()){
-//	    			owner = user;
-//	    		} else {
-//	    			owner = User.loadBasic(stage.getUserID());
-//	    		}
-//	    		
-//	    		request.setAttribute("owner", owner);
-//	    		
-//	    		//if this Stage is a template, remind the user that all instances of this stage will be changed
-//	    		if(stage.isTemplate()){
-//					request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
-//				}
-//    		}
-			
-			if(user.hasRole(Constants.USER_ADMIN)){
-				switch(requestedAction){
-				case ("edit-task-start"):
-					tempTask.setTemplate(true);
-					//set tempTask in request so page knows value of isTemplate
-					request.setAttribute("task", tempTask);
-					
-					forwardTo = Constants.URL_EDIT_TASK;
-					break;
-				case ("edit-task-select-task"):
-					int selectedTaskID = ParameterUtils.parseIntParameter(request, "taskID");
-					
-					request.setAttribute("task", Task.load(selectedTaskID));
-
-					forwardTo = Constants.URL_EDIT_TASK;
-					break;
-				case ("edit-task-select-task-type"):
-					// most of the work for this case was moved to CommonServletFunctions.getTaskParametersFromRequest, so now it just needs to set forwardTo
-					
-					
-					
-					forwardTo = Constants.URL_EDIT_TASK;
-					break;
-				case ("edit-task-update"):
-					if(tempTask.getTaskID()==0){
-						throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
-					}
-					tempTask.update();
-					
-					stageToReturnTo = ParameterUtils.parseIntParameter(request, "stageToReturnTo");
-					if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN")|| path.equals("Constants.PATH_TEMPLATE_STAGE")){
-						request.setAttribute("stage", Stage.load(stageToReturnTo));
-						request.setAttribute("defaultStageList", Stage.getDefaultStages());
-						
-						forwardTo = Constants.URL_EDIT_STAGE;
-					}else{
-						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
-					}
-				
-					break;
+    		if(taskID != 0){
+    			task = Task.load(taskID);
+        		ownerUserID = task.getUserID();
+        		
+        		//Set the User var "owner". If the owner of the plan that is being edited is different than the logged in user, then load the appropriate owner info
+	    		if(ownerUserID==user.getUserID()){
+	    			owner = user;
+	    		} else {
+	    			owner = User.loadBasic(task.getUserID());
+	    		}
+	    		
+	    		request.setAttribute("owner", owner);
+	    		
+	    		//if this Task is a template, remind the user that all instances of this task will be changed
+	    		if(task.isTemplate()){
+					request.setAttribute("warningMessage", WarningMessages.EDITING_TASK_TEMPLATE);
 				}
+    		}
+
+			
+    		if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
+				switch(requestedAction){
+					case ("edit-task-start"):
+
+						forwardTo = Constants.URL_EDIT_TASK;
+						break;
+					case ("edit-task-select-task"):
+						
+						forwardTo = Constants.URL_EDIT_TASK;
+						break;
+					case ("edit-task-select-task-type"):
+						int newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
+						//TODO delete? task.setTaskTypeID(newTaskTypeID);
+						task =Task.convertToType(task, newTaskTypeID);
+	
+						forwardTo = Constants.URL_EDIT_TASK;
+						break;
+					case ("edit-task-update"):
+						if(task.getTaskID()==0){
+							throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+						}
+						
+					
+						task = CommonServletFunctions.updateTaskParametersFromRequest(request, task);
+						
+						task.update();
+						
+						switch(path){
+							case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
+							case Constants.PATH_TEMPLATE_STAGE:
+							case Constants.PATH_CLIENT_TREATMENT_PLAN:
+		            		case Constants.PATH_MANAGE_CLIENT:
+								request.setAttribute("stage", Stage.load(stageID));
+								request.setAttribute("defaultStageList", Stage.getDefaultStages());
+								
+								forwardTo = Constants.URL_EDIT_STAGE;
+								
+								break;
+								
+		            		case Constants.PATH_TEMPLATE_TASK:
+		            			if(user.getRole().equals(Constants.USER_ADMIN)){
+			            			forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+			            		} else if(user.getRole().equals(Constants.USER_THERAPIST)){
+			            			forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
+			            		}
+						}
+						
+						request.setAttribute("warningMessage", null);
+						
+						break;
+				}
+				
+				request.setAttribute("task", task);
+				
+			} else if(user.hasRole(Constants.USER_CLIENT)){
+				forwardTo = "clientMainMenu.jsp";
+				request.setAttribute("erorMessage", ErrorMessages.UNAUTHORIZED_ACCESS);
+				//UNSURE consider creating a UnauthorizedAccessException and throwing that here
+				
 			}
 				
 			
 		} catch (DatabaseException | ValidationException e) {
 			//put in temporary task object so values can be saved in inputs after error
-			request.setAttribute("task", tempTask);
-			request.setAttribute("stageToReturnTo", stageToReturnTo);
-			request.setAttribute("treatmentPlanID", planToReturnTo);
+			request.setAttribute("task", task);
+			request.setAttribute("stageID", stageID);
+			request.setAttribute("treatmentPlanID", treatmentPlanID);
 			request.setAttribute("errorMessage", e.getMessage());
+			
+			e.printStackTrace();
 
 			forwardTo = Constants.URL_EDIT_TASK;
 		}

@@ -8,6 +8,7 @@
 
 <div class="page-header">
 	<h1>Edit Task <c:if test="${task.template}">Template</c:if></h1>
+	<h3>Task Owner: ${owner.email}</h3>
 </div>
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
@@ -15,8 +16,10 @@
 <form class="form-horizontal" action="/secure/EditTask" method="POST">
 	<input type="hidden" name="requestedAction" value="edit-task-select-task">
 	<input type="hidden" name="path" value="${path }">
+	<input type="hidden" name="stageID" value="${stageID }" >
+	<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 
-	<c:if test="${path=='taskTemplate'}">
+	<c:if test='${path=="templateTask"}'>
 		<div class="form-group">
 			<label for="defaultTaskListID" class="col-sm-2 control-label">Select Task</label>
 			<div class="col-sm-8">
@@ -36,6 +39,8 @@
 	<input type="hidden" name="requestedAction" value="edit-task-select-task-type">
 	<input type="hidden" name="path" value="${path }">
 	<input type="hidden" name="taskID" value="${task.taskID }">
+	<input type="hidden" name="stageID" value="${stageID }" >
+	<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 	
 	<div class="form-group">
 	    <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
@@ -55,13 +60,13 @@
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">
 		<input type="hidden" name="taskID" value="${task.taskID }">
-		<input type="hidden" name="stageID" value="${task.stageID }">
+		<input type="hidden" name="stageID" value="${stageID }">
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 		<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
 		<input type="hidden" name="clientTaskOrder" value="${task.clientTaskOrder }">
-		<input type="hidden" name="stageToReturnTo" value="${stageToReturnTo }">
-		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+		
 				
         <div class="form-group">
             <label for="taskTitle" class="col-sm-2 control-label">Task Name</label>

@@ -74,7 +74,7 @@ public class CreateStage extends HttpServlet {
 		request.setAttribute("treatmentPlanID", treatmentPlanID);
 		
 		try{
-			if(!path.equals("Constants.PATH_TEMPLATE_STAGE")){
+			if(!path.equals(Constants.PATH_TEMPLATE_STAGE)){
 				treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 			}
 			
@@ -95,7 +95,7 @@ public class CreateStage extends HttpServlet {
 							treatmentPlan.addStageTemplate(selectedDefaultStageID);
 							//treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
 	
-			            	if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN")){
+			            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
 			                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 			                	
 			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
@@ -116,7 +116,7 @@ public class CreateStage extends HttpServlet {
 		                }
 		                
 		                Stage newStage = null;
-		                if(path.equals("Constants.PATH_TEMPLATE_STAGE")){
+		                if(path.equals(Constants.PATH_TEMPLATE_STAGE)){
 		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
 		                } else {
 		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
@@ -130,7 +130,7 @@ public class CreateStage extends HttpServlet {
 		                request.setAttribute("stage", newStage);
 		                
 		                
-		                if(path.equals("Constants.PATH_TEMPLATE_TREATMENT_PLAN")){
+		                if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
 		                	
 		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 		                }else{

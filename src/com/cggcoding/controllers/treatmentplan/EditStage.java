@@ -80,12 +80,12 @@ public class EditStage extends HttpServlet {
 		String stageDescription = request.getParameter("stageDescription");
 		Stage stage = null;
 
-		//TODO keep this line? Can I instead maintain this on the jsp side by using stage.treatmentPlanID?
+		//TODO keep this line? Can I instead maintain this on the jsp side by using stage.treatmentPlanID? Requires figuring out what to do when stage.TreatmentPlanID is the stage template holder
 		request.setAttribute("treatmentPlanID", treatmentPlanID);
 		
 		try{
     		//TODO make sure to remove ownerUserID and clientUserID from edit jsps since I have switched things to not need to maintain this value - get it from treatmentPlan/stage/task			
-			//Here we check that a stage has been selected (currently the only time this is true is with path plan-edit-selection).
+			//Here we check that a stage has been selected (currently the only time this is true isn't with path plan-edit-selection).
     		//If so, then load it and use it's userID prop to get it's owner
     		if(stageID != 0){
     			stage = Stage.load(stageID);
@@ -134,7 +134,7 @@ public class EditStage extends HttpServlet {
 		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
 		            	}
 		            	
-		            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
+		            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
 		            		//get the repetition value for each task template inside this stage template and set it the edited stage to be updated when stage.update() is called
 			            	for(MapStageTaskTemplate stageTaskInfo : stage.getMapStageTaskTemplates()){
 			            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
@@ -148,7 +148,7 @@ public class EditStage extends HttpServlet {
 		            	request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
 		            	
 		            	switch(path){
-		            		//case for both Client and Template TreatmentPlan  as well as ManageClient is the same
+		            		//case for both Client and Template TreatmentPlan as well as ManageClient is the same
 		            		case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
 		            		case Constants.PATH_CLIENT_TREATMENT_PLAN:
 		            		case Constants.PATH_MANAGE_CLIENT:
@@ -160,7 +160,6 @@ public class EditStage extends HttpServlet {
 			            		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            			break;
 			            		
-		            		
 		            		case Constants.PATH_TEMPLATE_STAGE:
 		            			if(user.getRole().equals(Constants.USER_ADMIN)){
 			            			forwardTo = Constants.URL_ADMIN_MAIN_MENU;

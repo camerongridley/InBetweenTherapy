@@ -67,8 +67,16 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 			extraTextLabel2, extraTextValue2);
 	}
 	
+	/**Converts a TaskGeneric object to TaskTwoTextBoxes.  Changes the TaskTypeID to Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK and transfers all other common fields from the generic task.
+	 * @param genericTask
+	 * @param extraTextLabel1
+	 * @param extraTextValue1
+	 * @param extraTextLabel2
+	 * @param extraTextValue2
+	 * @return
+	 */
 	public static TaskTwoTextBoxes addDataToGenericTask(TaskGeneric genericTask, String extraTextLabel1, String extraTextValue1,String extraTextLabel2, String extraTextValue2){
-		return new TaskTwoTextBoxes(genericTask.getTaskID(), genericTask.getStageID(), genericTask.getUserID(), genericTask.getTaskTypeID(), genericTask.getParentTaskID(), genericTask.getTitle(),
+		return new TaskTwoTextBoxes(genericTask.getTaskID(), genericTask.getStageID(), genericTask.getUserID(), Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK, genericTask.getParentTaskID(), genericTask.getTitle(),
 				genericTask.getInstructions(), genericTask.getResourceLink(), genericTask.isCompleted(), genericTask.getDateCompleted(), genericTask.getClientTaskOrder(),
 				genericTask.isExtraTask(), genericTask.isTemplate(), genericTask.getTemplateID(), genericTask.getClientRepetition(),
 				extraTextLabel1, extraTextValue1,
