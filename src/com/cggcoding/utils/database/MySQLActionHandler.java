@@ -1283,6 +1283,24 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return task;
 	}
 	
+
+	@Override
+	public void taskTwoTextBoxesDeleteAdditionalData(Connection cn, int taskID) throws SQLException {
+		PreparedStatement ps = null;
+
+		try {
+            ps = cn.prepareStatement("DELETE FROM task_two_textboxes WHERE task_generic_id=?");
+            ps.setInt(1, taskID);
+
+            ps.executeUpdate();
+
+		} finally {
+			DbUtils.closeQuietly(ps);
+	    }
+
+		
+	}
+	
 	@Override
 	public boolean taskGenericUpdate(Connection cn, Task taskToUpdate) throws SQLException {
     	PreparedStatement ps = null;
@@ -1870,6 +1888,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	}
     	return ldt;
     }
+
 
 
 

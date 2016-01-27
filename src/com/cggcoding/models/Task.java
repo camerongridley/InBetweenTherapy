@@ -208,8 +208,73 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return task;
 	}
 	
-	public static Task convertToType(Task task, int taskTypeIDtoConvertTo){
-		if(task instanceof TaskGeneric){
+	public static Task convertToType(Task task, int taskTypeIDtoConvertTo, boolean updateDataBaseRows) throws DatabaseException, ValidationException{
+		
+		//if the taskTypeID of the task argument and taskTypeIDtoConvertTo are equal, then just pass the task back
+		if(task.getTaskTypeID()!=taskTypeIDtoConvertTo){
+			//castGenericToType only accepts TaskGenric objects so first convert 
+			TaskGeneric genericTask = TaskGeneric.convertToGeneric(task);
+
+			//set the typeID to convert to so castGenericToType knows what to cast to
+			genericTask.setTaskTypeID(taskTypeIDtoConvertTo);
+			
+			if(updateDataBaseRows==false){
+				//if type to convert to is TaskGeneric, then no further conversion is necessary; could eliminate this condition check if wanted, that would just mean the task was converted to generic twice
+				if(taskTypeIDtoConvertTo != Constants.TASK_TYPE_ID_GENERIC_TASK){
+					task = castGenericToType(genericTask);
+				} else {
+					task = genericTask;
+				}
+
+			} else {
+				
+				Connection cn = null;
+		        
+		        try {
+		        	cn = dao.getConnection();
+		        	cn.setAutoCommit(false);
+		        	
+		        	task.deleteAdditionalData(cn);
+		        	
+		        	//if type to convert to is TaskGeneric, then no further conversion is necessary
+					if(taskTypeIDtoConvertTo != Constants.TASK_TYPE_ID_GENERIC_TASK){
+						task = castGenericToType(genericTask);
+					} else {
+						task = genericTask;
+					}
+		        	
+		        	task.createAdditionalData(cn);
+		        	
+		        	cn.commit();
+
+		        } catch (SQLException | ValidationException e) {
+		            e.printStackTrace();
+		            try {
+						System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+						cn.rollback();
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+						throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+					}
+		            if(e.getClass().getSimpleName().equals("ValidationException")){
+						throw new ValidationException(e.getMessage());
+					}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+						throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+					}
+		        } finally {
+		        	try {
+						cn.setAutoCommit(true);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					DbUtils.closeQuietly(cn);
+		        }
+			}
+		}
+		
+		
+
+		/*if(task instanceof TaskGeneric){
 			TaskGeneric genericTask = (TaskGeneric)task;
 			if(taskTypeIDtoConvertTo == Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK){
 				task = TaskTwoTextBoxes.convertFromGeneric(genericTask);
@@ -223,7 +288,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 				//TODO delete row from db table taskTwoTextboxes AND update taskTypeID
 			}
 			
-		}
+		}*/
 
 		return task;
 	}
@@ -406,6 +471,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 */
 	protected abstract boolean updateAdditionalData(Connection cn) throws ValidationException, SQLException;
 
+	protected abstract void deleteAdditionalData(Connection cn) throws ValidationException, SQLException;
 	
 	/**Copies the task, setting the taskID to 0 and template=false since templates are unique. DOES NOT SAVE TO DATABASE.
 	 * @param stageID

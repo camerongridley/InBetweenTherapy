@@ -128,6 +128,12 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	protected boolean updateAdditionalData(Connection cn) throws ValidationException, SQLException {
 		return dao.taskTwoTextBoxesUpdateAdditionalData(cn, this);
 	}
+	
+	@Override
+	protected void deleteAdditionalData(Connection cn) throws ValidationException, SQLException {
+		dao.taskTwoTextBoxesDeleteAdditionalData(cn,super.getTaskID());
+		
+	}
 
 	@Override
 	protected void loadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException {
@@ -162,6 +168,8 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 		
 		return task.create();
 	}
+
+	
 
 
 }

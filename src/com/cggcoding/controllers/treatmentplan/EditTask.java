@@ -116,7 +116,10 @@ public class EditTask extends HttpServlet {
 					case ("edit-task-select-task-type"):
 						int newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
 						//TODO delete? task.setTaskTypeID(newTaskTypeID);
-						task =Task.convertToType(task, newTaskTypeID);
+					
+						//do not update database here.  that should only happen once user has submitted the overall update request
+						boolean updateDataBase = false;
+						task =Task.convertToType(task, newTaskTypeID, updateDataBase);
 	
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
@@ -125,6 +128,9 @@ public class EditTask extends HttpServlet {
 							throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
 						}
 						
+						newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
+						updateDataBase = true;
+						task =Task.convertToType(task, newTaskTypeID, updateDataBase);
 					
 						task = CommonServletFunctions.updateTaskParametersFromRequest(request, task);
 						

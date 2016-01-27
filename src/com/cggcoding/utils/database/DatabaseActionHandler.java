@@ -182,6 +182,8 @@ public interface DatabaseActionHandler {
 
 	void taskTwoTextBoxesCreateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws SQLException;
 
+	void taskTwoTextBoxesDeleteAdditionalData(Connection cn, int taskID) throws SQLException;
+	
 	boolean taskValidate(Connection cn, Task newTask) throws ValidationException, SQLException;
 
 	Task taskGenericCreate(Connection cn, Task newTask) throws SQLException;
@@ -202,6 +204,8 @@ public interface DatabaseActionHandler {
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
 	boolean throwValidationExceptionIfZero(int arg) throws ValidationException;
+
+	
 
 	
 

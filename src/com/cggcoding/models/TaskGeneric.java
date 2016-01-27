@@ -104,6 +104,11 @@ public class TaskGeneric extends Task implements Serializable{
 	}
 
 	@Override
+	protected void deleteAdditionalData(Connection cn) throws ValidationException, SQLException {
+		// nothing to do here for TaskGeneric	
+	}
+
+	@Override
 	public Task copy(){
 		TaskGeneric gTask = getInstanceFull(0, getStageID(), getUserID(), getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
 					isCompleted(), getDateCompleted(), getClientTaskOrder(), isExtraTask(), false, getTemplateID(), getClientRepetition());
@@ -126,6 +131,7 @@ public class TaskGeneric extends Task implements Serializable{
 		//there is no additional data with this task
 		
 	}
+
 	
 	
 }
