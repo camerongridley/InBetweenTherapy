@@ -763,6 +763,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 					
 					if(task.isTemplate()){ //UNSURE Does it matter if I check Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
 						MapStageTaskTemplate.delete(cn, taskToDeleteID, this.stageID);
+						stageTaskTemplateMapList.remove(i);//this list is only populated when the stage is a template whereas the tasks list is always populated so remove from that below where all conditions hit it
 					}else{
 						task.delete(cn);
 					}
@@ -772,7 +773,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				}
 			}
 			
-			reorderTasks();
+			reorderClientTasks();
 			
 			//update the remaining tasks with their new order value
 			if(task.isTemplate()){
@@ -811,14 +812,22 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return this;
 	}
 	
-	protected List<Task> updateTaskTemplateList(Connection cn, List<Task> taskTemplates) throws SQLException{
-		return dao.stageUpdateTemplateTasks(cn, this.stageID, taskTemplates);
+	protected List<MapStageTaskTemplate> updateTaskTemplateList(Connection cn, List<Task> taskTemplates) throws SQLException{
+		return dao.stageUpdateTemplateTasks(cn, this.stageID, stageTaskTemplateMapList);
 	}
 	
-	private void reorderTasks(){
-		for(int i=0; i < this.tasks.size(); i++){
-			tasks.get(i).setClientTaskOrder(i);
+	private void reorderClientTasks(){
+		//if this Stage is a template then it's task order info is going to be in the mapping table so reorder those.  Otherwise, the task order is a prop of the task
+		if(this.template){
+			for(int i=0; i < this.stageTaskTemplateMapList.size(); i++){
+				stageTaskTemplateMapList.get(i).setTemplateTaskOrder(i);
+			}
+		} else {
+			for(int i=0; i < this.tasks.size(); i++){
+				tasks.get(i).setClientTaskOrder(i);
+			}
 		}
+		
 	}
 	
 	//TODO decide if I want to keep int mainTaskID as an argument.  It isn't being used right now.
@@ -830,28 +839,41 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		}
 		
 		try {
+			cn = dao.getConnection();
+    		
+			//update the order in the actual tasks templates - happens for templates and client tasks
+			Task mainTask = tasks.get(originalOrder);
+			Task prevTask = tasks.get(originalOrder-1);
+			this.tasks.set(originalOrder-1, mainTask);
+			this.tasks.set(originalOrder, prevTask);
 			
-			MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
-			MapStageTaskTemplate prevStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder-1);
+			//if this Stage is a template, then update the stage-mapping info
+			if(this.template){
+				MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
+				MapStageTaskTemplate prevStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder-1);
+				
+				//swap order values in mapping info
+				mainStageTaskMap.setTemplateTaskOrder(originalOrder-1);
+				prevStageTaskMap.setTemplateTaskOrder(originalOrder);
+				
+				//swap places in both the stageTaskMap and tasks List
+				this.stageTaskTemplateMapList.set(originalOrder-1, mainStageTaskMap);
+				this.stageTaskTemplateMapList.set(originalOrder, prevStageTaskMap);
+				
+				//update in database
+				mainStageTaskMap.update(cn);
+				prevStageTaskMap.update(cn);
+			} else {
+				//this is a client task so update the task's clientOrder prop
+				mainTask.setClientTaskOrder(originalOrder-1);
+				prevTask.setClientTaskOrder(originalOrder);
+				
+				//update it in the database
+				mainTask.update(cn);
+				prevTask.update(cn);
+			}
 			
-			//swap order values in objects
-			mainStageTaskMap.setTemplateTaskOrder(originalOrder-1);
-			prevStageTaskMap.setTemplateTaskOrder(originalOrder);
 			
-			//swap places in both the stageTaskMap and tasks List
-			this.stageTaskTemplateMapList.set(originalOrder-1, mainStageTaskMap);
-			this.stageTaskTemplateMapList.set(originalOrder, prevStageTaskMap);
-			
-			Task holder = tasks.get(originalOrder-1);
-			this.tasks.set(originalOrder-1, tasks.get(originalOrder));
-			this.tasks.set(originalOrder, holder);
-
-			
-			//update in database
-        	cn = dao.getConnection();
-        		
-        	dao.mapStageTaskTemplateUpdate(cn, mainStageTaskMap);
-        	dao.mapStageTaskTemplateUpdate(cn, prevStageTaskMap);
         	
         	
 		} catch (SQLException e) {
@@ -864,7 +886,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	//TODO decide if I want to keep int mainTaskID as an argument.  It isn't being used right now.
-	public void orderDecrementTemplateTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
+	public void orderDecrementTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
 		Connection cn = null;
 		
 		if(originalOrder == this.getMapStageTaskTemplates().size()-1){
@@ -872,28 +894,42 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		}
 		
 		try {
+			cn = dao.getConnection();
 			
-			MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
-			MapStageTaskTemplate nextStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder+1);
+			//update the order in the actual tasks templates - happens for templates and client tasks
+			Task mainTask = tasks.get(originalOrder);
+			Task nextTask = tasks.get(originalOrder+1);
+			this.tasks.set(originalOrder+1, mainTask);
+			this.tasks.set(originalOrder, nextTask);
 			
-			//swap order values in objects
-			mainStageTaskMap.setTemplateTaskOrder(originalOrder+1);
-			nextStageTaskMap.setTemplateTaskOrder(originalOrder);
+			//if this Stage is a template, then update the stage-mapping info
+			if(this.template){
+				MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
+				MapStageTaskTemplate nextStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder+1);
+				
+				//swap order values in mapping info
+				mainStageTaskMap.setTemplateTaskOrder(originalOrder+1);
+				nextStageTaskMap.setTemplateTaskOrder(originalOrder);
 
-			Task holder = tasks.get(originalOrder+1);
-			this.tasks.set(originalOrder+1, tasks.get(originalOrder));
-			this.tasks.set(originalOrder, holder);
+				//swap places in the local List
+				this.stageTaskTemplateMapList.set(originalOrder+1, mainStageTaskMap);
+				this.stageTaskTemplateMapList.set(originalOrder, nextStageTaskMap);
+				
+				//update in database
+				mainStageTaskMap.update(cn);
+				nextStageTaskMap.update(cn);
 
+			} else {
+				//this is a client task so update the task's clientOrder prop
+				mainTask.setClientTaskOrder(originalOrder+1);
+				nextTask.setClientTaskOrder(originalOrder);
+				
+				//update it in the database
+				mainTask.update(cn);
+				nextTask.update(cn);
+			}
 			
-			//swap places in the List
-			this.stageTaskTemplateMapList.set(originalOrder+1, mainStageTaskMap);
-			this.stageTaskTemplateMapList.set(originalOrder, nextStageTaskMap);
 			
-			//update in database
-        	cn = dao.getConnection();
-        		
-        	dao.mapStageTaskTemplateUpdate(cn, mainStageTaskMap);
-        	dao.mapStageTaskTemplateUpdate(cn, nextStageTaskMap);
         	
 		} catch (SQLException e) {
 			e.printStackTrace();

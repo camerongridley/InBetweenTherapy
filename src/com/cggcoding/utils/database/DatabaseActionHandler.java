@@ -108,7 +108,7 @@ public interface DatabaseActionHandler {
 	
 	List<Task> stageLoadTemplateTasks(Connection cn, int stageID) throws SQLException;
 	
-	List<Task> stageUpdateTemplateTasks(Connection cn, int stageID, List<Task> taskTemplates) throws SQLException;
+	List<MapStageTaskTemplate> stageUpdateTemplateTasks(Connection cn, int stageID, List<MapStageTaskTemplate> taskTemplates) throws SQLException;
 	
 	//**************************************************************************************************
 	//*************************************** Stage Goal Methods ***************************************

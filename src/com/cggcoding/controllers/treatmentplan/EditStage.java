@@ -75,7 +75,7 @@ public class EditStage extends HttpServlet {
 		
 		int ownerUserID = 0;
 		User owner = null;
-		int originalOrder = ParameterUtils.parseIntParameter(request, "templateTaskOrder");
+		int originalOrder = ParameterUtils.parseIntParameter(request, "taskOrder");
 		String stageTitle = request.getParameter("stageTitle");
 		String stageDescription = request.getParameter("stageDescription");
 		Stage stage = null;
@@ -228,7 +228,7 @@ public class EditStage extends HttpServlet {
 					case("decrease-task-order"):
 						//TODO delete? stage = Stage.load(stageID);
 					
-						stage.orderDecrementTemplateTask(taskID, originalOrder);
+						stage.orderDecrementTask(taskID, originalOrder);
 						
 						//TODO delete? request.setAttribute("stage", stage);
 						forwardTo = Constants.URL_EDIT_STAGE;

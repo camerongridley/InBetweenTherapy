@@ -101,8 +101,12 @@
 								
 								  	<input type="hidden" name="taskID" value="${task.taskID}"/>
 								  	<input type="hidden" name="taskTitle" value="${task.title}"/>
-								  	<a href="/secure/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&templateTaskOrder=${mappedStageTaskInfo.templateTaskOrder}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
-								  	&nbsp;<a href="/secure/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&templateTaskOrder=${mappedStageTaskInfo.templateTaskOrder}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
+								  	<c:set var="taskOrder" value="
+								  	<c:if test='${task.template }'>${mappedStageTaskInfo.templateTaskOrder}</c:if><c:if test='${!task.template }'>${task.clientTaskOrder}</c:if>
+								  	">
+								  	</c:set>
+								  	<a href="/secure/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=<c:if test='${task.template }'>${mappedStageTaskInfo.templateTaskOrder}</c:if><c:if test='${!task.template }'>${task.clientTaskOrder}</c:if>" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
+								  	&nbsp;<a href="/secure/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=<c:if test='${task.template }'>${mappedStageTaskInfo.templateTaskOrder}</c:if><c:if test='${!task.template }'>${task.clientTaskOrder}</c:if>" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
 									<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							          <c:choose>
 							          	<c:when test='${path.equals("manageClients") }'>

@@ -50,8 +50,13 @@ public class SessionTimeout implements Filter {
         System.out.println("Request URI: " + request.getRequestURI() + " || Path: " + request.getParameter("path") + " || RequestedAction: " + request.getParameter("requestedAction"));
         //System.out.println("Context Path: " + request.getContextPath());
 
-
-        	if (session == null || user == null) {
+        	//TODO make sure this isn't actually dead code
+        	if (session == null) {
+        		System.out.println("The session has timed out.  Please log in again.");
+        		
+        		request.setAttribute("errorMessage", "The session has timed out.  Please log in again.");
+	            response.sendRedirect(request.getContextPath() + "/login.jsp");
+        	} else if (user == null){
         		System.out.println("No logged-in user found, redirecting to login page.");
         		
         		request.setAttribute("errorMessage", "No logged-in user found, redirecting to login page.");

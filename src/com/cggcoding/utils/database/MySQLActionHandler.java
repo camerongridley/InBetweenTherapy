@@ -976,17 +976,17 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
 
 	@Override
-	public List<Task> stageUpdateTemplateTasks(Connection cn, int stageID, List<Task> taskTemplates) throws SQLException {
+	public List<MapStageTaskTemplate> stageUpdateTemplateTasks(Connection cn, int stageID, List<MapStageTaskTemplate> taskTemplates) throws SQLException {
 		PreparedStatement ps = null;
-        List<Task> tasks = new ArrayList<>();
+        
         
         try {
-        	for(Task task : taskTemplates){
+        	for(MapStageTaskTemplate taskInfo : taskTemplates){
         		ps = cn.prepareStatement("UPDATE task_template_id_stage_template_id_maps SET task_generic_template_id_fk=?, stage_template_id_fk=?, template_task_order=? WHERE task_generic_template_id_fk=? and stage_template_id_fk=?;");
-                ps.setInt(1,task.getTaskID());
+                ps.setInt(1,taskInfo.getTaskID());
                 ps.setInt(2,stageID);
-                ps.setInt(3,task.getClientTaskOrder());
-                ps.setInt(4,task.getTaskID());
+                ps.setInt(3,taskInfo.getTemplateTaskOrder());
+                ps.setInt(4,taskInfo.getTaskID());
                 ps.setInt(5,stageID);
                 
                 ps.executeUpdate();
@@ -998,7 +998,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			DbUtils.closeQuietly(ps);
         }
 
-        return tasks;
+        return taskTemplates;
 	}
 	
 	@Override
