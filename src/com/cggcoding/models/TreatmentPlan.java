@@ -634,7 +634,9 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	//TODO refactor to use MapTreatmentPlanStageTemplate class - also do for other methods that use this new class
-	/**Adds a stage template to a treatment plan template.  Inserts into stageTemplate-Constants.PATH_TEMPLATE_TREATMENT_PLAN mapping table. Both the Stage and TreatmentPlan must be templates to be valid.
+	/**Adds a stage template to a treatment plan template.  Inserts into stageTemplate-Constants.PATH_TEMPLATE_TREATMENT_PLAN mapping table.
+	 * Then loads the specified stage template into the local stages List variable. 
+	 * Both the Stage and TreatmentPlan must be templates to be valid.
 	 * @param stageTemplateID
 	 * @throws DatabaseException
 	 * @throws ValidationException
@@ -650,6 +652,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	        		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
 	        		dao.mapTreatmentPlanStageTemplateCreate(cn, stageTemplateID, this.getTreatmentPlanID(), this.getNumberOfStages());
 	        	}
+	        	
+	        	this.stages.add(Stage.load(stageTemplateID));
 
 			} catch (SQLException e) {
 				e.printStackTrace();

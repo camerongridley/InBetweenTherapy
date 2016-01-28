@@ -80,8 +80,8 @@ public class CreateStage extends HttpServlet {
 			
 			defaultStages = Stage.getDefaultStages();
 			
-			if(user.hasRole(Constants.USER_ADMIN)){
-				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
+			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
+				
 								
 				switch (requestedAction){
 					case "stage-create-start":
@@ -104,8 +104,10 @@ public class CreateStage extends HttpServlet {
 			                	
 			                	//OPTIMIZE loading the plan twice here - possible improvement would be to have plan.addStageTemplate add the stage to the local stages List so would need to have the dao method return a stage 
 			                	//need to reload the plan with the newly added stage
-			                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+			                	//treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
+			                } else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
+			                	treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
 			                }
 						}
 		            	break;
@@ -117,9 +119,9 @@ public class CreateStage extends HttpServlet {
 		                
 		                Stage newStage = null;
 		                if(path.equals(Constants.PATH_TEMPLATE_STAGE)){
-		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
+		                	newStage = Stage.createTemplate(user.getUserID(), stageTitle, stageDescription);
 		                } else {
-		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
+		                	newStage = Stage.createTemplate(user.getUserID(), stageTitle, stageDescription);
 		                	//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 		                	treatmentPlan.addStageTemplate(newStage.getStageID());
 		                	

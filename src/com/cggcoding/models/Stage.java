@@ -773,7 +773,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				}
 			}
 			
-			reorderClientTasks();
+			reorderTasks();
 			
 			//update the remaining tasks with their new order value
 			if(task.isTemplate()){
@@ -816,7 +816,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return dao.stageUpdateTemplateTasks(cn, this.stageID, stageTaskTemplateMapList);
 	}
 	
-	private void reorderClientTasks(){
+	private void reorderTasks(){
 		//if this Stage is a template then it's task order info is going to be in the mapping table so reorder those.  Otherwise, the task order is a prop of the task
 		if(this.template){
 			for(int i=0; i < this.stageTaskTemplateMapList.size(); i++){
@@ -831,7 +831,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	//TODO decide if I want to keep int mainTaskID as an argument.  It isn't being used right now.
-	public void orderIncrementTemplateTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
+	public void orderIncrementTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
 		Connection cn = null;
 		
 		if(originalOrder <= 0){

@@ -219,7 +219,7 @@ public class EditStage extends HttpServlet {
 						
 						//TODO delete? stage = Stage.load(stageID);
 						
-						stage.orderIncrementTemplateTask(taskID, originalOrder);
+						stage.orderIncrementTask(taskID, originalOrder);
 						
 						//TODO delete? request.setAttribute("stage", stage);
 						forwardTo = Constants.URL_EDIT_STAGE;
