@@ -139,7 +139,7 @@ public class CreateTask extends HttpServlet {
 							Task.createTemplate(templateCopy);
 						}*/
 						
-						request.setAttribute("stage", Stage.load(stageID));
+						//request.setAttribute("stage", Stage.load(stageID));
 					}
 										
 					if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
@@ -155,7 +155,7 @@ public class CreateTask extends HttpServlet {
 				if(path.equals(Constants.PATH_TEMPLATE_TASK)){
 					
 				}else{
-					stage = loadStageAndPutInRequest(request, stageID);
+					stage = loadStageAndPutInRequest(request, stageID);//OPTIMIZE delete this and just make sure all previous methods return the Stage object with the proper modifications
 				}
 
 			}

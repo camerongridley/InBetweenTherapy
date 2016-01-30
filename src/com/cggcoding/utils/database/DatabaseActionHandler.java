@@ -12,6 +12,7 @@ import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
 import com.cggcoding.models.MapStageTaskTemplate;
+import com.cggcoding.models.MapTreatmentPlanStageTemplate;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
@@ -50,7 +51,7 @@ public interface DatabaseActionHandler {
 
 	TreatmentPlan treatmentPlanLoadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 
-	List<Stage> treatmentPlanLoadStages(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+	List<Stage> treatmentPlanLoadClientStages(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 
 	boolean treatmentPlanValidateNewTitle(Connection cn, int userID, String planTitle)
 			throws ValidationException, SQLException;
@@ -74,9 +75,9 @@ public interface DatabaseActionHandler {
 	
 	void treatmentPlanDelete(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 	
-	List<Stage> treatmentPlanLoadStageTemplates(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+	List<Stage> treatmentPlanLoadTemplateStages(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 	
-	List<Stage> treatmentPlanUpdateStageTemplates(Connection cn, int treatmentPlanID, List<Stage> stageTemplates)
+	List<Stage> treatmentPlanUpdateTemplateStages(Connection cn, int treatmentPlanID, List<Stage> stageTemplates)
 			throws SQLException;
 	
 	//**************************************************************************************************
@@ -105,8 +106,6 @@ public interface DatabaseActionHandler {
 	 * @throws ValidationException 
 	 */
 	List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException;
-	
-	List<Task> stageLoadTemplateTasks(Connection cn, int stageID) throws SQLException;
 	
 	List<MapStageTaskTemplate> stageUpdateTemplateTasks(Connection cn, int stageID, List<MapStageTaskTemplate> taskTemplates) throws SQLException;
 	
@@ -137,14 +136,20 @@ public interface DatabaseActionHandler {
 	
 	void mapStageTaskTemplateUpdate(Connection cn, MapStageTaskTemplate map) throws SQLException;
 	
-	void mapTreatmentPlanStageTemplateCreate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID, int stageOrder)
+	
+	List<MapTreatmentPlanStageTemplate> mapTreatmentPlanStageTemplateLoad(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
+	
+	void mapTreatmentPlanStageTemplateCreate(Connection cn, MapTreatmentPlanStageTemplate mapPlanStageTemplate)
+			throws SQLException;
+	
+	void mapTreatmentPlanStageTemplateUpdate(Connection cn, MapTreatmentPlanStageTemplate mapPlanStageTemplate)
 			throws SQLException;
 
 	boolean mapTreatmentPlanStageTemplateValidate(Connection cn, int stageTemplateID, int treatmentPlanTemplateID)
 			throws ValidationException, SQLException;
 
 
-	void mapTreatmentPlanStageTemplateDelete(Connection cn, int stageID) throws SQLException;
+	void mapTreatmentPlanStageTemplateDelete(Connection cn, int stageID, int treatmentPlanID) throws SQLException;
 
 
 	//**************************************************************************************************
@@ -204,6 +209,8 @@ public interface DatabaseActionHandler {
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
 	boolean throwValidationExceptionIfZero(int arg) throws ValidationException;
+
+	
 
 	
 

@@ -168,13 +168,23 @@
 
 	</label>
 	<c:forEach items="${treatmentPlan.stages }" var="stage">
+	<c:set var="mappedPlanStageInfo" value="${treatmentPlan.getMappedStageTemplateByStageID(stage.stageID)}" />
 		<div class="panel panel-default panel-task" id="stageList"
 			title="Click the stage title to expand and see the stage details.">
 			<div class="panel-heading">
 				<input type="hidden" name="stageID" value="${stage.stageID}" /> 
 				<input type="hidden" name="stageTitle${stage.stageID}" value="${stage.title}" /> 
+				<c:choose>
+		          <c:when test='${stage.template }'>
+		          	<c:set var="stageOrder" value="${mappedPlanStageInfo.templateStageOrder }"/>
+		          </c:when>
+		          <c:otherwise>
+		          	<c:set var="stageOrder" value="${stage.clientStageOrder }"/>
+		          </c:otherwise>
+		        </c:choose>
+				
 				<a role="button" data-toggle="collapse" href="#collapse${stage.stageID }" aria-expanded="true" aria-controls="collapse${stage.stageID }">
-					${stage.stageOrderForUserDisplay } - <span class="">${stage.title }</span>
+					${stageOrder+1 } - <span class="">${stage.title }</span>
 				</a> 
 				<a role="button" href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
 					class="btn btn-default btn-xs pull-right"

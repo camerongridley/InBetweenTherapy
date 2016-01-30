@@ -27,7 +27,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	private int userID;
 	private String title;
 	private String description;
-	private int stageOrder; //the order of the stage within its treatment plan - if present decides the index it will be in the TreatmentPlan's List of Stages
+	private int clientStageOrder; //the order of the stage within client-owned treatment plans - order for admin and therapist owned treatment plans will be templates and so will be stored in the mapping class
 	private List<Task> tasks;
 	private List<Task> extraTasks; //for when user chooses to do more tasks than asked of - won't count toward progress meter but can be saved for review or other analysis (e.g. themes)
 	private List<MapStageTaskTemplate> stageTaskTemplateMapList;
@@ -40,13 +40,13 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	
 	private static DatabaseActionHandler dao = new MySQLActionHandler();
 
-	private Stage (int treatmentPlanID, int userID, String title, String description, int stageOrder, boolean template){
+	private Stage (int treatmentPlanID, int userID, String title, String description, int clientStageOrder, boolean template){
 		this.stageID = 0;
 		this.treatmentPlanID = treatmentPlanID;
 		this.userID = userID;
 		this.title = title;
 		this.description = description;
-		this.stageOrder = stageOrder;
+		this.clientStageOrder = clientStageOrder;
 		this.tasks = new ArrayList<>();;
 		this.extraTasks = new ArrayList<>();
 		this.stageTaskTemplateMapList = new ArrayList<>();
@@ -59,7 +59,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	//Full constructor - asks for every argument stage has
-	private Stage(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
+	private Stage(int stageID, int treatmentPlanID, int userID, String title, String description, int clientStageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals,
 			boolean inProgress, boolean template, int templateID) {
 		this.stageID = stageID;
@@ -67,7 +67,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.userID = userID;
 		this.title = title;
 		this.description = description;
-		this.stageOrder = stageOrder;
+		this.clientStageOrder = clientStageOrder;
 		this.tasks = tasks;
 		this.extraTasks = extraTasks;
 		this.stageTaskTemplateMapList = new ArrayList<>();
@@ -85,7 +85,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @param userID is of the user who owns this
 	 * @param title Title of the stage
 	 * @param description Description of the stage
-	 * @param stageOrder Order of the stage within the parent TreatmentPlan
+	 * @param clientStageOrder Order of the stage within the parent TreatmentPlan
 	 * @param tasks List of tasks within this stage
 	 * @param extraTasks List of extra tasks within this stage
 	 * @param completed True if all tasks in the stage have been completed
@@ -94,9 +94,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @param template True if this is a Stage template and therefore has no concrete parent TreatmentPlan
 	 * @return Stage object
 	 */
-	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder, List<Task> tasks, 
+	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String title, String description, int clientStageOrder, List<Task> tasks, 
 			List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean inProgress, boolean template, int templateID){
-		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, inProgress, template, templateID);
+		return new Stage(stageID, treatmentPlanID, userID, title, description, clientStageOrder, tasks, extraTasks, completed, percentComplete, goals, inProgress, template, templateID);
 	}
 	
 	/**For use when creating a new Stage. As such, these are the only parameters that could be available for saving to the database.  
@@ -106,12 +106,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @param userID
 	 * @param title
 	 * @param description
-	 * @param stageOrder
+	 * @param clientStageOrder
 	 * @param template
 	 * @return
 	 */
-	public static Stage getInstanceWithoutID(int treatmentPlanID, int userID, String title, String description, int stageOrder, boolean template) {
-		Stage stage = new Stage(treatmentPlanID, userID, title, description, stageOrder, template);
+	public static Stage getInstanceWithoutID(int treatmentPlanID, int userID, String title, String description, int clientStageOrder, boolean template) {
+		Stage stage = new Stage(treatmentPlanID, userID, title, description, clientStageOrder, template);
 		return stage;
 	}
 
@@ -201,22 +201,13 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.description = description;
 	}
 
-	public int getStageOrder() {
-		return stageOrder;
+	public int getClientStageOrder() {
+		return clientStageOrder;
 	}
 
 	//sets the order of the stage in the treatment plan if relevant
-	public void setStageOrder(int stageOrder) {
-		this.stageOrder = stageOrder;
-	}
-	
-	//FIXME currently not being used since linking Treatment Plan templates directly to Stage templates and Stage templates all have an order value of 0. The order for these tasks is stored in the stage-plan mapping table.
-	/**Since stageOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
-	 *the order values start with 1.
-	 * @return
-	 */
-	public int getStageOrderForUserDisplay(){
-		return this.stageOrder + 1;
+	public void setClientStageOrder(int clientStageOrder) {
+		this.clientStageOrder = clientStageOrder;
 	}
 	
 	public boolean isInProgress() {
@@ -713,6 +704,8 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	        	if(dao.mapStageTaskTemplateValidate(cn, taskTemplateID, this.getStageID())){
 	        		MapStageTaskTemplate map = new MapStageTaskTemplate(this.stageID, taskTemplateID, this.getTaskOrderDefaultValue(), templateRepetitions);
 	        		map.create(cn);
+
+	        		stageTaskTemplateMapList.add(map);
 	        	}
 
 			} catch (SQLException e) {
@@ -950,7 +943,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 */
 	public Stage copy(){
 		boolean falseForTemplate = false;
-		Stage copiedStage = getInstanceWithoutID(this.treatmentPlanID, this.userID, this.title, this.description, this.stageOrder, falseForTemplate);
+		Stage copiedStage = getInstanceWithoutID(this.treatmentPlanID, this.userID, this.title, this.description, this.clientStageOrder, falseForTemplate);
 
 		for(StageGoal goal : this.goals){
 			copiedStage.getGoals().add(goal.copy());

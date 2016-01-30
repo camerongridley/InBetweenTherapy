@@ -27,10 +27,11 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	private String title;
 	private String description;
 	private List<Stage> stages;
+	private List<MapTreatmentPlanStageTemplate> treatmentPlanStageTemplateMapList;
 	private int currentStageIndex;
 	private int activeViewStageIndex;
 	private boolean inProgress;
-	private boolean isTemplate;
+	private boolean template;
 	private boolean completed;
 	private int templateID;
 	private int assignedByUserID;
@@ -43,27 +44,29 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		this.description = description;
 		this.treatmentIssueID = treatmentIssueID;
 		this.stages = new ArrayList<>();
+		this.treatmentPlanStageTemplateMapList = new ArrayList<>();
 		this.currentStageIndex = 0;
 		this.activeViewStageIndex = 0;
 		this.inProgress = false;
-		this.isTemplate = false;
+		this.template = false;
 		this.completed = false;
 		this.templateID = 0;
 		this.assignedByUserID = Constants.ADMIN_ROLE_ID;
 	}	
 
 	private TreatmentPlan(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
-			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID, int assignedByUserID){
+			boolean template, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID, int assignedByUserID){
 		this.treatmentPlanID = treatmentPlanID;
 		this.title = title;
 		this.description = description;
 		this.treatmentIssueID = txIssueID;
 		this.userID = userID;
 		this.stages = new ArrayList<>();
+		this.treatmentPlanStageTemplateMapList = new ArrayList<>();
 		this.currentStageIndex = currentStageIndex;
 		this.activeViewStageIndex = activeViewStageIndex;
 		this.inProgress = inProgress;
-		this.isTemplate = isTemplate;
+		this.template = template;
 		this.completed = completed;
 		this.templateID = templateID;
 		this.assignedByUserID = assignedByUserID;
@@ -74,8 +77,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	public static TreatmentPlan getInstanceBasic(int treatmentPlanID, int userID, String title, String description, int txIssueID, boolean inProgress, 
-			boolean isTemplate, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID, int assignedByUserID){
-		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, isTemplate, completed, currentStageIndex, activeViewStageIndex, templateID, assignedByUserID);
+			boolean template, boolean completed, int currentStageIndex, int activeViewStageIndex, int templateID, int assignedByUserID){
+		return new TreatmentPlan(treatmentPlanID, userID, title, description, txIssueID, inProgress, template, completed, currentStageIndex, activeViewStageIndex, templateID, assignedByUserID);
 	}
 
 	/**Run first time a client loads a plan.  Sets inProgress=true for the TreatmentPlan itself and for the first stage of the plan
@@ -144,6 +147,14 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		return stages;
 	}
 	
+	public List<MapTreatmentPlanStageTemplate> getTreatmentPlanStageTemplateMapList() {
+		return treatmentPlanStageTemplateMapList;
+	}
+
+	public void setTreatmentPlanStageTemplateMapList(List<MapTreatmentPlanStageTemplate> treatmentPlanStageTemplateMapList) {
+		this.treatmentPlanStageTemplateMapList = treatmentPlanStageTemplateMapList;
+	}
+
 	public void addStage(Stage newStage){
 		stages.add(newStage);
 	}
@@ -187,11 +198,11 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 
 	public boolean isTemplate() {
-		return isTemplate;
+		return template;
 	}
 
-	public void setTemplate(boolean isTemplate) {
-		this.isTemplate = isTemplate;
+	public void setTemplate(boolean template) {
+		this.template = template;
 	}
 
 	public boolean isCompleted() {
@@ -266,7 +277,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		int stageOrder = 0;
 		for(Stage stage : stages){
 			if(stage.getStageID() == stageID){
-				stageOrder = stage.getStageOrder();
+				stageOrder = stage.getClientStageOrder();
 				return stageOrder;
 			}
 		}
@@ -283,6 +294,17 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	
 	private int getStageOrderDefaultValue(){
 		return this.stages.size();
+	}
+	
+	public MapTreatmentPlanStageTemplate getMappedStageTemplateByStageID(int stageID){
+		MapTreatmentPlanStageTemplate found = null;
+		for(MapTreatmentPlanStageTemplate planStageTemplate : treatmentPlanStageTemplateMapList){
+			if(stageID == planStageTemplate.getStageID()){
+				found = planStageTemplate;
+				break;
+			}
+		}
+		return found;
 	}
 	
 	//OPTIMIZE move this logic to when the TreatmentPlan's Stages are loaded
@@ -523,9 +545,16 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
         
 		//Load the Stages
 		if(plan.isTemplate()){
-			plan.setStages(dao.treatmentPlanLoadStageTemplates(cn, treatmentPlanID));
+			List<MapTreatmentPlanStageTemplate> stageMap = dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID);
+			plan.setTreatmentPlanStageTemplateMapList(stageMap);
+			
+			//OPTIMIZE modify so dao.treatmentPlanLoadClientStages can be used here too - maybe rename treatmentPlanLoadClientStages then
+			for(MapTreatmentPlanStageTemplate planStageDetail : plan.treatmentPlanStageTemplateMapList){
+				plan.addStage(Stage.load(cn, planStageDetail.getStageID()));
+			}
+			
 		}else{
-			plan.setStages(dao.treatmentPlanLoadStages(cn, treatmentPlanID));
+			plan.setStages(dao.treatmentPlanLoadClientStages(cn, treatmentPlanID));
 		}
 		
 		return plan;
@@ -572,7 +601,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 				if(stage.getStageID()==stageID){
 					
 					if(stage.isTemplate()){
-						dao.mapTreatmentPlanStageTemplateDelete(cn, stageID);
+						MapTreatmentPlanStageTemplate.delete(cn, stageID, this.treatmentPlanID);
+						treatmentPlanStageTemplateMapList.remove(i);
 					}else{
 						Stage.delete(cn, stageID);
 					}	
@@ -624,16 +654,23 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	protected List<Stage> updateStageTemplateList(Connection cn, List<Stage> stageTemplates) throws SQLException{
-		return dao.treatmentPlanUpdateStageTemplates(cn, this.treatmentPlanID, stageTemplates);
+		return dao.treatmentPlanUpdateTemplateStages(cn, this.treatmentPlanID, stageTemplates);
 	}
 	
 	private void reorderStages(){
-		for(int i=0; i < this.stages.size(); i++){
-			stages.get(i).setStageOrder(i);
+		//if this Stage is a template then it's task order info is going to be in the mapping table so reorder those.  Otherwise, the task order is a prop of the task
+		if(this.template){
+			for(int i=0; i < this.treatmentPlanStageTemplateMapList.size(); i++){
+				treatmentPlanStageTemplateMapList.get(i).setTemplateStageOrder(i);
+			}
+		} else {
+			for(int i=0; i < this.stages.size(); i++){
+				stages.get(i).setClientStageOrder(i);
+			}
 		}
+		
 	}
 	
-	//TODO refactor to use MapTreatmentPlanStageTemplate class - also do for other methods that use this new class
 	/**Adds a stage template to a treatment plan template.  Inserts into stageTemplate-Constants.PATH_TEMPLATE_TREATMENT_PLAN mapping table.
 	 * Then loads the specified stage template into the local stages List variable. 
 	 * Both the Stage and TreatmentPlan must be templates to be valid.
@@ -648,10 +685,13 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			try {
 				
 	        	cn = dao.getConnection();
-	        	if(dao.mapTreatmentPlanStageTemplateValidate(cn, stageTemplateID, this.getTreatmentPlanID())){
-	        		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
-	        		dao.mapTreatmentPlanStageTemplateCreate(cn, stageTemplateID, this.getTreatmentPlanID(), this.getNumberOfStages());
-	        	}
+	        	
+        		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
+        		MapTreatmentPlanStageTemplate mapPlanStageTemplate = new MapTreatmentPlanStageTemplate(treatmentPlanID, stageTemplateID, this.getNumberOfStages());
+        		if(mapPlanStageTemplate.validate(cn)){
+        			mapPlanStageTemplate.create(cn);
+        			treatmentPlanStageTemplateMapList.add(mapPlanStageTemplate);
+        		}
 	        	
 	        	this.stages.add(Stage.load(stageTemplateID));
 
@@ -684,6 +724,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		stageBeingCopied.setTemplate(false);
 		stageBeingCopied.setUserID(this.userID);
 		stageBeingCopied.setTreatmentPlanID(this.treatmentPlanID);
+		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
+		stageBeingCopied.setClientStageOrder(this.getNumberOfStages());
 		
 		//set stageID in all children to -1 in case there is an error so nothings accidentally gets inserted into other users information - SQL rollback should prevent this but doing this adds another layer of data protection
 		stageBeingCopied.setStageID(-1);
@@ -695,24 +737,13 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			task.setStageID(-1);
 		}
 		
-		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
-		stageBeingCopied.setStageOrder(this.getNumberOfStages());
+		
 		
 		stageBeingCopied.create();
 		
 		this.addStage(stageBeingCopied);
 		
 		return stageBeingCopied;
-	}
-	
-	public Stage createNewStage(int userID, String title, String description) throws ValidationException, DatabaseException{
-		
-		Stage newStage = Stage.getInstanceWithoutID(this.treatmentPlanID, userID, title, description, this.getStageOrderDefaultValue(), false);
-		newStage.create();
-		
-		this.addStage(newStage);
-		
-		return newStage;
 	}
 	
 	public static List<TreatmentPlan> getDefaultTreatmentPlans() throws DatabaseException, ValidationException {

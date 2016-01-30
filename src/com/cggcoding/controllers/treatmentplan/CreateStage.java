@@ -59,10 +59,13 @@ public class CreateStage extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+    	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
 		/*-----------End Common Servlet variables---------------*/
 		
 		int selectedDefaultStageID = ParameterUtils.parseIntParameter(request, "defaultStageID");
-		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 		String stageTitle = request.getParameter("stageTitle");
     	String stageDescription = request.getParameter("stageDescription");
     	int stageOrder = ParameterUtils.parseIntParameter(request, "stageOrder");
@@ -102,9 +105,6 @@ public class CreateStage extends HttpServlet {
 			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
 			                	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
 			                	
-			                	//OPTIMIZE loading the plan twice here - possible improvement would be to have plan.addStageTemplate add the stage to the local stages List so would need to have the dao method return a stage 
-			                	//need to reload the plan with the newly added stage
-			                	//treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                } else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
 			                	treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);

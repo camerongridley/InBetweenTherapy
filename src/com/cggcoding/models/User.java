@@ -125,7 +125,7 @@ public abstract class User implements Serializable{
 		return true;
 	}
 	
-	
+	//TODO redo this to loop MapStageTaskTemplate and MapTreatmentPlanStageTemplate objects instead of using TreatmentPlan.load()?
 	 public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
     	TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
     	planToCopy.setTemplate(isTemplate);//XXX won't this always be false since plans owned by clients can never be templates?
@@ -138,6 +138,9 @@ public abstract class User implements Serializable{
     		stage.setUserID(userIDTakingNewPlan);
     		stage.setTemplate(false);
     		stage.setTemplateID(stage.getStageID());
+    		//OPTIMIZE getMappedStageTemplateByID uses another loop to get the return value, so even more Big O complexity...
+    		stage.setClientStageOrder(planToCopy.getMappedStageTemplateByStageID(stage.getStageID()).getTemplateStageOrder());
+    		
     		List<Task> taskRepetitionsAdded = new ArrayList<>();
     		for(Task task : stage.getTasks()){
     			task.setUserID(userIDTakingNewPlan);

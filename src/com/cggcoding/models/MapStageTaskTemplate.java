@@ -68,7 +68,6 @@ public class MapStageTaskTemplate {
 		return templateRepetitions;
 	}
 
-
 	public void setTemplateRepetitions(int templateRepetitions) {
 		this.templateRepetitions = templateRepetitions;
 	}
