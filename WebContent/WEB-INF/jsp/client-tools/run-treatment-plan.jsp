@@ -32,8 +32,8 @@
 			</div>
 		</c:if>
 		
-		<!--For stage that is accessible but NOT the active view (enabled-inactive)-->
-		<c:if test="${stage.clientStageOrder != treatmentPlan.activeViewStageIndex && stage.clientStageOrder <= treatmentPlan.currentStageIndex}">
+		<!--For stage that is accessible but NOT the active view (enabled-inactive)  removed this condition:  && stage.clientStageOrder <= treatmentPlan.currentStageIndex-->
+		<c:if test="${stage.clientStageOrder != treatmentPlan.activeViewStageIndex  && stage.inProgress}">
 			<div class="progress-stage progress-stage-enabled-inactive col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
 				<a href='#' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
 			</div>

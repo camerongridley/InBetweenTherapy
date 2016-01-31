@@ -103,7 +103,7 @@ public class CreateStage extends HttpServlet {
 			                	
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                } else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
-			                	treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
+			                	treatmentPlan.copyStageIntoClientTreatmentPlan(selectedDefaultStageID);
 			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                }

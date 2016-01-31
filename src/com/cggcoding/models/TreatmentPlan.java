@@ -745,7 +745,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
-	public Stage copyStageIntoTreatmentPlan(int stageIDBeingCopied) throws DatabaseException, ValidationException{
+	public Stage copyStageIntoClientTreatmentPlan(int stageIDBeingCopied) throws DatabaseException, ValidationException{
 		Stage stageBeingCopied = Stage.load(stageIDBeingCopied);
 		stageBeingCopied.setTemplate(false);
 		stageBeingCopied.setUserID(this.userID);
@@ -759,8 +759,13 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			goal.setStageID(-1);
 		}
 		
+		//OPTIMIZE if the local stageTaskMappingList was type Map and not List with the key being the taskID I could just use Map.get(taskID) instead of calling stageBeingCopied.getMappedTaskTemplateByTaskID(task.getTaskID()) which is a loop
+		//set the stageID to -1 as precaution, sets template=false, and transfer taskOrder from StageTaskMapping info to clientTaskOrder
 		for(Task task : stageBeingCopied.getTasks()){
 			task.setStageID(-1);
+			task.setTemplate(false);
+			MapStageTaskTemplate taskDetail = stageBeingCopied.getMappedTaskTemplateByTaskID(task.getTaskID());
+			task.setClientTaskOrder(taskDetail.getTemplateTaskOrder());
 		}
 		
 		
