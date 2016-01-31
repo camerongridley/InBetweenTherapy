@@ -94,12 +94,8 @@ public class CreateStage extends HttpServlet {
 					case "stage-add-default-template":
 						
 						if(selectedDefaultStageID != 0){
-							//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-							treatmentPlan.addStageTemplate(selectedDefaultStageID);
-							//treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
-	
 			            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
-			                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
+			            		treatmentPlan.addStageTemplate(selectedDefaultStageID);
 			                	
 			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
 			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
@@ -108,7 +104,11 @@ public class CreateStage extends HttpServlet {
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                } else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
 			                	treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
+			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
+			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                }
+			            	
+			            	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 						}
 		            	break;
 		            case "stage-create-title":
@@ -120,10 +120,26 @@ public class CreateStage extends HttpServlet {
 		                Stage newStage = null;
 		                if(path.equals(Constants.PATH_TEMPLATE_STAGE)){
 		                	newStage = Stage.createTemplate(user.getUserID(), stageTitle, stageDescription);
+		                	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
+		                	forwardTo = Constants.URL_EDIT_STAGE;
 		                } else {
-		                	newStage = Stage.createTemplate(user.getUserID(), stageTitle, stageDescription);
+		                	if(path.equals(Constants.PATH_MANAGE_CLIENT)){
+		                		newStage = treatmentPlan.createClientStage(stageTitle, stageDescription);
+		                		forwardTo = Constants.URL_EDIT_STAGE;
+		                	} else if (path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
+		                		//TODO write new method in TreatmentPlan that combines these two lines?
+		                		newStage = Stage.createTemplate(user.getUserID(), stageTitle, stageDescription);
+		                		treatmentPlan.addStageTemplate(newStage.getStageID());
+		                		request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
+		                		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
+		                		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
+		                	}
+		                	
+		                	
+		                	
+		                	
 		                	//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-		                	treatmentPlan.addStageTemplate(newStage.getStageID());
+		                	
 		                	
 		                	/*treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 		                	newStage = treatmentPlan.createNewStage(userAdmin.getUserID(), stageTitle, stageDescription);*/
@@ -131,14 +147,6 @@ public class CreateStage extends HttpServlet {
 
 		                request.setAttribute("stage", newStage);
 		                
-		                
-		                if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
-		                	
-		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
-		                }else{
-		                	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
-		                }
-		                forwardTo = Constants.URL_EDIT_STAGE;
 		                break;
 		            case("add-stage-to-treatment-plan"):
 						//set all user-independent lists into request

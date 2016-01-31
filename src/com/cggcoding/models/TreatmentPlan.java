@@ -707,6 +707,22 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
+	public Stage createClientStage(String stageTitle, String stageDescription) throws ValidationException, DatabaseException{
+		Stage clientStage = null;
+		if(!template){
+			clientStage = Stage.getInstanceWithoutID(this.treatmentPlanID, this.userID, stageTitle, stageDescription, this.getStageOrderDefaultValue(), false);
+
+			clientStage.create();
+			
+			this.addStage(clientStage);
+		} else {
+			throw new ValidationException(ErrorMessages.STAGE_CLIENT_ONLY_ALLOWED_IN_PLAN_TEMPLATE);
+		}
+		
+		
+		return clientStage;
+	}
+	
 	/**Copies a pre-existing Stage into a TreatmentPlan.  This methods gets the existing Stage, updated the treatmentPlanID and the userID associated with the new TreatmentPlan that the
 	 * Stage is being copies into.  It also sets the copied Stages's isTemplate to false and determines the stageOrder it will have initially.
 	 * Then the copied Stage is sent the DAO to be saved in the database.  The DAO is responsible for getting the auto-generated id for the new Stage and setting it for the Stage and 
