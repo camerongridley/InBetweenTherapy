@@ -571,6 +571,17 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		}
 	}
 
+	/**---Database Interaction---
+	 * Creates a new Stage template with the supplied userID, title and description.
+	 * Sets treatmentPlanID to Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, templateStageOrder to Constants.TEMPLATE_ORDER_NUMBER and template to true.
+	 * Then it inserts the new Stage into the database with Stage.create().
+	 * @param userID
+	 * @param title
+	 * @param description
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
 	public static Stage createTemplate(int userID, String title, String description) throws ValidationException, DatabaseException{
 		Stage stageTemplate = new Stage(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, title, description, Constants.TEMPLATE_ORDER_NUMBER, true);
 		
@@ -579,11 +590,6 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return stageTemplate;
 	}
 	
-	public static Stage createTemplate(Stage templateStage) throws ValidationException, DatabaseException{
-		return createTemplate(templateStage.getUserID(), templateStage.getTitle(), templateStage.getDescription());
-	}
-	
-	//TODO rename to updateTemplates
 	@Override
 	public void update()  throws ValidationException, DatabaseException {
 		Connection cn = null;

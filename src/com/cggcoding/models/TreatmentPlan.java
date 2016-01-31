@@ -707,6 +707,16 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
+	/**---Database Interaction---
+	 * Creates a new Stage for an existing client-owned TreatmentPlan with the supplied title and description. 
+	 * Sets treatmentPlanID with this plan's ID, userID with this plan's userID, clientStageOrder based on the number of existing Stages in the TreatmentPlan, and template is set to false.
+	 * Then it inserts the new stage into the database with stage.create() and then adds the stage to the local Stages list.
+	 * @param stageTitle - Title of new Stage
+	 * @param stageDescription - Description of the Stage
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
 	public Stage createClientStage(String stageTitle, String stageDescription) throws ValidationException, DatabaseException{
 		Stage clientStage = null;
 		if(!template){

@@ -105,7 +105,8 @@ public class EditStage extends HttpServlet {
 					request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
 				}
     		}
-
+    		
+    		//OPTIMIZE move to only relevant requestedActions
 			request.setAttribute("defaultStageList", Stage.getDefaultStages());
 			
 			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){

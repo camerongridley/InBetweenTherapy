@@ -189,8 +189,9 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	protected abstract void loadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException;
 	
 	
-	//TODO can I merge functionality of this method and converToType()
-	/**This is used to determine the task type, primarily for when loading a task based solely on taskID and, therefore, the taskType would be unknown.
+	/**Takes a TaskGeneric, looks at it's taskTypeID and based on that calls that Task subtype's convertFromGeneric() method.
+	 * This is used primarily for when loading a task based solely on taskID and, therefore, the taskType would be unknown.
+	 * Since TaskGeneric is the concretized version of Task, it is the main argument and has the actual taskTypeID set to that property.
 	 * @param genericTask
 	 * @return
 	 */
@@ -208,6 +209,24 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return task;
 	}
 	
+	/**---Database Interaction an argument flag---
+	 * Converts a Task from one type to another.  
+	 * If updateDatabaseRows=false the sequence of events is: 
+	 * 1) cast supplied Task argument to generic and set it's taskTypeID to the taskTypeToConvertTo argument
+	 * 2) call castGenericToType
+	 * 
+	 * If updateDatabaseRows=true the sequence of events is: 
+	 * 1) cast supplied Task argument to generic and set it's taskTypeID to the taskTypeToConvertTo argument
+	 * 2) Task.deleteAdditionalData()
+	 * 3) call castGenericToType
+	 * 4) Task.createAdditionalData() - which will create all blank fields but allows for future updating
+	 * @param task
+	 * @param taskTypeIDtoConvertTo - the taskTypeID
+	 * @param updateDataBaseRows
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
 	public static Task convertToType(Task task, int taskTypeIDtoConvertTo, boolean updateDataBaseRows) throws DatabaseException, ValidationException{
 		
 		//if the taskTypeID of the task argument and taskTypeIDtoConvertTo are equal, then just pass the task back
@@ -271,24 +290,6 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		        }
 			}
 		}
-		
-		
-
-		/*if(task instanceof TaskGeneric){
-			TaskGeneric genericTask = (TaskGeneric)task;
-			if(taskTypeIDtoConvertTo == Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK){
-				task = TaskTwoTextBoxes.convertFromGeneric(genericTask);
-				//TODO create a row in db table for taskTwoTextboxes AND update taskTypeID
-			}
-		}
-		
-		if(task instanceof TaskTwoTextBoxes){
-			if(taskTypeIDtoConvertTo == Constants.TASK_TYPE_ID_GENERIC_TASK){
-				task = TaskGeneric.convertToGeneric(task);
-				//TODO delete row from db table taskTwoTextboxes AND update taskTypeID
-			}
-			
-		}*/
 
 		return task;
 	}
