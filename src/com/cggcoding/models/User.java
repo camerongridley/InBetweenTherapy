@@ -147,12 +147,14 @@ public abstract class User implements Serializable{
     			task.setTemplate(false);
     			task.setTemplateID(task.getTaskID());
     			
-    			//
-    			int taskReps = stage.getMappedTaskTemplateByTaskID(task.getTaskID()).getTemplateRepetitions();
+    			MapStageTaskTemplate taskDetail = stage.getMappedTaskTemplateByTaskID(task.getTaskID());
+    			int taskReps = taskDetail.getTemplateRepetitions();
+    			int taskOrder = taskDetail.getTemplateTaskOrder();//for now this isn't used since the task orders are going to change as repetitions are created
     			for(int i = 0; i<taskReps; i++){
     				Task taskRep = task.copy();
     				taskRep.setClientRepetition(i+1);
     				
+    				//if more than 1 repetition, change the Task title to reflect repetition number
     				if(taskReps > 1){
     					taskRep.setTitle(task.getTitle() + " (" + (i+1) + ")");
     				}
@@ -161,11 +163,7 @@ public abstract class User implements Serializable{
     				
     				taskRepetitionsAdded.add(taskRep);
     			}
-    			
-    			
-    			
-    			
-    			
+	
     		}//end Task loop
     		
     		//reset the Stage's Task list with new list that has been populated with repetitions

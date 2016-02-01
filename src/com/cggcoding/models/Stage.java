@@ -712,6 +712,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	        		map.create(cn);
 
 	        		stageTaskTemplateMapList.add(map);
+	        		this.tasks.add(Task.load(cn, taskTemplateID));
 	        	}
 
 			} catch (SQLException e) {
@@ -726,11 +727,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 	}
 	
-	public Task copyTaskIntoStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
+	public Task copyTaskIntoClientStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
 		Task task = Task.load(taskIDBeingCopied);
 		task.setTemplate(false);
 		task.setUserID(this.userID);
 		task.setStageID(this.stageID);
+		task.setTemplateID(taskIDBeingCopied);
 		task.setClientTaskOrder(this.getTaskOrderDefaultValue());
 		
 		task.create();

@@ -83,9 +83,7 @@ public class CreateStage extends HttpServlet {
 			
 			defaultStages = Stage.getDefaultStages();
 			
-			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
-				
-								
+			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){				
 				switch (requestedAction){
 					case "stage-create-start":
 

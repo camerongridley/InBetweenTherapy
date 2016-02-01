@@ -18,6 +18,7 @@ import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
  * Servlet implementation class CreateTask
@@ -78,8 +79,8 @@ public class CreateTask extends HttpServlet {
 				stage = Stage.load(stageID);
 			}
 	
-			if(user.hasRole(Constants.USER_ADMIN)){
-				UserAdmin admin = (UserAdmin)user;
+			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
+
 				switch(requestedAction){
 				case ("create-task-start"):
 					//set tempTask in request so page knows value of isTemplate
@@ -88,18 +89,19 @@ public class CreateTask extends HttpServlet {
 					break;
 				case "task-add-default-template" :
 
-					if(taskToCreate.getTaskID() != 0){
-						//TODO delete? stage = Stage.load(stageID);
-						stage.addTaskTemplate(taskToCreate.getTaskID(), taskReps);
-						//stage.copyTaskIntoStage(taskToCreate.getTaskID());
+					if(taskToCreate.getTaskID() != 0){				
 						
+						forwardTo = Constants.URL_EDIT_STAGE;
 						if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
-							request.setAttribute("stage", stage);//XXX right now this is redundant as loadStageAndPutInRequest is called later
+							stage.addTaskTemplate(taskToCreate.getTaskID(), taskReps);
 							request.setAttribute("defaultStageList", Stage.getDefaultStages());
-							forwardTo = Constants.URL_EDIT_STAGE;
-						}else{
-							forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+							
+						} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
+							int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
+							
+							stage.copyTaskIntoClientStage(taskToCreate.getTaskID());
 						}
+						request.setAttribute("successMessage", SuccessMessages.TASK_ADDED_TO_STAGE);
 					}
 					
 					break;
@@ -152,11 +154,14 @@ public class CreateTask extends HttpServlet {
 				}
 				
 				
-				if(path.equals(Constants.PATH_TEMPLATE_TASK)){
+				/*//TODO delete after confirm removal didn't break things
+				 * if(path.equals(Constants.PATH_TEMPLATE_TASK)){
 					
 				}else{
 					stage = loadStageAndPutInRequest(request, stageID);//OPTIMIZE delete this and just make sure all previous methods return the Stage object with the proper modifications
-				}
+				}*/
+				
+				request.setAttribute("stage", stage);
 
 			}
 			

@@ -748,10 +748,16 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	public Stage copyStageIntoClientTreatmentPlan(int stageIDBeingCopied) throws DatabaseException, ValidationException{
 		Stage stageBeingCopied = Stage.load(stageIDBeingCopied);
 		stageBeingCopied.setTemplate(false);
+		stageBeingCopied.setTemplateID(stageIDBeingCopied);
 		stageBeingCopied.setUserID(this.userID);
 		stageBeingCopied.setTreatmentPlanID(this.treatmentPlanID);
+		
+		//TODO if this is a single copy operation then clientStageOrder will be this.getNumberOfStages but if it is part of a batch of template Stages being created for a TreatmentPlan, then should get clientStageOrder from the Mapping List
 		//since ArrayLists start with index of 0, setting the order of the new stage to the number of stages will give the proper order number
 		stageBeingCopied.setClientStageOrder(this.getNumberOfStages());
+		//MapTreatmentPlanStageTemplate stageDetails = this.getMappedStageTemplateByStageID(stageIDBeingCopied);
+		//stageBeingCopied.setClientStageOrder(stageDetails.getTemplateStageOrder());
+		
 		
 		//set stageID in all children to -1 in case there is an error so nothings accidentally gets inserted into other users information - SQL rollback should prevent this but doing this adds another layer of data protection
 		stageBeingCopied.setStageID(-1);
@@ -759,11 +765,13 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			goal.setStageID(-1);
 		}
 		
+		//XXX could integrate Stage.copyTaskIntoClientStage() here, but would want to start this method off with something different than Stage.load() since doing both would involve repeating Task.load() for all tasks
 		//OPTIMIZE if the local stageTaskMappingList was type Map and not List with the key being the taskID I could just use Map.get(taskID) instead of calling stageBeingCopied.getMappedTaskTemplateByTaskID(task.getTaskID()) which is a loop
 		//set the stageID to -1 as precaution, sets template=false, and transfer taskOrder from StageTaskMapping info to clientTaskOrder
 		for(Task task : stageBeingCopied.getTasks()){
 			task.setStageID(-1);
 			task.setTemplate(false);
+			task.setTemplateID(task.getTaskID());
 			MapStageTaskTemplate taskDetail = stageBeingCopied.getMappedTaskTemplateByTaskID(task.getTaskID());
 			task.setClientTaskOrder(taskDetail.getTemplateTaskOrder());
 		}
