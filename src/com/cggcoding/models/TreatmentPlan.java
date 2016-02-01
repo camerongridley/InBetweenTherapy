@@ -719,7 +719,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	 */
 	public Stage createClientStage(String stageTitle, String stageDescription) throws ValidationException, DatabaseException{
 		Stage clientStage = null;
-		if(!template){
+		if(!this.template){
 			clientStage = Stage.getInstanceWithoutID(this.treatmentPlanID, this.userID, stageTitle, stageDescription, this.getStageOrderDefaultValue(), false);
 
 			clientStage.create();

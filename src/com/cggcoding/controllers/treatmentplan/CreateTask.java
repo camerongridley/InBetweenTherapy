@@ -129,7 +129,9 @@ public class CreateTask extends HttpServlet {
 					}*/
 					if(path.equals(Constants.PATH_TEMPLATE_TASK)){
 						Task.createTemplate(taskToCreate);
-					} else {
+						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+					} else if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
+						
 						newTask = Task.createTemplate(taskToCreate);
 						//TODO delete? stage = Stage.load(stageID);
 						stage.addTaskTemplate(newTask.getTaskID(), taskReps);//TODO make sure this is working right
@@ -142,12 +144,10 @@ public class CreateTask extends HttpServlet {
 						}*/
 						
 						//request.setAttribute("stage", Stage.load(stageID));
-					}
-										
-					if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
 						forwardTo = Constants.URL_EDIT_STAGE;
-					}else{
-						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+					} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
+						
+						forwardTo = Constants.URL_EDIT_STAGE;
 					}
 
 					break;
