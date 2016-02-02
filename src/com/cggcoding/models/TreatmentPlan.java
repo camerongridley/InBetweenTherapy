@@ -750,6 +750,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			newStage.setClientStageOrder(this.getStageOrderDefaultValue());
 		}
 		
+		//copy stage goals
+		for(stageBeingCopied)
 		
 		List<Task> taskRepetitionsAdded = new ArrayList<>();
 		for(Task task : stageBeingCopied.getTasks()){

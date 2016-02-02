@@ -562,12 +562,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 					goal.create(cn);
 				}
 			}
-			
-			for(Task task : getTasks()){
-				//set the newly generated stageID in the task
-				task.setStageID(getStageID());
-				task.create(cn);
-			}
+
 		}
 	}
 	
