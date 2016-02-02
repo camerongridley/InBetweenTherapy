@@ -1,8 +1,12 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -125,6 +129,60 @@ public abstract class User implements Serializable{
 		return true;
 	}
 	
+	public TreatmentPlan copyTreatmentPlanForClient2(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied) throws ValidationException, DatabaseException{
+		Connection cn = null;
+		
+		TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
+		TreatmentPlan newPlan = TreatmentPlan.getInstanceWithoutID(planToCopy.getTitle(), this.userID, planToCopy.getDescription(), planToCopy.getTreatmentIssueID());
+		
+		newPlan.setTemplate(false);
+		newPlan.setTemplateID(planToCopy.getTreatmentPlanID());
+    	newPlan.setAssignedByUserID(this.userID);
+
+        try {
+        	cn = dao.getConnection();
+        	cn.setAutoCommit(false);
+
+        	newPlan.createBasic(cn);
+        	
+        	//loop through and change all the userIDs to the userID supplied by the method argument
+        	//OPTIMIZE O(N3) complexity here with 3 nested for loops.  Is there a better way to do this?
+        	for(Stage stage : planToCopy.getStages()){
+        		MapTreatmentPlanStageTemplate planStageInfo = newPlan.getMappedStageTemplateByStageID(stage.getStageID());
+        		newPlan.copyStageIntoClientTreatmentPlan(cn, stage, planStageInfo);
+        	}
+        	
+        	cn.commit();
+        	
+        } catch (SQLException | ValidationException e) {
+        	e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
+				e1.printStackTrace();
+			}
+			if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
+			
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+        }
+		
+		
+    	
+    	return newPlan;
+	}
+	
 	//TODO redo this to loop MapStageTaskTemplate and MapTreatmentPlanStageTemplate objects instead of using TreatmentPlan.load()?
 	 public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
     	TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
@@ -139,7 +197,11 @@ public abstract class User implements Serializable{
     		stage.setTemplate(false);
     		stage.setTemplateID(stage.getStageID());
     		//OPTIMIZE getMappedStageTemplateByID uses another loop to get the return value, so even more Big O complexity...
-    		stage.setClientStageOrder(planToCopy.getMappedStageTemplateByStageID(stage.getStageID()).getTemplateStageOrder());
+    		MapTreatmentPlanStageTemplate stageDetail = planToCopy.getMappedStageTemplateByStageID(stage.getStageID());
+    		if(stageDetail != null){
+    			stage.setClientStageOrder(stageDetail.getTemplateStageOrder());
+    		}
+    		
     		
     		List<Task> taskRepetitionsAdded = new ArrayList<>();
     		for(Task task : stage.getTasks()){
@@ -148,8 +210,13 @@ public abstract class User implements Serializable{
     			task.setTemplateID(task.getTaskID());
     			
     			MapStageTaskTemplate taskDetail = stage.getMappedTaskTemplateByTaskID(task.getTaskID());
-    			int taskReps = taskDetail.getTemplateRepetitions();
-    			int taskOrder = taskDetail.getTemplateTaskOrder();//for now this isn't used since the task orders are going to change as repetitions are created
+    			int taskReps = 1;
+    			int taskOrder = 0;
+    			if(taskDetail!=null){
+    				taskReps = taskDetail.getTemplateRepetitions();
+        			taskOrder = taskDetail.getTemplateTaskOrder();//for now this isn't used since the task orders are going to change as repetitions are created
+    			}
+    			
     			for(int i = 0; i<taskReps; i++){
     				Task taskRep = task.copy();
     				taskRep.setClientRepetition(i+1);

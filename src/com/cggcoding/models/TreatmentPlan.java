@@ -733,6 +733,36 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		return clientStage;
 	}
 	
+	public Stage copyStageIntoClientTreatmentPlan(Connection cn, Stage stageBeingCopied, MapTreatmentPlanStageTemplate planStageTemplateInfo) throws DatabaseException, ValidationException{
+		//Stage stageBeingCopied = Stage.load(stageIDBeingCopied);
+		Stage newStage = Stage.getInstanceWithoutID(stageBeingCopied.getTreatmentPlanID(), this.userID, stageBeingCopied.getTitle(), stageBeingCopied.getDescription(), stageBeingCopied.getClientStageOrder(), false);
+		newStage.createBasic(cn);
+		
+		//newStage.setTemplate(false); this is set in the static named constructor
+		newStage.setTemplateID(stageBeingCopied.getStageID());
+		newStage.setUserID(this.userID);
+		newStage.setTreatmentPlanID(this.treatmentPlanID);
+	
+		//check if there is info in the TreatmentPlanStageTemplateMap, and if not assign other values
+		if(planStageTemplateInfo != null){
+			newStage.setClientStageOrder(planStageTemplateInfo.getTemplateStageOrder());
+		} else {
+			newStage.setClientStageOrder(this.getStageOrderDefaultValue());
+		}
+		
+		
+		List<Task> taskRepetitionsAdded = new ArrayList<>();
+		for(Task task : stageBeingCopied.getTasks()){
+			MapStageTaskTemplate stageTaskInfo = stageBeingCopied.getMappedTaskTemplateByTaskID(task.getTaskID());
+			newStage.copyTaskIntoClientStage(cn, task, stageTaskInfo);
+		}
+		
+		//now add the newly created stage into this plan
+		this.addStage(newStage);
+		
+		return newStage;
+	}
+	
 	/**Copies a pre-existing Stage into a TreatmentPlan.  This methods gets the existing Stage, updated the treatmentPlanID and the userID associated with the new TreatmentPlan that the
 	 * Stage is being copies into.  It also sets the copied Stages's isTemplate to false and determines the stageOrder it will have initially.
 	 * Then the copied Stage is sent the DAO to be saved in the database.  The DAO is responsible for getting the auto-generated id for the new Stage and setting it for the Stage and 

@@ -546,6 +546,31 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return savedStage;*/
 	}
 	
+	protected void createBasic(Connection cn) throws ValidationException, SQLException{
+		
+		if(this.title.isEmpty()){
+    		throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
+    	}
+		
+		if(dao.stageValidateNewTitle(cn, this)){
+			dao.stageCreateBasic(cn, this);
+			
+			for(StageGoal goal : getGoals()){
+				if(goal.isValidGoal()){
+					//set the newly generated stageID in the goal
+					goal.setStageID(this.stageID);
+					goal.create(cn);
+				}
+			}
+			
+			for(Task task : getTasks()){
+				//set the newly generated stageID in the task
+				task.setStageID(getStageID());
+				task.create(cn);
+			}
+		}
+	}
+	
 	protected void create(Connection cn) throws ValidationException, SQLException{
 		
 		if(this.title.isEmpty()){
@@ -742,13 +767,13 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	//TODO delete since not being used?
-	public Task createNewTask(Task taskBeingCopied) throws DatabaseException, ValidationException{
+	/*public Task createNewTask(Task taskBeingCopied) throws DatabaseException, ValidationException{
 		taskBeingCopied.setUserID(this.userID);
 		taskBeingCopied.setStageID(this.stageID);
 		taskBeingCopied.setClientTaskOrder(this.getTaskOrderDefaultValue());
 		
 		return taskBeingCopied.create();
-	}
+	}*/
 	
 	/**---Database Interaction---
 	 * Creates a new Stage for an existing client-owned TreatmentPlan with the supplied title and description. 
@@ -967,6 +992,8 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 	}
 	
+	
+	//TODO delete because not being used?
 	/**Creates a copy of the Stage and sets the copy's stageID to 0.  DOES NOT save anything to database.
 	 * @param treatmentPlanIDToCopy - treatmentPlanID the Stage is being copied into
 	 * @param userIDToCopy - userID of the User that owns the TreatmentPlan the Stage is being copied into
