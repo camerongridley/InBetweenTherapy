@@ -139,7 +139,7 @@ public class EditStage extends HttpServlet {
 		            		//get the repetition value for each task template inside this stage template and set it the edited stage to be updated when stage.update() is called
 			            	for(MapStageTaskTemplate stageTaskInfo : stage.getMapStageTaskTemplates()){
 			            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
-			            		stageTaskInfo.setTemplateRepetitions(templateReps);
+			            		stageTaskInfo.setTemplateTaskRepetitions(templateReps);
 			            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
 			            	}	
 		            	}

@@ -129,15 +129,20 @@ public abstract class User implements Serializable{
 		return true;
 	}
 	
-	public TreatmentPlan copyTreatmentPlanForClient2(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied) throws ValidationException, DatabaseException{
+	public TreatmentPlan createTreatmentPlanFromTemplate(int userIDTakingNewPlan, int treatmentPlanIDToCopy) throws ValidationException, DatabaseException{
 		Connection cn = null;
 		
-		TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
-		TreatmentPlan newPlan = TreatmentPlan.getInstanceWithoutID(planToCopy.getTitle(), this.userID, planToCopy.getDescription(), planToCopy.getTreatmentIssueID());
+		TreatmentPlan newPlan = TreatmentPlan.loadBasic(treatmentPlanIDToCopy);
+		//TreatmentPlan newPlan = TreatmentPlan.getInstanceWithoutID(planToCopy.getTitle(), this.userID, planToCopy.getDescription(), planToCopy.getTreatmentIssueID());
 		
+		//most of these should be set to their defaults, but am just resetting them here as a precaution
+		newPlan.setUserID(userIDTakingNewPlan);
 		newPlan.setTemplate(false);
-		newPlan.setTemplateID(planToCopy.getTreatmentPlanID());
+		newPlan.setTemplateID(treatmentPlanIDToCopy);
     	newPlan.setAssignedByUserID(this.userID);
+    	newPlan.setInProgress(false);
+    	newPlan.setCompleted(false);
+    	newPlan.setActiveViewStageIndex(0);
 
         try {
         	cn = dao.getConnection();
@@ -147,10 +152,16 @@ public abstract class User implements Serializable{
         	
         	//loop through and change all the userIDs to the userID supplied by the method argument
         	//OPTIMIZE O(N3) complexity here with 3 nested for loops.  Is there a better way to do this?
-        	for(Stage stage : planToCopy.getStages()){
+        	
+        	for(MapTreatmentPlanStageTemplate planStageInfo : newPlan.getTreatmentPlanStageTemplateMapList()){
+        		newPlan.createStageFromTemplate(cn, planStageInfo.getStageID(), planStageInfo);
+        	}
+        	
+        	/*if ever switch to have copy client plans, then this code would be useful
+        	 * for(Stage stage : planToCopy.getStages()){
         		MapTreatmentPlanStageTemplate planStageInfo = newPlan.getMappedStageTemplateByStageID(stage.getStageID());
         		newPlan.copyStageIntoClientTreatmentPlan(cn, stage, planStageInfo);
-        	}
+        	}*/
         	
         	cn.commit();
         	
@@ -183,8 +194,8 @@ public abstract class User implements Serializable{
     	return newPlan;
 	}
 	
-	//TODO redo this to loop MapStageTaskTemplate and MapTreatmentPlanStageTemplate objects instead of using TreatmentPlan.load()?
-	 public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
+	//TODO delete
+	/*public TreatmentPlan copyTreatmentPlanForClient(int userIDTakingNewPlan, int treatmentPlanIDBeingCopied, boolean isTemplate) throws ValidationException, DatabaseException{
     	TreatmentPlan planToCopy = TreatmentPlan.load(treatmentPlanIDBeingCopied);
     	planToCopy.setTemplate(isTemplate);//XXX won't this always be false since plans owned by clients can never be templates?
     	planToCopy.setTemplateID(planToCopy.getTreatmentPlanID());
@@ -213,7 +224,7 @@ public abstract class User implements Serializable{
     			int taskReps = 1;
     			int taskOrder = 0;
     			if(taskDetail!=null){
-    				taskReps = taskDetail.getTemplateRepetitions();
+    				taskReps = taskDetail.getTemplateTaskRepetitions();
         			taskOrder = taskDetail.getTemplateTaskOrder();//for now this isn't used since the task orders are going to change as repetitions are created
     			}
     			
@@ -242,7 +253,7 @@ public abstract class User implements Serializable{
     	//save the plan - which is responsible for updating treatmentPlanID in all the child objects
     	return planToCopy.create();
     	
-    }
+    }*/
 	
 	public static User loadBasic(int userID) throws DatabaseException, ValidationException{
 		return dao.userLoadByID(userID);

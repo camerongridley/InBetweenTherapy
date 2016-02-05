@@ -362,7 +362,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	public MapStageTaskTemplate getMappedTaskTemplateByTaskID(int taskID){
-		MapStageTaskTemplate found = null;
+		MapStageTaskTemplate found = new MapStageTaskTemplate();
 		for(MapStageTaskTemplate stageTaskTemplate : stageTaskTemplateMapList){
 			if(taskID == stageTaskTemplate.getTaskID()){
 				found = stageTaskTemplate;
@@ -492,6 +492,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         
     	stage = dao.stageLoadBasic(cn, stageID);
 
+    	stage.setGoals(dao.stageLoadGoals(cn, stageID));
+    	
+    	if(stage.isTemplate()){
+    		stage.setMapStageTaskTemplates(dao.mapStageTaskTemplateLoad(cn, stageID));
+    	}
+    	
         dao.throwValidationExceptionIfNull(stage);
         
         return stage;
@@ -747,7 +753,64 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 	}
 	
-	public Task copyTaskIntoClientStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
+	public List<Task> createTaskFromTemplate(int taskIDBeingCopied, MapStageTaskTemplate stageTaskInfo) throws DatabaseException, ValidationException{
+		Connection cn = null;
+		List<Task> createdTasks = new ArrayList<>();
+		
+		//TODO decide if need a template check
+		//if(this.isTemplate()){
+			try {
+				
+	        	cn = dao.getConnection();
+
+	        	createdTasks = createTaskFromTemplate(cn, taskIDBeingCopied, stageTaskInfo);
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }		
+		//}else{
+		//	throw new ValidationException(ErrorMessages.STAGE_IS_NOT_TEMPLATE);
+		//}
+		
+		return createdTasks;
+		
+	}
+	
+	protected List<Task> createTaskFromTemplate(Connection cn, int taskIDBeingCopied, MapStageTaskTemplate stageTaskInfo) throws SQLException, ValidationException{
+		List<Task> createdTasks = new ArrayList<>();
+		int taskReps = stageTaskInfo.getTemplateTaskRepetitions();
+		Task task = Task.load(cn, stageTaskInfo.getTaskID());
+		task.setUserID(this.getUserID());
+		task.setStageID(this.stageID);
+		task.setTemplate(false);
+		task.setTemplateID(task.getTaskID());
+		
+		for(int i = 0; i<taskReps; i++){
+			Task taskRep = task.copy();
+			taskRep.setClientRepetition(i+1);
+			
+			//if more than 1 repetition, change the Task title to reflect repetition number
+			if(taskReps > 1){
+				taskRep.setTitle(task.getTitle() + " (" + (i+1) + ")");
+			}
+			
+			taskRep.setClientTaskOrder(tasks.size());
+			
+			taskRep.create(cn);
+			this.addTask(taskRep);
+			createdTasks.add(taskRep);
+		}
+		
+		
+		
+		return createdTasks;
+	}
+	
+//TODO delete
+/*	public Task copyTaskIntoClientStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
 		Task task = Task.load(taskIDBeingCopied);
 		task.setTemplate(false);
 		task.setUserID(this.userID);
@@ -759,7 +822,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.addTask(task);
 		
 		return task;
-	}
+	}*/
 	
 	//TODO delete since not being used?
 	/*public Task createNewTask(Task taskBeingCopied) throws DatabaseException, ValidationException{

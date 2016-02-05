@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.MapTreatmentPlanStageTemplate;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -101,7 +102,8 @@ public class CreateStage extends HttpServlet {
 			                	
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                } else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
-			                	treatmentPlan.copyStageIntoClientTreatmentPlan(selectedDefaultStageID);
+			                	MapTreatmentPlanStageTemplate platStageInfo = null;//should there be any attributes to be passed, like if stage repetitions was added, they would go in this. for now, none of it's properties are relevant in this particular situation
+			                	treatmentPlan.createStageFromTemplate(selectedDefaultStageID, platStageInfo);
 			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                }

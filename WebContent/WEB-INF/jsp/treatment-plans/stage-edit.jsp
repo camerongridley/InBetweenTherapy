@@ -140,16 +140,16 @@
 					<div class="panel panel-primary panel-task" id="taskReps" title="Number of repetitions.">
 					<div class="panel-heading">
 					  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="taskTemplateRepetitions${task.taskID }" name="taskTemplateRepetitions${task.taskID }">
-	                    <option  value="1" <c:if test="${mappedStageTaskInfo.templateRepetitions==1 }">selected</c:if>>1</option>
-						<option  value="2" <c:if test="${mappedStageTaskInfo.templateRepetitions==2 }">selected</c:if>>2</option>
-						<option  value="3" <c:if test="${mappedStageTaskInfo.templateRepetitions==3}">selected</c:if>>3</option>
-						<option  value="4" <c:if test="${mappedStageTaskInfo.templateRepetitions==4 }">selected</c:if>>4</option>
-						<option  value="5" <c:if test="${mappedStageTaskInfo.templateRepetitions==5 }">selected</c:if>>5</option>
-						<option  value="6" <c:if test="${mappedStageTaskInfo.templateRepetitions==6 }">selected</c:if>>6</option>
-						<option  value="7" <c:if test="${mappedStageTaskInfo.templateRepetitions==7 }">selected</c:if>>7</option>
-						<option  value="8" <c:if test="${mappedStageTaskInfo.templateRepetitions==8 }">selected</c:if>>8</option>
-						<option  value="9" <c:if test="${mappedStageTaskInfo.templateRepetitions==9 }">selected</c:if>>9</option>
-						<option  value="10" <c:if test="${mappedStageTaskInfo.templateRepetitions==10 }">selected</c:if>>10</option>
+	                    <option  value="1" <c:if test="${mappedStageTaskInfo.templateTaskRepetitions==1 }">selected</c:if>>1</option>
+						<option  value="2" <c:if test="${mappedStageTaskInfo.templateTaskRepetitions==2 }">selected</c:if>>2</option>
+						<option  value="3" <c:if test="${mappedStageTaskInfo.templateTaskRepetitions==3}">selected</c:if>>3</option>
+						<option  value="4" <c:if test="${mappedStageTaskInfo.templateTaskRepetitions==4 }">selected</c:if>>4</option>
+						<option  value="5" <c:if test="${mappedStageTaskInfo.templateTaskRepetitions==5 }">selected</c:if>>5</option>
+						<option  value="6" <c:if test="${mappedStageTaskInfo.templateTaskRepetitions==6 }">selected</c:if>>6</option>
+						<option  value="7" <c:if test="${mappedStageTaskInfo.templateTaskRepetitions==7 }">selected</c:if>>7</option>
+						<option  value="8" <c:if test="${mappedStageTaskInfo.templateTaskRepetitions==8 }">selected</c:if>>8</option>
+						<option  value="9" <c:if test="${mappedStageTaskInfo.templateTaskRepetitions==9 }">selected</c:if>>9</option>
+						<option  value="10" <c:if test="${mappedStageTaskInfo.templateTaskRepetitions==10 }">selected</c:if>>10</option>
 	                </select>
 	
 	                </div>

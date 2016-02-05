@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.MapStageTaskTemplate;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
@@ -98,8 +99,8 @@ public class CreateTask extends HttpServlet {
 							
 						} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
 							int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
-							
-							stage.copyTaskIntoClientStage(taskToCreate.getTaskID());
+							MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), taskToCreate.getTaskID(), 0, clientRepetition);
+							stage.createTaskFromTemplate(taskToCreate.getTaskID(), stageTaskInfo);
 						}
 						request.setAttribute("successMessage", SuccessMessages.TASK_ADDED_TO_STAGE);
 					}

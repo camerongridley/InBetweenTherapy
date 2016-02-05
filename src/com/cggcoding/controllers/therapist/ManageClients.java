@@ -78,6 +78,7 @@ public class ManageClients extends HttpServlet {
 				User client = clientMap.get(clientUserID);
 				request.setAttribute("client", client);
 				
+				//TODO do I still need this or can it be handled by treatmentPlanID?
 				int defaultTreatmentPlanID = ParameterUtils.parseIntParameter(request, "defaultTreatmentPlanID");
 				
 				//set the default treatment plans and the custom plans for this therapist into the request
@@ -113,7 +114,8 @@ public class ManageClients extends HttpServlet {
 						break;
 					case "copy-plan-to-client":
 						boolean isTemplate = false;
-						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
+						//therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
+						therapistUser.createTreatmentPlanFromTemplate(clientUserID, defaultTreatmentPlanID);
 						request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COPIED_TO_CLIENT);
 						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;

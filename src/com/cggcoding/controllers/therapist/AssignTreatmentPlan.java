@@ -80,7 +80,7 @@ public class AssignTreatmentPlan extends HttpServlet {
 						break;
 					case "copy-plan-to-client":
 						boolean isTemplate = false;
-						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
+						//therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
 						
 						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 						break;

@@ -15,15 +15,22 @@ public class MapStageTaskTemplate {
 	private int stageID;
 	private int taskID;
 	private int templateTaskOrder;
-	private int templateRepetitions;
+	private int templateTaskRepetitions;
 	
 	private static DatabaseActionHandler dao = new MySQLActionHandler();
+	
+	public MapStageTaskTemplate(){
+		this.stageID = 0;
+		this.taskID = 0;
+		this.templateTaskOrder = 0;
+		this.templateTaskRepetitions = 0;
+	}
 	
 	public MapStageTaskTemplate(int stageID, int taskID, int templateTaskOrder, int templateRepetitions) {
 		this.stageID = stageID;
 		this.taskID = taskID;
 		this.templateTaskOrder = templateTaskOrder;
-		this.templateRepetitions = templateRepetitions;
+		this.templateTaskRepetitions = templateRepetitions;
 	}
 
 
@@ -64,12 +71,12 @@ public class MapStageTaskTemplate {
 		return templateTaskOrder + 1;
 	}
 
-	public int getTemplateRepetitions() {
-		return templateRepetitions;
+	public int getTemplateTaskRepetitions() {
+		return templateTaskRepetitions;
 	}
 
-	public void setTemplateRepetitions(int templateRepetitions) {
-		this.templateRepetitions = templateRepetitions;
+	public void setTemplateTaskRepetitions(int templateTaskRepetitions) {
+		this.templateTaskRepetitions = templateTaskRepetitions;
 	}
 	
 	protected void update(Connection cn) throws SQLException{

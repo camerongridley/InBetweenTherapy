@@ -1687,7 +1687,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps.setInt(1, map.getTaskID());
             ps.setInt(2, map.getStageID());
             ps.setInt(3, map.getTemplateTaskOrder());
-            ps.setInt(4, map.getTemplateRepetitions());
+            ps.setInt(4, map.getTemplateTaskRepetitions());
 
             int success = ps.executeUpdate();
  	
@@ -1709,7 +1709,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps = cn.prepareStatement(sql);
             
             ps.setInt(1, stageTaskTemplateMap.getTemplateTaskOrder());
-            ps.setInt(2, stageTaskTemplateMap.getTemplateRepetitions());
+            ps.setInt(2, stageTaskTemplateMap.getTemplateTaskRepetitions());
             ps.setInt(3, stageTaskTemplateMap.getStageID());
             ps.setInt(4, stageTaskTemplateMap.getTaskID());
 

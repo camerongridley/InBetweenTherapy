@@ -212,7 +212,7 @@
 							<c:set var="mappedStageTaskInfo" value="${stage.getMappedTaskTemplateByTaskID(task.taskID)}" />
 								<tr>
 									<!-- <th scope="row">${task.clientTaskOrder}</th>-->
-									<td>${task.title} <span class="badge" title="Number of repetitions.">${mappedStageTaskInfo.templateRepetitions }</span>
+									<td>${task.title} <c:if test="${task.template}"><span class="badge" title="Number of repetitions.">${mappedStageTaskInfo.templateTaskRepetitions }</span></c:if>
 									
 										<!-- <a role="button"
 										href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
