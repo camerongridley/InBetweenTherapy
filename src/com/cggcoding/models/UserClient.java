@@ -32,7 +32,7 @@ public class UserClient extends User implements Serializable{
 		return activeTreatmentPlanId;
 	}
 	
-	public TreatmentPlan getActiveTreatmentPlan(){
+	public TreatmentPlan getActiveTreatmentPlan() throws ValidationException{
 		return super.getTreatmentPlan(activeTreatmentPlanId);
 	}
 

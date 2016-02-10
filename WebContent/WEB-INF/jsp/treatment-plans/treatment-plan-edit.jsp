@@ -15,24 +15,24 @@
 
 <div class="page-header">
 	<h1>Update Treatment Plan</h1>
-	<h2>Add and update detail to the treatment plan</h2>
+	<h3>Plan Owner: ${owner.email}</h3>
 </div>
 
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
 
-<c:if test="${path=='treatmentPlanTemplate' }">
+<c:if test="${path=='templateTreatmentPlan' }">
 <div class="row">
 	<div class="form-group">
 		<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
-			<input type="hidden" name="requestedAction" value="plan-edit-select-plan"> 
+			<input type="hidden" name="requestedAction" value="plan-edit-load-plan"> 
 			<input type="hidden" name="path" value="${path }">
 			
 				<label for="selectedDefaultTreatmentPlanID"
 					class="col-sm-2 control-label">Select a Treatment Plan</label>
 				<div class="col-sm-8">
 					<select class="form-control" id="selectedDefaultTreatmentPlanID"
-						name="selectedDefaultTreatmentPlanID">
+						name="treatmentPlanID">
 						<option value="">Select a treatment plan to edit.</option>
 						<c:forEach var="defaultPlan" items="${defaultTreatmentPlanList }">
 							<option value="${defaultPlan.treatmentPlanID}"
@@ -46,7 +46,7 @@
 		<div class="col-xs-1">
 			<form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
 				<input type="hidden" name="requestedAction" value="plan-create-start"> 
-				<input type="hidden" name="path" value="treatmentPlanTemplate">
+				<input type="hidden" name="path" value="templateTreatmentPlan">
 				<button type="submit" class="btn btn-default glyphicon glyphicon-plus" aria-hidden="true" title="Add a new treatment plan."></button>
 			</form>
 		</div>	
@@ -69,6 +69,7 @@
 	<input type="hidden" name="requestedAction" value="plan-edit-update">
 	<input type="hidden" name="path" value="${path }"> 
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+	<input type="hidden" name="ownerUserID" value="${treatmentPlan.userID}">
 	
 	<div class="row form-group">
 		<label for="planName" class="col-sm-2 control-label">Plan Name</label>
@@ -119,11 +120,13 @@
 				</select>
 			</div>
 			<div class="col-sm-1">
-				<button type="button" class="btn btn-default" title="Add a new default treatment issue."
-					aria-label="Left Align" data-toggle="modal"
-					data-target="#newDefaultTreatmentIssueModal">
-					<span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
-				</button>
+				<c:if test='${user.role.equals("admin") }'>
+					<button type="button" class="btn btn-default" title="Add a new default treatment issue."
+						aria-label="Left Align" data-toggle="modal"
+						data-target="#newDefaultTreatmentIssueModal">
+						<span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
+					</button>
+				</c:if>	
 			</div>
 		</div>
 
@@ -165,23 +168,30 @@
 
 	</label>
 	<c:forEach items="${treatmentPlan.stages }" var="stage">
+	<c:set var="mappedPlanStageInfo" value="${treatmentPlan.getMappedStageTemplateByStageID(stage.stageID)}" />
 		<div class="panel panel-default panel-task" id="stageList"
 			title="Click the stage title to expand and see the stage details.">
 			<div class="panel-heading">
-				<input type="hidden" name="stageID" value="${stage.stageID}" /> <input
-					type="hidden" name="stageTitle${stage.stageID}"
-					value="${stage.title}" /> <a role="button" data-toggle="collapse"
-					href="#collapse${stage.stageID }" aria-expanded="true"
-					aria-controls="collapse${stage.stageID }">
-					${stage.stageOrderForUserDisplay } - <span class="">${stage.title }</span>
+				<input type="hidden" name="stageID" value="${stage.stageID}" /> 
+				<input type="hidden" name="stageTitle${stage.stageID}" value="${stage.title}" /> 
+				<c:choose>
+		          <c:when test='${stage.template }'>
+		          	<c:set var="stageOrder" value="${mappedPlanStageInfo.templateStageOrder }"/>
+		          </c:when>
+		          <c:otherwise>
+		          	<c:set var="stageOrder" value="${stage.clientStageOrder }"/>
+		          </c:otherwise>
+		        </c:choose>
+				
+				<a role="button" data-toggle="collapse" href="#collapse${stage.stageID }" aria-expanded="true" aria-controls="collapse${stage.stageID }">
+					${stageOrder+1 } - <span class="">${stage.title }</span>
 				</a> 
-				<a role="button"
-					href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
+				<a role="button" href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
 					class="btn btn-default btn-xs pull-right"
-					title="Delete this stage."> <span
-					class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+					title="Delete stage from this treatment plan."> 
+					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 				</a> <a role="button"
-					href="/secure/EditStage?requestedAction=stage-edit&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
+					href="/secure/EditStage?requestedAction=select-stage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" 
 					class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 				</a>
@@ -199,9 +209,10 @@
 						</thead>
 						<tbody>
 							<c:forEach items="${stage.tasks }" var="task">
+							<c:set var="mappedStageTaskInfo" value="${stage.getMappedTaskTemplateByTaskID(task.taskID)}" />
 								<tr>
-									<!-- <th scope="row">${task.taskOrder}</th>-->
-									<td>${task.title} <span class="badge" title="Number of repetitions.">${task.repetitions }</span>
+									<!-- <th scope="row">${task.clientTaskOrder}</th>-->
+									<td>${task.title} <c:if test="${task.template}"><span class="badge" title="Number of repetitions.">${mappedStageTaskInfo.templateTaskRepetitions }</span></c:if>
 									
 										<!-- <a role="button"
 										href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"

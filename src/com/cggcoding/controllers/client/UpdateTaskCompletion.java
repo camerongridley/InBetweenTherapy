@@ -21,6 +21,7 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
@@ -46,7 +47,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
@@ -91,7 +92,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 			e.printStackTrace();
 			request.setAttribute("errorMessage", ErrorMessages.GENERAL_DB_ERROR);
 		} catch (ValidationException e) {
-			request.setAttribute("errorMessage", ErrorMessages.VALIDATION_ERROR_UPDATING_DATA);
+			request.setAttribute("errorMessage", e.getMessage());
 			e.printStackTrace();
 		}
 		

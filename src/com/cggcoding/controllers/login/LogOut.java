@@ -1,4 +1,4 @@
-package com.cggcoding.controllers.navigation;
+package com.cggcoding.controllers.login;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -9,22 +9,21 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cggcoding.models.User;
-import com.cggcoding.utils.Constants;
 
 /**
- * Servlet implementation class MenuNav
+ * Servlet implementation class LogOut
  */
-@WebServlet(description = "Controls user-specific navigation menu item population.", urlPatterns = { "/secure/MenuNav" })
-public class MenuNav extends HttpServlet {
+@WebServlet("/LogOut")
+public class LogOut extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public MenuNav() {
+    public LogOut() {
         super();
     }
-    
+
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -38,38 +37,23 @@ public class MenuNav extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		processRequest(request, response);
 	}
-
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+	protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
-		String forwardTo = Constants.URL_INDEX;
-		String requestedAction = request.getParameter("requestedAction");
-		String path = request.getParameter("path");
-		request.setAttribute("path", path);
+		//User user = (User)session.getAttribute("user");
+		String forwardTo = "/index.jsp";
+		//String requestedAction = request.getParameter("requestedAction");
+		//String path = request.getParameter("path");
+		//request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
-		String destination = request.getParameter("destination");
 		
+		session.invalidate();		
 		
-		if(user!=null){
-			switch(user.getRole()){
-			case "admin":
-				forwardTo = Constants.URL_ADMIN_MAIN_MENU;
-				break;
-			case "therapist":
-				forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
-				break;
-			case "client":
-				forwardTo = Constants.URL_CLIENT_MAIN_MENU;
-				break;
-			default:
-				
-				break;
-			}
-		}
-		
+		forwardTo = "/login.jsp";
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 
     }
+
 }

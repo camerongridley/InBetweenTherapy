@@ -7,7 +7,8 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Edit A Task</h1>
+	<h1>Edit Task <c:if test="${task.template}">Template</c:if></h1>
+	<h3>Task Owner: ${owner.email}</h3>
 </div>
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
@@ -15,8 +16,10 @@
 <form class="form-horizontal" action="/secure/EditTask" method="POST">
 	<input type="hidden" name="requestedAction" value="edit-task-select-task">
 	<input type="hidden" name="path" value="${path }">
+	<input type="hidden" name="stageID" value="${stageID }" >
+	<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 
-	<c:if test="${path=='taskTemplate'}">
+	<c:if test='${path=="templateTask"}'>
 		<div class="form-group">
 			<label for="defaultTaskListID" class="col-sm-2 control-label">Select Task</label>
 			<div class="col-sm-8">
@@ -36,6 +39,8 @@
 	<input type="hidden" name="requestedAction" value="edit-task-select-task-type">
 	<input type="hidden" name="path" value="${path }">
 	<input type="hidden" name="taskID" value="${task.taskID }">
+	<input type="hidden" name="stageID" value="${stageID }" >
+	<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 	
 	<div class="form-group">
 	    <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
@@ -55,13 +60,13 @@
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">
 		<input type="hidden" name="taskID" value="${task.taskID }">
-		<input type="hidden" name="stageID" value="${task.stageID }">
+		<input type="hidden" name="stageID" value="${stageID }">
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 		<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
-		<input type="hidden" name="taskOrder" value="${task.taskOrder }">
-		<input type="hidden" name="stageToReturnTo" value="${stageToReturnTo }">
-		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+		<input type="hidden" name="clientTaskOrder" value="${task.clientTaskOrder }">
+		
 				
         <div class="form-group">
             <label for="taskTitle" class="col-sm-2 control-label">Task Name</label>
@@ -83,22 +88,7 @@
         </div>
         <c:if test="${task.template }">
         	<div class="form-group">
-	            <label for="repetitions" class="col-sm-2 control-label">Repetitions</label>
-	            <div class="col-sm-2">
-	            	<select class="form-control" id="repetitions" name="repetitions">
-	                    <option  value="1" <c:if test="${task.repetitions==1 }">selected</c:if>>1</option>
-						<option  value="2" <c:if test="${task.repetitions==2 }">selected</c:if>>2</option>
-						<option  value="3" <c:if test="${task.repetitions==3}">selected</c:if>>3</option>
-						<option  value="4" <c:if test="${task.repetitions==4 }">selected</c:if>>4</option>
-						<option  value="5" <c:if test="${task.repetitions==5 }">selected</c:if>>5</option>
-						<option  value="6" <c:if test="${task.repetitions==6 }">selected</c:if>>6</option>
-						<option  value="7" <c:if test="${task.repetitions==7 }">selected</c:if>>7</option>
-						<option  value="8" <c:if test="${task.repetitions==8 }">selected</c:if>>8</option>
-						<option  value="9" <c:if test="${task.repetitions==9 }">selected</c:if>>9</option>
-						<option  value="10" <c:if test="${task.repetitions==10 }">selected</c:if>>10</option>
-	                </select>
-	              
-	            </div>
+	            
 	        </div>
         </c:if>
         <c:if test="${task.taskTypeID==2 }">

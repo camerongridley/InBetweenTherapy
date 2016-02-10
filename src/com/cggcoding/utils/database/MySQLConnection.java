@@ -1,5 +1,6 @@
 package com.cggcoding.utils.database;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -10,7 +11,12 @@ import javax.sql.DataSource;
 
 
 
-public class MySQLConnection implements DatabaseConnection {
+public class MySQLConnection implements Serializable, DatabaseConnection {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public MySQLConnection() {
 

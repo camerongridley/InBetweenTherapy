@@ -8,6 +8,8 @@ import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
+import com.cggcoding.models.User;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.models.TaskTwoTextBoxes;
 
 public class CommonServletFunctions {
@@ -24,7 +26,8 @@ public class CommonServletFunctions {
 		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
 	}
 	
-	/**Gets all the parameter values from request, except user info which isn't in the request and is set in doPost(), and creates a Task object of the correct taskType with them
+	//TODO delete this after fully transitioned to updateTaskParametersFromRequest
+	/**Gets all the parameter values from request, except user info which is in the session, and creates a Task object of the correct taskType with them
 	 * @param request  HttpServletRequest
 	 * @param userID id for the current user
 	 * @return Task object populated with parameter values obtained from request.
@@ -41,13 +44,13 @@ public class CommonServletFunctions {
 		String resourceLink = request.getParameter("resourceLink");
 		//boolean completed = request.getParameter("requestedAction");
 		//LocalDateTime dateCompleted = request.getParameter("requestedAction"); - set in the service layer when task is marked complete
-		int taskOrder =  ParameterUtils.parseIntParameter(request, "taskOrder");
+		int clientTaskOrder =  ParameterUtils.parseIntParameter(request, "clientTaskOrder");
 		boolean extraTask = ParameterUtils.getBooleanParameter(request, "isExtraTask"); 
 		boolean template = ParameterUtils.getBooleanParameter(request, "isTemplate"); 
 		int templateID = ParameterUtils.parseIntParameter(request, "templateID");
-		int repetitions = ParameterUtils.parseIntParameterDefaultIsOne(request, "repetitions");
+		int clientRepetition = ParameterUtils.parseIntParameterDefaultIsOne(request, "clientRepetition");
 		
-		TaskGeneric genericTask = TaskGeneric.getInstanceWithoutTaskID(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, taskOrder, extraTask, template, templateID, repetitions);
+		TaskGeneric genericTask = TaskGeneric.getInstanceWithoutTaskID(stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, clientTaskOrder, extraTask, template, templateID, clientRepetition);
 		genericTask.setTaskID(taskID);
 		
 		switch(taskTypeID){
@@ -72,6 +75,42 @@ public class CommonServletFunctions {
 		return task;
 	}
 	
+	public static Task updateTaskParametersFromRequest(HttpServletRequest request, Task task){
+		//update appropriate parameters associated with Task and do null checks
+		task.setTaskTypeID(ParameterUtils.parseIntParameter(request, "taskTypeID"));
+		String title = request.getParameter("taskTitle");
+		task.setTitle(request.getParameter("taskTitle"));
+		task.setInstructions(request.getParameter("taskInstructions"));
+		task.setResourceLink(request.getParameter("resourceLink"));
+		task.setClientTaskOrder(ParameterUtils.parseIntParameter(request, "clientTaskOrder"));
+		task.setExtraTask(ParameterUtils.getBooleanParameter(request, "isExtraTask"));
+		task.setClientRepetition(ParameterUtils.parseIntParameterDefaultIsOne(request, "clientRepetition"));
+		
+		//The following are other properties of Task that shouldn't really ever be altered in the jsp
+		//task.setTemplate(ParameterUtils.getBooleanParameter(request, "isTemplate")); 
+		//int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		//int parentTaskID =  ParameterUtils.parseIntParameter(request, "parentTaskID");//if this task is a subtask, then the parent's taskID is set here. If this is a parenttask it equals 0;
+		//boolean completed = request.getParameter("requestedAction");
+		//LocalDateTime dateCompleted = request.getParameter("requestedAction"); - set in the service layer when task is marked complete
+		//int templateID = ParameterUtils.parseIntParameter(request, "templateID");
+		
+		
+		
+		//XXX replace use of downcasting?  re: http://stackoverflow.com/questions/2856122/how-to-find-out-the-subclass-from-the-base-class-instance
+		//If is instanceof TaskGeneric then nothing else needs updating
+		if(task instanceof TaskTwoTextBoxes){
+			((TaskTwoTextBoxes)task).setExtraTextLabel1(request.getParameter("extraTextLabel1"));
+			((TaskTwoTextBoxes)task).setExtraTextValue1(request.getParameter("extraTextValue1"));
+			((TaskTwoTextBoxes)task).setExtraTextLabel2(request.getParameter("extraTextLabel2"));
+			((TaskTwoTextBoxes)task).setExtraTextValue2(request.getParameter("extraTextValue2"));
+
+		}
+		
+		return task;
+
+	}
+	
+	
 	public static void setDefaultTreatmentIssuesInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
 		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
 	}
@@ -79,4 +118,5 @@ public class CommonServletFunctions {
 	public static void setDefaultTreatmentPlansInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
 		request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
 	}
+	
 }

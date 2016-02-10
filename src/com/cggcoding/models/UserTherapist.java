@@ -21,13 +21,18 @@ public class UserTherapist extends User implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private Map<Integer, UserClient> clientMap;
     private List<TreatmentIssue> defaultTreatmentIssues;
+    private List<TreatmentPlan> allAssignedClientPlans;
+    private List<TreatmentPlan> activeAssignedClientPlans;
+    private List<TreatmentPlan> unstartedAssignedClientPlans;
+    private List<TreatmentPlan> completedAssignedClientPlans;
 
-    private static DatabaseActionHandler databaseActionHandler= new MySQLActionHandler();
+    private static DatabaseActionHandler dao= new MySQLActionHandler();
         
     public UserTherapist(int userID, String email){
         super(userID, email);
         this.clientMap = new HashMap<>();
         this.defaultTreatmentIssues = new ArrayList<>();
+        this.allAssignedClientPlans = new ArrayList<>();
     }
 
 	public Map<Integer, UserClient> getClientMap() {
@@ -42,9 +47,52 @@ public class UserTherapist extends User implements Serializable{
     	this.clientMap.put(client.getUserID(), client);
     }
     
+    public UserClient getClient(int clientUserID){
+    	return clientMap.get(clientUserID);
+    }
+    
     public Map<Integer, UserClient> loadClients() throws DatabaseException{
-    	this.clientMap = databaseActionHandler.userGetClientsByTherapistID(this.getUserID());
+    	this.clientMap = dao.userGetClientsByTherapistID(this.getUserID());
     	return clientMap;
+    }
+    
+    public List<TreatmentPlan> loadAllAssignedClientTreatmentPlans(int clientID) throws DatabaseException, ValidationException{
+    	this.allAssignedClientPlans =  dao.userGetTherapistAssignedPlans(clientID, this.getUserID());
+    	
+    	return allAssignedClientPlans;
+    }
+    
+    public List<TreatmentPlan> loadActiveAssignedClientTreatmentPlans(){
+    	this.activeAssignedClientPlans = new ArrayList<>();
+    	for(TreatmentPlan plan : allAssignedClientPlans){
+    		if(plan.isInProgress()){
+    			activeAssignedClientPlans.add(plan);
+    		}
+    	}
+    	
+    	return activeAssignedClientPlans;
+    }
+    
+    public List<TreatmentPlan> loadCompletedAssignedClientTreatmentPlans(){
+    	this.unstartedAssignedClientPlans = new ArrayList<>();
+    	for(TreatmentPlan plan : allAssignedClientPlans){
+    		if(plan.isCompleted()){
+    			completedAssignedClientPlans.add(plan);
+    		}
+    	}
+    	
+    	return completedAssignedClientPlans;
+    }
+    
+    public List<TreatmentPlan> loadUnstartedAssignedClientTreatmentPlans(){
+    	this.completedAssignedClientPlans = new ArrayList<>();
+    	for(TreatmentPlan plan : allAssignedClientPlans){
+    		if(!plan.isCompleted() && !plan.isInProgress()){
+    			unstartedAssignedClientPlans.add(plan);
+    		}
+    	}
+    	
+    	return unstartedAssignedClientPlans;
     }
     
 }

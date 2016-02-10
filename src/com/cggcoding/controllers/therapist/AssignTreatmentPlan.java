@@ -16,6 +16,8 @@ import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 
+
+//TODO delete this class once procs fully moved over to ManageCLients
 /**
  * Servlet implementation class AssignTreatmentPlan
  */
@@ -44,7 +46,7 @@ public class AssignTreatmentPlan extends HttpServlet {
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
@@ -78,9 +80,9 @@ public class AssignTreatmentPlan extends HttpServlet {
 						break;
 					case "copy-plan-to-client":
 						boolean isTemplate = false;
-						therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
+						//therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
 						
-						forwardTo = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
+						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 						break;
 				}
 				

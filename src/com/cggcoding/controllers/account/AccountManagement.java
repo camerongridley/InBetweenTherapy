@@ -1,4 +1,4 @@
-package com.cggcoding.controllers.navigation;
+package com.cggcoding.controllers.account;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -12,19 +12,20 @@ import com.cggcoding.models.User;
 import com.cggcoding.utils.Constants;
 
 /**
- * Servlet implementation class MenuNav
+ * Servlet implementation class AccountManagement
  */
-@WebServlet(description = "Controls user-specific navigation menu item population.", urlPatterns = { "/secure/MenuNav" })
-public class MenuNav extends HttpServlet {
+@WebServlet("/secure/AccountManagement")
+public class AccountManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public MenuNav() {
+    public AccountManagement() {
         super();
+        // TODO Auto-generated constructor stub
     }
-    
+
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -39,7 +40,7 @@ public class MenuNav extends HttpServlet {
 		processRequest(request, response);
 	}
 
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
@@ -52,15 +53,16 @@ public class MenuNav extends HttpServlet {
 		
 		
 		if(user!=null){
+			forwardTo = "/WEB-INF/jsp/account-management.jsp";
 			switch(user.getRole()){
 			case "admin":
-				forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+				
 				break;
 			case "therapist":
-				forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
+
 				break;
 			case "client":
-				forwardTo = Constants.URL_CLIENT_MAIN_MENU;
+
 				break;
 			default:
 				
@@ -72,4 +74,5 @@ public class MenuNav extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 
     }
+	
 }

@@ -11,65 +11,49 @@
 
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
-<div class="row">
+<div class="form-horizontal">
 
 
 
 	<!-- depending on the accessibility of the stage, set the proper css class -->
-	<c:forEach var="stage" items="${treatmentPlan.stages }"
-		varStatus="stageStatus">
+	<c:forEach var="stage" items="${treatmentPlan.stages }" varStatus="status">
+		<form id="stageNode${stage.stageID }" action="/secure/ChangeStage" method="POST">
 
+			<input type="hidden" name="stageIndex" value=${stage.clientStageOrder } >
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >
+			<input type="hidden" name="requestedAction" value="change-stage">
+			<input type="hidden" name="path" value="${path }">
+			
 		<!--For stage that is currently being viewed (enabled-active)-->
 
-		<c:if
-			test="${stage.stageOrder == treatmentPlan.activeViewStageIndex }">
-			<div
-				class="progress-stage progress-stage-enabled-active col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
-				<c:if test="${stage.stageOrder <= treatmentPlan.currentStageIndex }">
-					<form action="/secure/ChangeStage" method="POST">
-				</c:if>
-				${stage.title } <a href="#" type="button" data-toggle="modal"
-					data-target="#stageInfoModal"> <span
-					class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
-				</a> <input type="hidden" name="stageIndex" value=${stage.stageOrder } /><input
-					type="hidden" name="treatmentPlanID"
-					value="${treatmentPlan.treatmentPlanID}" />
-				<c:if
-					test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }">
-					</form>
-				</c:if>
-			</div>
-
-		</c:if>
-		<!--For stage that is accessible but NOT the active view (enabled-inactive)-->
-		<c:if
-			test="${stage.stageOrder != treatmentPlan.activeViewStageIndex && stage.stageOrder <= treatmentPlan.currentStageIndex}">
-			<div
-				class="progress-stage progress-stage-enabled-inactive col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
-				<c:if
-					test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }">
-					<form action="/secure/ChangeStage" method="POST">
-						<a href='#' onclick='this.parentNode.submit(); return false;'>
-				</c:if>
-				${stage.title }<input type="hidden" name="stageIndex"
-					value=${stage.stageOrder } /><input type="hidden"
-					name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-				<c:if
-					test="${stage.stageOrder <= treatmentPlan.currentStageIndex  }">
-					</a>
-					</form>
-				</c:if>
+		<c:if test="${stage.clientStageOrder == treatmentPlan.activeViewStageIndex && stage.inProgress}">
+			<div class="progress-stage progress-stage-enabled-active col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
+				${stage.title } <a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal"> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
 			</div>
 		</c:if>
-		<!--For stage that is inaccssible at this time (disabled)-->
-		<c:if test="${!stage.inProgress}">
-			<div
-				class="progress-stage progress-stage-disabled col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
-				${stage.title }<input type="hidden" name="stageIndex"
-					value=${stage.stageOrder } />
+		
+		<!--For stage that is accessible but NOT the active view (enabled-inactive)  removed this condition:  && stage.clientStageOrder <= treatmentPlan.currentStageIndex-->
+		<c:if test="${stage.clientStageOrder != treatmentPlan.activeViewStageIndex  && stage.inProgress}">
+			<div class="progress-stage progress-stage-enabled-inactive col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
+				<a href='#' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
 			</div>
 		</c:if>
-
+		
+		<!--For stage that is disabled at this time and active as current view (disabled-active)-->
+		<c:if test="${stage.clientStageOrder == treatmentPlan.activeViewStageIndex && !stage.inProgress  && !stage.completed}">
+			<div class="progress-stage progress-stage-disabled-active col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
+				${stage.title } <a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal"> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+			</div>
+		</c:if>
+		
+		<!--For stage that is disabled at this time and inactive as current view (disabled-inactive)-->
+		<c:if test="${stage.clientStageOrder != treatmentPlan.activeViewStageIndex && !stage.inProgress && !stage.completed}">
+			<div class="progress-stage progress-stage-disabled-inactive col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
+				<a href='#' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
+			</div>
+		</c:if>
+		
+		</form>
 	</c:forEach>
 
 
@@ -109,12 +93,10 @@
 <div class="row">
 	<div class="col-sm-12">
 
-		<form action="/secure/UpdateTaskCompletion" method="post"
-			class="form-inline">
-			<input type="hidden" name="treatmentPlanID"
-				value="${treatmentPlan.treatmentPlanID}" />
-			<c:set var="activeViewStagePercentComplete"
-				value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
+		<form action="/secure/UpdateTaskCompletion" method="post" class="form-inline">
+			<input type="hidden" name="requestedAction" value="update-client-plan">
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
+			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
 			<div class="progress-stage-detail">
 				<strong>
 					Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${activeViewStagePercentComplete}% Complete
@@ -136,7 +118,7 @@
 					<div class="panel-heading panel-heading-task">
 						<input type="hidden" name="allTaskIDs" value="${task.taskID}" /> 
 						<input type="hidden" name="taskTypeName${task.taskID}" value="${task.taskTypeName}" /> 
-						<input class="responsive-checkbox" type="checkbox" id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]" aria-label="Task: ${task.title }"/> 
+						<input class="responsive-checkbox" type="checkbox" id="${task.taskID }" value="${task.taskID }" name="taskChkBx[]" aria-label="Task: ${task.title }" <c:if test="${task.disabled }">disabled</c:if>/> 
 						<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							${task.title } - Task Type: ${task.taskTypeName } 
 						</a>
@@ -166,13 +148,15 @@
 								${task.extraTextLabel1 }<input type="text" class="form-control"
 									placeholder="${task.extraTextLabel1 }"
 									name="extraTextValue1${task.taskID }"
-									value="${task.extraTextValue1 }">
+									value="${task.extraTextValue1 }" 
+									<c:if test="${task.disabled }">disabled</c:if>>
 							</div>
 							<div class="panel-body panel-body-task">
 								${task.extraTextLabel2 }<input type="text" class="form-control"
 									placeholder="${task.extraTextLabel2 }"
 									name="extraTextValue2${task.taskID }"
-									value="${task.extraTextValue2 }">
+									value="${task.extraTextValue2 }" 
+									<c:if test="${task.disabled }">disabled</c:if>>
 							</div>
 						</div>
 					</c:if>
@@ -192,7 +176,8 @@
 							type="hidden" name="taskTypeName${task.taskID}"
 							value="${task.taskTypeName}" /> <input class="responsive-checkbox" type="checkbox"
 							id="${task.taskID }" aria-label="Task: ${task.title }"
-							value="${task.taskID }" name="taskChkBx[]" checked> <a
+							value="${task.taskID }" name="taskChkBx[]" checked
+							<c:if test="${task.disabled }">disabled</c:if>> <a
 							role="button" data-toggle="collapse"
 							href="#collapse${task.taskID }" aria-expanded="true"
 							aria-controls="collapse${task.taskID }"> <span
@@ -210,13 +195,15 @@
 								${task.extraTextLabel1 }<input type="text" class="form-control"
 									placeholder="${task.extraTextLabel1 }"
 									name="extraTextValue1${task.taskID }"
-									value="${task.extraTextValue1 }">
+									value="${task.extraTextValue1 }"
+									<c:if test="${task.disabled }">disabled</c:if>>
 							</div>
 							<div class="panel-body panel-body-task">
 								${task.extraTextLabel2 }<input type="text" class="form-control"
 									placeholder="${task.extraTextLabel2 }"
 									name="extraTextValue2${task.taskID }"
-									value="${task.extraTextValue2 }">
+									value="${task.extraTextValue2 }"
+									<c:if test="${task.disabled }">disabled</c:if>>
 							</div>
 						</c:if>
 					</div>
@@ -226,31 +213,46 @@
 			<hr>
 
 			<!--INCOMPLETE EXTRA TASKS-->
-			<strong>Extra Tasks (Placeholder text - Functionality not
-				yet implemented)</strong>
-			<div class="panel panel-default panel-task"
-				title="Click the task title to expand and see task details.">
+			<strong>Extra Tasks (Placeholder text - Functionality not yet implemented)</strong>
+			<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 				<div class="panel-heading panel-heading-task">
 					<input class="responsive-checkbox" type="checkbox" id="0" aria-label="Task: Temp Extra Task"
-						value="0" name="taskChkBx[]"> <a role="button"
+						value="0" name="taskChkBx[]" <c:if test="${task.disabled }">disabled</c:if>> <a role="button"
 						data-toggle="collapse" href="#collapse121212" aria-expanded="true"
 						aria-controls="collapse121212"> Sample Extra Task </a>
 				</div>
-				<div id="collapse121212" class="panel-collapse collapse"
-					role="tabpanel" aria-labelledby="heading121212">
+				<div id="collapse121212" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading121212">
 					<div class="panel-body panel-body-task">Extra task
 						instructions would go here.</div>
 				</div>
 			</div>
 
 			<!--COMPLETED EXTRA TASKS-->
-
-			<button type="submit" class="btn btn-primary">Save</button>
+			
+			<c:choose>
+				<c:when test='${path.equals("manageClients") }'>
+				<!--  -->
+					<button type="button" class="btn btn-primary" onclick="">Done</button>
+				</c:when>
+				<c:otherwise>
+					<button type="submit" class="btn btn-primary">Save</button>
+				</c:otherwise>
+			</c:choose>
 
 		</form>
-
+		
+		
 
 	</div>
 </div>
+
+<script>
+	$(function() {
+	    $('#defaultTreatmentPlanID').change(function() {
+	    	this.form.submit();
+	    });
+	    
+	});
+</script>
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />

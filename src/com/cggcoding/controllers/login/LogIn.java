@@ -6,6 +6,7 @@ import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -43,7 +45,7 @@ public class LogIn extends HttpServlet {
     	/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
@@ -63,12 +65,14 @@ public class LogIn extends HttpServlet {
 					user = databaseActionHandler.userLoadInfo(email, password);
 					request.getSession().setAttribute("user", user);
 					
-					if(user.hasRole("admin")){
-						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
-					} else if(user.hasRole("therapist")){
-						forwardTo = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
-					}if(user.hasRole("client")){
-						forwardTo = "/WEB-INF/jsp/client-tools/client-main-menu.jsp";
+					if(user.hasRole(Constants.USER_ADMIN)){
+						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+					} else if(user.hasRole(Constants.USER_THERAPIST)){
+						UserTherapist userTherapist = (UserTherapist)user;
+						userTherapist.setClientMap(userTherapist.loadClients());
+						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
+					}if(user.hasRole(Constants.USER_CLIENT)){
+						forwardTo = Constants.URL_CLIENT_MAIN_MENU;
 					}
 					
 				} else {
@@ -77,7 +81,7 @@ public class LogIn extends HttpServlet {
 			} catch (DatabaseException e) {
 				e.printStackTrace();
 				request.setAttribute("errorMessage", e.getMessage());
-				//response.sendRedirect("index.jsp");
+				//response.sendRedirect(Constants.URL_INDEX);
 			    request.getRequestDispatcher("/index.jsp").forward(request, response);
 			}
 	        
