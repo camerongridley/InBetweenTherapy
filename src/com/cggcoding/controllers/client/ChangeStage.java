@@ -5,6 +5,7 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.utils.Constants;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -34,7 +35,10 @@ public class ChangeStage extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = (User)request.getSession().getAttribute("user");
-        String forwardTo = "index.jsp";
+        String forwardTo = Constants.URL_INDEX;
+        String requestedAction = request.getParameter("requestedAction");
+		String path = request.getParameter("path");
+		request.setAttribute("path", path);
         int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
         TreatmentPlan treatmentPlan = null;
         Stage activeStage  = null;
@@ -47,6 +51,9 @@ public class ChangeStage extends HttpServlet {
 	        activeStage = treatmentPlan.getActiveViewStage();
 	        
 			treatmentPlan.updateBasic();
+			
+			//TODO decide if I need to check the user role (client vs. therapist)
+			treatmentPlan.setTasksDisabledStatus(user.getUserID());
 			
 			request.setAttribute("activeStage", activeStage);
 			request.setAttribute("treatmentPlan", treatmentPlan);

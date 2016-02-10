@@ -14,10 +14,15 @@ public final class ErrorMessages {
 	public static final String DEFAULTS_HOLDER_ID_SELECTED = "It appears you are trying to access restricted data.  Please be sure to make a valid selection and try again.";
 	public static final String OBJECT_IS_NULL = "It appears there is no database record for what you are looking for.  Please be sure to make a valid selection and try again.  If you have further problems please contact customer support.";
 	public static final String NOTHING_SELECTED = "You have not selected anything to update.  Please make a selection and try again.";
+	public static final String INVALID_SELECTION = "Something is missing!  There seems to be some missing information on our end that is needed to do what you're asking.  Please try again or contact customer support.";
+	
 	
 	//Log in
 	public static final String INVALID_USERNAME_OR_PASSWORD = "Login failed.  The email and password combination is not found in our records.  Please try again.";
-
+	
+	//Authorization
+	public static final String UNAUTHORIZED_ACCESS = "You are not authorized for access this the data you are requesting.  If you need further assistance, plase contact customer support.";
+	
 	//Treatment Plan Creation Stage One - Choosing plan name, description, and treatment issue
 	public static final String PLAN_MISSING_INFO = "You must enter a plan name and description.";
 	public static final String PLAN_TITLE_EXISTS = "That treatment plan name already exists in your profile.  Please choose another one.";
@@ -37,14 +42,23 @@ public final class ErrorMessages {
 	public static final String STAGE_TITLE_DESCRIPTION_MISSING = "You must enter a stage name and description.";
 	public static final String STAGE_IS_NOT_TEMPLATE = "You appear to be trying to add a task template to a stage that is not a template.  This is not allowed.  Please try again or contact customer support.";
 	public static final String STAGE_CONTAINS_TASK_TEMPLATE = "This stage template already contains the task you've chosen.  Go to the Edit Task page to increase the number of repetitions for this task.";
-	
+	public static final String STAGE_CLIENT_ONLY_ALLOWED_IN_PLAN_TEMPLATE = "Client Stages can only be added to Treatment Plans that are NOT templates.  It appears the Treatment Plan you have loaded is a template.  Please try again.";
+
 	//Tasks
 	public static final String TASK_MISSING_INFO = "You must select a task type as well as enter a task name and instructions.";
 	public static final String TASK_INVALID_ID = "There appears to be a problem with your task.  Please email customer support with a detailed explanation of what happened.";
 	public static final String TASK_TITLE_EXISTS_FOR_STAGE = "That task title already exists for this stage.  Please choose a different title.";
 	
+	//User
+	public static final String NO_PLAN_FOUND_FOR_USER = "That treatment plan cannot be found for this user.  Please try again or contact customer support";
+	
+	//StageTaskTemplateMap
+	public static final String TASK_IS_FIRST = "You cannot increase this tasks order any more as it is already first.";
+	public static final String TASK_IS_LAST = "You cannot decrease this tasks order any more as it is already last.";
+	
 	//Other
-	public static final String CLONE_NOT_SUPPORTED = "There was a problem copying the data.  Please try again or contact customer support.";
+	public static final String USER_NOT_FOUND = "We cannont find the user you are looking for.  Please try again or contact customer support.";
+	
 	
 	
 	

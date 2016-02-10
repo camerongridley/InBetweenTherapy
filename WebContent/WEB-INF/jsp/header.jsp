@@ -46,7 +46,7 @@
           <li class="active"><a href="/secure/MenuNav?destination=home">Home</a></li>
             <li><a href="/#contact">Contact</a></li>
             <li class="dropdown">
-              <a href="/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+              <a href="/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown<span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="/task-review.jsp">Record Exercise</a></li>
                 <li><a href="/#">Another action</a></li>
@@ -57,17 +57,62 @@
                 <li><a href="/#">One more separated link</a></li>
               </ul>
             </li>
+            <c:if test="${user!=null }"></c:if>
+            <c:choose>
+			  <c:when test='${user.role=="admin" }'>
+			  	<li class="dropdown">
+	              <a href="/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin Tools<span class="caret"></span></a>
+	              <ul class="dropdown-menu">
+	                <li><a href="/task-review.jsp">Record Exercise</a></li>
+	                <li><a href="/#">Another action</a></li>
+	                <li><a href="/#">Something else here</a></li>
+	                <li role="separator" class="divider"></li>
+	                <li class="dropdown-header">Nav header</li>
+	                <li><a href="/#">Separated link</a></li>
+	                <li><a href="/#">One more separated link</a></li>
+	              </ul>
+	            </li>
+			  </c:when>
+			  <c:when test='${user.role=="therapist" }'>
+			  	<li class="dropdown">
+	              <a href="/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Therapist Tools<span class="caret"></span></a>
+	              <ul class="dropdown-menu">
+	                <li><a href="/task-review.jsp">Record Exercise</a></li>
+	                <li><a href="/#">Another action</a></li>
+	                <li><a href="/#">Something else here</a></li>
+	                <li role="separator" class="divider"></li>
+	                <li class="dropdown-header">Nav header</li>
+	                <li><a href="/#">Separated link</a></li>
+	                <li><a href="/#">One more separated link</a></li>
+	              </ul>
+	            </li>
+			  </c:when>
+			  <c:when test='${user.role=="client" }'>
+			  	<li class="dropdown">
+	              <a href="/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Client Tools<span class="caret"></span></a>
+	              <ul class="dropdown-menu">
+	                <li><a href="/task-review.jsp">Record Exercise</a></li>
+	                <li><a href="/#">Another action</a></li>
+	                <li><a href="/#">Something else here</a></li>
+	                <li role="separator" class="divider"></li>
+	                <li class="dropdown-header">Nav header</li>
+	                <li><a href="/#">Separated link</a></li>
+	                <li><a href="/#">One more separated link</a></li>
+	              </ul>
+	            </li>
+			  </c:when>
+			</c:choose>
           </ul>
 
           <ul class="nav navbar-nav navbar-right">
             	<c:choose>
 				  <c:when test="${user == null }">
-				  	<li class="active"><a href="/login.jsp">Sign In</a></li>
+				  	<li><a href="/login.jsp">Sign In&nbsp;<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></a></li>
 				  </c:when>
 
 				  <c:otherwise>
-				    <li><a href="/secure/AccountManagement">Hello, ${user.email} (${user.role})</a></li>
-				    <li title="Sign Out"><a href="/secure/LogOut"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></li>
+				    <li><a href="/secure/AccountManagement" style="padding-right:0px;">Hello, ${user.email} (${user.role})</a></li>
+				    <li title="Sign Out"><a href="/LogOut"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></li>
 				  </c:otherwise>
 				</c:choose>
           </ul>

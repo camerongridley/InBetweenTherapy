@@ -13,7 +13,7 @@ import com.cggcoding.models.User;
 /**
  * Servlet implementation class LogOut
  */
-@WebServlet("/secure/LogOut")
+@WebServlet("/LogOut")
 public class LogOut extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -41,15 +41,17 @@ public class LogOut extends HttpServlet {
 	protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
-		User user = (User)session.getAttribute("user");
+		//User user = (User)session.getAttribute("user");
 		String forwardTo = "/index.jsp";
-		String requestedAction = request.getParameter("requestedAction");
-		String path = request.getParameter("path");
-		request.setAttribute("path", path);
+		//String requestedAction = request.getParameter("requestedAction");
+		//String path = request.getParameter("path");
+		//request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
 		
 		session.invalidate();		
-
+		
+		forwardTo = "/login.jsp";
+		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 
     }

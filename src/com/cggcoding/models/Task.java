@@ -38,11 +38,12 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private String resourceLink;
 	private boolean completed;
 	private LocalDateTime dateCompleted;
-	private int taskOrder;
+	private int clientTaskOrder;
 	private boolean extraTask;
 	private boolean template;
 	private int templateID;
-	int repetitions;
+	int clientRepetition;
+	boolean disabled; //this property is not maintained in the database and is set upon or after loading.  It's purpose is to tell the view if assiciated control should be disabled
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
@@ -62,11 +63,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.resourceLink = null;
 		this.completed = false;
 		this.dateCompleted = null;
-		this.taskOrder = 0;
+		this.clientTaskOrder = 0;
 		this.extraTask = false;
 		this.template = false;
 		this.templateID = 0;
-		this.repetitions = 1;
+		this.clientRepetition = 1;
 
 	}
 	
@@ -79,11 +80,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @param title
 	 * @param instructions
 	 * @param resourceLink
-	 * @param taskOrder
+	 * @param clientTaskOrder
 	 * @param extraTask
 	 * @param template
 	 */
-	protected Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int taskOrder, boolean extraTask, boolean template, int templateID, int repetitions){
+	protected Task (int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition){
 		this.taskID = 0;
 		this.stageID = stageID;
 		this.userID = userID;
@@ -94,11 +95,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.resourceLink = resourceLink;
 		this.completed = false;
 		this.dateCompleted = null;
-		this.taskOrder = taskOrder;
+		this.clientTaskOrder = clientTaskOrder;
 		this.extraTask = extraTask;
 		this.template = template;
 		this.templateID = templateID;
-		this.repetitions = repetitions;
+		this.clientRepetition = clientRepetition;
 	}
 	
 	
@@ -113,11 +114,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @param resourceLink
 	 * @param completed
 	 * @param dateCompleted
-	 * @param taskOrder
+	 * @param clientTaskOrder
 	 * @param extraTask
 	 * @param template
 	 */
-	protected Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int taskOrder, boolean extraTask, boolean template, int templateID, int repetitions){
+	protected Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition){
 		this.taskID = taskID;
 		this.stageID = stageID;
 		this.userID = userID;
@@ -128,16 +129,16 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.resourceLink = resourceLink;
 		this.completed = completed;
 		this.dateCompleted = dateCompleted;
-		this.taskOrder = taskOrder;
+		this.clientTaskOrder = clientTaskOrder;
 		this.extraTask = extraTask;
 		this.template = template;
 		this.templateID = templateID;
-		this.repetitions = repetitions;
+		this.clientRepetition = clientRepetition;
 	}
 	
 	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
 		taskTemplate.setStageID(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID);
-		taskTemplate.setTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
+		taskTemplate.setClientTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
 		taskTemplate.setTemplate(true);
 		
 		taskTemplate.create();
@@ -178,7 +179,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 
 		TaskGeneric genericTask = TaskGeneric.loadGeneric(cn, taskID);
 		
-		task = convertToType(genericTask);
+		task = castGenericToType(genericTask);
 		
 		task.loadAdditionalData(cn, genericTask);
 
@@ -188,12 +189,13 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	protected abstract void loadAdditionalData(Connection cn, TaskGeneric genericTask) throws SQLException;
 	
 	
-	
-	/**This is used to determine the task type, primarily for when loading a task based solely on taskID and, therefore, the taskType would be unknown.
+	/**Takes a TaskGeneric, looks at it's taskTypeID and based on that calls that Task subtype's convertFromGeneric() method.
+	 * This is used primarily for when loading a task based solely on taskID and, therefore, the taskType would be unknown.
+	 * Since TaskGeneric is the concretized version of Task, it is the main argument and has the actual taskTypeID set to that property.
 	 * @param genericTask
 	 * @return
 	 */
-	private static Task convertToType(TaskGeneric genericTask){
+	private static Task castGenericToType(TaskGeneric genericTask){
 		Task task = null;
 		switch(genericTask.getTaskTypeID()){
 			case Constants.TASK_TYPE_ID_GENERIC_TASK:
@@ -207,6 +209,90 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return task;
 	}
 	
+	/**---Database Interaction an argument flag---
+	 * Converts a Task from one type to another.  
+	 * If updateDatabaseRows=false the sequence of events is: 
+	 * 1) cast supplied Task argument to generic and set it's taskTypeID to the taskTypeToConvertTo argument
+	 * 2) call castGenericToType
+	 * 
+	 * If updateDatabaseRows=true the sequence of events is: 
+	 * 1) cast supplied Task argument to generic and set it's taskTypeID to the taskTypeToConvertTo argument
+	 * 2) Task.deleteAdditionalData()
+	 * 3) call castGenericToType
+	 * 4) Task.createAdditionalData() - which will create all blank fields but allows for future updating
+	 * @param task
+	 * @param taskTypeIDtoConvertTo - the taskTypeID
+	 * @param updateDataBaseRows
+	 * @return
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	public static Task convertToType(Task task, int taskTypeIDtoConvertTo, boolean updateDataBaseRows) throws DatabaseException, ValidationException{
+		
+		//if the taskTypeID of the task argument and taskTypeIDtoConvertTo are equal, then just pass the task back
+		if(task.getTaskTypeID()!=taskTypeIDtoConvertTo){
+			//castGenericToType only accepts TaskGenric objects so first convert 
+			TaskGeneric genericTask = TaskGeneric.convertToGeneric(task);
+
+			//set the typeID to convert to so castGenericToType knows what to cast to
+			genericTask.setTaskTypeID(taskTypeIDtoConvertTo);
+			
+			if(updateDataBaseRows==false){
+				//if type to convert to is TaskGeneric, then no further conversion is necessary; could eliminate this condition check if wanted, that would just mean the task was converted to generic twice
+				if(taskTypeIDtoConvertTo != Constants.TASK_TYPE_ID_GENERIC_TASK){
+					task = castGenericToType(genericTask);
+				} else {
+					task = genericTask;
+				}
+
+			} else {
+				
+				Connection cn = null;
+		        
+		        try {
+		        	cn = dao.getConnection();
+		        	cn.setAutoCommit(false);
+		        	
+		        	task.deleteAdditionalData(cn);
+		        	
+		        	//if type to convert to is TaskGeneric, then no further conversion is necessary
+					if(taskTypeIDtoConvertTo != Constants.TASK_TYPE_ID_GENERIC_TASK){
+						task = castGenericToType(genericTask);
+					} else {
+						task = genericTask;
+					}
+		        	
+		        	task.createAdditionalData(cn);
+		        	
+		        	cn.commit();
+
+		        } catch (SQLException | ValidationException e) {
+		            e.printStackTrace();
+		            try {
+						System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+						cn.rollback();
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+						throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+					}
+		            if(e.getClass().getSimpleName().equals("ValidationException")){
+						throw new ValidationException(e.getMessage());
+					}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+						throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+					}
+		        } finally {
+		        	try {
+						cn.setAutoCommit(true);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					DbUtils.closeQuietly(cn);
+		        }
+			}
+		}
+
+		return task;
+	}
 	
 	@Override
 	public Task create()throws DatabaseException, ValidationException{
@@ -349,7 +435,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @param resourceLink
 	 * @param completed
 	 * @param dateCompleted
-	 * @param taskOrder
+	 * @param clientTaskOrder
 	 * @param extraTask
 	 * @param template
 	 * @return
@@ -386,6 +472,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 */
 	protected abstract boolean updateAdditionalData(Connection cn) throws ValidationException, SQLException;
 
+	protected abstract void deleteAdditionalData(Connection cn) throws ValidationException, SQLException;
 	
 	/**Copies the task, setting the taskID to 0 and template=false since templates are unique. DOES NOT SAVE TO DATABASE.
 	 * @param stageID
@@ -484,21 +571,12 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return dateCompleted;
 	}
 	
-	public int getTaskOrder() {
-		return taskOrder;
+	public int getClientTaskOrder() {
+		return clientTaskOrder;
 	}
 
-	public void setTaskOrder(int taskOrder) {
-		this.taskOrder = taskOrder;
-	}
-	
-	//FIXME currently not being used since linking Stage templates directly to Task templates and Task templates all have an order value of 0. The order for these tasks is stored in the task-stage mapping table.
-	/**Since taskOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
-	 *the order values start with 1.
-	 * @return
-	 */
-	public int getTaskOrderForUserDisplay(){
-		return taskOrder + 1;
+	public void setClientTaskOrder(int clientTaskOrder) {
+		this.clientTaskOrder = clientTaskOrder;
 	}
 
 	public boolean isExtraTask() {
@@ -517,12 +595,12 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.templateID = templateID;
 	}
 
-	public int getRepetitions() {
-		return repetitions;
+	public int getClientRepetition() {
+		return clientRepetition;
 	}
 
-	public void setRepetitions(int repetitions) {
-		this.repetitions = repetitions;
+	public void setClientRepetition(int clientRepetition) {
+		this.clientRepetition = clientRepetition;
 	}
 
 	public boolean isTemplate() {
@@ -539,6 +617,14 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 
 	public boolean isParentTask(){
 		return parentTaskID == 0;
+	}
+
+	public boolean isDisabled() {
+		return disabled;
+	}
+
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
 	}
 
 	public String getDateCompletedFormatted(){
@@ -601,7 +687,6 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		} else {
 			return 0;
 		}
-		//return (int)(((double)repetitionsCompleted/(double)repetitions) * 100);
 	}
 
 	public String getTaskTypeName(){

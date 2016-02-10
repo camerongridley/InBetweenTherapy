@@ -15,6 +15,7 @@ import java.util.*;
 
 import org.apache.commons.dbutils.DbUtils;
 
+//UNSURE Consider creating subclasses of Stage: ClientStage and TemplateStage since some vairables and methods are only valid for use with each type - now they are all housed in one class, so would be cleaner if they were split up
 public class Stage implements Serializable, Completable, DatabaseModel {
 
 	/**
@@ -26,9 +27,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	private int userID;
 	private String title;
 	private String description;
-	private int stageOrder; //the order of the stage within its treatment plan - if present decides the index it will be in the TreatmentPlan's List of Stages
+	private int clientStageOrder; //the order of the stage within client-owned treatment plans - order for admin and therapist owned treatment plans will be templates and so will be stored in the mapping class
 	private List<Task> tasks;
 	private List<Task> extraTasks; //for when user chooses to do more tasks than asked of - won't count toward progress meter but can be saved for review or other analysis (e.g. themes)
+	private List<MapStageTaskTemplate> stageTaskTemplateMapList;
 	private boolean completed;
 	private double percentComplete;
 	private List<StageGoal> goals;
@@ -38,15 +40,16 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	
 	private static DatabaseActionHandler dao = new MySQLActionHandler();
 
-	private Stage (int treatmentPlanID, int userID, String title, String description, int stageOrder, boolean template){
+	private Stage (int treatmentPlanID, int userID, String title, String description, int clientStageOrder, boolean template){
 		this.stageID = 0;
 		this.treatmentPlanID = treatmentPlanID;
 		this.userID = userID;
 		this.title = title;
 		this.description = description;
-		this.stageOrder = stageOrder;
+		this.clientStageOrder = clientStageOrder;
 		this.tasks = new ArrayList<>();;
 		this.extraTasks = new ArrayList<>();
+		this.stageTaskTemplateMapList = new ArrayList<>();
 		this.completed = false;
 		this.percentComplete = 0;
 		this.goals = new ArrayList<>();
@@ -56,7 +59,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	//Full constructor - asks for every argument stage has
-	private Stage(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder,
+	private Stage(int stageID, int treatmentPlanID, int userID, String title, String description, int clientStageOrder,
 			List<Task> tasks, List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals,
 			boolean inProgress, boolean template, int templateID) {
 		this.stageID = stageID;
@@ -64,9 +67,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.userID = userID;
 		this.title = title;
 		this.description = description;
-		this.stageOrder = stageOrder;
+		this.clientStageOrder = clientStageOrder;
 		this.tasks = tasks;
 		this.extraTasks = extraTasks;
+		this.stageTaskTemplateMapList = new ArrayList<>();
 		this.completed = completed;
 		this.percentComplete = percentComplete;
 		this.goals = goals;
@@ -81,7 +85,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @param userID is of the user who owns this
 	 * @param title Title of the stage
 	 * @param description Description of the stage
-	 * @param stageOrder Order of the stage within the parent TreatmentPlan
+	 * @param clientStageOrder Order of the stage within the parent TreatmentPlan
 	 * @param tasks List of tasks within this stage
 	 * @param extraTasks List of extra tasks within this stage
 	 * @param completed True if all tasks in the stage have been completed
@@ -90,9 +94,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @param template True if this is a Stage template and therefore has no concrete parent TreatmentPlan
 	 * @return Stage object
 	 */
-	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String title, String description, int stageOrder, List<Task> tasks, 
+	public static Stage getInstance(int stageID, int treatmentPlanID, int userID, String title, String description, int clientStageOrder, List<Task> tasks, 
 			List<Task> extraTasks, boolean completed, double percentComplete, List<StageGoal> goals, boolean inProgress, boolean template, int templateID){
-		return new Stage(stageID, treatmentPlanID, userID, title, description, stageOrder, tasks, extraTasks, completed, percentComplete, goals, inProgress, template, templateID);
+		return new Stage(stageID, treatmentPlanID, userID, title, description, clientStageOrder, tasks, extraTasks, completed, percentComplete, goals, inProgress, template, templateID);
 	}
 	
 	/**For use when creating a new Stage. As such, these are the only parameters that could be available for saving to the database.  
@@ -102,12 +106,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @param userID
 	 * @param title
 	 * @param description
-	 * @param stageOrder
+	 * @param clientStageOrder
 	 * @param template
 	 * @return
 	 */
-	public static Stage getInstanceWithoutID(int treatmentPlanID, int userID, String title, String description, int stageOrder, boolean template) {
-		Stage stage = new Stage(treatmentPlanID, userID, title, description, stageOrder, template);
+	public static Stage getInstanceWithoutID(int treatmentPlanID, int userID, String title, String description, int clientStageOrder, boolean template) {
+		Stage stage = new Stage(treatmentPlanID, userID, title, description, clientStageOrder, template);
 		return stage;
 	}
 
@@ -151,6 +155,14 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.extraTasks = extraTasks;
 	}
 
+	public List<MapStageTaskTemplate> getMapStageTaskTemplates() {
+		return stageTaskTemplateMapList;
+	}
+
+	public void setMapStageTaskTemplates(List<MapStageTaskTemplate> mapStageTaskTemplates) {
+		this.stageTaskTemplateMapList = mapStageTaskTemplates;
+	}
+
 	public Task getTaskByID(int taskID){
 		Task returnMe = null;
 		for(Task task : tasks){
@@ -189,22 +201,13 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		this.description = description;
 	}
 
-	public int getStageOrder() {
-		return stageOrder;
+	public int getClientStageOrder() {
+		return clientStageOrder;
 	}
 
 	//sets the order of the stage in the treatment plan if relevant
-	public void setStageOrder(int stageOrder) {
-		this.stageOrder = stageOrder;
-	}
-	
-	//FIXME currently not being used since linking Treatment Plan templates directly to Stage templates and Stage templates all have an order value of 0. The order for these tasks is stored in the stage-plan mapping table.
-	/**Since stageOrder is based off List indexes, it starts with 0.  So for displaying the order to users on the front end, add 1 so
-	 *the order values start with 1.
-	 * @return
-	 */
-	public int getStageOrderForUserDisplay(){
-		return this.stageOrder + 1;
+	public void setClientStageOrder(int clientStageOrder) {
+		this.clientStageOrder = clientStageOrder;
 	}
 	
 	public boolean isInProgress() {
@@ -348,10 +351,6 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return completeTasks;
 	}
 	
-	public void addGoal(StageGoal goal){
-		this.goals.add(goal);
-	}
-	
 	public StageGoal getGoalByID(int stageGoalID){
 		for(StageGoal goal : goals){
 			if(goal.getStageGoalID() == stageGoalID){
@@ -361,7 +360,46 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 		return null;
 	}
+	
+	public MapStageTaskTemplate getMappedTaskTemplateByTaskID(int taskID){
+		MapStageTaskTemplate found = new MapStageTaskTemplate();
+		for(MapStageTaskTemplate stageTaskTemplate : stageTaskTemplateMapList){
+			if(taskID == stageTaskTemplate.getTaskID()){
+				found = stageTaskTemplate;
+				break;
+			}
+		}
+		return found;
+	}
 
+	/**Inserts the new goal into the database, then adds it the this Stage's goal list.
+	 * @param goal
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	public void saveNewGoal(StageGoal goal) throws ValidationException, DatabaseException{
+		goal.create();
+		this.goals.add(goal);
+	}
+	
+	/**Deletes goal from the database then removes it from this instance of Stage
+	 * @param goalID
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	public void deleteGoal(int goalID) throws ValidationException, DatabaseException{
+		StageGoal.delete(goalID);
+		int indexToRemove = 0;
+		for(int i=0; i<goals.size(); i++){
+			if(goals.get(i).getStageGoalID() == goalID){
+				indexToRemove = i;
+				break;
+			}
+		}
+		
+		goals.remove(indexToRemove);
+	}
+	
 	/**Loads the stage and all associated Tasks.  Checks if the Stage is a template.  If so, then it's Tasks are also templates and 
 	 * the database loads the Tasks using the task_template_stage_template_mapping table to get the taskIDs to load.  If not a template then it 
 	 * just loads tasks straight from the task_generic table
@@ -409,9 +447,16 @@ public class Stage implements Serializable, Completable, DatabaseModel {
     	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
     	
     	if(stage.isTemplate()){
-    		stage.setTasks(dao.stageLoadTaskTemplates(cn, stageID));
+    		//get list of templates and set local variable
+    		List<MapStageTaskTemplate> taskMap = dao.mapStageTaskTemplateLoad(cn, stageID);
+    		stage.setMapStageTaskTemplates(taskMap);
+    		
+    		//loop through map and load Task templates to local List
+    		for(MapStageTaskTemplate stageTaskTempaltes : taskMap){
+    			stage.addTask(Task.load(cn, stageTaskTempaltes.getTaskID()));
+    		}
     	}else{
-    		stage.setTasks(dao.stageLoadTasks(cn, stage.getStageID()));
+    		stage.setTasks(dao.stageLoadClientTasks(cn, stage.getStageID()));
     	}
 		
 
@@ -447,6 +492,12 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         
     	stage = dao.stageLoadBasic(cn, stageID);
 
+    	stage.setGoals(dao.stageLoadGoals(cn, stageID));
+    	
+    	if(stage.isTemplate()){
+    		stage.setMapStageTaskTemplates(dao.mapStageTaskTemplateLoad(cn, stageID));
+    	}
+    	
         dao.throwValidationExceptionIfNull(stage);
         
         return stage;
@@ -501,6 +552,26 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return savedStage;*/
 	}
 	
+	protected void createBasic(Connection cn) throws ValidationException, SQLException{
+		
+		if(this.title.isEmpty()){
+    		throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
+    	}
+		
+		if(dao.stageValidateNewTitle(cn, this)){
+			dao.stageCreateBasic(cn, this);
+			
+			for(StageGoal goal : getGoals()){
+				if(goal.isValidGoal()){
+					//set the newly generated stageID in the goal
+					goal.setStageID(this.stageID);
+					goal.create(cn);
+				}
+			}
+
+		}
+	}
+	
 	protected void create(Connection cn) throws ValidationException, SQLException{
 		
 		if(this.title.isEmpty()){
@@ -526,16 +597,23 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		}
 	}
 
+	/**---Database Interaction---
+	 * Creates a new Stage template with the supplied userID, title and description.
+	 * Sets treatmentPlanID to Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, templateStageOrder to Constants.TEMPLATE_ORDER_NUMBER and template to true.
+	 * Then it inserts the new Stage into the database with Stage.create().
+	 * @param userID
+	 * @param title
+	 * @param description
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
 	public static Stage createTemplate(int userID, String title, String description) throws ValidationException, DatabaseException{
 		Stage stageTemplate = new Stage(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, title, description, Constants.TEMPLATE_ORDER_NUMBER, true);
 		
 		stageTemplate.create();
 		
 		return stageTemplate;
-	}
-	
-	public static Stage createTemplate(Stage templateStage) throws ValidationException, DatabaseException{
-		return createTemplate(templateStage.getUserID(), templateStage.getTitle(), templateStage.getDescription());
 	}
 	
 	@Override
@@ -545,11 +623,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         try {
         	cn = dao.getConnection();
         	
-        	updateBasic(cn);
-        	
-        	for(StageGoal goal : goals){
-        		goal.update(cn);
-        	}
+        	update(cn);
         	
         } catch (SQLException e) {
             e.printStackTrace();
@@ -558,6 +632,23 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 
 			DbUtils.closeQuietly(cn);
         }
+		
+	}
+	
+	public void update(Connection cn)  throws SQLException, ValidationException {
+
+    	updateBasic(cn);
+    	
+    	for(StageGoal goal : goals){
+    		goal.update(cn);
+    	}
+    	
+    	if(this.template){
+    		for(MapStageTaskTemplate stageTaskTemplate : this.stageTaskTemplateMapList){
+        		stageTaskTemplate.update(cn);
+        	}  
+    	}
+    	 	
 		
 	}
 	
@@ -635,15 +726,19 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
-	public void addTaskTemplate(int taskTemplateID) throws DatabaseException, ValidationException{
+	public void addTaskTemplate(int taskTemplateID, int templateRepetitions) throws DatabaseException, ValidationException{
 		Connection cn = null;
 	
 		if(this.isTemplate()){
 			try {
 				
 	        	cn = dao.getConnection();
-	        	if(dao.mapsTaskStageTemplateValidate(cn, taskTemplateID, this.getStageID())){
-	        		dao.mapsTaskStageTemplateCreate(cn, taskTemplateID, this.stageID, this.getTaskOrderDefaultValue());
+	        	if(dao.mapStageTaskTemplateValidate(cn, taskTemplateID, this.getStageID())){
+	        		MapStageTaskTemplate map = new MapStageTaskTemplate(this.stageID, taskTemplateID, this.getTaskOrderDefaultValue(), templateRepetitions);
+	        		map.create(cn);
+
+	        		stageTaskTemplateMapList.add(map);
+	        		this.tasks.add(Task.load(cn, taskTemplateID));
 	        	}
 
 			} catch (SQLException e) {
@@ -658,26 +753,111 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 	}
 	
-	public Task copyTaskIntoStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
+	public List<Task> createTaskFromTemplate(int taskIDBeingCopied, MapStageTaskTemplate stageTaskInfo) throws DatabaseException, ValidationException{
+		Connection cn = null;
+		List<Task> createdTasks = new ArrayList<>();
+		
+		//TODO decide if need a template check
+		//if(this.isTemplate()){
+			try {
+				
+	        	cn = dao.getConnection();
+
+	        	createdTasks = createTaskFromTemplate(cn, taskIDBeingCopied, stageTaskInfo);
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }		
+		//}else{
+		//	throw new ValidationException(ErrorMessages.STAGE_IS_NOT_TEMPLATE);
+		//}
+		
+		return createdTasks;
+		
+	}
+	
+	protected List<Task> createTaskFromTemplate(Connection cn, int taskIDBeingCopied, MapStageTaskTemplate stageTaskInfo) throws SQLException, ValidationException{
+		List<Task> createdTasks = new ArrayList<>();
+		int taskReps = stageTaskInfo.getTemplateTaskRepetitions();
+		Task task = Task.load(cn, stageTaskInfo.getTaskID());
+		task.setUserID(this.getUserID());
+		task.setStageID(this.stageID);
+		task.setTemplate(false);
+		task.setTemplateID(task.getTaskID());
+		
+		for(int i = 0; i<taskReps; i++){
+			Task taskRep = task.copy();
+			taskRep.setClientRepetition(i+1);
+			
+			//if more than 1 repetition, change the Task title to reflect repetition number
+			if(taskReps > 1){
+				taskRep.setTitle(task.getTitle() + " (" + (i+1) + ")");
+			}
+			
+			taskRep.setClientTaskOrder(tasks.size());
+			
+			taskRep.create(cn);
+			this.addTask(taskRep);
+			createdTasks.add(taskRep);
+		}
+		
+		
+		
+		return createdTasks;
+	}
+	
+//TODO delete
+/*	public Task copyTaskIntoClientStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
 		Task task = Task.load(taskIDBeingCopied);
 		task.setTemplate(false);
 		task.setUserID(this.userID);
 		task.setStageID(this.stageID);
-		task.setTaskOrder(this.getTaskOrderDefaultValue());
+		task.setTemplateID(taskIDBeingCopied);
+		task.setClientTaskOrder(this.getTaskOrderDefaultValue());
 		
 		task.create();
 		this.addTask(task);
 		
 		return task;
-	}
+	}*/
 	
-	public Task createNewTask(Task taskBeingCopied) throws DatabaseException, ValidationException{
+	//TODO delete since not being used?
+	/*public Task createNewTask(Task taskBeingCopied) throws DatabaseException, ValidationException{
 		taskBeingCopied.setUserID(this.userID);
 		taskBeingCopied.setStageID(this.stageID);
-		taskBeingCopied.setTaskOrder(this.getTaskOrderDefaultValue());
+		taskBeingCopied.setClientTaskOrder(this.getTaskOrderDefaultValue());
 		
 		return taskBeingCopied.create();
-	}
+	}*/
+	
+	/**---Database Interaction---
+	 * Creates a new Stage for an existing client-owned TreatmentPlan with the supplied title and description. 
+	 * Sets treatmentPlanID with this plan's ID, userID with this plan's userID, clientStageOrder based on the number of existing Stages in the TreatmentPlan, and template is set to false.
+	 * Then it inserts the new stage into the database with stage.create() and then adds the stage to the local Stages list.
+	 * @param stageTitle - Title of new Stage
+	 * @param stageDescription - Description of the Stage
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	/*public Task createClientTask(String taskTitle, String taskInstructions) throws ValidationException, DatabaseException{
+		Task clientTask = null;
+		if(!this.template){
+			clientTask = Stage.getInstanceWithoutID(this.treatmentPlanID, this.userID, stageTitle, stageDescription, this.getStageOrderDefaultValue(), false);
+
+			clientStage.create();
+			
+			this.addStage(clientStage);
+		} else {
+			throw new ValidationException(ErrorMessages.TASK_CLIENT_ONLY_ALLOWED_IN_STAGE_TEMPLATE);
+		}
+		
+		
+		return clientStage;
+	}*/
 	
 	public Stage deleteTask(int taskToDeleteID) throws ValidationException, DatabaseException{
 		Connection cn = null;
@@ -691,8 +871,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				task = tasks.get(i);
 				if(task.getTaskID() == taskToDeleteID){
 					
-					if(task.isTemplate()){ //UNSURE Does it matter if I check use Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
-						dao.mapsTaskStageTemplateDelete(cn, taskToDeleteID);
+					if(task.isTemplate()){ //UNSURE Does it matter if I check Task or Stage isTemplate() method here?  Since keeping the tasks as templates when they are part of stage templates, it really shouldn't but I fear I am overlooking something.
+						MapStageTaskTemplate.delete(cn, taskToDeleteID, this.stageID);
+						stageTaskTemplateMapList.remove(i);//this list is only populated when the stage is a template whereas the tasks list is always populated so remove from that below where all conditions hit it
 					}else{
 						task.delete(cn);
 					}
@@ -741,16 +922,136 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return this;
 	}
 	
-	protected List<Task> updateTaskTemplateList(Connection cn, List<Task> taskTemplates) throws SQLException{
-		return dao.stageUpdateTaskTemplates(cn, this.stageID, taskTemplates);
+	protected List<MapStageTaskTemplate> updateTaskTemplateList(Connection cn, List<Task> taskTemplates) throws SQLException{
+		return dao.stageUpdateTemplateTasks(cn, this.stageID, stageTaskTemplateMapList);
 	}
 	
 	private void reorderTasks(){
-		for(int i=0; i < this.tasks.size(); i++){
-			tasks.get(i).setTaskOrder(i);
+		//if this Stage is a template then it's task order info is going to be in the mapping table so reorder those.  Otherwise, the task order is a prop of the task
+		if(this.template){
+			for(int i=0; i < this.stageTaskTemplateMapList.size(); i++){
+				stageTaskTemplateMapList.get(i).setTemplateTaskOrder(i);
+			}
+		} else {
+			for(int i=0; i < this.tasks.size(); i++){
+				tasks.get(i).setClientTaskOrder(i);
+			}
 		}
+		
 	}
 	
+	//TODO decide if I want to keep int mainTaskID as an argument.  It isn't being used right now.
+	public void orderIncrementTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
+		Connection cn = null;
+		
+		if(originalOrder <= 0){
+			throw new ValidationException(ErrorMessages.TASK_IS_FIRST);
+		}
+		
+		try {
+			cn = dao.getConnection();
+    		
+			//update the order in the actual tasks templates - happens for templates and client tasks
+			Task mainTask = tasks.get(originalOrder);
+			Task prevTask = tasks.get(originalOrder-1);
+			this.tasks.set(originalOrder-1, mainTask);
+			this.tasks.set(originalOrder, prevTask);
+			
+			//if this Stage is a template, then update the stage-mapping info
+			if(this.template){
+				MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
+				MapStageTaskTemplate prevStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder-1);
+				
+				//swap order values in mapping info
+				mainStageTaskMap.setTemplateTaskOrder(originalOrder-1);
+				prevStageTaskMap.setTemplateTaskOrder(originalOrder);
+				
+				//swap places in both the stageTaskMap and tasks List
+				this.stageTaskTemplateMapList.set(originalOrder-1, mainStageTaskMap);
+				this.stageTaskTemplateMapList.set(originalOrder, prevStageTaskMap);
+				
+				//update in database
+				mainStageTaskMap.update(cn);
+				prevStageTaskMap.update(cn);
+			} else {
+				//this is a client task so update the task's clientOrder prop
+				mainTask.setClientTaskOrder(originalOrder-1);
+				prevTask.setClientTaskOrder(originalOrder);
+				
+				//update it in the database
+				mainTask.update(cn);
+				prevTask.update(cn);
+			}
+			
+			
+        	
+        	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }		
+			
+	}
+	
+	//TODO decide if I want to keep int mainTaskID as an argument.  It isn't being used right now.
+	public void orderDecrementTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
+		Connection cn = null;
+		
+		if(originalOrder == this.getMapStageTaskTemplates().size()-1){
+			throw new ValidationException(ErrorMessages.TASK_IS_LAST);
+		}
+		
+		try {
+			cn = dao.getConnection();
+			
+			//update the order in the actual tasks templates - happens for templates and client tasks
+			Task mainTask = tasks.get(originalOrder);
+			Task nextTask = tasks.get(originalOrder+1);
+			this.tasks.set(originalOrder+1, mainTask);
+			this.tasks.set(originalOrder, nextTask);
+			
+			//if this Stage is a template, then update the stage-mapping info
+			if(this.template){
+				MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
+				MapStageTaskTemplate nextStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder+1);
+				
+				//swap order values in mapping info
+				mainStageTaskMap.setTemplateTaskOrder(originalOrder+1);
+				nextStageTaskMap.setTemplateTaskOrder(originalOrder);
+
+				//swap places in the local List
+				this.stageTaskTemplateMapList.set(originalOrder+1, mainStageTaskMap);
+				this.stageTaskTemplateMapList.set(originalOrder, nextStageTaskMap);
+				
+				//update in database
+				mainStageTaskMap.update(cn);
+				nextStageTaskMap.update(cn);
+
+			} else {
+				//this is a client task so update the task's clientOrder prop
+				mainTask.setClientTaskOrder(originalOrder+1);
+				nextTask.setClientTaskOrder(originalOrder);
+				
+				//update it in the database
+				mainTask.update(cn);
+				nextTask.update(cn);
+			}
+			
+			
+        	
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }	
+		
+	}
+	
+	
+	//TODO delete because not being used?
 	/**Creates a copy of the Stage and sets the copy's stageID to 0.  DOES NOT save anything to database.
 	 * @param treatmentPlanIDToCopy - treatmentPlanID the Stage is being copied into
 	 * @param userIDToCopy - userID of the User that owns the TreatmentPlan the Stage is being copied into
@@ -761,10 +1062,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 */
 	public Stage copy(){
 		boolean falseForTemplate = false;
-		Stage copiedStage = getInstanceWithoutID(this.treatmentPlanID, this.userID, this.title, this.description, this.stageOrder, falseForTemplate);
+		Stage copiedStage = getInstanceWithoutID(this.treatmentPlanID, this.userID, this.title, this.description, this.clientStageOrder, falseForTemplate);
 
 		for(StageGoal goal : this.goals){
-			copiedStage.addGoal(goal.copy());
+			copiedStage.getGoals().add(goal.copy());
 		}
 		
 		for(Task task : this.tasks){
@@ -778,4 +1079,6 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public static List<Stage> getDefaultStages() throws DatabaseException, ValidationException{
 		return dao.stagesGetDefaults();
 	}
+
+	
 }

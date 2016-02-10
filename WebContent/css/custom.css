@@ -16,7 +16,7 @@ body {
 }
 
 .jumbotron h2 {
-	font-size: 24px;
+	font-size: 20px;
 }
 
 h1{
@@ -56,6 +56,7 @@ h2{
 .panel-body-task {
 	padding: 10px;
 }
+
 /* Login css */
 .form-signin {
   max-width: 330px;
@@ -123,9 +124,18 @@ h2{
     color: white;
 }
 
-.progress-stage-disabled {
+.progress-stage-disabled-active {
+    color: black;
+    background-color: darkgray;
+}
+
+.progress-stage-disabled-inactive {
     color: gray;
     background-color: lightgray;
+}
+
+.progress-stage-disabled-inactive a{
+    color: slategray;
 }
 
 .progress-bar-separator {
@@ -141,12 +151,29 @@ h2{
     font-weight: bold;
 }
 
+.task-repetition-dropdown {
+	width:45px;
+	height:22px;
+	border-radius: 3px;
+	color: black;
+}
+
 .responsive-checkbox {
     width: 18px; 
     height: 18px;
     margin-top: 2px;
 }
 
+.save-button{
+	margin-top:10px;
+}
+
+.hide-overflow
+{
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
 
 /* For Large Screen Width */
 @media (min-width: 768px){
@@ -163,15 +190,24 @@ h2{
     }
     
     .jumbotron {
-		padding: 30px;
+		padding: 40px;
 	    margin-bottom: 15px;
 	}
 	    
     .jumbotron h1 {
-		font-size: 36px;
+		font-size: 50px;
 	}
 	
 	.jumbotron h2 {
+		font-size: 30px;
+	}
+	
+	h1{
+		font-size: 50px;
+		
+	}
+	
+	h2{
 		font-size: 30px;
 	}
 	

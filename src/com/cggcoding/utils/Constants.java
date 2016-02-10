@@ -30,14 +30,39 @@ public class Constants {
 	private static final String TASK_TYPE_NAME_TASK_TWO_TEXTBOXES = new TaskTwoTextBoxes().getTaskTypeName();
 	
 	//These methods allow access to these values via JSTL when this class is put into the context
-	public static String getTaskTypeNameTaskGeneric() {
+	public static final String getTaskTypeNameTaskGeneric() {
 		return TASK_TYPE_NAME_TASK_GENERIC;
 	}
-	public static String getTaskTypeNameTaskTwoTextboxes() {
+	public static final String getTaskTypeNameTaskTwoTextboxes() {
 		return TASK_TYPE_NAME_TASK_TWO_TEXTBOXES;
 	}
 	
-	public static String PATH_CREATE_TREATMENT_PLAN = "creatingPlanTemplate";
+	//Paths
+	public static final String PATH_TEMPLATE_TREATMENT_PLAN = "templateTreatmentPlan";
+	public static final String PATH_TEMPLATE_STAGE = "templateStage";
+	public static final String PATH_TEMPLATE_TASK = "templateTask";
+	
+	public static final String PATH_MANAGE_CLIENT = "manageClients";
+	public static final String PATH_CLIENT_TREATMENT_PLAN = "clientTreatmentPlan";
+	public static final String PATH_CLIENT_STAGE = "clientStage";
+
+	//URLs
+	public static final String URL_ADMIN_MAIN_MENU = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+	public static final String URL_THERAPIST_MAIN_MENU = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
+	public static final String URL_CLIENT_MAIN_MENU = "/WEB-INF/jsp/client-tools/client-main-menu.jsp";
+	
+	public static final String URL_THERAPIST_MANAGE_CLIENT_MAIN = "/WEB-INF/jsp/therapist-tools/manage-clients-main.jsp";
+	public static final String URL_THERAPIST_MANAGE_CLIENT_PLANS = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
+	
+	public static final String URL_CREATE_TREATMENT_PLAN = "/WEB-INF/jsp/treatment-plans/treatment-plan-create.jsp";
+	public static final String URL_CREATE_STAGE = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
+	public static final String URL_CREATE_TASK = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
+	public static final String URL_EDIT_TREATMENT_PLAN = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+	public static final String URL_EDIT_STAGE = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
+	public static final String URL_EDIT_TASK = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
+
+	public static final String URL_INDEX = "/index.jsp";;
+	
 
 	
 	

@@ -10,13 +10,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.MapStageTaskTemplate;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
  * Servlet implementation class CreateTask
@@ -51,7 +54,7 @@ public class CreateTask extends HttpServlet {
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
@@ -60,9 +63,10 @@ public class CreateTask extends HttpServlet {
 		userID =  user.getUserID();
 		int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		Stage stage = null;
+		int taskReps = ParameterUtils.parseIntParameter(request, "taskReps");
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
-		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);
+		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);//TODO change this to use updateTaskParametersFromRequest
 
 		int planToReturnTo = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 		request.setAttribute("treatmentPlanID", planToReturnTo);
@@ -72,49 +76,50 @@ public class CreateTask extends HttpServlet {
 			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
 			request.setAttribute("defaultTasks", Task.getDefaultTasks());
 			
-			if(!path.equals("taskTemplate")){
+			if(!path.equals(Constants.PATH_TEMPLATE_TASK)){
 				stage = Stage.load(stageID);
 			}
 	
-			if(user.hasRole("admin")){
-				UserAdmin admin = (UserAdmin)user;
+			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
+
 				switch(requestedAction){
 				case ("create-task-start"):
 					//set tempTask in request so page knows value of isTemplate
 					request.setAttribute("task", taskToCreate);
-					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
+					forwardTo = Constants.URL_CREATE_TASK;
 					break;
 				case "task-add-default-template" :
 
-					if(taskToCreate.getTaskID() != 0){
-						//TODO delete? stage = Stage.load(stageID);
-						stage.addTaskTemplate(taskToCreate.getTaskID());
-						//stage.copyTaskIntoStage(taskToCreate.getTaskID());
+					if(taskToCreate.getTaskID() != 0){				
 						
-						if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
-							request.setAttribute("stage", stage);//XXX right now this is redundant as loadStageAndPutInRequest is called later
+						forwardTo = Constants.URL_EDIT_STAGE;
+						if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
+							stage.addTaskTemplate(taskToCreate.getTaskID(), taskReps);
 							request.setAttribute("defaultStageList", Stage.getDefaultStages());
-							forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
-						}else{
-							forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+							
+						} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
+							int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
+							MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), taskToCreate.getTaskID(), 0, clientRepetition);
+							stage.createTaskFromTemplate(taskToCreate.getTaskID(), stageTaskInfo);
 						}
+						request.setAttribute("successMessage", SuccessMessages.TASK_ADDED_TO_STAGE);
 					}
 					
 					break;
 				case "task-type-select":
 					request.setAttribute("task", taskToCreate);
 					request.setAttribute("defaultTasks", Task.getDefaultTasks());
-					forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
+					forwardTo = Constants.URL_CREATE_TASK;
 					break;
 				case ("create-new-task"):
 					Task newTask = null;
 				
 					//TODO implement this?
 					/*switch(path){
-						case "taskTemplate":
+						case Constants.PATH_TEMPLATE_TASK:
 							Task.createTemplate(taskToCreate);
 							break;
-						case "stageTemplate":
+						case Constants.PATH_TEMPLATE_STAGE:
 							newTask = Task.createTemplate(taskToCreate);
 							stage = Stage.load(stageID);
 							stage.addTaskTemplate(newTask.getTaskID());
@@ -123,12 +128,14 @@ public class CreateTask extends HttpServlet {
 							
 							
 					}*/
-					if(path.equals("taskTemplate")){
+					if(path.equals(Constants.PATH_TEMPLATE_TASK)){
 						Task.createTemplate(taskToCreate);
-					} else {
+						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+					} else if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
+						
 						newTask = Task.createTemplate(taskToCreate);
 						//TODO delete? stage = Stage.load(stageID);
-						stage.addTaskTemplate(newTask.getTaskID());
+						stage.addTaskTemplate(newTask.getTaskID(), taskReps);//TODO make sure this is working right
 						/*stage = Stage.load(stageID);
 						stage.createNewTask(taskToCreate);
 						
@@ -137,24 +144,25 @@ public class CreateTask extends HttpServlet {
 							Task.createTemplate(templateCopy);
 						}*/
 						
-						request.setAttribute("stage", Stage.load(stageID));
-					}
-										
-					if(path.equals("treatmentPlanTemplate") || path.equals("stageTemplate")){
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
-					}else{
-						forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+						//request.setAttribute("stage", Stage.load(stageID));
+						forwardTo = Constants.URL_EDIT_STAGE;
+					} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
+						
+						forwardTo = Constants.URL_EDIT_STAGE;
 					}
 
 					break;
 				}
 				
 				
-				if(path.equals("taskTemplate")){
+				/*//TODO delete after confirm removal didn't break things
+				 * if(path.equals(Constants.PATH_TEMPLATE_TASK)){
 					
 				}else{
-					stage = loadStageAndPutInRequest(request, stageID);
-				}
+					stage = loadStageAndPutInRequest(request, stageID);//OPTIMIZE delete this and just make sure all previous methods return the Stage object with the proper modifications
+				}*/
+				
+				request.setAttribute("stage", stage);
 
 			}
 			
@@ -165,7 +173,7 @@ public class CreateTask extends HttpServlet {
 			request.setAttribute("treatmentPlanID", planToReturnTo);
 			request.setAttribute("errorMessage", e.getMessage());
 
-			forwardTo = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
+			forwardTo = Constants.URL_CREATE_TASK;
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

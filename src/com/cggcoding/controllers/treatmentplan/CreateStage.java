@@ -12,11 +12,13 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.MapTreatmentPlanStageTemplate;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
 import com.cggcoding.utils.messaging.SuccessMessages;
@@ -54,14 +56,17 @@ public class CreateStage extends HttpServlet {
 		/*--Common Servlet variables that should be in every controller--*/
 		HttpSession session = request.getSession();
 		User user = (User)session.getAttribute("user");
-		String forwardTo = "index.jsp";
+		String forwardTo = Constants.URL_INDEX;
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+    	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
 		/*-----------End Common Servlet variables---------------*/
 		
 		int selectedDefaultStageID = ParameterUtils.parseIntParameter(request, "defaultStageID");
-		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 		String stageTitle = request.getParameter("stageTitle");
     	String stageDescription = request.getParameter("stageDescription");
     	int stageOrder = ParameterUtils.parseIntParameter(request, "stageOrder");
@@ -73,39 +78,37 @@ public class CreateStage extends HttpServlet {
 		request.setAttribute("treatmentPlanID", treatmentPlanID);
 		
 		try{
-			if(!path.equals("stageTemplate")){
+			if(!path.equals(Constants.PATH_TEMPLATE_STAGE)){
 				treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 			}
 			
 			defaultStages = Stage.getDefaultStages();
 			
-			if(user.hasRole("admin")){
-				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
-								
+			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){				
 				switch (requestedAction){
 					case "stage-create-start":
 
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
+						forwardTo = Constants.URL_CREATE_STAGE;
 						break;
 					case "stage-add-default-template":
 						
 						if(selectedDefaultStageID != 0){
-							//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-							treatmentPlan.addStageTemplate(selectedDefaultStageID);
-							//treatmentPlan.copyStageIntoTreatmentPlan(selectedDefaultStageID);
-	
-			            	if(path.equals("treatmentPlanTemplate")){
-			                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
+			            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
+			            		treatmentPlan.addStageTemplate(selectedDefaultStageID);
 			                	
 			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
 			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
 			                	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
 			                	
-			                	//OPTIMIZE loading the plan twice here - possible improvement would be to have plan.addStageTemplate add the stage to the local stages List so would need to have the dao method return a stage 
-			                	//need to reload the plan with the newly added stage
-			                	treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-			                	forwardTo = "/WEB-INF/jsp/treatment-plans/treatment-plan-edit.jsp";
+			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
+			                } else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
+			                	MapTreatmentPlanStageTemplate platStageInfo = null;//should there be any attributes to be passed, like if stage repetitions was added, they would go in this. for now, none of it's properties are relevant in this particular situation
+			                	treatmentPlan.createStageFromTemplate(selectedDefaultStageID, platStageInfo);
+			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
+			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                }
+			            	
+			            	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 						}
 		            	break;
 		            case "stage-create-title":
@@ -115,12 +118,28 @@ public class CreateStage extends HttpServlet {
 		                }
 		                
 		                Stage newStage = null;
-		                if(path.equals("stageTemplate")){
-		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
+		                if(path.equals(Constants.PATH_TEMPLATE_STAGE)){
+		                	newStage = Stage.createTemplate(user.getUserID(), stageTitle, stageDescription);
+		                	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
+		                	forwardTo = Constants.URL_EDIT_STAGE;
 		                } else {
-		                	newStage = Stage.createTemplate(userAdmin.getUserID(), stageTitle, stageDescription);
+		                	if(path.equals(Constants.PATH_MANAGE_CLIENT)){
+		                		newStage = treatmentPlan.createClientStage(stageTitle, stageDescription);
+		                		forwardTo = Constants.URL_EDIT_STAGE;
+		                	} else if (path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
+		                		//TODO write new method in TreatmentPlan that combines these two lines?
+		                		newStage = Stage.createTemplate(user.getUserID(), stageTitle, stageDescription);
+		                		treatmentPlan.addStageTemplate(newStage.getStageID());
+		                		request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
+		                		forwardTo = Constants.URL_EDIT_STAGE;
+		                		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
+		                	}
+		                	
+		                	
+		                	
+		                	
 		                	//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-		                	treatmentPlan.addStageTemplate(newStage.getStageID());
+		                	
 		                	
 		                	/*treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 		                	newStage = treatmentPlan.createNewStage(userAdmin.getUserID(), stageTitle, stageDescription);*/
@@ -128,24 +147,16 @@ public class CreateStage extends HttpServlet {
 
 		                request.setAttribute("stage", newStage);
 		                
-		                
-		                if(path.equals("treatmentPlanTemplate")){
-		                	
-		                	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
-		                }else{
-		                	request.setAttribute("successMessage", SuccessMessages.STAGE_TEMPLATE_BASIC_CREATE);
-		                }
-		                forwardTo = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 		                break;
 		            case("add-stage-to-treatment-plan"):
 						//set all user-independent lists into request
 						request.setAttribute("defaultStages", defaultStages);
 		            	//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-						forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
+						forwardTo = Constants.URL_CREATE_STAGE;
 						break;
 		            default:
 
-		                forwardTo = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
+		                forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 		                break;
 				}
 				
@@ -163,7 +174,7 @@ public class CreateStage extends HttpServlet {
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("defaultStages", defaultStages);
 			
-            forwardTo = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
+            forwardTo = Constants.URL_CREATE_STAGE;
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

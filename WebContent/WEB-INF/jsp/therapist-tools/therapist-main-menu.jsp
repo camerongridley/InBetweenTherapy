@@ -16,6 +16,16 @@
     <h1>Therapist Main Menu</h1>
   </div>
   <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
+  
+  
+  <p>
+    <form class="form-inline" action="/secure/ManageClients" method="POST">
+      <div><button type="submit" class="btn btn-primary">Manage Clients</button></div>
+      <input type="hidden" name="requestedAction" value="client-management-menu">
+      <input type="hidden" name="path" value="manageClients">
+    </form>
+  </p>
+  
   <p>
     <form class="form-inline" action="/secure/LoadData" method="POST">
       <div><button type="submit" class="btn btn-primary" disabled>Create Treatment Plan</button></div>
@@ -33,21 +43,12 @@
   </p>
 
   <p>
-    <form class="form-inline" action="/secure/AssignTreatmentPlan" method="POST">
-      <div><button type="submit" class="btn btn-primary">Assign Plan to Client</button></div>
-      <input type="hidden" name="requestedAction" value="assign-treatment-plan-start">
-      <input type="hidden" name="path" value="assignClientTreatmentPlan">
+    <form class="form-inline" action="/secure/ManageClients" method="POST">
+      <div><button type="submit" class="btn btn-primary" disabled>Invite a New Client</button></div>
+      <input type="hidden" name="requestedAction" value="invite-new-client">
+      <input type="hidden" name="path" value="inviteClient">
     </form>
   </p>
-
-  <p>
-    <form class="form-inline" action="/secure/LoadData" method="POST">
-      <div><button type="submit" class="btn btn-primary" disabled>Manage Clients</button></div>
-      <input type="hidden" name="requestedAction" value="manage-clients">
-      <input type="hidden" name="path" value="assignClientTreatmentPlan">
-    </form>
-  </p>
-
 
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />
