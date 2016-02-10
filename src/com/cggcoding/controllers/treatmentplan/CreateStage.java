@@ -131,7 +131,7 @@ public class CreateStage extends HttpServlet {
 		                		newStage = Stage.createTemplate(user.getUserID(), stageTitle, stageDescription);
 		                		treatmentPlan.addStageTemplate(newStage.getStageID());
 		                		request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
-		                		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
+		                		forwardTo = Constants.URL_EDIT_STAGE;
 		                		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
 		                	}
 		                	

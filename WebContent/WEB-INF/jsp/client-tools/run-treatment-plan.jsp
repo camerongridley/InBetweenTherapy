@@ -27,28 +27,28 @@
 		<!--For stage that is currently being viewed (enabled-active)-->
 
 		<c:if test="${stage.clientStageOrder == treatmentPlan.activeViewStageIndex && stage.inProgress}">
-			<div class="progress-stage progress-stage-enabled-active col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
+			<div class="progress-stage progress-stage-enabled-active col-sm-${treatmentPlan.stageDisplayColWidthForBootstrap()}">
 				${stage.title } <a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal"> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
 			</div>
 		</c:if>
 		
 		<!--For stage that is accessible but NOT the active view (enabled-inactive)  removed this condition:  && stage.clientStageOrder <= treatmentPlan.currentStageIndex-->
 		<c:if test="${stage.clientStageOrder != treatmentPlan.activeViewStageIndex  && stage.inProgress}">
-			<div class="progress-stage progress-stage-enabled-inactive col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
+			<div class="progress-stage progress-stage-enabled-inactive col-sm-${treatmentPlan.stageDisplayColWidthForBootstrap()}">
 				<a href='#' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
 			</div>
 		</c:if>
 		
 		<!--For stage that is disabled at this time and active as current view (disabled-active)-->
 		<c:if test="${stage.clientStageOrder == treatmentPlan.activeViewStageIndex && !stage.inProgress  && !stage.completed}">
-			<div class="progress-stage progress-stage-disabled-active col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
+			<div class="progress-stage progress-stage-disabled-active col-sm-${treatmentPlan.stageDisplayColWidthForBootstrap()}">
 				${stage.title } <a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal"> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
 			</div>
 		</c:if>
 		
 		<!--For stage that is disabled at this time and inactive as current view (disabled-inactive)-->
 		<c:if test="${stage.clientStageOrder != treatmentPlan.activeViewStageIndex && !stage.inProgress && !stage.completed}">
-			<div class="progress-stage progress-stage-disabled-inactive col-sm-${fn:substringBefore(12/treatmentPlan.numberOfStages, '.')}">
+			<div class="progress-stage progress-stage-disabled-inactive col-sm-${treatmentPlan.stageDisplayColWidthForBootstrap()}">
 				<a href='#' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
 			</div>
 		</c:if>

@@ -857,4 +857,9 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	public static List<TreatmentPlan> getDefaultTreatmentPlans() throws DatabaseException, ValidationException {
 		return dao.treatmentPlanGetDefaults();
 	}
+	
+	public int stageDisplayColWidthForBootstrap(){
+		return 12/this.stages.size();
+
+	}
 }

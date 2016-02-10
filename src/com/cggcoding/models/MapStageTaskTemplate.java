@@ -23,7 +23,7 @@ public class MapStageTaskTemplate {
 		this.stageID = 0;
 		this.taskID = 0;
 		this.templateTaskOrder = 0;
-		this.templateTaskRepetitions = 0;
+		this.templateTaskRepetitions = 1;
 	}
 	
 	public MapStageTaskTemplate(int stageID, int taskID, int templateTaskOrder, int templateRepetitions) {
