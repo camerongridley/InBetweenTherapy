@@ -26,11 +26,11 @@ public class MapStageTaskTemplate {
 		this.templateTaskRepetitions = 1;
 	}
 	
-	public MapStageTaskTemplate(int stageID, int taskID, int templateTaskOrder, int templateRepetitions) {
+	public MapStageTaskTemplate(int stageID, int taskID, int templateTaskOrder, int templateTaskRepetitions) {
 		this.stageID = stageID;
 		this.taskID = taskID;
 		this.templateTaskOrder = templateTaskOrder;
-		this.templateTaskRepetitions = templateRepetitions;
+		this.templateTaskRepetitions = templateTaskRepetitions;
 	}
 
 

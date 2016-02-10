@@ -858,8 +858,18 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		return dao.treatmentPlanGetDefaults();
 	}
 	
-	public int stageDisplayColWidthForBootstrap(){
-		return 12/this.stages.size();
+	/**Calculates and returns size value for Bootstrap's col width for each stage node in the stage navigation bar of run-treatment-plan.jsp.  
+	 * If there are more than 4 stages, returns 2, otherwise, return 12/number of stages. 
+	 * @return
+	 */
+	public int stageNodeDisplayColWidthForBootstrap(){
+		if(this.stages.size() < 5){
+			return 12/this.stages.size();
+		} else {
+			return 2;
+		}
+		
+		
 
 	}
 }
