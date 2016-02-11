@@ -7,8 +7,8 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<c:if test='${path=="templateTask" }'><h1>Create A Task Template</h1></c:if>
-	<c:if test='${path!="templateTask" }'><h1>Create a Task for the Stage: ${stage.title}</h1></c:if>
+	<h2>Create A Task<c:if test='${path=="templateTask" }'> Template</c:if></h2>
+	<c:import url="/WEB-INF/jsp/includes/breadcrumbs.jsp" />
 </div>
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
@@ -20,7 +20,7 @@
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="stageID" value="${stage.stageID }">
 				<input type="hidden" name="isTemplate" value="${task.template }">
-				<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 				
 				<div>
 					<h3>Add a Predefined Task</h3>
@@ -85,7 +85,7 @@
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">
 			<input type="hidden" name="isTemplate" value="${task.template }">
-			<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 				
 			<div class="form-group">
 	            <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
@@ -108,7 +108,7 @@
 			<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 			<input type="hidden" name="isTemplate" value="${task.template }">
 			<input type="hidden" name="isExtraTask" value="${task.extraTask }">
-			<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 			    
 			<c:if test="${task.taskTypeID!=0 }">	
 	        <div class="form-group">

@@ -15,7 +15,6 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
-import com.cggcoding.models.UserAdmin;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
@@ -27,7 +26,6 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 @WebServlet("/secure/CreateTask")
 public class CreateTask extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	int userID =  0;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -59,55 +57,66 @@ public class CreateTask extends HttpServlet {
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
-
-		userID =  user.getUserID();
-		int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		
+		/*-----------Common Treatment Plan object variables------------*/
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+    	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
+		TreatmentPlan treatmentPlan = null;
 		Stage stage = null;
+		Task task = null;
+		int ownerUserID = 0;
+		User owner = null;
+		/*-----------End Treatment Plan object variables---------------*/
+
 		int taskReps = ParameterUtils.parseIntParameter(request, "taskReps");
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
-		Task taskToCreate = CommonServletFunctions.getTaskParametersFromRequest(request, userID);//TODO change this to use updateTaskParametersFromRequest
+		task = CommonServletFunctions.getTaskParametersFromRequest(request, user.getUserID());//TODO change this to use updateTaskParametersFromRequest
 
-		int planToReturnTo = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
-		request.setAttribute("treatmentPlanID", planToReturnTo);
-		
 		try {
-			//put user-independent (i.e. default) lists acquired from database in the request
-			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
-			request.setAttribute("defaultTasks", Task.getDefaultTasks());
-			
 			if(!path.equals(Constants.PATH_TEMPLATE_TASK)){
-				stage = Stage.load(stageID);
+				stage = Stage.load(stageID);//load the entire stage since we need everything loaded to determine certain properties, such as the taskOrder
+				treatmentPlan = TreatmentPlan.loadBasic(treatmentPlanID);//only need basic info such as title so use loadBasic()
+				ownerUserID = stage.getUserID();
 			}
+
+			//Set the User var "owner". If the owner of the plan that is being edited is different than the logged in user, then load the appropriate owner info
+    		if(ownerUserID==user.getUserID() || ownerUserID==0){
+    			owner = user;
+    		} else {
+    			owner = User.loadBasic(ownerUserID);
+    		}
+			
 	
 			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
 
 				switch(requestedAction){
 				case ("create-task-start"):
 					//set tempTask in request so page knows value of isTemplate
-					request.setAttribute("task", taskToCreate);
+					request.setAttribute("task", task);
 					forwardTo = Constants.URL_CREATE_TASK;
 					break;
 				case "task-add-default-template" :
 
-					if(taskToCreate.getTaskID() != 0){				
+					if(task.getTaskID() != 0){				
 						
 						forwardTo = Constants.URL_EDIT_STAGE;
 						if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
-							stage.addTaskTemplate(taskToCreate.getTaskID(), taskReps);
+							stage.addTaskTemplate(task.getTaskID(), taskReps);
 							request.setAttribute("defaultStageList", Stage.getDefaultStages());
 							
 						} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
 							int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
-							MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), taskToCreate.getTaskID(), 0, clientRepetition);
-							stage.createTaskFromTemplate(taskToCreate.getTaskID(), stageTaskInfo);
+							MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), 0, clientRepetition);
+							stage.createTaskFromTemplate(task.getTaskID(), stageTaskInfo);
 						}
 						request.setAttribute("successMessage", SuccessMessages.TASK_ADDED_TO_STAGE);
 					}
 					
 					break;
 				case "task-type-select":
-					request.setAttribute("task", taskToCreate);
+					request.setAttribute("task", task);
 					request.setAttribute("defaultTasks", Task.getDefaultTasks());
 					forwardTo = Constants.URL_CREATE_TASK;
 					break;
@@ -129,11 +138,11 @@ public class CreateTask extends HttpServlet {
 							
 					}*/
 					if(path.equals(Constants.PATH_TEMPLATE_TASK)){
-						Task.createTemplate(taskToCreate);
+						Task.createTemplate(task);
 						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 					} else if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
 						
-						newTask = Task.createTemplate(taskToCreate);
+						newTask = Task.createTemplate(task);
 						//TODO delete? stage = Stage.load(stageID);
 						stage.addTaskTemplate(newTask.getTaskID(), taskReps);//TODO make sure this is working right
 						/*stage = Stage.load(stageID);
@@ -162,15 +171,20 @@ public class CreateTask extends HttpServlet {
 					stage = loadStageAndPutInRequest(request, stageID);//OPTIMIZE delete this and just make sure all previous methods return the Stage object with the proper modifications
 				}*/
 				
+				//put user-independent (i.e. default) lists acquired from database in the request
+				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
+				request.setAttribute("defaultTasks", Task.getDefaultTasks());
+				request.setAttribute("treatmentPlan", treatmentPlan);
 				request.setAttribute("stage", stage);
+				request.setAttribute("owner", owner);
 
 			}
 			
 		} catch (DatabaseException | ValidationException e) {
 			//put in temporary task object so values can be saved in inputs after error
 			request.setAttribute("stage", stage);
-			request.setAttribute("task", taskToCreate);
-			request.setAttribute("treatmentPlanID", planToReturnTo);
+			request.setAttribute("task", task);
+			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("errorMessage", e.getMessage());
 
 			forwardTo = Constants.URL_CREATE_TASK;

@@ -566,24 +566,26 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
         
         dao.throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
         
-        try {
-        	cn = dao.getConnection();
-        	
-            plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
-            
-            if(plan.isTemplate()){
-            	plan.setTreatmentPlanStageTemplateMapList(dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID));
-            }
-            
-        } catch (SQLException e) {
-			
-			e.printStackTrace();
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-		} finally {
-			DbUtils.closeQuietly(cn);
+        if(treatmentPlanID!=0){
+	        try {
+	        	cn = dao.getConnection();
+	        	
+	            plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
+	            
+	            if(plan.isTemplate()){
+	            	plan.setTreatmentPlanStageTemplateMapList(dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID));
+	            }
+	            
+	        } catch (SQLException e) {
+				
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+	        }
+	        
+	        dao.throwValidationExceptionIfNull(plan);
         }
-
-        dao.throwValidationExceptionIfNull(plan);
         
         return plan;
 		

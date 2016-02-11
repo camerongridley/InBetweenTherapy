@@ -14,7 +14,7 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Update Treatment Plan</h1>
+	<h2>Update Treatment Plan</h2>
 	<h3>Plan Owner: ${owner.email}</h3>
 </div>
 

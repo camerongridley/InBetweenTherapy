@@ -7,7 +7,7 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Edit Stage: ${stage.title }</h1>
+	<h2>Edit Stage: ${stage.title }</h2>
 	<h3>Treatment Plan: ${treatmentPlan.title}</h3>
 	<h3>Stage Owner: ${owner.email}</h3>
 </div>

@@ -423,7 +423,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			DbUtils.closeQuietly(ps);
         }
 
-        throwValidationExceptionIfNull(plan);
+        //throwValidationExceptionIfNull(plan);
         
         return plan;
     }
@@ -910,7 +910,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			DbUtils.closeQuietly(ps);
         }
         
-        throwValidationExceptionIfNull(stage);
+        //throwValidationExceptionIfNull(stage);
         
         return stage;
 	}

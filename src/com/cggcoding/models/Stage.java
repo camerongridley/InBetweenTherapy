@@ -470,17 +470,22 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		Connection cn = null;
 		Stage stage = null;
 
-		try{
-			cn = dao.getConnection();
+		if(stageID!=0){
+			try{
+				cn = dao.getConnection();
 
-			stage = loadBasic(cn, stageID);
+				stage = loadBasic(cn, stageID);
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }
 			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-		} finally {
-			DbUtils.closeQuietly(cn);
-	    }
+			dao.throwValidationExceptionIfNull(stage);
+		}
+		
 
 		return stage;
 	}
