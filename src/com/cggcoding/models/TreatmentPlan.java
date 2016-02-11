@@ -540,22 +540,25 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	public static TreatmentPlan load(Connection cn, int treatmentPlanID) throws ValidationException, SQLException{
 		TreatmentPlan plan = null;
 		
-		//Load the basic plan
-		plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
-        
-		//Load the Stages
-		if(plan.isTemplate()){
-			List<MapTreatmentPlanStageTemplate> stageMap = dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID);
-			plan.setTreatmentPlanStageTemplateMapList(stageMap);
-			
-			//OPTIMIZE modify so dao.treatmentPlanLoadClientStages can be used here too - maybe rename treatmentPlanLoadClientStages then
-			for(MapTreatmentPlanStageTemplate planStageDetail : plan.treatmentPlanStageTemplateMapList){
-				plan.addStage(Stage.load(cn, planStageDetail.getStageID()));
+		if(treatmentPlanID != 0){
+			//Load the basic plan
+			plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
+	        
+			//Load the Stages
+			if(plan.isTemplate()){
+				List<MapTreatmentPlanStageTemplate> stageMap = dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID);
+				plan.setTreatmentPlanStageTemplateMapList(stageMap);
+				
+				//OPTIMIZE modify so dao.treatmentPlanLoadClientStages can be used here too - maybe rename treatmentPlanLoadClientStages then
+				for(MapTreatmentPlanStageTemplate planStageDetail : plan.treatmentPlanStageTemplateMapList){
+					plan.addStage(Stage.load(cn, planStageDetail.getStageID()));
+				}
+				
+			}else{
+				plan.setStages(dao.treatmentPlanLoadClientStages(cn, treatmentPlanID));
 			}
-			
-		}else{
-			plan.setStages(dao.treatmentPlanLoadClientStages(cn, treatmentPlanID));
 		}
+		
 		
 		return plan;
 	}

@@ -440,28 +440,31 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public static Stage load(Connection cn, int stageID) throws SQLException, ValidationException{
 		Stage stage = null;
         
-        dao.throwValidationExceptionIfTemplateHolderID(stageID);
-        
-    	stage = dao.stageLoadBasic(cn, stageID);
-    	
-    	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
-    	
-    	if(stage.isTemplate()){
-    		//get list of templates and set local variable
-    		List<MapStageTaskTemplate> taskMap = dao.mapStageTaskTemplateLoad(cn, stageID);
-    		stage.setMapStageTaskTemplates(taskMap);
-    		
-    		//loop through map and load Task templates to local List
-    		for(MapStageTaskTemplate stageTaskTempaltes : taskMap){
-    			stage.addTask(Task.load(cn, stageTaskTempaltes.getTaskID()));
-    		}
-    	}else{
-    		stage.setTasks(dao.stageLoadClientTasks(cn, stage.getStageID()));
-    	}
-		
+		if(stageID!=0){
+			dao.throwValidationExceptionIfTemplateHolderID(stageID);
+	        
+	    	stage = dao.stageLoadBasic(cn, stageID);
+	    	
+	    	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
+	    	
+	    	if(stage.isTemplate()){
+	    		//get list of templates and set local variable
+	    		List<MapStageTaskTemplate> taskMap = dao.mapStageTaskTemplateLoad(cn, stageID);
+	    		stage.setMapStageTaskTemplates(taskMap);
+	    		
+	    		//loop through map and load Task templates to local List
+	    		for(MapStageTaskTemplate stageTaskTempaltes : taskMap){
+	    			stage.addTask(Task.load(cn, stageTaskTempaltes.getTaskID()));
+	    		}
+	    	}else{
+	    		stage.setTasks(dao.stageLoadClientTasks(cn, stage.getStageID()));
+	    	}
+			
 
+	        
+	        dao.throwValidationExceptionIfNull(stage);
+		}
         
-        dao.throwValidationExceptionIfNull(stage);
         
         return stage;
 	}
@@ -470,22 +473,17 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		Connection cn = null;
 		Stage stage = null;
 
-		if(stageID!=0){
-			try{
-				cn = dao.getConnection();
+		try{
+			cn = dao.getConnection();
 
-				stage = loadBasic(cn, stageID);
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-			} finally {
-				DbUtils.closeQuietly(cn);
-		    }
+			stage = loadBasic(cn, stageID);
 			
-			dao.throwValidationExceptionIfNull(stage);
-		}
-		
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
 
 		return stage;
 	}
@@ -493,17 +491,20 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public static Stage loadBasic(Connection cn, int stageID) throws SQLException, ValidationException{
 		Stage stage = null;
         
-        dao.throwValidationExceptionIfTemplateHolderID(stageID);
-        
-    	stage = dao.stageLoadBasic(cn, stageID);
+		if(stageID!=0){
+			dao.throwValidationExceptionIfTemplateHolderID(stageID);
+	        
+	    	stage = dao.stageLoadBasic(cn, stageID);
 
-    	stage.setGoals(dao.stageLoadGoals(cn, stageID));
-    	
-    	if(stage.isTemplate()){
-    		stage.setMapStageTaskTemplates(dao.mapStageTaskTemplateLoad(cn, stageID));
-    	}
-    	
-        dao.throwValidationExceptionIfNull(stage);
+	    	stage.setGoals(dao.stageLoadGoals(cn, stageID));
+	    	
+	    	if(stage.isTemplate()){
+	    		stage.setMapStageTaskTemplates(dao.mapStageTaskTemplateLoad(cn, stageID));
+	    	}
+	    	
+	        dao.throwValidationExceptionIfNull(stage);
+		}
+        
         
         return stage;
 	}
