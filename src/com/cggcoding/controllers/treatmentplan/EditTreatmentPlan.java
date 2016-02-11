@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
+import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -63,22 +64,24 @@ public class EditTreatmentPlan extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
 		
-		//TODO update the common servlet variable with these in all other servlets
+		/*-----------Common Treatment Plan object variables------------*/
 		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
     	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
-		/*-----------End Common Servlet variables---------------*/
-		
+		TreatmentPlan treatmentPlan = null;
+		Stage stage = null;
+		Task task = null;
 		int ownerUserID = 0;
 		User owner = null;
+		/*-----------End Treatment Plan object variables---------------*/
+
 
     	String planTitle = request.getParameter("planTitle");
     	String planDescription = request.getParameter("planDescription");
     	int defaultIssueID = ParameterUtils.parseIntParameter(request, "defaultTreatmentIssue");
     	int customIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
-    	
-    	TreatmentPlan treatmentPlan = null;
     	
     	try {
     		
@@ -95,7 +98,6 @@ public class EditTreatmentPlan extends HttpServlet {
 	    			owner = User.loadBasic(treatmentPlan.getUserID());
 	    		}
 	    		
-	    		request.setAttribute("owner", owner);
     		}
     		
     		
@@ -181,7 +183,6 @@ public class EditTreatmentPlan extends HttpServlet {
 		            case "stage-delete":
 						//TODO delete: treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						treatmentPlan.deleteStage(stageID);
-				    	request.setAttribute("treatmentPlan", treatmentPlan);
 						
 						forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 						break;
@@ -191,7 +192,6 @@ public class EditTreatmentPlan extends HttpServlet {
 		            		throw new ValidationException(ErrorMessages.PLAN_DELETE_ERROR);
 		            	}else{
 			            	TreatmentPlan.delete(treatmentPlanID);
-			            	request.removeAttribute("treatmentPlan");
 			            	request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_DELETED);
 			            	
 			            	//reload default options so dropdown list is properly updated
@@ -204,7 +204,12 @@ public class EditTreatmentPlan extends HttpServlet {
 				}
 	    		
 				//set the TreatmentPlan in the request after all actions with it have been completed
+				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
+				request.setAttribute("taskTemplateList", Task.getDefaultTasks());
 				request.setAttribute("treatmentPlan", treatmentPlan);
+				request.setAttribute("stage", stage);
+				request.setAttribute("task", task);
+				request.setAttribute("owner", owner);
 				
 				
 			} else if(user.hasRole(Constants.USER_CLIENT)){

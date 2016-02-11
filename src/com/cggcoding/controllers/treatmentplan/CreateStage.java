@@ -14,6 +14,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.MapTreatmentPlanStageTemplate;
 import com.cggcoding.models.Stage;
+import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
@@ -60,27 +61,39 @@ public class CreateStage extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
 		
+		/*-----------Common Treatment Plan object variables------------*/
 		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
     	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
-		/*-----------End Common Servlet variables---------------*/
+		TreatmentPlan treatmentPlan = null;
+		Stage stage = null;
+		Task task = null;
+		int ownerUserID = 0;
+		User owner = null;
+		/*-----------End Treatment Plan object variables---------------*/
+		
 		
 		int selectedDefaultStageID = ParameterUtils.parseIntParameter(request, "defaultStageID");
 		String stageTitle = request.getParameter("stageTitle");
     	String stageDescription = request.getParameter("stageDescription");
     	int stageOrder = ParameterUtils.parseIntParameter(request, "stageOrder");
     	String newStageGoal =request.getParameter("newStageGoal");
-		TreatmentPlan treatmentPlan = null;
 		List<Stage> defaultStages = null;
-		
-		//maintain treatmentPlanID for when wanting to return user to main edit plan page
-		request.setAttribute("treatmentPlanID", treatmentPlanID);
 		
 		try{
 			if(!path.equals(Constants.PATH_TEMPLATE_STAGE)){
 				treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+				ownerUserID = treatmentPlan.getUserID();
 			}
+			
+			//Set the User var "owner". If the owner of the plan that is being edited is different than the logged in user, then load the appropriate owner info
+    		if(ownerUserID==user.getUserID() || ownerUserID==0){
+    			owner = user;
+    		} else {
+    			owner = User.loadBasic(ownerUserID);
+    		}
 			
 			defaultStages = Stage.getDefaultStages();
 			
@@ -145,7 +158,7 @@ public class CreateStage extends HttpServlet {
 		                	newStage = treatmentPlan.createNewStage(userAdmin.getUserID(), stageTitle, stageDescription);*/
 		                }
 
-		                request.setAttribute("stage", newStage);
+		                stage = newStage;
 		                
 		                break;
 		            case("add-stage-to-treatment-plan"):
@@ -161,6 +174,9 @@ public class CreateStage extends HttpServlet {
 				}
 				
 				request.setAttribute("treatmentPlan", treatmentPlan);
+				request.setAttribute("stage", stage);
+				request.setAttribute("task", task);
+				request.setAttribute("owner", owner);
 
 			}
 			

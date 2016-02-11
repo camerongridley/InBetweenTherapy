@@ -7,9 +7,8 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<h2>Edit Stage: ${stage.title }</h2>
-	<h3>Treatment Plan: ${treatmentPlan.title}</h3>
-	<h3>Stage Owner: ${owner.email}</h3>
+	<h2>Edit Stage</h2>
+	<c:import url="/WEB-INF/jsp/includes/breadcrumbs.jsp" />
 </div>
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
@@ -17,7 +16,7 @@
 	<form class="form-horizontal" action="/secure/EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="select-stage">
 		<input type="hidden" name="path" value="${path }">
-		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 		
 		<c:if test="${path=='templateStage'}">
 			<div class="well well-sm">
@@ -40,7 +39,7 @@
 		<input type="hidden" name="requestedAction" value="stage-edit-basic-info">
 		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >
-		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">	
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">	
 		
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
@@ -71,7 +70,7 @@
 		                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
 		            </div>
 		            <div class="col-sm-1">    
-		                <a role="button" class="btn btn-default btn-sm" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" title="Delete goal:${goal.description }">
+		                <a role="button" class="btn btn-default btn-sm" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" title="Delete goal:${goal.description }">
 						  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 						</a>
 		            </div>
@@ -83,7 +82,7 @@
 		
 		<label for="taskList" class="control-label">Tasks
 
-       			<a role="button" href="/secure/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
+       			<a role="button" href="/secure/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</a>
 
@@ -111,17 +110,17 @@
 							         </c:choose>
 
 								  	
-								  	<a href="/secure/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
-								  	&nbsp;<a href="/secure/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
+								  	<a href="/secure/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
+								  	&nbsp;<a href="/secure/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
 									<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							          ${taskOrder+1} - <span class="">${task.title }</span>
 							        </a>   
 								</div>
 								<div class="col-sm-1">
-							        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }">
+							        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }">
 									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 									</a>
-									<a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Delete task (${task.title }) from this stage.">
+									<a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Delete task (${task.title }) from this stage.">
 									  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 									</a>
 								</div>
@@ -175,7 +174,7 @@
 		    <input type="hidden" name="requestedAction" value="stage-edit-add-goal">
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="stageID" value="${stage.stageID}" >
-		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		        <h4 class="modal-title" id="newStageGoalModalLabel">Enter a new stage goal.</h4>

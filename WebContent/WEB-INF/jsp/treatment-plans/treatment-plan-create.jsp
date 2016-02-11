@@ -14,6 +14,7 @@
 
     <div class="page-header">
         <h2>Create a Treatment Plan</h2>
+        <c:import url="/WEB-INF/jsp/includes/breadcrumbs.jsp" />
     </div>
     
 	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>

@@ -15,7 +15,7 @@
 
 <div class="page-header">
 	<h2>Update Treatment Plan</h2>
-	<h3>Plan Owner: ${owner.email}</h3>
+	<c:import url="/WEB-INF/jsp/includes/breadcrumbs.jsp" />
 </div>
 
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
@@ -31,8 +31,7 @@
 				<label for="selectedDefaultTreatmentPlanID"
 					class="col-sm-2 control-label">Select a Treatment Plan</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="selectedDefaultTreatmentPlanID"
-						name="treatmentPlanID">
+					<select class="form-control" id="selectedDefaultTreatmentPlanID" name="treatmentPlanID">
 						<option value="">Select a treatment plan to edit.</option>
 						<c:forEach var="defaultPlan" items="${defaultTreatmentPlanList }">
 							<option value="${defaultPlan.treatmentPlanID}"
@@ -243,13 +242,10 @@
 	role="dialog" aria-labelledby="newDefaultTreatmentIssueModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<form class="form-horizontal" action="/secure/EditTreatmentPlan"
-				method="POST">
-				<input type="hidden" name="requestedAction"
-					value="create-default-treatment-issue"> <input
-					type="hidden" name="path" value="${path }"> <input
-					type="hidden" name="treatmentPlanID"
-					value="${treatmentPlan.treatmentPlanID}">
+			<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
+				<input type="hidden" name="requestedAction" value="create-default-treatment-issue"> 
+				<input type="hidden" name="path" value="${path }"> 
+				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"
 						aria-label="Close">

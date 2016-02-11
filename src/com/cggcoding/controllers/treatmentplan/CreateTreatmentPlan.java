@@ -2,6 +2,8 @@ package com.cggcoding.controllers.treatmentplan;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.Stage;
+import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -40,6 +42,8 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
+		
+		
     }
     
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -52,14 +56,27 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
 		
+		/*-----------Common Treatment Plan object variables------------*/
+		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+    	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
+		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
+		TreatmentPlan treatmentPlan = null;
+		Stage stage = null;
+		Task task = null;
+		int ownerUserID = 0;
+		User owner = null;
+		/*-----------End Treatment Plan object variables---------------*/
+		
     	String planTitle = request.getParameter("planTitle");
     	String planDescription = request.getParameter("planDescription");
     	int selectedDefaultIssueID = ParameterUtils.parseIntParameter(request, "defaultTreatmentIssue");
     	int selectedCustomIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
 
-    	TreatmentPlan treatmentPlan = null;
     	
     	try {
+    		//currently the logged in user will always be the owner of a new TreatmentPlan
+    		owner = user;
+    		
 			if(user.hasRole(Constants.USER_CLIENT)){
 				//UserClient userClient = (UserClient)session.getAttribute("user");
 				forwardTo = "clientMainMenu.jsp";
@@ -126,6 +143,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 
 			}
 			
+			request.setAttribute("owner", owner);
 			request.setAttribute("planTitle", planTitle);
     		request.setAttribute("planDescription", planDescription);
     		request.setAttribute("selectedDefaultIssueID", selectedDefaultIssueID);
