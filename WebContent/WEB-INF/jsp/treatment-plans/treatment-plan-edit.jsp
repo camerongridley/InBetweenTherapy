@@ -14,7 +14,7 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<h2>Update Treatment Plan</h2>
+	<h2>Edit Treatment Plan</h2>
 	<c:import url="/WEB-INF/jsp/includes/breadcrumbs.jsp" />
 </div>
 

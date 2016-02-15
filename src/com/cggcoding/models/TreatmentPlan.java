@@ -557,6 +557,9 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			}else{
 				plan.setStages(dao.treatmentPlanLoadClientStages(cn, treatmentPlanID));
 			}
+			
+			//reset the active view so the plan starts off on the current view
+			plan.setActiveViewStageIndex(plan.getCurrentStageIndex());
 		}
 		
 		

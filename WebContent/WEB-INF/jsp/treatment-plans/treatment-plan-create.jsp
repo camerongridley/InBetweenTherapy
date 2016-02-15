@@ -13,7 +13,7 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
     <div class="page-header">
-        <h2>Create a Treatment Plan</h2>
+        <h2>Create a Treatment Plan<c:if test='${path=="templateTreatmentPlan" }'> Template</c:if></h2>
         <c:import url="/WEB-INF/jsp/includes/breadcrumbs.jsp" />
     </div>
     
