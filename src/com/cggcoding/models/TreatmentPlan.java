@@ -769,9 +769,10 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	
 	protected Stage createStageFromTemplate(Connection cn, int stageIDBeingCopied, MapTreatmentPlanStageTemplate planStageTemplateInfo) throws ValidationException, SQLException{
 		Stage newStage = Stage.loadBasic(cn, stageIDBeingCopied);
+		newStage.loadGoals(cn);
 		//Stage newStage = Stage.getInstanceWithoutID(stageBeingCopied.getTreatmentPlanID(), this.userID, stageBeingCopied.getTitle(), stageBeingCopied.getDescription(), stageBeingCopied.getClientStageOrder(), false);
 		
-		
+		//get the list of Tasks from the MapStageTaskTemplate list to know which task to create, then clear that list from the client instantiation of the Stage
 		List<MapStageTaskTemplate> stageTaskInfoList = newStage.getMapStageTaskTemplates();
 		newStage.setMapStageTaskTemplates(new ArrayList<>());
 		
@@ -789,13 +790,11 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			newStage.setClientStageOrder(this.getStageOrderDefaultValue());
 		}
 		
+		//copy basic info including goals
 		newStage.createBasic(cn);
 
 		//copy stage goals
-		for(StageGoal goal : newStage.getGoals()){
-			goal.setStageID(newStage.getStageID());
-			goal.create(cn);
-		}
+		newStage.createGoals(cn);
 		
 		for(MapStageTaskTemplate stageTaskInfo : stageTaskInfoList){
 			newStage.createTaskFromTemplate(cn, stageTaskInfo.getTaskID(), stageTaskInfo);

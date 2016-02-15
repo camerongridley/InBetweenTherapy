@@ -445,7 +445,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	        
 	    	stage = dao.stageLoadBasic(cn, stageID);
 	    	
-	    	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
+	    	stage.loadGoals(cn);
 	    	
 	    	if(stage.isTemplate()){
 	    		//get list of templates and set local variable
@@ -495,8 +495,6 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			dao.throwValidationExceptionIfTemplateHolderID(stageID);
 	        
 	    	stage = dao.stageLoadBasic(cn, stageID);
-
-	    	stage.setGoals(dao.stageLoadGoals(cn, stageID));
 	    	
 	    	if(stage.isTemplate()){
 	    		stage.setMapStageTaskTemplates(dao.mapStageTaskTemplateLoad(cn, stageID));
@@ -509,6 +507,23 @@ public class Stage implements Serializable, Completable, DatabaseModel {
         return stage;
 	}
 
+	
+	/**---Database Interaction---
+	 * Creates a new Stage in the database that only contains the basic (i.e. Tasks, Goals, etc. or other lists) stage information contained in the Stage model.
+	 * @param cn
+	 * @throws ValidationException
+	 * @throws SQLException
+	 */
+	protected void createBasic(Connection cn) throws ValidationException, SQLException{
+		
+		if(this.title.isEmpty()){
+    		throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
+    	}
+		
+		if(dao.stageValidateNewTitle(cn, this)){
+			dao.stageCreateBasic(cn, this);
+		}
+	}
 	
 	@Override
 	public Stage create() throws ValidationException, DatabaseException{
@@ -558,26 +573,6 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return savedStage;*/
 	}
 	
-	protected void createBasic(Connection cn) throws ValidationException, SQLException{
-		
-		if(this.title.isEmpty()){
-    		throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
-    	}
-		
-		if(dao.stageValidateNewTitle(cn, this)){
-			dao.stageCreateBasic(cn, this);
-			
-			for(StageGoal goal : getGoals()){
-				if(goal.isValidGoal()){
-					//set the newly generated stageID in the goal
-					goal.setStageID(this.stageID);
-					goal.create(cn);
-				}
-			}
-
-		}
-	}
-	
 	protected void create(Connection cn) throws ValidationException, SQLException{
 		
 		if(this.title.isEmpty()){
@@ -585,15 +580,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
     	}
 		
 		if(dao.stageValidateNewTitle(cn, this)){
-			dao.stageCreateBasic(cn, this);
+			createBasic(cn);
 			
-			for(StageGoal goal : getGoals()){
-				if(goal.isValidGoal()){
-					//set the newly generated stageID in the goal
-					goal.setStageID(this.stageID);
-					goal.create(cn);
-				}
-			}
+			createGoals(cn);
 			
 			for(Task task : getTasks()){
 				//set the newly generated stageID in the task
@@ -720,6 +709,57 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		} finally {
 			DbUtils.closeQuietly(cn);
 	    }	
+	}
+	
+	
+	protected void loadGoals(Connection cn) throws SQLException, ValidationException{
+		this.setGoals(dao.stageLoadGoals(cn, stageID));
+	}
+	
+	public void createGoals() throws DatabaseException, ValidationException{
+		Connection cn = null;
+		
+        try {
+        	cn= dao.getConnection();
+        	
+        	cn.setAutoCommit(false);
+        	
+			createGoals(cn);
+			
+			cn.commit();
+			
+        } catch (SQLException | ValidationException e) {
+        	e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
+				e1.printStackTrace();
+			}
+			if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+		}
+	}
+	
+	protected void createGoals(Connection cn) throws SQLException, ValidationException{
+		for(StageGoal goal : getGoals()){
+			if(goal.isValidGoal()){
+				//set the newly generated stageID in the goal
+				goal.setStageID(this.stageID);
+				goal.create(cn);
+			}
+		}
 	}
 	
 	protected static void delete(Connection cn, int stageID) throws ValidationException, SQLException {
