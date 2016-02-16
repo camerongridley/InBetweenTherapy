@@ -43,9 +43,7 @@
 								<a href="/secure/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
-								<a href="/secure/ManageClients?requestedAction=delete-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
-								  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-								</a>
+								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${activePlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
 							  </div>
 							</div>
 						</div>	
@@ -80,9 +78,7 @@
 								<a href="/secure/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${unstartedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
-								<a href="/secure/ManageClients?requestedAction=delete-plan&path=${path}&treatmentPlanID=${unstartedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
-								  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-								</a>
+								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${unstartedPlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
 							  </div>
 							</div>
 						</div>	
@@ -165,9 +161,7 @@
 								<a href="/secure/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${completedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
-								<a href="/secure/ManageClients?requestedAction=delete-plan&path=${path}&treatmentPlanID=${completedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Delete Treatment Plan from Client's Profile">
-								  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-								</a>
+								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${completedPlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
 							  </div>
 							</div>
 						</div>	
@@ -178,6 +172,38 @@
         </div>
 
     </form>
+    
+<!-- Delete TreatmentPlan Modal -->
+<c:forEach items="${allAssignedClientPlans}" var="treatmentPlan">
+	<div class="modal" id="delete_plan_modal${treatmentPlan.treatmentPlanID}">
+		<form class="form-horizontal" action="/secure/ManageClients" method="POST">
+			<input type="hidden" name="requestedAction" value="delete-plan"> 
+			<input type="hidden" name="path" value="${path }">
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+			<input type="hidden" name="clientUserID" value="${client.userID}">
+			
+			
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			          <h4 class="modal-title">Delete Treatment Plan</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>Are you sure you want to delete <strong>${treatmentPlan.title}</strong> from ${client.userName}'s account?</p>
+			        
+			      </div>
+			      <div class="modal-footer">
+			      	<button type="submit" class="btn btn-default" aria-hidden="true" title="Delete this treatment plan.">OK</button>
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			      </div>
+			    </div>
+			  </div>
+		</form>
+	</div>
+</c:forEach>
+<!-- End Delete TreatmentPlan Modal -->
+    
     
 	<script>
 		$(function() {

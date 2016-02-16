@@ -17,8 +17,8 @@ public class UserAdmin extends User implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private List<TreatmentIssue> customTreatmentIssues;
 
-	public UserAdmin(int userID, String email) {
-		super(userID, email);
+	public UserAdmin(int userID, String userName, String firstName, String lastName, String email) {
+		super(userID, userName, firstName, lastName, email);
 		this.customTreatmentIssues = new ArrayList<>();
 	}
 

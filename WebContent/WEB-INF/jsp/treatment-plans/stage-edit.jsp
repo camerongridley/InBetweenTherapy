@@ -120,7 +120,7 @@
 							        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }">
 									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 									</a>
-									<a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Delete task (${task.title }) from this stage.">
+									<a role="button" data-toggle="modal" data-target="#delete_task_modal${task.taskID }" class="btn btn-default btn-xs pull-left" title="Delete task (${task.title }) from this stage.">
 									  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 									</a>
 								</div>
@@ -190,6 +190,32 @@
 	    </div>
 	  </div>
 	</div>
+	<!-- End New Stage Goal Modal -->
+	
+	<!-- Delete Modal -->
+	<c:forEach items="${stage.tasks }" var="task">
+		<div class="modal" id="delete__task_modal${task.taskID }">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		          <h4 class="modal-title">Delete Task</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>Are you sure you want to delete <strong>${task.title}</strong> from ${stage.title}?</p>
+		        
+		      </div>
+		      <div class="modal-footer">
+		      	<a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
+				  OK
+				</a>
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	</c:forEach>
+	<!-- End Delete Modal -->
 	
 	<script>
 		$(function() {
@@ -197,5 +223,6 @@
 		    	this.form.submit();
 		    });
 		});
+		
 	</script>
 <c:import url="/WEB-INF/jsp/footer.jsp" />

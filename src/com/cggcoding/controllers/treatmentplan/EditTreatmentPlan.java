@@ -194,6 +194,8 @@ public class EditTreatmentPlan extends HttpServlet {
 			            	TreatmentPlan.delete(treatmentPlanID);
 			            	request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_DELETED);
 			            	
+			            	treatmentPlan = null;
+			            	
 			            	//reload default options so dropdown list is properly updated
 			            	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
 		            	}

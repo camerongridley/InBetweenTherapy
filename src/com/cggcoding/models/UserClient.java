@@ -18,8 +18,8 @@ public class UserClient extends User implements Serializable{
 	
 	DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 	
-	public UserClient(int userID, String email){
-		super(userID, email);
+	public UserClient(int userID, String userName, String firstName, String lastName, String email){
+		super(userID, userName, firstName, lastName, email);
 		activeTreatmentPlanId = -1;
 	}
 

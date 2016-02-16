@@ -28,8 +28,8 @@ public class UserTherapist extends User implements Serializable{
 
     private static DatabaseActionHandler dao= new MySQLActionHandler();
         
-    public UserTherapist(int userID, String email){
-        super(userID, email);
+    public UserTherapist(int userID, String userName, String firstName, String lastName, String email){
+        super(userID, userName, firstName, lastName, email);
         this.clientMap = new HashMap<>();
         this.defaultTreatmentIssues = new ArrayList<>();
         this.allAssignedClientPlans = new ArrayList<>();

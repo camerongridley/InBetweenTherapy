@@ -130,7 +130,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         	cn = getConnection();
-            ps = cn.prepareStatement("SELECT user.user_id, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?) AND ((user.password)=?))");
+            ps = cn.prepareStatement("SELECT user.user_id, user.user_name, user.first_name, user.last_name, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?) AND ((user.password)=?))");
             ps.setString(1, email);
             ps.setString(2, password);
 
@@ -141,17 +141,17 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             while (rsUserInfo.next()){
             	switch (rsUserInfo.getString("role")){
             		case "admin":
-            			user = new UserAdmin(rsUserInfo.getInt("user_id"), rsUserInfo.getString("email"));
+            			user = new UserAdmin(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
             			user.addRole("admin");
             			user.setRole("admin");
             			break;
             		case "therapist":
-            			user = new UserTherapist(rsUserInfo.getInt("user_id"), rsUserInfo.getString("email"));
+            			user = new UserTherapist(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
             			user.addRole("therapist");
             			user.setRole("therapist");
             			break;
             		case "client":
-            			user = new UserClient(rsUserInfo.getInt("user_id"), rsUserInfo.getString("email"));
+            			user = new UserClient(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
             			user.addRole("client");
             			user.setRole("client");
             			((UserClient)user).setActiveTreatmentPlanId(rsUserInfo.getInt("active_treatment_plan_id"));
@@ -187,7 +187,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rsUserInfo = ps.executeQuery();
             
             while (rsUserInfo.next()){
-            	user = new UserAdmin(rsUserInfo.getInt("user_id"), rsUserInfo.getString("email"));
+            	user = new UserAdmin(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
             }
             
             if(user==null){
@@ -245,7 +245,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         try {
         	cn = getConnection();
             ps = cn.prepareStatement("SELECT therapist_user_id_client_user_id_maps.therapist_user_id, "
-            		+ "therapist_user_id_client_user_id_maps.client_user_id, user.email, user.password, "
+            		+ "therapist_user_id_client_user_id_maps.client_user_id, user.user_name, user.first_name, user.last_name, user.email, user.password, "
             		+ "user.user_user_role_id_fk, user.active_treatment_plan_id, user_role.role "
             		+ "FROM user_role INNER JOIN ((user) INNER JOIN therapist_user_id_client_user_id_maps "
             		+ "ON user.user_id = therapist_user_id_client_user_id_maps.client_user_id) "
@@ -259,7 +259,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 
 
             while (rs.next()){
-            	UserClient client = new UserClient(rs.getInt("client_user_id"), rs.getString("email"));
+            	UserClient client = new UserClient(rs.getInt("client_user_id"), rs.getString("user_name"), rs.getString("first_name"), rs.getString("last_name"), rs.getString("email"));
             	client.setRoleID(rs.getInt("user_user_role_id_fk"));
             	client.addRole(rs.getString("role"));
                 clients.put(client.getUserID(), client);

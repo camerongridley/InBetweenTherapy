@@ -21,6 +21,9 @@ public abstract class User implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private int userID;
 	private String email;
+	private String userName;
+	private String firstName;
+	private String lastName;
 	private int roleID;
 	private List<String> roles;
 	private String role;
@@ -28,8 +31,11 @@ public abstract class User implements Serializable{
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
-	public User (int userID, String email){
+	public User (int userID, String userName, String firstName, String lastName, String email){
 		this.userID = userID;
+		this.userName = userName;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
 		this.roleID = 0;
 		roles = new ArrayList<>();
@@ -52,6 +58,30 @@ public abstract class User implements Serializable{
 		return email;
 	}
 	
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
 	public int getRoleID() {
 		return roleID;
 	}

@@ -155,7 +155,11 @@ public class ManageClients extends HttpServlet {
 	}
 	
 	private void putClientPlansInRequest(HttpServletRequest request, UserTherapist therapistUser, int clientUserID) throws DatabaseException, ValidationException{
-		therapistUser.loadAllAssignedClientTreatmentPlans(clientUserID);
+		//load all client plans into therapist user object
+		List<TreatmentPlan> allClientPlans = therapistUser.loadAllAssignedClientTreatmentPlans(clientUserID);
+		request.setAttribute("allAssignedClientPlans", allClientPlans);
+		
+		//call methods that return subcategories of client plans
 		request.setAttribute("activeAssignedClientPlans", therapistUser.loadActiveAssignedClientTreatmentPlans());
 		request.setAttribute("unstartedAssignedClientPlans", therapistUser.loadUnstartedAssignedClientTreatmentPlans());
 		request.setAttribute("completedAssignedClientPlans", therapistUser.loadCompletedAssignedClientTreatmentPlans());

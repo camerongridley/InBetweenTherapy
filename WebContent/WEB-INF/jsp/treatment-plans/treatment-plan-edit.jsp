@@ -50,12 +50,7 @@
 			</form>
 		</div>	
 		<div class="col-xs-1">
-			<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
-				<input type="hidden" name="requestedAction" value="delete-plan"> 
-				<input type="hidden" name="path" value="${path }">
-				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-				<button type="submit" class="btn btn-default glyphicon glyphicon-remove" aria-hidden="true" title="Delete this treatment plan."></button>
-			</form>
+			<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal" aria-hidden="true" title="Delete this treatment plan."></button>
 		</div>
 	</div>
 </div>
@@ -185,7 +180,7 @@
 				<a role="button" data-toggle="collapse" href="#collapse${stage.stageID }" aria-expanded="true" aria-controls="collapse${stage.stageID }">
 					${stageOrder+1 } - <span class="">${stage.title }</span>
 				</a> 
-				<a role="button" href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
+				<a role="button" data-toggle="modal" data-target="#delete_stage_modal${stage.stageID }"
 					class="btn btn-default btn-xs pull-right"
 					title="Delete stage from this treatment plan."> 
 					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -268,6 +263,60 @@
 		</div>
 	</div>
 </div>
+<!-- End New Default Treatment Issue Modal -->
+
+<!-- Delete Stage Modal -->
+<c:forEach items="${treatmentPlan.stages }" var="stage">
+	<div class="modal" id="delete_stage_modal${stage.stageID }">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		          <h4 class="modal-title">Delete Stage</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>Are you sure you want to delete <strong>${stage.title}</strong> from ${treatmentPlan.title}?</p>
+		        
+		      </div>
+		      <div class="modal-footer">
+		      	<a role="button" href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
+				  OK
+				</a>
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+</c:forEach>
+<!-- End Delete Stage Modal -->
+
+<!-- Delete TreatmentPlan Modal -->
+<div class="modal" id="delete_plan_modal">
+	<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
+		<input type="hidden" name="requestedAction" value="delete-plan"> 
+		<input type="hidden" name="path" value="${path }">
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+		
+		
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		          <h4 class="modal-title">Delete Treatment Plan</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>Are you sure you want to delete <strong>${treatmentPlan.title}</strong> from ${owner.userName}'s account?</p>
+		        
+		      </div>
+		      <div class="modal-footer">
+		      	<button type="submit" class="btn btn-default" aria-hidden="true" title="Delete this treatment plan.">OK</button>
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		      </div>
+		    </div>
+		  </div>
+	</form>
+</div>
+<!-- End Delete TreatmentPlan Modal -->
 
 <script>
 	$(function() {
