@@ -194,7 +194,7 @@
 	
 	<!-- Delete Modal -->
 	<c:forEach items="${stage.tasks }" var="task">
-		<div class="modal" id="delete__task_modal${task.taskID }">
+		<div class="modal" id="delete_task_modal${task.taskID }">
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">

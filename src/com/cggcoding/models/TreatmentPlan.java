@@ -235,15 +235,20 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	
 	//TODO update so this gives a value that incorporates each stages percent complete
 	public int percentComplete(){
-		double stagesComplete = 0;
+		double totalTasks = 0;
+		double tasksComplete = 0;
 		for(Stage stage : stages){
-			if(stage.isCompleted()){
-				stagesComplete = stagesComplete + 1;
+			for(Task task : stage.getTasks()){
+				totalTasks++;
+				if(task.isCompleted()){
+					tasksComplete++;
+				}
 			}
+			
 		}
 		
-		if(stagesComplete!=0){
-			return (int) (stagesComplete/getNumberOfStages()*100);
+		if(tasksComplete!=0){
+			return (int) (tasksComplete/totalTasks*100);
 		} else {
 			return 0;
 		}
