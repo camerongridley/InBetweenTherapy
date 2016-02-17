@@ -1122,8 +1122,8 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return copiedStage;
 	}
 	
-	public static List<Stage> getDefaultStages() throws DatabaseException, ValidationException{
-		return dao.stagesGetDefaults();
+	public static List<Stage> getCoreStages() throws DatabaseException, ValidationException{
+		return dao.stagesGetCoreList();
 	}
 
 	

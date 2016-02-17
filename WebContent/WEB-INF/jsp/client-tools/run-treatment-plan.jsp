@@ -246,13 +246,5 @@
 	</div>
 </div>
 
-<script>
-	$(function() {
-	    $('#defaultTreatmentPlanID').change(function() {
-	    	this.form.submit();
-	    });
-	    
-	});
-</script>
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />

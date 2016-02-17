@@ -104,7 +104,7 @@ public class CreateTask extends HttpServlet {
 						forwardTo = Constants.URL_EDIT_STAGE;
 						if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
 							stage.addTaskTemplate(task.getTaskID(), taskReps);
-							request.setAttribute("defaultStageList", Stage.getDefaultStages());
+							request.setAttribute("coreStagesList", Stage.getCoreStages());
 							
 						} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
 							int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");

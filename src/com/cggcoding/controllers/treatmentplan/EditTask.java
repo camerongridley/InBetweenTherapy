@@ -136,7 +136,7 @@ public class EditTask extends HttpServlet {
 							case Constants.PATH_CLIENT_TREATMENT_PLAN:
 		            		case Constants.PATH_MANAGE_CLIENT:
 								stage = Stage.load(stageID);
-								request.setAttribute("defaultStageList", Stage.getDefaultStages());
+								request.setAttribute("coreStagesList", Stage.getCoreStages());
 								task = null;
 								forwardTo = Constants.URL_EDIT_STAGE;
 								

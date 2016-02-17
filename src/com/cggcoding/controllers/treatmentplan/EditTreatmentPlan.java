@@ -160,7 +160,7 @@ public class EditTreatmentPlan extends HttpServlet {
 		                	UserTherapist userTherapist = (UserTherapist)user;
 		    				
 		    				//set the default treatment plans and the custom plans for this therapist into the request
-		    				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+		    				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 		    				
 		                	userTherapist.loadAllAssignedClientTreatmentPlans(ownerUserID);
 		            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());

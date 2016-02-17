@@ -79,10 +79,10 @@ public class ManageClients extends HttpServlet {
 				request.setAttribute("client", client);
 				
 				//TODO do I still need this or can it be handled by treatmentPlanID?
-				int defaultTreatmentPlanID = ParameterUtils.parseIntParameter(request, "defaultTreatmentPlanID");
+				int coreTreatmentPlanID = ParameterUtils.parseIntParameter(request, "coreTreatmentPlanID");
 				
 				//set the default treatment plans and the custom plans for this therapist into the request
-				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 				
 				//based on the client retrieved from the request, load all plans that the therapist has access to
 				
@@ -114,8 +114,8 @@ public class ManageClients extends HttpServlet {
 						break;
 					case "copy-plan-to-client":
 						boolean isTemplate = false;
-						//therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
-						therapistUser.createTreatmentPlanFromTemplate(clientUserID, defaultTreatmentPlanID);
+						//therapistUser.copyTreatmentPlanForClient(clientUserID, coreTreatmentPlanID, isTemplate);
+						therapistUser.createTreatmentPlanFromTemplate(clientUserID, coreTreatmentPlanID);
 						request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COPIED_TO_CLIENT);
 						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
@@ -132,7 +132,7 @@ public class ManageClients extends HttpServlet {
 				
 				//put these back in the request so other forms can maintain selections of other forms as well as display selected items of the dropdown boxes
 				request.setAttribute("client", client);
-				request.setAttribute("defaultTreatmentPlanID", defaultTreatmentPlanID);
+				request.setAttribute("coreTreatmentPlanID", coreTreatmentPlanID);
 			}
 		
 		}catch(DatabaseException | ValidationException e){

@@ -16,10 +16,10 @@
 	<form class="form-horizontal" action="/secure/ManageClients" method="POST">
 		<input type="hidden" name="requestedAction" value="select-client">
 		<input type="hidden" name="path" value="${path }">
-		<input type="hidden" name="defaultTreatmentPlanID" value="${defaultTreatmentPlanID }">
+		<input type="hidden" name="coreTreatmentPlanID" value="${coreTreatmentPlanID }">
 		
         <div class="form-group">
-            <label for="defaultStage" class="col-sm-2 control-label">Clients:</label>
+            <label for="clientUserID" class="col-sm-2 control-label">Clients:</label>
             <div class="col-sm-5">
                 <select class="form-control" id="clientUserID" name="clientUserID">
                     <option  value="">Select a client.</option>

@@ -116,7 +116,7 @@ public class CommonServletFunctions {
 	}
 	
 	public static void setDefaultTreatmentPlansInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
-		request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+		request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 	}
 	
 }

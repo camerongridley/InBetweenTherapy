@@ -75,12 +75,12 @@ public class CreateStage extends HttpServlet {
 		/*-----------End Treatment Plan object variables---------------*/
 		
 		
-		int selectedDefaultStageID = ParameterUtils.parseIntParameter(request, "defaultStageID");
+		int selectedCoreStageID = ParameterUtils.parseIntParameter(request, "coreStageID");
 		String stageTitle = request.getParameter("stageTitle");
     	String stageDescription = request.getParameter("stageDescription");
     	int stageOrder = ParameterUtils.parseIntParameter(request, "stageOrder");
     	String newStageGoal =request.getParameter("newStageGoal");
-		List<Stage> defaultStages = null;
+		List<Stage> coreStages = null;
 		
 		try{
 			if(!path.equals(Constants.PATH_TEMPLATE_STAGE)){
@@ -95,7 +95,7 @@ public class CreateStage extends HttpServlet {
     			owner = User.loadBasic(ownerUserID);
     		}
 			
-			defaultStages = Stage.getDefaultStages();
+			coreStages = Stage.getCoreStages();
 			
 			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){				
 				switch (requestedAction){
@@ -105,9 +105,9 @@ public class CreateStage extends HttpServlet {
 						break;
 					case "stage-add-default-template":
 						
-						if(selectedDefaultStageID != 0){
+						if(selectedCoreStageID != 0){
 			            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
-			            		treatmentPlan.addStageTemplate(selectedDefaultStageID);
+			            		treatmentPlan.addStageTemplate(selectedCoreStageID);
 			                	
 			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
 			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
@@ -116,7 +116,7 @@ public class CreateStage extends HttpServlet {
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                } else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
 			                	MapTreatmentPlanStageTemplate platStageInfo = null;//should there be any attributes to be passed, like if stage repetitions was added, they would go in this. for now, none of it's properties are relevant in this particular situation
-			                	treatmentPlan.createStageFromTemplate(selectedDefaultStageID, platStageInfo);
+			                	treatmentPlan.createStageFromTemplate(selectedCoreStageID, platStageInfo);
 			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                }
@@ -163,7 +163,7 @@ public class CreateStage extends HttpServlet {
 		                break;
 		            case("add-stage-to-treatment-plan"):
 						//set all user-independent lists into request
-						request.setAttribute("defaultStages", defaultStages);
+						request.setAttribute("coreStages", coreStages);
 		            	//TODO delete? treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						forwardTo = Constants.URL_CREATE_STAGE;
 						break;
@@ -188,7 +188,7 @@ public class CreateStage extends HttpServlet {
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("newStageGoal", newStageGoal);
 			request.setAttribute("treatmentPlan", treatmentPlan);
-			request.setAttribute("defaultStages", defaultStages);
+			request.setAttribute("coreStages", coreStages);
 			
             forwardTo = Constants.URL_CREATE_STAGE;
 		}

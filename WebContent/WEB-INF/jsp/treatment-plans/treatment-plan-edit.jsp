@@ -28,14 +28,14 @@
 			<input type="hidden" name="requestedAction" value="plan-edit-load-plan"> 
 			<input type="hidden" name="path" value="${path }">
 			
-				<label for="selectedDefaultTreatmentPlanID"
+				<label for="selectedCoreTreatmentPlanID"
 					class="col-sm-2 control-label">Select a Treatment Plan</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="selectedDefaultTreatmentPlanID" name="treatmentPlanID">
+					<select class="form-control" id="selectedCoreTreatmentPlanID" name="treatmentPlanID">
 						<option value="">Select a treatment plan to edit.</option>
-						<c:forEach var="defaultPlan" items="${defaultTreatmentPlanList }">
-							<option value="${defaultPlan.treatmentPlanID}"
-								<c:if test="${defaultPlan.treatmentPlanID == treatmentPlan.treatmentPlanID }">selected</c:if>>${defaultPlan.title}</option>
+						<c:forEach var="corePlan" items="${coreTreatmentPlansList }">
+							<option value="${corePlan.treatmentPlanID}"
+								<c:if test="${corePlan.treatmentPlanID == treatmentPlan.treatmentPlanID }">selected</c:if>>${corePlan.title}</option>
 						</c:forEach>
 					</select>
 		
@@ -320,7 +320,7 @@
 
 <script>
 	$(function() {
-		$('#selectedDefaultTreatmentPlanID').change(function() {
+		$('#selectedCoreTreatmentPlanID').change(function() {
 			this.form.submit();
 		});
 	});

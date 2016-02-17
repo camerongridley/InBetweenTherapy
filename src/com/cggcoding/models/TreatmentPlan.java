@@ -866,8 +866,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		return stageBeingCopied;
 	}*/
 	
-	public static List<TreatmentPlan> getDefaultTreatmentPlans() throws DatabaseException, ValidationException {
-		return dao.treatmentPlanGetDefaults();
+	public static List<TreatmentPlan> getCoreTreatmentPlans() throws DatabaseException, ValidationException {
+		return dao.treatmentPlanGetCoreList();
 	}
 	
 	/**Calculates and returns size value for Bootstrap's col width for each stage node in the stage navigation bar of run-treatment-plan.jsp.  

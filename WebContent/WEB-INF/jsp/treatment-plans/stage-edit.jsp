@@ -21,12 +21,12 @@
 		<c:if test="${path=='templateStage'}">
 			<div class="well well-sm">
 				<div class="form-group">
-					<label for="selectedDefaultStageID" class="col-sm-2 control-label">Select Default Stage</label>
+					<label for="selectedCoreStageID" class="col-sm-2 control-label">Select Default Stage</label>
 			        <div class="col-sm-5">
-			            <select class="form-control" id="selectedDefaultStageID" name="stageID">
+			            <select class="form-control" id="selectedCoreStageID" name="stageID">
 			                <option  value="">Select a stage to edit.</option>
-			                <c:forEach var="defaultStage" items="${defaultStageList }">
-			                    <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == stage.stageID }">selected</c:if> >${defaultStage.title}</option>
+			                <c:forEach var="coreStage" items="${coreStagesList }">
+			                    <option value="${coreStage.stageID}" <c:if test="${coreStage.stageID == stage.stageID }">selected</c:if> >${coreStage.title}</option>
 			                </c:forEach>
 			            </select>
 			        </div>
@@ -219,7 +219,7 @@
 	
 	<script>
 		$(function() {
-		    $('#selectedDefaultStageID').change(function() {
+		    $('#selectedCoreStageID').change(function() {
 		    	this.form.submit();
 		    });
 		});

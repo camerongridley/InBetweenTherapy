@@ -16,7 +16,7 @@
 	<form class="form-horizontal" action="/secure/ManageClients" method="POST">
 		<input type="hidden" name="requestedAction" value="select-client">
 		<input type="hidden" name="path" value="${path }">
-		<input type="hidden" name="defaultTreatmentPlanID" value="${defaultTreatmentPlanID }">
+		<input type="hidden" name="coreTreatmentPlanID" value="${coreTreatmentPlanID }">
 		
         <div class="form-horizontal">
 	        <div class="panel panel-default">
@@ -58,7 +58,7 @@
     <form class="form-horizontal" action="/secure/ManageClients" method="POST">
 		<input type="hidden" name="requestedAction" value="select-client">
 		<input type="hidden" name="path" value="${path }">
-		<input type="hidden" name="defaultTreatmentPlanID" value="${defaultTreatmentPlanID }">
+		<input type="hidden" name="coreTreatmentPlanID" value="${coreTreatmentPlanID }">
 		
         <div class="form-horizontal">
 	        <div class="panel panel-default">
@@ -100,12 +100,12 @@
 				<input type="hidden" name="clientUserID" value="${client.userID }">
 				
 				<div class="form-group">
-					<label for="selectedDefaultTreatmentPlanID" class="col-sm-2 control-label">Select Default Treatment Plan</label>
+					<label for="coreTreatmentPlanID" class="col-sm-2 control-label">Select Default Treatment Plan</label>
 			        <div class="col-sm-5">
-			            <select class="form-control" id="defaultTreatmentPlanID" name="defaultTreatmentPlanID">
+			            <select class="form-control" id="coreTreatmentPlanID" name="coreTreatmentPlanID">
 			                <option  value="">Select a treatment plan to assign.</option>
-			                <c:forEach var="defaultPlan" items="${defaultTreatmentPlanList }">
-			                    <option value="${defaultPlan.treatmentPlanID}" <c:if test="${defaultPlan.treatmentPlanID == defaultTreatmentPlanID }">selected</c:if> >${defaultPlan.title}</option>
+			                <c:forEach var="corePlan" items="${coreTreatmentPlansList }">
+			                    <option value="${corePlan.treatmentPlanID}" <c:if test="${corePlan.treatmentPlanID == coreTreatmentPlanID }">selected</c:if> >${corePlan.title}</option>
 			                </c:forEach>
 			            </select>
 			        </div>
@@ -121,7 +121,7 @@
 				<input type="hidden" name="requestedAction" value="copy-plan-to-client">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="clientUserID" value="${client.userID }">
-				<input type="hidden" name="defaultTreatmentPlanID" value="${defaultTreatmentPlanID }">
+				<input type="hidden" name="coreTreatmentPlanID" value="${coreTreatmentPlanID }">
 				
 		        <div class="form-group">
 		            <div class="col-sm-offset-2 col-sm-10">
@@ -136,7 +136,7 @@
 	<form class="form-horizontal" action="/secure/ManageClients" method="POST">
 		<input type="hidden" name="requestedAction" value="select-client">
 		<input type="hidden" name="path" value="${path }">
-		<input type="hidden" name="defaultTreatmentPlanID" value="${defaultTreatmentPlanID }">
+		<input type="hidden" name="coreTreatmentPlanID" value="${coreTreatmentPlanID }">
 		
         <div class="form-horizontal">
 	        <div class="panel panel-default">
@@ -207,7 +207,7 @@
     
 	<script>
 		$(function() {
-		    $('#defaultTreatmentPlanID').change(function() {
+		    $('#coreTreatmentPlanID').change(function() {
 		    	this.form.submit();
 		    });
 		    

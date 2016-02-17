@@ -28,7 +28,7 @@
 				
 				<div class="form-horizontal">
 			        <div class="form-group">
-			            <label for="defaultStage" class="col-sm-2 control-label">Default Task</label>
+			            <label for="defaultTaskList" class="col-sm-2 control-label">Default Task</label>
 			            <div class="col-sm-10">
 			                <select class="form-control" id="defaultTaskList" name="taskID">
 			                    <option  value="">Select a default task.</option>

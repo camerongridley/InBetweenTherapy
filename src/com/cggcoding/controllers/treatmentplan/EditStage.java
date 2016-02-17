@@ -108,7 +108,7 @@ public class EditStage extends HttpServlet {
     		}
     		
     		//OPTIMIZE move to only relevant requestedActions
-			request.setAttribute("defaultStageList", Stage.getDefaultStages());
+			request.setAttribute("coreStagesList", Stage.getCoreStages());
 			
 			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
 								
@@ -179,7 +179,7 @@ public class EditStage extends HttpServlet {
 		            				UserTherapist userTherapist = (UserTherapist)user;
 				    				
 				    				//set the default treatment plans and the custom plans for this therapist into the request
-				    				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+				    				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 				    				
 				                	userTherapist.loadAllAssignedClientTreatmentPlans(ownerUserID);
 				            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());

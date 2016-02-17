@@ -25,12 +25,12 @@
 				</div>
 				
 		        <div class="form-group">
-		            <label for="defaultStage" class="col-sm-2 control-label">Default Stages</label>
+		            <label for="coreStage" class="col-sm-2 control-label">Default Stages</label>
 		            <div class="col-sm-10">
-		                <select class="form-control" id="defaultStageID" name="defaultStageID">
+		                <select class="form-control" id="coreStageID" name="coreStageID">
 		                    <option  value="">Select a default stage.</option>
-		                    <c:forEach items="${defaultStages}" var="defaultStage">
-		                        <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == defaultStageID}">selected</c:if>>${defaultStage.title}</option>
+		                    <c:forEach items="${coreStages}" var="coreStage">
+		                        <option value="${coreStage.stageID}" <c:if test="${coreStage.stageID == coreStageID}">selected</c:if>>${coreStage.title}</option>
 		                    </c:forEach>
 		                </select>
 		            </div>

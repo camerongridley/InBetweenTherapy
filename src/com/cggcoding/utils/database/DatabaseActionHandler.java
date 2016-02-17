@@ -71,7 +71,7 @@ public interface DatabaseActionHandler {
 	 * @throws DatabaseException
 	 * @throws ValidationException 
 	 */
-	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException;
+	List<TreatmentPlan> treatmentPlanGetCoreList() throws DatabaseException, ValidationException;
 	
 	void treatmentPlanDelete(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 	
@@ -105,7 +105,7 @@ public interface DatabaseActionHandler {
 	 * @throws DatabaseException
 	 * @throws ValidationException 
 	 */
-	List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException;
+	List<Stage> stagesGetCoreList() throws DatabaseException, ValidationException;
 	
 	List<MapStageTaskTemplate> stageUpdateTemplateTasks(Connection cn, int stageID, List<MapStageTaskTemplate> taskTemplates) throws SQLException;
 	

@@ -348,11 +348,11 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
 	@Override
-	public List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException {
+	public List<TreatmentPlan> treatmentPlanGetCoreList() throws DatabaseException, ValidationException {
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        List<TreatmentPlan> defaultPlanList = new ArrayList<>();
+        List<TreatmentPlan> corePlansList = new ArrayList<>();
         
         try {
         	cn = getConnection();
@@ -376,7 +376,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
    
             while (rs.next()){
             	if(rs.getInt("treatment_plan_id") != Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID){ //TreatmentPlan with id=1 is the Plan that holds all Stage Defaults and so should not be included in the results of this query.
-            		defaultPlanList.add(treatmentPlanLoadBasic(cn, rs.getInt("treatment_plan_id")));
+            		corePlansList.add(treatmentPlanLoadBasic(cn, rs.getInt("treatment_plan_id")));
             	}
             	
             }
@@ -389,9 +389,9 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			DbUtils.closeQuietly(cn);
         }
         
-        throwValidationExceptionIfNull(defaultPlanList);
+        throwValidationExceptionIfNull(corePlansList);
         
-        return defaultPlanList;
+        return corePlansList;
 	}
 	
 	@Override
@@ -832,11 +832,11 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
 
 	
-	public List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException{
+	public List<Stage> stagesGetCoreList() throws DatabaseException, ValidationException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Stage> defaultStageList = new ArrayList<>();
+        List<Stage> coreStagesList = new ArrayList<>();
         
         try {
         	cn = getConnection();
@@ -859,7 +859,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
    
             while (rs.next()){
             	if(rs.getInt("stage_id") != Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID){// The Stage with id=1 is the Stage that holds all of the Task templates, so should not be returned in this query
-            		defaultStageList.add(Stage.loadBasic(cn, rs.getInt("stage_id")));
+            		coreStagesList.add(Stage.loadBasic(cn, rs.getInt("stage_id")));
             	}
             }
 
@@ -872,7 +872,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			DbUtils.closeQuietly(cn);
         }
         
-        return defaultStageList;
+        return coreStagesList;
 	}
 
 	
