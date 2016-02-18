@@ -103,7 +103,7 @@ public class CreateStage extends HttpServlet {
 
 						forwardTo = Constants.URL_CREATE_STAGE;
 						break;
-					case "stage-add-core-template":
+					case "stage-add-new":
 						
 						if(selectedCoreStageID != 0){
 			            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){

@@ -16,14 +16,14 @@
 	<c:if test='${path!="templateTask" }'>
 		<div class="well well-sm">
 			<form class="form-horizontal" action="/secure/CreateTask" method="POST">
-				<input type="hidden" name="requestedAction" value="task-add-core-template">
+				<input type="hidden" name="requestedAction" value="task-add-new">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="stageID" value="${stage.stageID }">
 				<input type="hidden" name="isTemplate" value="${task.template }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 				
 				<div>
-					<h3>Add a Core Task</h3>
+					<h4>Add a Core Task</h4>
 				</div>
 				
 				<div class="form-horizontal">
@@ -75,7 +75,7 @@
 		    </form>
 		</div>
 		
-		<h2>Or</h2>
+		<h3>Or</h3>
 	</c:if>
 	
 	
@@ -87,9 +87,14 @@
 			<input type="hidden" name="isTemplate" value="${task.template }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 				
+			<div>
+				<h4>Create a New Task</h4>
+			</div>
+				
 			<div class="form-group">
 	            <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
 	            <div class="col-sm-10">
+	            <a name="taskTypeSelection" id="taskTypeSelection"></a>
 	                <select class="form-control" id="taskTypeID" name="taskTypeID">
 	                    <option  value="">Select a task type.</option>
 	                    <c:forEach items="${taskTypeMap}" var="taskType">

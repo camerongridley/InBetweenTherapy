@@ -98,7 +98,7 @@
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
 		    <form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
-		    <input type="hidden" name="requestedAction" value="create-core-treatment-issue">
+		    <input type="hidden" name="requestedAction" value="create-new-treatment-issue">
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >
 		    <input type="hidden" name="planTitle" value="${planTitle }">

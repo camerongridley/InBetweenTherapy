@@ -97,7 +97,7 @@ public class CreateTask extends HttpServlet {
 					request.setAttribute("task", task);
 					forwardTo = Constants.URL_CREATE_TASK;
 					break;
-				case "task-add-core-template" :
+				case "task-add-new" :
 
 					if(task.getTaskID() != 0){				
 						

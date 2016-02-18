@@ -95,7 +95,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 				request.setAttribute("coreTreatmentIssues", coreTreatmentIssues);
 				
 				switch (requestedAction){
-					case "create-core-treatment-issue":
+					case "create-new-treatment-issue":
 		            	CommonServletFunctions.createCoreTreatmentIssue(request, user.getUserID());
 	
 						forwardTo = Constants.URL_CREATE_TREATMENT_PLAN;

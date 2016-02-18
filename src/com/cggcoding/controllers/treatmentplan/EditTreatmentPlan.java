@@ -175,7 +175,7 @@ public class EditTreatmentPlan extends HttpServlet {
 
 		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
-		            case "create-core-treatment-issue":
+		            case "create-new-treatment-issue":
 		            	CommonServletFunctions.createCoreTreatmentIssue(request, user.getUserID());
 
 						forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;

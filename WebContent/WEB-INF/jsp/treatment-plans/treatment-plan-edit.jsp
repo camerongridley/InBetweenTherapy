@@ -237,7 +237,7 @@
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
-				<input type="hidden" name="requestedAction" value="create-core-treatment-issue"> 
+				<input type="hidden" name="requestedAction" value="create-new-treatment-issue"> 
 				<input type="hidden" name="path" value="${path }"> 
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
 				<div class="modal-header">
@@ -246,13 +246,13 @@
 						<span aria-hidden="true">&times;</span>
 					</button>
 					<h4 class="modal-title" id="newCoreTreatmentIssueModalLabel">Enter
-						a new default Treatment Issue</h4>
+						a new core Treatment Issue</h4>
 				</div>
 				<div class="modal-body">
 					<input type="text" class="form-control"
 						id="newCoreTreatmentIssue" name="newCoreTreatmentIssue"
 						value="${fn:escapeXml(newCoreTreatmentIssue) }"
-						placeholder="Enter a new default treatment issue.">
+						placeholder="Enter a new core treatment issue.">
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
