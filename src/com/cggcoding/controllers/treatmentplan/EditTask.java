@@ -157,7 +157,7 @@ public class EditTask extends HttpServlet {
 				
 				//put user-independent attributes acquired from database in the request
 				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
-				request.setAttribute("taskTemplateList", Task.getDefaultTasks());
+				request.setAttribute("coreTasks", Task.getCoreTasks());
 				request.setAttribute("treatmentPlan", treatmentPlan);
 				request.setAttribute("stage", stage);
 				request.setAttribute("task", task);

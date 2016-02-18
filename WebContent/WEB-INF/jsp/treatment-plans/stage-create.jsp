@@ -16,19 +16,19 @@
 	<c:if test="${path != 'templateStage' }">
 		<div class="well well-sm">
 			<form class="form-horizontal" action="/secure/CreateStage" method="POST">
-				<input type="hidden" name="requestedAction" value="stage-add-default-template">
+				<input type="hidden" name="requestedAction" value="stage-add-core-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 				
 				<div>
-					<h3>Add a Predefined Stage</h3>
+					<h3>Add a Core Stage</h3>
 				</div>
 				
 		        <div class="form-group">
-		            <label for="coreStage" class="col-sm-2 control-label">Default Stages</label>
+		            <label for="coreStage" class="col-sm-2 control-label">Core Stages</label>
 		            <div class="col-sm-10">
 		                <select class="form-control" id="coreStageID" name="coreStageID">
-		                    <option  value="">Select a default stage.</option>
+		                    <option  value="">Select a core stage.</option>
 		                    <c:forEach items="${coreStages}" var="coreStage">
 		                        <option value="${coreStage.stageID}" <c:if test="${coreStage.stageID == coreStageID}">selected</c:if>>${coreStage.title}</option>
 		                    </c:forEach>

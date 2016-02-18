@@ -49,17 +49,17 @@
             </div>
             
             <div class="form-group">
-                <label for="defaultTreatmentIssue" class="col-sm-2 control-label">Default Tx Issues</label>
+                <label for="coreTreatmentIssueID" class="col-sm-2 control-label">Core Treatment Issues</label>
                 <div class="col-sm-9">
-                    <select class="form-control" id="defaultTreatmentIssue" name="defaultTreatmentIssue">
-                        <option  value="">Select a default treatment issue.</option>
-                        <c:forEach items="${defaultTreatmentIssues}" var="defaultIssue">
-                            <option value="${defaultIssue.treatmentIssueID}" <c:if test="${defaultIssue.treatmentIssueID == selectedDefaultIssueID}">selected</c:if>>${defaultIssue.treatmentIssueName}</option>
+                    <select class="form-control" id="coreTreatmentIssueID" name="coreTreatmentIssueID">
+                        <option  value="">Select a core treatment issue.</option>
+                        <c:forEach items="${coreTreatmentIssues}" var="coreIssue">
+                            <option value="${coreIssue.treatmentIssueID}" <c:if test="${coreIssue.treatmentIssueID == selectedCoreIssueID}">selected</c:if>>${coreIssue.treatmentIssueName}</option>
                         </c:forEach>
                     </select>
                 </div>
                 <div class="col-sm-1">
-                	<button type="button" class="btn btn-default" aria-label="Left Align" data-toggle="modal" data-target="#newDefaultTreatmentIssueModal">
+                	<button type="button" class="btn btn-default" aria-label="Left Align" data-toggle="modal" data-target="#newCoreTreatmentIssueModal">
 					  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 					</button>
                 </div>
@@ -67,9 +67,9 @@
 
             <c:if test="${customTreatmentIssues != null }">
             <div class="form-group">
-                <label for="customTreatmentIssue" class="col-sm-2 control-label">Existing Custom Tx Issues</label>
+                <label for="customTreatmentIssueID" class="col-sm-2 control-label">Existing Custom Tx Issues</label>
                 <div class="col-sm-10">
-                    <select class="form-control" id="customTreatmentIssue" name="customTreatmentIssue">
+                    <select class="form-control" id="customTreatmentIssueID" name="customTreatmentIssueID">
                         <option value="">Or select an issue you've previously created.</option>
                         <c:forEach items="${customTreatmentIssues}" var="customIssue">
                             <option value="${customIssue.treatmentIssueID}"<c:if test="${customIssue.treatmentIssueID == selectedCustomIssueID}">selected</c:if>>${customIssue.treatmentIssueName}</option>
@@ -93,25 +93,25 @@
         </div>
     </form>
 
-	<!-- New Default Treatment Issue Modal -->
-	<div class="modal fade" id="newDefaultTreatmentIssueModal" tabindex="-1" role="dialog" aria-labelledby="newDefaultTreatmentIssueModalLabel">
+	<!-- New Core Treatment Issue Modal -->
+	<div class="modal fade" id="newCoreTreatmentIssueModal" tabindex="-1" role="dialog" aria-labelledby="newCoreTreatmentIssueModalLabel">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
 		    <form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
-		    <input type="hidden" name="requestedAction" value="create-default-treatment-issue">
+		    <input type="hidden" name="requestedAction" value="create-core-treatment-issue">
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >
 		    <input type="hidden" name="planTitle" value="${planTitle }">
 		    <input type="hidden" name="planDescription" value="${planDescription }">
-		    <input type="hidden" name="selectedDefaultIssueID" value="${selectedDefaultIssueID }">
+		    <input type="hidden" name="selectedCoreIssueID" value="${selectedCoreIssueID }">
 		    <input type="hidden" name="selectedCustomIssueID" value="${selectedCustomIssueID }">
 		    
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-		        <h4 class="modal-title" id="newDefaultTreatmentIssueModalLabel">Enter a new default Treatment Issue</h4>
+		        <h4 class="modal-title" id="newCoreTreatmentIssueModalLabel">Enter a new core Treatment Issue</h4>
 		      </div>
 		      <div class="modal-body">
-		        <input type="text" class="form-control" id="newDefaultTreatmentIssue" name="newDefaultTreatmentIssue" value="${fn:escapeXml(newDefaultTreatmentIssue) }" placeholder="Enter a new default treatment issue.">
+		        <input type="text" class="form-control" id="newCoreTreatmentIssue" name="newCoreTreatmentIssue" value="${fn:escapeXml(newCoreTreatmentIssue) }" placeholder="Enter a new core treatment issue.">
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

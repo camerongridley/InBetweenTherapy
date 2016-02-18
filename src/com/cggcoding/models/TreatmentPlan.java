@@ -233,7 +233,6 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		return stages.size();
 	}
 	
-	//TODO update so this gives a value that incorporates each stages percent complete
 	public int percentComplete(){
 		double totalTasks = 0;
 		double tasksComplete = 0;

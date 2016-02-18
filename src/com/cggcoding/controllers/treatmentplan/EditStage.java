@@ -155,8 +155,8 @@ public class EditStage extends HttpServlet {
 		            		case Constants.PATH_CLIENT_TREATMENT_PLAN:
 		            		case Constants.PATH_MANAGE_CLIENT:
 		            			treatmentPlan =  TreatmentPlan.load(treatmentPlanID);
-			            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
-			            		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+			            		request.setAttribute("coreTreatmentIssues", TreatmentIssue.getCoreTreatmentIssues());
+			            		CommonServletFunctions.setCoreTreatmentPlansInRequest(request);
 			            		
 			            		//forward to same place regardless of if user is an admin or therapist
 			            		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;

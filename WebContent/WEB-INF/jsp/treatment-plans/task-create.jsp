@@ -16,23 +16,23 @@
 	<c:if test='${path!="templateTask" }'>
 		<div class="well well-sm">
 			<form class="form-horizontal" action="/secure/CreateTask" method="POST">
-				<input type="hidden" name="requestedAction" value="task-add-default-template">
+				<input type="hidden" name="requestedAction" value="task-add-core-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="stageID" value="${stage.stageID }">
 				<input type="hidden" name="isTemplate" value="${task.template }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 				
 				<div>
-					<h3>Add a Predefined Task</h3>
+					<h3>Add a Core Task</h3>
 				</div>
 				
 				<div class="form-horizontal">
 			        <div class="form-group">
-			            <label for="defaultTaskList" class="col-sm-2 control-label">Default Task</label>
+			            <label for="defaultTaskList" class="col-sm-2 control-label">Core Task</label>
 			            <div class="col-sm-10">
 			                <select class="form-control" id="defaultTaskList" name="taskID">
-			                    <option  value="">Select a default task.</option>
-			                    <c:forEach items="${defaultTasks}" var="defaultTask">
+			                    <option  value="">Select a core task.</option>
+			                    <c:forEach items="${coreTasks}" var="defaultTask">
 			                        <option value="${defaultTask.taskID}">${fn:escapeXml(defaultTask.title)}</option>
 			                    </c:forEach>
 			                </select>

@@ -164,7 +164,7 @@ public interface DatabaseActionHandler {
 	boolean treatmentIssueValidateUpdatedName(Connection cn, TreatmentIssue issue)
 			throws ValidationException, SQLException;
 	
-	ArrayList<TreatmentIssue> treatmentIssueGetDefaults() throws DatabaseException;
+	ArrayList<TreatmentIssue> treatmentIssueGetCoreList() throws DatabaseException;
 
 	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
 
@@ -175,7 +175,7 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	//*************************************** Task Methods **********************************
 	//**************************************************************************************************
-	List<Task> taskGetDefaults() throws DatabaseException;
+	List<Task> taskGetCoreList() throws DatabaseException;
 	
 	Task taskGenericLoad(Connection cn, int taskID) throws SQLException;
 	

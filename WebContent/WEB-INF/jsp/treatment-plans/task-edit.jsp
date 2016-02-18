@@ -25,8 +25,8 @@
 			<div class="col-sm-8">
 				<select class="form-control" id="defaultTaskListID" name="taskID">
 				    <option  value="">Select a default task.</option>
-				    	<c:forEach items="${taskTemplateList}" var="taskTemplate">
-							<option value="${taskTemplate.taskID}" <c:if test="${taskTemplate.taskID == task.taskID }">selected</c:if> >${fn:escapeXml(taskTemplate.title)}</option>
+				    	<c:forEach items="${coreTasks}" var="coreTask">
+							<option value="${coreTask.taskID}" <c:if test="${coreTask.taskID == task.taskID }">selected</c:if> >${fn:escapeXml(coreTask.title)}</option>
 						</c:forEach>
 				</select>
 			</div>

@@ -69,8 +69,8 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 		
     	String planTitle = request.getParameter("planTitle");
     	String planDescription = request.getParameter("planDescription");
-    	int selectedDefaultIssueID = ParameterUtils.parseIntParameter(request, "defaultTreatmentIssue");
-    	int selectedCustomIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
+    	int selectedCoreIssueID = ParameterUtils.parseIntParameter(request, "coreTreatmentIssueID");
+    	int selectedCustomIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssueID");
 
     	
     	try {
@@ -91,12 +91,12 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 				
 			} else if(user.hasRole(Constants.USER_ADMIN)){
 				UserAdmin userAdmin = (UserAdmin)session.getAttribute("user");
-				ArrayList<TreatmentIssue> defaultreatmentIssues = TreatmentIssue.getDefaultTreatmentIssues();		
-				request.setAttribute("defaultTreatmentIssues", defaultreatmentIssues);
+				ArrayList<TreatmentIssue> coreTreatmentIssues = TreatmentIssue.getCoreTreatmentIssues();		
+				request.setAttribute("coreTreatmentIssues", coreTreatmentIssues);
 				
 				switch (requestedAction){
-					case "create-default-treatment-issue":
-		            	CommonServletFunctions.createDefaultTreatmentIssue(request, user.getUserID());
+					case "create-core-treatment-issue":
+		            	CommonServletFunctions.createCoreTreatmentIssue(request, user.getUserID());
 	
 						forwardTo = Constants.URL_CREATE_TREATMENT_PLAN;
 		            	break;
@@ -112,16 +112,16 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 		                
 		              //detect which treatment issue source was used and validate
 		                int treatmentIssueID = 0;
-		                if(selectedDefaultIssueID == 0 && selectedCustomIssueID == 0){
+		                if(selectedCoreIssueID == 0 && selectedCustomIssueID == 0){
 		                	throw new ValidationException(ErrorMessages.ISSUE_NONE_SELECTED);
 		                }
-		                if(selectedDefaultIssueID > 0 && selectedCustomIssueID > 0){
+		                if(selectedCoreIssueID > 0 && selectedCustomIssueID > 0){
 		                	throw new ValidationException(ErrorMessages.ISSUE_MULTIPLE_SELECTED);
 		                }
-		                if(selectedDefaultIssueID > 0 && selectedCustomIssueID <= 0){
-		                	treatmentIssueID = selectedDefaultIssueID;
+		                if(selectedCoreIssueID > 0 && selectedCustomIssueID <= 0){
+		                	treatmentIssueID = selectedCoreIssueID;
 		                }
-		                if(selectedDefaultIssueID <= 0 && selectedCustomIssueID > 0){
+		                if(selectedCoreIssueID <= 0 && selectedCustomIssueID > 0){
 		                	treatmentIssueID = selectedCustomIssueID;
 		                }
 
@@ -146,14 +146,14 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 			request.setAttribute("owner", owner);
 			request.setAttribute("planTitle", planTitle);
     		request.setAttribute("planDescription", planDescription);
-    		request.setAttribute("selectedDefaultIssueID", selectedDefaultIssueID);
+    		request.setAttribute("selectedCoreIssueID", selectedCoreIssueID);
     		request.setAttribute("selectedCustomTreatmentIssue", selectedCustomIssueID);
 			
     	} catch (ValidationException | DatabaseException e) {
     		request.setAttribute("errorMessage", e.getMessage());
     		request.setAttribute("planTitle", planTitle);
     		request.setAttribute("planDescription", planDescription);
-    		request.setAttribute("selectedDefaultIssueID", selectedDefaultIssueID);
+    		request.setAttribute("selectedCoreIssueID", selectedCoreIssueID);
     		request.setAttribute("selectedCustomTreatmentIssue", selectedCustomIssueID);
 
     		forwardTo = Constants.URL_CREATE_TREATMENT_PLAN;

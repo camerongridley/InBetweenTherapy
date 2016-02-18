@@ -20,7 +20,7 @@ public class UserTherapist extends User implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	private Map<Integer, UserClient> clientMap;
-    private List<TreatmentIssue> defaultTreatmentIssues;
+    private List<TreatmentIssue> coreTreatmentIssues;
     private List<TreatmentPlan> allAssignedClientPlans;
     private List<TreatmentPlan> activeAssignedClientPlans;
     private List<TreatmentPlan> unstartedAssignedClientPlans;
@@ -31,7 +31,7 @@ public class UserTherapist extends User implements Serializable{
     public UserTherapist(int userID, String userName, String firstName, String lastName, String email){
         super(userID, userName, firstName, lastName, email);
         this.clientMap = new HashMap<>();
-        this.defaultTreatmentIssues = new ArrayList<>();
+        this.coreTreatmentIssues = new ArrayList<>();
         this.allAssignedClientPlans = new ArrayList<>();
     }
 

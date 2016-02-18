@@ -100,7 +100,7 @@
 				<input type="hidden" name="clientUserID" value="${client.userID }">
 				
 				<div class="form-group">
-					<label for="coreTreatmentPlanID" class="col-sm-2 control-label">Select Default Treatment Plan</label>
+					<label for="coreTreatmentPlanID" class="col-sm-2 control-label">Select Core Treatment Plan</label>
 			        <div class="col-sm-5">
 			            <select class="form-control" id="coreTreatmentPlanID" name="coreTreatmentPlanID">
 			                <option  value="">Select a treatment plan to assign.</option>

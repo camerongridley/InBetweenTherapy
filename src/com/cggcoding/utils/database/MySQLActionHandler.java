@@ -53,7 +53,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	//TODO Move these 3 methods to CommonValidation.java?
 	@Override
 	public boolean throwValidationExceptionIfTemplateHolderID(int templateHolderObjectID) throws ValidationException{
-		if(templateHolderObjectID == Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID){
+		if(templateHolderObjectID == Constants.TEMPLATES_HOLDER_PRIMARY_KEY_ID){
 			throw new ValidationException(ErrorMessages.DEFAULTS_HOLDER_ID_SELECTED);
 		}
 		
@@ -375,7 +375,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	if(rs.getInt("treatment_plan_id") != Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID){ //TreatmentPlan with id=1 is the Plan that holds all Stage Defaults and so should not be included in the results of this query.
+            	if(rs.getInt("treatment_plan_id") != Constants.TEMPLATES_HOLDER_PRIMARY_KEY_ID){ //TreatmentPlan with id=1 is the Plan that holds all Stage Defaults and so should not be included in the results of this query.
             		corePlansList.add(treatmentPlanLoadBasic(cn, rs.getInt("treatment_plan_id")));
             	}
             	
@@ -858,7 +858,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	if(rs.getInt("stage_id") != Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID){// The Stage with id=1 is the Stage that holds all of the Task templates, so should not be returned in this query
+            	if(rs.getInt("stage_id") != Constants.TEMPLATES_HOLDER_PRIMARY_KEY_ID){// The Stage with id=1 is the Stage that holds all of the Task templates, so should not be returned in this query
             		coreStagesList.add(Stage.loadBasic(cn, rs.getInt("stage_id")));
             	}
             }
@@ -1093,7 +1093,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	
 	
 	@Override
-	public List<Task> taskGetDefaults() throws DatabaseException{
+	public List<Task> taskGetCoreList() throws DatabaseException{
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
@@ -1589,7 +1589,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 
 	//XXX I need to move this logic into a model and from there call treatmentIssueGetListByUserID()
 	@Override
-	public ArrayList<TreatmentIssue> treatmentIssueGetDefaults() throws DatabaseException{
+	public ArrayList<TreatmentIssue> treatmentIssueGetCoreList() throws DatabaseException{
 		Connection cn = null;
 		ArrayList<TreatmentIssue> issues = new ArrayList<>();
 		

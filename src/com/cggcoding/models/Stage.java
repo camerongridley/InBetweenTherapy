@@ -604,7 +604,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @throws DatabaseException
 	 */
 	public static Stage createTemplate(int userID, String title, String description) throws ValidationException, DatabaseException{
-		Stage stageTemplate = new Stage(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, title, description, Constants.TEMPLATE_ORDER_NUMBER, true);
+		Stage stageTemplate = new Stage(Constants.TEMPLATES_HOLDER_PRIMARY_KEY_ID, userID, title, description, Constants.TEMPLATE_ORDER_NUMBER, true);
 		
 		stageTemplate.create();
 		

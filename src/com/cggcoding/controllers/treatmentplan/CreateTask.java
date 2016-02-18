@@ -97,7 +97,7 @@ public class CreateTask extends HttpServlet {
 					request.setAttribute("task", task);
 					forwardTo = Constants.URL_CREATE_TASK;
 					break;
-				case "task-add-default-template" :
+				case "task-add-core-template" :
 
 					if(task.getTaskID() != 0){				
 						
@@ -117,7 +117,7 @@ public class CreateTask extends HttpServlet {
 					break;
 				case "task-type-select":
 					request.setAttribute("task", task);
-					request.setAttribute("defaultTasks", Task.getDefaultTasks());
+					request.setAttribute("coreTasks", Task.getCoreTasks());
 					forwardTo = Constants.URL_CREATE_TASK;
 					break;
 				case ("create-new-task"):
@@ -173,7 +173,7 @@ public class CreateTask extends HttpServlet {
 				
 				//put user-independent (i.e. default) lists acquired from database in the request
 				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
-				request.setAttribute("defaultTasks", Task.getDefaultTasks());
+				request.setAttribute("coreTasks", Task.getCoreTasks());
 				request.setAttribute("treatmentPlan", treatmentPlan);
 				request.setAttribute("stage", stage);
 				request.setAttribute("owner", owner);

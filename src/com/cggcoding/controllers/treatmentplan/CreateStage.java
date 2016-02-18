@@ -103,21 +103,21 @@ public class CreateStage extends HttpServlet {
 
 						forwardTo = Constants.URL_CREATE_STAGE;
 						break;
-					case "stage-add-default-template":
+					case "stage-add-core-template":
 						
 						if(selectedCoreStageID != 0){
 			            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
 			            		treatmentPlan.addStageTemplate(selectedCoreStageID);
 			                	
 			                	//freshly load the treatment plan so it has the newly created stage included when returning to the edit plan page
-			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
-			                	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+			                	CommonServletFunctions.setCoreTreatmentIssuesInRequest(request);
+			                	CommonServletFunctions.setCoreTreatmentPlansInRequest(request);
 			                	
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                } else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
 			                	MapTreatmentPlanStageTemplate platStageInfo = null;//should there be any attributes to be passed, like if stage repetitions was added, they would go in this. for now, none of it's properties are relevant in this particular situation
 			                	treatmentPlan.createStageFromTemplate(selectedCoreStageID, platStageInfo);
-			                	CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
+			                	CommonServletFunctions.setCoreTreatmentIssuesInRequest(request);
 			                	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			                }
 			            	
@@ -145,7 +145,7 @@ public class CreateStage extends HttpServlet {
 		                		treatmentPlan.addStageTemplate(newStage.getStageID());
 		                		request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 		                		forwardTo = Constants.URL_EDIT_STAGE;
-		                		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
+		                		CommonServletFunctions.setCoreTreatmentIssuesInRequest(request);
 		                	}
 		                	
 		                	

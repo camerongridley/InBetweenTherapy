@@ -18,12 +18,12 @@ public class CommonServletFunctions {
 
 	}
 
-	public static void createDefaultTreatmentIssue(HttpServletRequest request, int userID) throws ValidationException, DatabaseException{
-		String newIssueName = request.getParameter("newDefaultTreatmentIssue");
+	public static void createCoreTreatmentIssue(HttpServletRequest request, int userID) throws ValidationException, DatabaseException{
+		String newIssueName = request.getParameter("newCoreTreatmentIssue");
 		TreatmentIssue issue = new TreatmentIssue(newIssueName, userID);
 		issue.create();
 		
-		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
+		request.setAttribute("coreTreatmentIssues", TreatmentIssue.getCoreTreatmentIssues());
 	}
 	
 	//TODO delete this after fully transitioned to updateTaskParametersFromRequest
@@ -111,11 +111,11 @@ public class CommonServletFunctions {
 	}
 	
 	
-	public static void setDefaultTreatmentIssuesInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
-		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
+	public static void setCoreTreatmentIssuesInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
+		request.setAttribute("coreTreatmentIssues", TreatmentIssue.getCoreTreatmentIssues());
 	}
 	
-	public static void setDefaultTreatmentPlansInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
+	public static void setCoreTreatmentPlansInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
 		request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 	}
 	
