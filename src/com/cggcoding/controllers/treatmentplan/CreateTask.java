@@ -68,7 +68,7 @@ public class CreateTask extends HttpServlet {
 		int ownerUserID = 0;
 		User owner = null;
 		/*-----------End Treatment Plan object variables---------------*/
-
+		
 		int taskReps = ParameterUtils.parseIntParameter(request, "taskReps");
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
@@ -118,6 +118,9 @@ public class CreateTask extends HttpServlet {
 				case "task-type-select":
 					request.setAttribute("task", task);
 					request.setAttribute("coreTasks", Task.getCoreTasks());
+
+					request.setAttribute("scrollTo", "taskTypeSelection");
+					
 					forwardTo = Constants.URL_CREATE_TASK;
 					break;
 				case ("create-new-task"):

@@ -1,3 +1,4 @@
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
     </div> <!-- /container -->
 	    <hr>
@@ -6,6 +7,8 @@
 	        <p>&copy; 2015 Cameron Gridley</p>
 	    </footer>
 	</div>
+
+	<c:import url="/js/custom-js-include.jsp" />
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
