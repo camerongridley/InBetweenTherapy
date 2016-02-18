@@ -120,7 +120,11 @@ public class EditStage extends HttpServlet {
 		            case "select-stage" :
 		            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
 		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(treatmentPlanID));
+		            	} 
+		            	if(path.equals(Constants.PATH_TEMPLATE_STAGE)){
+		            		request.setAttribute("scrollTo", "selectStage");
 		            	}
+		            	
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 		            	break;
 		            	

@@ -31,6 +31,7 @@
 				<label for="selectedCoreTreatmentPlanID"
 					class="col-sm-2 control-label">Select a Treatment Plan</label>
 				<div class="col-sm-8">
+				<a id="selectTreatmentPlan"></a>
 					<select class="form-control" id="selectedCoreTreatmentPlanID" name="treatmentPlanID">
 						<option value="">Select a treatment plan to edit.</option>
 						<c:forEach var="corePlan" items="${coreTreatmentPlansList }">

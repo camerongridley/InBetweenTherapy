@@ -23,6 +23,7 @@
 		<div class="form-group">
 			<label for="defaultTaskListID" class="col-sm-2 control-label">Select Task</label>
 			<div class="col-sm-8">
+			<a id="taskSelection"></a>
 				<select class="form-control" id="defaultTaskListID" name="taskID">
 				    <option  value="">Select a default task.</option>
 				    	<c:forEach items="${coreTasks}" var="coreTask">

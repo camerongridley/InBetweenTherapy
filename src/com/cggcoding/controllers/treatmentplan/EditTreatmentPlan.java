@@ -172,7 +172,7 @@ public class EditTreatmentPlan extends HttpServlet {
 		                
 		            	break;
 		            case "plan-edit-load-plan":
-
+		            	request.setAttribute("scrollTo", "selectTreatmentPlan");
 		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 		            case "create-new-treatment-issue":

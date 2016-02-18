@@ -104,7 +104,9 @@ public class EditTask extends HttpServlet {
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-select-task"):
-						
+						if(path.equals(Constants.PATH_TEMPLATE_TASK)){
+							request.setAttribute("scrollTo", "taskSelection");
+						}
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-select-task-type"):

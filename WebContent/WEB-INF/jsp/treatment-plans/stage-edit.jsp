@@ -23,6 +23,7 @@
 				<div class="form-group">
 					<label for="selectedCoreStageID" class="col-sm-2 control-label">Select Default Stage</label>
 			        <div class="col-sm-5">
+			        <a id="selectStage"></a>
 			            <select class="form-control" id="selectedCoreStageID" name="stageID">
 			                <option  value="">Select a stage to edit.</option>
 			                <c:forEach var="coreStage" items="${coreStagesList }">
