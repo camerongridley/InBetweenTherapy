@@ -102,6 +102,7 @@
 				<div class="form-group">
 					<label for="coreTreatmentPlanID" class="col-sm-2 control-label">Select Core Treatment Plan</label>
 			        <div class="col-sm-5">
+			        <a id="selectTreatmentPlan"></a>
 			            <select class="form-control" id="coreTreatmentPlanID" name="coreTreatmentPlanID">
 			                <option  value="">Select a treatment plan to assign.</option>
 			                <c:forEach var="corePlan" items="${coreTreatmentPlansList }">

@@ -110,6 +110,9 @@ public class ManageClients extends HttpServlet {
 						break;
 					case "select-treatment-plan-for-assignment":
 						//TODO load the preview of the selected treatment plan and put into request
+						
+						request.setAttribute("scrollTo", "selectTreatmentPlan");
+						
 						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
 					case "copy-plan-to-client":
