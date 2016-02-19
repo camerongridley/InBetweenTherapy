@@ -226,7 +226,7 @@
 	</c:forEach>
 
 	<div class="row form-group">
-		<div class="col-sm-offset-2 col-sm-10">
+		<div class="col-sm-12 save-button">
 			<button type="submit" class="btn btn-default">Save</button>
 		</div>
 	</div>

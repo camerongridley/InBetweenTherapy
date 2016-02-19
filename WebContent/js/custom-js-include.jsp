@@ -1,14 +1,11 @@
 <script>
 $(document).ready(function(){
-    var scroll = "${scrollTo}";
+    var scrollTo = "${scrollTo}";
 
-    console.log("scrollTo: ${scrollTo}");
-    if(scroll !== "" && scroll!== null && scroll !== undefined){
-    	console.log("Inside if statement.");
+    if(scrollTo !== "" && scrollTo!== null && scrollTo !== undefined){
     	$('html, body').animate({
-            scrollTop: $("#${scrollTo}").offset().top-135
+            scrollTop: $("#" + scrollTo).offset().top-135
         }, 0);
-    }
-    
+    } 
 });
 </script>

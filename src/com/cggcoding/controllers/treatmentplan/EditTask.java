@@ -120,18 +120,21 @@ public class EditTask extends HttpServlet {
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-update"):
-						if(task.getTaskID()==0){
-							throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+						//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
+						if(request.getParameter("submitButton").equals("save")){
+							if(task.getTaskID()==0){
+								throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+							}
+							
+							newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
+							updateDataBase = true;
+							task =Task.convertToType(task, newTaskTypeID, updateDataBase);
+						
+							task = CommonServletFunctions.updateTaskParametersFromRequest(request, task);
+							
+							task.update();
 						}
-						
-						newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
-						updateDataBase = true;
-						task =Task.convertToType(task, newTaskTypeID, updateDataBase);
-					
-						task = CommonServletFunctions.updateTaskParametersFromRequest(request, task);
-						
-						task.update();
-						
+							
 						switch(path){
 							case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
 							case Constants.PATH_TEMPLATE_STAGE:
@@ -150,8 +153,9 @@ public class EditTask extends HttpServlet {
 			            		} else if(user.getRole().equals(Constants.USER_THERAPIST)){
 			            			forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 			            		}
+		            			break;
 						}
-						
+
 						request.setAttribute("warningMessage", null);
 						
 						break;

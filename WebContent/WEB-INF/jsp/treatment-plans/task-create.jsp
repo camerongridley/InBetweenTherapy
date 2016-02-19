@@ -174,7 +174,13 @@
 					</div>
 		        </div>
 			</c:if>
-	        <button type="submit" class="btn btn-default col-sm-offset-2">Submit</button>
+			
+	        <div class="form-group">
+	            <div class="col-sm-offset-2 col-sm-10 save-button">
+	                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+	                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
+	            </div>
+	        </div>
 
 	    </form>
     </div>

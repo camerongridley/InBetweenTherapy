@@ -103,7 +103,7 @@ public class CreateStage extends HttpServlet {
 
 						forwardTo = Constants.URL_CREATE_STAGE;
 						break;
-					case "stage-add-new":
+					case "stage-add-new"://TODO rename to stage-add-core?
 						
 						if(selectedCoreStageID != 0){
 			            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
@@ -124,7 +124,7 @@ public class CreateStage extends HttpServlet {
 			            	request.setAttribute("successMessage", SuccessMessages.STAGE_ADDED_TO_TREATMENT_PLAN);
 						}
 		            	break;
-		            case "stage-create-title":
+		            case "stage-create-title": //TODO rename to stage-create-new
 		            	
 		                if(stageTitle.isEmpty() || stageDescription.isEmpty()){
 		                	throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);

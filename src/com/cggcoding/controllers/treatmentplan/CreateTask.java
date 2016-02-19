@@ -92,76 +92,74 @@ public class CreateTask extends HttpServlet {
 			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
 
 				switch(requestedAction){
-				case ("create-task-start"):
-					//set tempTask in request so page knows value of isTemplate
-					request.setAttribute("task", task);
-					forwardTo = Constants.URL_CREATE_TASK;
-					break;
-				case "task-add-new" :
-
-					if(task.getTaskID() != 0){				
-						
-						forwardTo = Constants.URL_EDIT_STAGE;
-						if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
-							stage.addTaskTemplate(task.getTaskID(), taskReps);
-							request.setAttribute("coreStagesList", Stage.getCoreStages());
+					case ("create-task-start"):
+						//set tempTask in request so page knows value of isTemplate
+						request.setAttribute("task", task);
+						forwardTo = Constants.URL_CREATE_TASK;
+						break;
+					case "task-add-new" :
+	
+						if(task.getTaskID() != 0){				
 							
-						} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
-							int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
-							MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), 0, clientRepetition);
-							stage.createTaskFromTemplate(task.getTaskID(), stageTaskInfo);
+							forwardTo = Constants.URL_EDIT_STAGE;
+							if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
+								stage.addTaskTemplate(task.getTaskID(), taskReps);
+								request.setAttribute("coreStagesList", Stage.getCoreStages());
+								
+							} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
+								int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
+								MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), 0, clientRepetition);
+								stage.createTaskFromTemplate(task.getTaskID(), stageTaskInfo);
+							}
+							request.setAttribute("successMessage", SuccessMessages.TASK_ADDED_TO_STAGE);
 						}
-						request.setAttribute("successMessage", SuccessMessages.TASK_ADDED_TO_STAGE);
-					}
-					
-					break;
-				case "task-type-select":
-					request.setAttribute("task", task);
-					request.setAttribute("coreTasks", Task.getCoreTasks());
+						
+						break;
+					case "task-type-select":
+						request.setAttribute("task", task);
+						request.setAttribute("coreTasks", Task.getCoreTasks());
+	
+						request.setAttribute("scrollTo", "taskTypeSelection");
+						
+						forwardTo = Constants.URL_CREATE_TASK;
+						break;
+					case ("create-new-task"):
+						Task newTask = null;
 
-					request.setAttribute("scrollTo", "taskTypeSelection");
-					
-					forwardTo = Constants.URL_CREATE_TASK;
-					break;
-				case ("create-new-task"):
-					Task newTask = null;
-				
-					//TODO implement this?
-					/*switch(path){
-						case Constants.PATH_TEMPLATE_TASK:
-							Task.createTemplate(taskToCreate);
-							break;
-						case Constants.PATH_TEMPLATE_STAGE:
-							newTask = Task.createTemplate(taskToCreate);
-							stage = Stage.load(stageID);
-							stage.addTaskTemplate(newTask.getTaskID());
-							break;
-						default:
-							
-							
-					}*/
-					if(path.equals(Constants.PATH_TEMPLATE_TASK)){
-						Task.createTemplate(task);
-						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
-					} else if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
-						
-						newTask = Task.createTemplate(task);
-						//TODO delete? stage = Stage.load(stageID);
-						stage.addTaskTemplate(newTask.getTaskID(), taskReps);//TODO make sure this is working right
-						/*stage = Stage.load(stageID);
-						stage.createNewTask(taskToCreate);
-						
-						if(ParameterUtils.singleCheckboxIsOn(request, "copyAsTemplate")){
-							Task templateCopy = taskToCreate.copy();
-							Task.createTemplate(templateCopy);
-						}*/
-						
-						//request.setAttribute("stage", Stage.load(stageID));
-						forwardTo = Constants.URL_EDIT_STAGE;
-					} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
-						
-						forwardTo = Constants.URL_EDIT_STAGE;
-					}
+						if(request.getParameter("submitButton").equals("save")){
+							switch(path){
+								case Constants.PATH_TEMPLATE_TASK:
+									Task.createTemplate(task);
+									forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+									break;
+								case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
+								case Constants.PATH_TEMPLATE_STAGE:
+									newTask = Task.createTemplate(task);
+									stage.addTaskTemplate(newTask.getTaskID(), taskReps);
+			
+									forwardTo = Constants.URL_EDIT_STAGE;
+									break;
+								case Constants.PATH_MANAGE_CLIENT:
+									//TODO implement creating a new Task here!  newTask = Stage.createClientTask(taskTitle, taskInstructions); 
+									
+									forwardTo = Constants.URL_EDIT_STAGE;
+									break;
+							}
+						}else{
+							//Cancel button pressed.  Just send back to appropriate page
+							switch(path){
+								case Constants.PATH_TEMPLATE_TASK:
+									forwardTo = Constants.URL_ADMIN_MAIN_MENU;
+									break;
+								case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
+								case Constants.PATH_TEMPLATE_STAGE:
+									forwardTo = Constants.URL_EDIT_STAGE;
+									break;
+								case Constants.PATH_MANAGE_CLIENT:
+									forwardTo = Constants.URL_EDIT_STAGE;
+									break;
+							}
+						}
 
 					break;
 				}
