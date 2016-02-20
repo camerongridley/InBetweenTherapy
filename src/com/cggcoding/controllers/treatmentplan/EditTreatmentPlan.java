@@ -127,29 +127,33 @@ public class EditTreatmentPlan extends HttpServlet {
 		            	break;
 		            //Updates the plan's basic info
 		            case "plan-edit-update":
-		                //detect which treatment issue source was used and validate
-		                int treatmentIssueID = determineTreatmentIssueID(coreTreatmentIssueID, customIssueID);
-		                
-		                //updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
-		                if(treatmentPlanID==0){
-		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
-		            	}
-		            	
-		                if(planTitle.isEmpty() || planDescription.isEmpty()){
-		                	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
-		                }
+		            	//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
+						if(request.getParameter("submitButton").equals("save")){
+							//detect which treatment issue source was used and validate
+			                int treatmentIssueID = determineTreatmentIssueID(coreTreatmentIssueID, customIssueID);
+			                
+			                //updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
+			                if(treatmentPlanID==0){
+			            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+			            	}
+			            	
+			                if(planTitle.isEmpty() || planDescription.isEmpty()){
+			                	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
+			                }
 
-		                //TODO possibly change this to use a static method TreatmentPlan.updateBasic(planTitle, planDescription, treatmentIssueID);???
+			                //TODO possibly change this to use a static method TreatmentPlan.updateBasic(planTitle, planDescription, treatmentIssueID);???
+			                
+			                //treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+			                
+			                treatmentPlan.setTitle(planTitle);
+			                treatmentPlan.setDescription(planDescription);
+			                treatmentPlan.setTreatmentIssueID(treatmentIssueID);
+			                
+			                treatmentPlan.update();
+			                
+			                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
+						}
 		                
-		                //treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-		                
-		                treatmentPlan.setTitle(planTitle);
-		                treatmentPlan.setDescription(planDescription);
-		                treatmentPlan.setTreatmentIssueID(treatmentIssueID);
-		                
-		                treatmentPlan.update();
-		                
-		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
 		                
 		                //TODO eval path first?
 		                if(user.hasRole(Constants.USER_ADMIN)){

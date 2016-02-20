@@ -128,30 +128,34 @@ public class EditStage extends HttpServlet {
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 		            	break;
 		            	
-		            case "stage-edit-basic-info" :
-		            	if(stageID==0){
-		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
-		            	}
+		            case "stage-edit-update" :
+		            	//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
+						if(request.getParameter("submitButton").equals("save")){
+							if(stageID==0){
+			            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+			            	}
 
-		            	stage.setTitle(stageTitle);
-		            	stage.setDescription(stageDescription);
+			            	stage.setTitle(stageTitle);
+			            	stage.setDescription(stageDescription);
+			            	
+			            	for(StageGoal goal: stage.getGoals()){
+			            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
+			            	}
+			            	
+			            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
+			            		//get the repetition value for each task template inside this stage template and set it the edited stage to be updated when stage.update() is called
+				            	for(MapStageTaskTemplate stageTaskInfo : stage.getMapStageTaskTemplates()){
+				            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
+				            		stageTaskInfo.setTemplateTaskRepetitions(templateReps);
+				            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
+				            	}	
+			            	}
+			            	
+			            	stage.update();//OPTIMIZE could create a new method that takes all relevant info and calls static method in stage that loads and updates all with the same connection
+			            	
+			            	request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
+						}
 		            	
-		            	for(StageGoal goal: stage.getGoals()){
-		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
-		            	}
-		            	
-		            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
-		            		//get the repetition value for each task template inside this stage template and set it the edited stage to be updated when stage.update() is called
-			            	for(MapStageTaskTemplate stageTaskInfo : stage.getMapStageTaskTemplates()){
-			            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
-			            		stageTaskInfo.setTemplateTaskRepetitions(templateReps);
-			            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
-			            	}	
-		            	}
-		            	
-		            	stage.update();//OPTIMIZE could create a new method that takes all relevant info and calls static method in stage that loads and updates all with the same connection
-		            	
-		            	request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
 		            	
 		            	switch(path){
 		            		//case for both Client and Template TreatmentPlan as well as ManageClient is the same
@@ -208,6 +212,7 @@ public class EditStage extends HttpServlet {
 		            	StageGoal goal = StageGoal.getInstanceWithoutID(stageID, goalDescription);
 		            	stage.saveNewGoal(goal);
 		            	
+		            	request.setAttribute("scrollTo", "goalListTop");
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 		            	break;
 		            	
@@ -221,25 +226,22 @@ public class EditStage extends HttpServlet {
 					case("delete-task"):
 						deleteTask(request, stage);
 					
+						request.setAttribute("scrollTo", "taskListTop");
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 					
 					case("increase-task-order"):					
-						
-						//TODO delete? stage = Stage.load(stageID);
-						
+
 						stage.orderIncrementTask(taskID, originalOrder);
 						
-						//TODO delete? request.setAttribute("stage", stage);
+						request.setAttribute("scrollTo", "task" + taskID);
 						forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 						
 					case("decrease-task-order"):
-						//TODO delete? stage = Stage.load(stageID);
-					
 						stage.orderDecrementTask(taskID, originalOrder);
 						
-						//TODO delete? request.setAttribute("stage", stage);
+						request.setAttribute("scrollTo", "task" + taskID);
 						forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 		            default:

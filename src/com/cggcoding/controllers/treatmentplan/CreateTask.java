@@ -99,19 +99,25 @@ public class CreateTask extends HttpServlet {
 						break;
 					case "task-add-new" :
 	
-						if(task.getTaskID() != 0){				
-							
-							forwardTo = Constants.URL_EDIT_STAGE;
-							if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
-								stage.addTaskTemplate(task.getTaskID(), taskReps);
-								request.setAttribute("coreStagesList", Stage.getCoreStages());
-								
-							} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
-								int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
-								MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), 0, clientRepetition);
-								stage.createTaskFromTemplate(task.getTaskID(), stageTaskInfo);
+						forwardTo = Constants.URL_EDIT_STAGE;
+						//only do the following if the save button was clicked.
+						if(request.getParameter("submitButton").equals("save")){
+							if(task.getTaskID() != 0){				
+
+								if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
+									stage.addTaskTemplate(task.getTaskID(), taskReps);
+									request.setAttribute("coreStagesList", Stage.getCoreStages());
+									
+								} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
+									int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
+									MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), 0, clientRepetition);
+									stage.createTaskFromTemplate(task.getTaskID(), stageTaskInfo);
+								}
+								request.setAttribute("successMessage", SuccessMessages.TASK_ADDED_TO_STAGE);
 							}
-							request.setAttribute("successMessage", SuccessMessages.TASK_ADDED_TO_STAGE);
+							
+						}else{
+							request.setAttribute("coreStagesList", Stage.getCoreStages());
 						}
 						
 						break;
@@ -136,7 +142,8 @@ public class CreateTask extends HttpServlet {
 								case Constants.PATH_TEMPLATE_STAGE:
 									newTask = Task.createTemplate(task);
 									stage.addTaskTemplate(newTask.getTaskID(), taskReps);
-			
+									request.setAttribute("coreStagesList", Stage.getCoreStages());
+									
 									forwardTo = Constants.URL_EDIT_STAGE;
 									break;
 								case Constants.PATH_MANAGE_CLIENT:
@@ -153,6 +160,7 @@ public class CreateTask extends HttpServlet {
 									break;
 								case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
 								case Constants.PATH_TEMPLATE_STAGE:
+									request.setAttribute("coreStagesList", Stage.getCoreStages());
 									forwardTo = Constants.URL_EDIT_STAGE;
 									break;
 								case Constants.PATH_MANAGE_CLIENT:

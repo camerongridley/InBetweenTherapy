@@ -225,11 +225,12 @@
 		</div>
 	</c:forEach>
 
-	<div class="row form-group">
-		<div class="col-sm-12 save-button">
-			<button type="submit" class="btn btn-default">Save</button>
-		</div>
-	</div>
+	<div class="form-group">
+        <div class="col-sm-12 save-button">
+            <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+            <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
+        </div>
+    </div>
 </form>
 
 <!-- New Core Treatment Issue Modal -->

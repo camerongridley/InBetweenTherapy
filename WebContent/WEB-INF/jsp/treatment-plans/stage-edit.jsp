@@ -37,7 +37,7 @@
 	</form>
 	
 	<form class="form-horizontal" action="/secure/EditStage" method="POST">
-		<input type="hidden" name="requestedAction" value="stage-edit-basic-info">
+		<input type="hidden" name="requestedAction" value="stage-edit-update">
 		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">	
@@ -55,6 +55,7 @@
             </div>
         </div>
 
+		<a id="goalListTop"></a>
 		<div class="form-group">
 			<div class="col-sm-12">
 				<label for="stageGoalList" class="control-label">Stage Goals
@@ -81,6 +82,7 @@
 				
 		</div>
 		
+		<a id="taskListTop"></a>
 		<label for="taskList" class="control-label">Tasks
 
        			<a role="button" href="/secure/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
@@ -88,17 +90,18 @@
 				</a>
 
 		</label>
-	
+			
 			<c:forEach items="${stage.tasks }" var="task">
 			<c:set var="mappedStageTaskInfo" value="${stage.getMappedTaskTemplateByTaskID(task.taskID)}" />
 			<input type="hidden" name="allTaskIDs" value="listItem${task.taskID }">
+			<a id="task${task.taskID }"></a>
 			<div class="row">
 			<div class="col-sm-10">
 				<div class="panel panel-default panel-task" id="taskList" title="Click the task title to expand and see details.">
 					  <div class="panel-heading">
+					  	  
 						  <div class="row">
 								<div class="col-sm-11">
-								
 								  	<input type="hidden" name="taskID" value="${task.taskID}"/>
 								  	<input type="hidden" name="taskTitle" value="${task.title}"/>
 								  	<c:choose>
@@ -160,9 +163,10 @@
 			</div><!-- end row -->
 				
 			</c:forEach>
-        <div class="row">
+        <div class="form-group">
             <div class="col-sm-12 save-button">
-                <button type="submit" class="btn btn-default">Save</button>
+                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
             </div>
         </div>
     </form>
