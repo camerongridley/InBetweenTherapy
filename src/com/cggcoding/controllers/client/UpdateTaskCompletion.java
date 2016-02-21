@@ -21,6 +21,8 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserClient;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
@@ -54,39 +56,71 @@ public class UpdateTaskCompletion extends HttpServlet {
 		/*-----------End Common Servlet variables---------------*/
 		
 		try{
-			forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
-			
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
-	
+			User client = null;
+			
 			//OPTIMIZE change this so just the basic treatment plan and the stage being displayed is loaded.
 			TreatmentPlan treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-			Stage activeStage = treatmentPlan.getActiveViewStage();
-	
-			//get checked values from the request and convert to List<Integer>
-			List<Integer> checkedTaskIDs = convertStringArrayToInt(request.getParameterValues("taskChkBx[]"));
-	
-			//get all Task ids from hidden field so we can get at unchecked values
-			List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
-	
-			//build maps containing new data to pass back to service layer for updating
-			Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(user, checkedTaskIDs, allTaskIDs, request);
-	
-			//call to service layer to save and process the new task data and return an updated Stage
-			Stage updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
-	
-			//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
-			if(updatedStage.isCompleted()){
-				updatedStage = treatmentPlan.nextStage();
+			
+			if(user.getRole().equals(Constants.USER_CLIENT)){
+				//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
+				if(request.getParameter("submitButton").equals("save")){
+					client = user;
+					
+					Stage activeStage = treatmentPlan.getActiveViewStage();
+					
+					//get checked values from the request and convert to List<Integer>
+					List<Integer> checkedTaskIDs = convertStringArrayToInt(request.getParameterValues("taskChkBx[]"));
+			
+					//get all Task ids from hidden field so we can get at unchecked values
+					List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
+			
+					//build maps containing new data to pass back to service layer for updating
+					Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(user, checkedTaskIDs, allTaskIDs, request);
+			
+					//call to service layer to save and process the new task data and return an updated Stage
+					Stage updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
+			
+					//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
+					if(updatedStage.isCompleted()){
+						updatedStage = treatmentPlan.nextStage();
+					}
+					
+					if(treatmentPlan.isCompleted()){
+						request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COMPLETED);
+					}
+					
+					treatmentPlan.update();
+					
+					request.setAttribute("treatmentPlan", treatmentPlan);
+					request.setAttribute("activeStage", updatedStage);
+					
+					forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
+				} else {
+					//Cancel/Back button was pressed
+					client = user;
+					forwardTo = Constants.URL_CLIENT_MAIN_MENU;
+				}
+				
+				request.setAttribute("client", client);
+				
+			} else if(user.getRole().equals(Constants.USER_THERAPIST)){//the therapist has clicked the Done button here
+				UserTherapist userTherapist = (UserTherapist)user;
+				int clientID = ParameterUtils.parseIntParameter(request, "clientID"); 
+				client = User.loadBasic(clientID);
+				//set the default treatment plans and the custom plans for this therapist into the request
+				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
+
+				request.setAttribute("client", client);
+				
+	        	userTherapist.loadAllAssignedClientTreatmentPlans(client.getUserID());
+	    		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
+	    		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
+	    		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
+	    		
+	    		forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 			}
 			
-			if(treatmentPlan.isCompleted()){
-				request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COMPLETED);
-			}
-			
-			treatmentPlan.update();
-			
-			request.setAttribute("treatmentPlan", treatmentPlan);
-			request.setAttribute("activeStage", updatedStage);
 			
 		} catch (DatabaseException e){
 			e.printStackTrace();

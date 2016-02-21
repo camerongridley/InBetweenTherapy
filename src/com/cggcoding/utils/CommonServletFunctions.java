@@ -122,18 +122,6 @@ public class CommonServletFunctions {
 		request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 	}
 	
-	public static UserClient getClientFromTherapist(HttpServletRequest request, UserTherapist therapistUser) throws DatabaseException{
-		int clientUserID = 0;
-		Map<Integer, UserClient> clientMap = therapistUser.loadClients();
-		
-		clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
-		
-		//XXX This works, but isn't stateless since getting from session var user
-		UserClient client = clientMap.get(clientUserID);
-		request.setAttribute("client", client);
-		
-		return client;
-	}
 	
 	
 }

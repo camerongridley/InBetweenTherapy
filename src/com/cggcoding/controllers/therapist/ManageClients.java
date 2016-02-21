@@ -74,7 +74,6 @@ public class ManageClients extends HttpServlet {
 				
 				clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
 				
-				//XXX This works, but isn't stateless since getting from session var user
 				User client = clientMap.get(clientUserID);
 				request.setAttribute("client", client);
 				

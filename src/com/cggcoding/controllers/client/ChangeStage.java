@@ -6,6 +6,7 @@ import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.Constants;
+import com.cggcoding.utils.ParameterUtils;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -34,16 +35,28 @@ public class ChangeStage extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        User user = (User)request.getSession().getAttribute("user");
-        String forwardTo = Constants.URL_INDEX;
-        String requestedAction = request.getParameter("requestedAction");
+		/*--Common Servlet variables that should be in every controller--*/
+		HttpSession session = request.getSession();
+		User user = (User)session.getAttribute("user");
+		String forwardTo = Constants.URL_INDEX;
+		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
+
+		int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
+		User client = null;
         int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
         TreatmentPlan treatmentPlan = null;
         Stage activeStage  = null;
         
         try {
+        	if(user.getRole().equals(Constants.USER_CLIENT)){
+        		client = user;
+        	} else if(user.getRole().equals(Constants.USER_THERAPIST)){
+        		client = User.loadBasic(clientUserID);
+        	}
+        	
 	        treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 	
 	        int newViewID = Integer.parseInt(request.getParameter("stageIndex"));
@@ -57,8 +70,9 @@ public class ChangeStage extends HttpServlet {
 			
 			request.setAttribute("activeStage", activeStage);
 			request.setAttribute("treatmentPlan", treatmentPlan);
-			
-			forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
+			request.setAttribute("client", client);
+	
+			forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 		} catch (ValidationException | DatabaseException e) {
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("treatmentPlan", treatmentPlan);

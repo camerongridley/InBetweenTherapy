@@ -71,7 +71,7 @@ public class ClientSelectPlan extends HttpServlet {
 						request.setAttribute("inProgressPlansList", inProgressPlansList);
 						request.setAttribute("completedPlansList", completedPlansList);
 						
-						forwardTo = "/WEB-INF/jsp/client-tools/select-plan.jsp";
+						forwardTo = Constants.URL_CLIENT_SELECT_PLAN;
 						break;
 					case "select-plan-load":
 						int assignedTreatmentPlanID = ParameterUtils.parseIntParameter(request, "selectedPlanID");
@@ -86,9 +86,11 @@ public class ClientSelectPlan extends HttpServlet {
 						
 						request.setAttribute("activeStage", activeStage);
 						request.setAttribute("treatmentPlan", selectedPlan);
-						forwardTo = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
+						forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 						break;
 				}
+				
+				request.setAttribute("client", client);
 			}
 		} catch (DatabaseException | ValidationException e) {
 			request.setAttribute("errorMessage", e.getMessage());

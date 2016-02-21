@@ -37,7 +37,7 @@
 								</div>
 								<p><strong>Current Stage: </strong></p>
 								<p>${activePlan.currentStage.title } (${activePlan.currentStage.percentComplete*100}%)</p>
-								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&clientUserID=${client.userID}&treatmentPlanID=${activePlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
 								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 								</a>
 								<a href="/secure/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
@@ -72,7 +72,7 @@
 							    <h3 class="panel-title">${unstartedPlan.title}</h3>
 							  </div>
 							  <div class="panel-body">
-								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&treatmentPlanID=${unstartedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&clientUserID=${client.userID}&treatmentPlanID=${unstartedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
 								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 								</a>
 								<a href="/secure/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${unstartedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
@@ -156,7 +156,7 @@
 								    ${completedPlan.percentComplete()}%
 								  </div>
 								</div>
-								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&treatmentPlanID=${completedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&clientUserID=${client.userID}&treatmentPlanID=${completedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
 								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 								</a>
 								<a href="/secure/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${completedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">

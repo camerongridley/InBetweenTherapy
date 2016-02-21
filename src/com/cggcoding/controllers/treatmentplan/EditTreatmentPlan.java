@@ -154,23 +154,35 @@ public class EditTreatmentPlan extends HttpServlet {
 			                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
 						}
 		                
-						
+						//regardless of whether Save or Cancel button was pressed this determines where to forward and what to set in request
 		                if(user.hasRole(Constants.USER_ADMIN)){
 		                	forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 		                }
 		                
 		                if(user.hasRole(Constants.USER_THERAPIST)){
-		                	UserTherapist userTherapist = (UserTherapist)user;
-		    				
-		    				//set the default treatment plans and the custom plans for this therapist into the request
-		    				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
-		    				
-		                	userTherapist.loadAllAssignedClientTreatmentPlans(ownerUserID);
-		            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
-		            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
-		            		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
-			                
-			                forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
+		                	switch(path){
+		                		case Constants.PATH_MANAGE_CLIENT:
+			                		UserTherapist userTherapist = (UserTherapist)user;
+			    				
+				    				//set the default treatment plans and the custom plans for this therapist into the request
+				    				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
+				    				
+				    				User client = User.loadBasic(treatmentPlan.getUserID());
+			        				request.setAttribute("client", client);
+				    				
+				                	userTherapist.loadAllAssignedClientTreatmentPlans(ownerUserID);
+				            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
+				            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
+				            		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
+					                
+					                forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
+					                
+					                break;
+					                
+		                		default: 
+		                			user.getMainMenuURL();
+		                	} 
+		                	
 		                }
 		                
 		            	break;

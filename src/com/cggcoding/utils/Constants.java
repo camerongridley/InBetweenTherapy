@@ -54,6 +54,8 @@ public class Constants {
 	public static final String URL_THERAPIST_MANAGE_CLIENT_MAIN = "/WEB-INF/jsp/therapist-tools/manage-clients-main.jsp";
 	public static final String URL_THERAPIST_MANAGE_CLIENT_PLANS = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
 	
+	public static final String URL_CLIENT_SELECT_PLAN = "/WEB-INF/jsp/client-tools/select-plan.jsp";
+	
 	public static final String URL_CREATE_TREATMENT_PLAN = "/WEB-INF/jsp/treatment-plans/treatment-plan-create.jsp";
 	public static final String URL_CREATE_STAGE = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
 	public static final String URL_CREATE_TASK = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
@@ -61,7 +63,9 @@ public class Constants {
 	public static final String URL_EDIT_STAGE = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 	public static final String URL_EDIT_TASK = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 
-	public static final String URL_INDEX = "/index.jsp";;
+	public static final String URL_INDEX = "/index.jsp";
+
+	public static final String URL_RUN_TREATMENT_PLAN = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
 	
 
 	
