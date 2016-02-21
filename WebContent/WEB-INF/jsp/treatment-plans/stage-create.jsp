@@ -16,7 +16,7 @@
 	<c:if test="${path != 'templateStage' }">
 		<div class="well well-sm">
 			<form class="form-horizontal" action="/secure/CreateStage" method="POST">
-				<input type="hidden" name="requestedAction" value="stage-add-new">
+				<input type="hidden" name="requestedAction" value="stage-add-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 				
@@ -42,10 +42,11 @@
 		        </div>
 		
 		        <div class="form-group">
-		            <div class="col-sm-offset-2 col-sm-10">
-		                <button type="submit" class="btn btn-default">Save</button>
-		            </div>
-		        </div>
+	            <div class="col-sm-offset-2 col-sm-10 save-button">
+	                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save & Continue</button>
+	                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
+	            </div>
+	        </div>
 		    </form>
 		</div>
 		
@@ -55,7 +56,7 @@
 	
 	<div class="well well-sm">
 		<form class="form-horizontal" action="/secure/CreateStage" method="POST">
-			<input type="hidden" name="requestedAction" value="stage-create-title">
+			<input type="hidden" name="requestedAction" value="stage-create-new">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 			
@@ -76,7 +77,12 @@
 	            </div>
 	        </div>
 	        
-	        <button type="submit" class="btn btn-default col-sm-offset-2">Save</button>
+	        <div class="form-group">
+	            <div class="col-sm-offset-2 col-sm-10 save-button">
+	                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save & Continue</button>
+	                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
+	            </div>
+	        </div>
 
 	    </form>
 	</div>

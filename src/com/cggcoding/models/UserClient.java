@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -21,6 +22,7 @@ public class UserClient extends User implements Serializable{
 	public UserClient(int userID, String userName, String firstName, String lastName, String email){
 		super(userID, userName, firstName, lastName, email);
 		activeTreatmentPlanId = -1;
+		setMainMenuURL(Constants.URL_CLIENT_MAIN_MENU);
 	}
 
 	

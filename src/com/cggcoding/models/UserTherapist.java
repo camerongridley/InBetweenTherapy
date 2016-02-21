@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -33,6 +34,7 @@ public class UserTherapist extends User implements Serializable{
         this.clientMap = new HashMap<>();
         this.coreTreatmentIssues = new ArrayList<>();
         this.allAssignedClientPlans = new ArrayList<>();
+        setMainMenuURL(Constants.URL_THERAPIST_MAIN_MENU);
     }
 
 	public Map<Integer, UserClient> getClientMap() {

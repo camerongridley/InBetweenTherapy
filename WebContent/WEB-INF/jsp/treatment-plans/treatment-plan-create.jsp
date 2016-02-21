@@ -20,7 +20,7 @@
 	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
     
     <form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
-        <input type="hidden" name="requestedAction" value="plan-create-name" >
+        <input type="hidden" name="requestedAction" value="plan-create-new" >
         <input type="hidden" name="path" value="${path }" >
         <div class="form-group">
             <label for="planTitle" class="col-sm-2 control-label">Plan Name</label>
@@ -87,8 +87,9 @@
         </div>
 		
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Save & Continue</button>
+            <div class="col-sm-offset-2 col-sm-10 save-button">
+                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save & Continue</button>
+                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
             </div>
         </div>
     </form>

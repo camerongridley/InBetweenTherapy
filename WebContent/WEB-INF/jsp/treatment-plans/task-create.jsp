@@ -16,7 +16,7 @@
 	<c:if test='${path!="templateTask" }'>
 		<div class="well well-sm">
 			<form class="form-horizontal" action="/secure/CreateTask" method="POST">
-				<input type="hidden" name="requestedAction" value="task-add-new">
+				<input type="hidden" name="requestedAction" value="task-add-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="stageID" value="${stage.stageID }">
 				<input type="hidden" name="isTemplate" value="${task.template }">
@@ -68,7 +68,7 @@
 					
 			        <div class="form-group">
 			            <div class="col-sm-offset-2 col-sm-10 save-button">
-			                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+			                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save & Continue</button>
 			                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
 			            </div>
 			        </div>
@@ -107,7 +107,7 @@
 	    </form>
 	        
 	    <form class="form-horizontal" action="/secure/CreateTask" method="POST">
-			<input type="hidden" name="requestedAction" value="create-new-task">
+			<input type="hidden" name="requestedAction" value="task-create-new">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">
 			<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">
@@ -178,7 +178,7 @@
 			
 	        <div class="form-group">
 	            <div class="col-sm-offset-2 col-sm-10 save-button">
-	                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+	                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save & Continue</button>
 	                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
 	            </div>
 	        </div>

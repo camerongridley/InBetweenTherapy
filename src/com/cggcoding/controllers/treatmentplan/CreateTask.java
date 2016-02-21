@@ -97,7 +97,7 @@ public class CreateTask extends HttpServlet {
 						request.setAttribute("task", task);
 						forwardTo = Constants.URL_CREATE_TASK;
 						break;
-					case "task-add-new" :
+					case "task-add-template" :
 	
 						forwardTo = Constants.URL_EDIT_STAGE;
 						//only do the following if the save button was clicked.
@@ -117,7 +117,8 @@ public class CreateTask extends HttpServlet {
 							}
 							
 						}else{
-							request.setAttribute("coreStagesList", Stage.getCoreStages());
+							//Cancel button pressed.  Just send back to appropriate page
+							forwardTo = setForwardToForCancel(request, user, path);
 						}
 						
 						break;
@@ -129,7 +130,7 @@ public class CreateTask extends HttpServlet {
 						
 						forwardTo = Constants.URL_CREATE_TASK;
 						break;
-					case ("create-new-task"):
+					case ("task-create-new"):
 						Task newTask = null;
 
 						if(request.getParameter("submitButton").equals("save")){
@@ -154,19 +155,7 @@ public class CreateTask extends HttpServlet {
 							}
 						}else{
 							//Cancel button pressed.  Just send back to appropriate page
-							switch(path){
-								case Constants.PATH_TEMPLATE_TASK:
-									forwardTo = Constants.URL_ADMIN_MAIN_MENU;
-									break;
-								case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
-								case Constants.PATH_TEMPLATE_STAGE:
-									request.setAttribute("coreStagesList", Stage.getCoreStages());
-									forwardTo = Constants.URL_EDIT_STAGE;
-									break;
-								case Constants.PATH_MANAGE_CLIENT:
-									forwardTo = Constants.URL_EDIT_STAGE;
-									break;
-							}
+							forwardTo = setForwardToForCancel(request, user, path);
 						}
 
 					break;
@@ -195,11 +184,31 @@ public class CreateTask extends HttpServlet {
 			request.setAttribute("task", task);
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("errorMessage", e.getMessage());
+			request.setAttribute("owner", owner);
 
 			forwardTo = Constants.URL_CREATE_TASK;
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
+	}
+	
+	private String setForwardToForCancel(HttpServletRequest request, User user, String path) throws DatabaseException, ValidationException{
+		String forwardTo = "";
+		switch(path){
+			case Constants.PATH_TEMPLATE_TASK:
+				forwardTo = user.getMainMenuURL();
+				break;
+			case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
+			case Constants.PATH_TEMPLATE_STAGE:
+				request.setAttribute("coreStagesList", Stage.getCoreStages());
+				forwardTo = Constants.URL_EDIT_STAGE;
+				break;
+			case Constants.PATH_MANAGE_CLIENT:
+				forwardTo = Constants.URL_EDIT_STAGE;
+				break;
+		}
+		
+		return forwardTo;
 	}
 	
 	private Stage loadStageAndPutInRequest(HttpServletRequest request, int stageID) throws DatabaseException, ValidationException{

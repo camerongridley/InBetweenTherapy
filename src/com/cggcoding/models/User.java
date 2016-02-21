@@ -28,6 +28,7 @@ public abstract class User implements Serializable{
 	private List<String> roles;
 	private String role;
 	private List<TreatmentPlan> treatmentPlanList;
+	private String mainMenuURL;
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
@@ -40,6 +41,7 @@ public abstract class User implements Serializable{
 		this.roleID = 0;
 		roles = new ArrayList<>();
 		this.treatmentPlanList = new ArrayList<>();
+		this.mainMenuURL = "";
 	}
 	
 	public void setUserID(int userID) {
@@ -122,6 +124,14 @@ public abstract class User implements Serializable{
 
 	public List<TreatmentPlan> getTreatmentPlanList(){
 		return treatmentPlanList;
+	}
+
+	public String getMainMenuURL() {
+		return mainMenuURL;
+	}
+
+	public void setMainMenuURL(String mainMenuURL) {
+		this.mainMenuURL = mainMenuURL;
 	}
 
 	public void addTreatmentPlan(TreatmentPlan treatmentPlan){

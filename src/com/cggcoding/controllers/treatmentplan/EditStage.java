@@ -269,6 +269,8 @@ public class EditStage extends HttpServlet {
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
 			request.setAttribute("treatmentPlanID", treatmentPlanID);
+			request.setAttribute("owner", owner);
+			
             forwardTo = Constants.URL_EDIT_STAGE;
 		}
 		

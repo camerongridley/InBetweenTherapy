@@ -183,6 +183,7 @@ public class EditTask extends HttpServlet {
 			request.setAttribute("stage", stage);
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("errorMessage", e.getMessage());
+			request.setAttribute("owner", owner);
 			
 			e.printStackTrace();
 

@@ -154,8 +154,7 @@ public class EditTreatmentPlan extends HttpServlet {
 			                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
 						}
 		                
-		                
-		                //TODO eval path first?
+						
 		                if(user.hasRole(Constants.USER_ADMIN)){
 		                	forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 		                }
@@ -234,6 +233,7 @@ public class EditTreatmentPlan extends HttpServlet {
     		request.setAttribute("treatmentPlan", treatmentPlan);
     		request.setAttribute("coreTreatmentIssueID", coreTreatmentIssueID);
     		request.setAttribute("existingCustomTreatmentIssue", customIssueID);
+    		request.setAttribute("owner", owner);
     		
     		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			//e.printStackTrace();

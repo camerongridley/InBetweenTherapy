@@ -1,5 +1,7 @@
 package com.cggcoding.utils;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.cggcoding.exceptions.DatabaseException;
@@ -9,6 +11,7 @@ import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
 import com.cggcoding.models.TaskTwoTextBoxes;
 
@@ -118,5 +121,19 @@ public class CommonServletFunctions {
 	public static void setCoreTreatmentPlansInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
 		request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 	}
+	
+	public static UserClient getClientFromTherapist(HttpServletRequest request, UserTherapist therapistUser) throws DatabaseException{
+		int clientUserID = 0;
+		Map<Integer, UserClient> clientMap = therapistUser.loadClients();
+		
+		clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
+		
+		//XXX This works, but isn't stateless since getting from session var user
+		UserClient client = clientMap.get(clientUserID);
+		request.setAttribute("client", client);
+		
+		return client;
+	}
+	
 	
 }
