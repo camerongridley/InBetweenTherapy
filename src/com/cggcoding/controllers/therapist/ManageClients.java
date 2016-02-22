@@ -18,6 +18,7 @@ import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.SuccessMessages;
@@ -130,7 +131,7 @@ public class ManageClients extends HttpServlet {
 						break;
 				}
 				
-				putClientPlansInRequest(request, therapistUser, clientUserID);
+				CommonServletFunctions.putClientPlansInRequest(request, therapistUser, clientUserID);
 				
 				//put these back in the request so other forms can maintain selections of other forms as well as display selected items of the dropdown boxes
 				request.setAttribute("client", client);
@@ -156,15 +157,6 @@ public class ManageClients extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 	}
 	
-	private void putClientPlansInRequest(HttpServletRequest request, UserTherapist therapistUser, int clientUserID) throws DatabaseException, ValidationException{
-		//load all client plans into therapist user object
-		List<TreatmentPlan> allClientPlans = therapistUser.loadAllAssignedClientTreatmentPlans(clientUserID);
-		request.setAttribute("allAssignedClientPlans", allClientPlans);
-		
-		//call methods that return subcategories of client plans
-		request.setAttribute("activeAssignedClientPlans", therapistUser.loadActiveAssignedClientTreatmentPlans());
-		request.setAttribute("unstartedAssignedClientPlans", therapistUser.loadUnstartedAssignedClientTreatmentPlans());
-		request.setAttribute("completedAssignedClientPlans", therapistUser.loadCompletedAssignedClientTreatmentPlans());
-	}
+	
 
 }

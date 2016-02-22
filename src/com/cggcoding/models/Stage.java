@@ -855,6 +855,33 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return createdTasks;
 	}
 	
+	/**---Database Interaction---
+	 * Creates a new Stage for an existing client-owned TreatmentPlan with the supplied title and description. 
+	 * Sets treatmentPlanID with this plan's ID, userID with this plan's userID, clientStageOrder based on the number of existing Stages in the TreatmentPlan, and template is set to false.
+	 * Then it inserts the new stage into the database with stage.create() and then adds the stage to the local Stages list.
+	 * @param taskTitle - Title of new Task
+	 * @param taskInstructions - Description of the Task
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	public Task createClientTask(Task clientTask) throws ValidationException, DatabaseException{
+		if(!this.template){
+			clientTask.setStageID(this.stageID);
+			clientTask.setUserID(this.userID);
+			clientTask.setClientTaskOrder(this.getTaskOrderDefaultValue());
+
+			clientTask.create();
+			
+			this.addTask(clientTask);
+		} else {
+			throw new ValidationException(ErrorMessages.STAGE_CLIENT_ONLY_ALLOWED_IN_PLAN_TEMPLATE);
+		}
+		
+		
+		return clientTask;
+	}
+	
 //TODO delete
 /*	public Task copyTaskIntoClientStage(int taskIDBeingCopied) throws DatabaseException, ValidationException{
 		Task task = Task.load(taskIDBeingCopied);

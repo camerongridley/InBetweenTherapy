@@ -170,11 +170,8 @@ public class EditTreatmentPlan extends HttpServlet {
 				    				User client = User.loadBasic(treatmentPlan.getUserID());
 			        				request.setAttribute("client", client);
 				    				
-				                	userTherapist.loadAllAssignedClientTreatmentPlans(ownerUserID);
-				            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
-				            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
-				            		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
-					                
+			        				CommonServletFunctions.putClientPlansInRequest(request, userTherapist, client.getUserID());
+			        				
 					                forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 					                
 					                break;
@@ -198,6 +195,8 @@ public class EditTreatmentPlan extends HttpServlet {
 		            case "stage-delete":
 						//TODO delete: treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						treatmentPlan.deleteStage(stageID);
+						
+						request.setAttribute("scrollTo", "stageListTop");
 						
 						forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 						break;

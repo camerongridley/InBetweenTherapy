@@ -23,6 +23,7 @@ import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
@@ -106,17 +107,14 @@ public class UpdateTaskCompletion extends HttpServlet {
 				
 			} else if(user.getRole().equals(Constants.USER_THERAPIST)){//the therapist has clicked the Done button here
 				UserTherapist userTherapist = (UserTherapist)user;
-				int clientID = ParameterUtils.parseIntParameter(request, "clientID"); 
-				client = User.loadBasic(clientID);
+				int clientUserID = ParameterUtils.parseIntParameter(request, "clientID"); 
+				client = User.loadBasic(clientUserID);
 				//set the default treatment plans and the custom plans for this therapist into the request
 				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 
 				request.setAttribute("client", client);
 				
-	        	userTherapist.loadAllAssignedClientTreatmentPlans(client.getUserID());
-	    		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
-	    		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
-	    		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
+				CommonServletFunctions.putClientPlansInRequest(request, userTherapist, clientUserID);
 	    		
 	    		forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 			}

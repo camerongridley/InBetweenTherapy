@@ -13,6 +13,7 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.MapStageTaskTemplate;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
+import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.CommonServletFunctions;
@@ -75,6 +76,10 @@ public class CreateTask extends HttpServlet {
 		task = CommonServletFunctions.getTaskParametersFromRequest(request, user.getUserID());//TODO change this to use updateTaskParametersFromRequest
 
 		try {
+			//put user-independent (i.e. default) lists acquired from database in the request
+			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
+			request.setAttribute("coreTasks", Task.getCoreTasks());
+			
 			if(!path.equals(Constants.PATH_TEMPLATE_TASK)){
 				stage = Stage.load(stageID);//load the entire stage since we need everything loaded to determine certain properties, such as the taskOrder
 				treatmentPlan = TreatmentPlan.loadBasic(treatmentPlanID);//only need basic info such as title so use loadBasic()
@@ -87,7 +92,8 @@ public class CreateTask extends HttpServlet {
     		} else {
     			owner = User.loadBasic(ownerUserID);
     		}
-			
+    		
+    		request.setAttribute("owner", owner);
 	
 			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
 
@@ -147,8 +153,8 @@ public class CreateTask extends HttpServlet {
 									
 									forwardTo = Constants.URL_EDIT_STAGE;
 									break;
-								case Constants.PATH_MANAGE_CLIENT:
-									//TODO implement creating a new Task here!  newTask = Stage.createClientTask(taskTitle, taskInstructions); 
+								case Constants.PATH_MANAGE_CLIENT:							
+									newTask = stage.createClientTask(task);
 									
 									forwardTo = Constants.URL_EDIT_STAGE;
 									break;
@@ -169,12 +175,10 @@ public class CreateTask extends HttpServlet {
 					stage = loadStageAndPutInRequest(request, stageID);//OPTIMIZE delete this and just make sure all previous methods return the Stage object with the proper modifications
 				}*/
 				
-				//put user-independent (i.e. default) lists acquired from database in the request
-				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
-				request.setAttribute("coreTasks", Task.getCoreTasks());
+				
 				request.setAttribute("treatmentPlan", treatmentPlan);
 				request.setAttribute("stage", stage);
-				request.setAttribute("owner", owner);
+				
 
 			}
 			

@@ -1,5 +1,6 @@
 package com.cggcoding.utils;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -122,6 +123,15 @@ public class CommonServletFunctions {
 		request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 	}
 	
-	
+	public static void putClientPlansInRequest(HttpServletRequest request, UserTherapist therapistUser, int clientUserID) throws DatabaseException, ValidationException{
+		//load all client plans into therapist user object
+		List<TreatmentPlan> allClientPlans = therapistUser.loadAllAssignedClientTreatmentPlans(clientUserID);
+		request.setAttribute("allAssignedClientPlans", allClientPlans);
+		
+		//call methods that return subcategories of client plans
+		request.setAttribute("activeAssignedClientPlans", therapistUser.loadActiveAssignedClientTreatmentPlans());
+		request.setAttribute("unstartedAssignedClientPlans", therapistUser.loadUnstartedAssignedClientTreatmentPlans());
+		request.setAttribute("completedAssignedClientPlans", therapistUser.loadCompletedAssignedClientTreatmentPlans());
+	}
 	
 }

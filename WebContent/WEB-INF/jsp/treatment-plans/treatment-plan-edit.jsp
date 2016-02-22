@@ -151,9 +151,8 @@
 	</div>
 
 
-
-	<label for="stageList" class="control-label">Stages <a
-		role="button"
+	<a id="stageListTop"></a>
+	<label for="stageList" class="control-label">Stages <a role="button"
 		href="/secure/CreateStage?requestedAction=add-stage-to-treatment-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}"
 		class="btn btn-default btn-xs"
 		title="Add a stage to this treatment plan."> <span

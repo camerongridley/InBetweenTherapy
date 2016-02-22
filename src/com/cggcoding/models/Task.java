@@ -146,6 +146,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return taskTemplate;
 	}
 	
+	
+	
 	public static Task load(int taskID) throws DatabaseException{
 		Connection cn = null;
 		Task task = null;

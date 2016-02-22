@@ -45,7 +45,7 @@ public class SessionTimeout implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpSession session = request.getSession(false);
         
-        User user = (User)session.getAttribute("user");
+        User user = (User)session.getAttribute("user");//FIXME keep getting null pointer exception here after session expires
         
         System.out.println("Request URI: " + request.getRequestURI() + " || Path: " + request.getParameter("path") + " || RequestedAction: " + request.getParameter("requestedAction"));
         //System.out.println("Context Path: " + request.getContextPath());
