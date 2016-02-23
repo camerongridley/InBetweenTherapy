@@ -45,26 +45,26 @@ public class SessionTimeout implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpSession session = request.getSession(false);
         
-        User user = (User)session.getAttribute("user");//FIXME keep getting null pointer exception here after session expires
-        
         System.out.println("Request URI: " + request.getRequestURI() + " || Path: " + request.getParameter("path") + " || RequestedAction: " + request.getParameter("requestedAction"));
         //System.out.println("Context Path: " + request.getContextPath());
 
-        	//TODO make sure this isn't actually dead code
-        	if (session == null) {
-        		System.out.println("The session has timed out.  Please log in again.");
-        		
-        		request.setAttribute("errorMessage", "The session has timed out.  Please log in again.");
-	            response.sendRedirect(request.getContextPath() + "/login.jsp");
-        	} else if (user == null){
-        		System.out.println("No logged-in user found, redirecting to login page.");
+    	if (session == null) {
+    		System.out.println("The session has timed out.  Please log in again.");
+    		
+    		request.setAttribute("errorMessage", "The session has timed out.  Please log in again.");
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+    	} else {
+    		User user = (User)session.getAttribute("user");
+    		
+    		if (user == null){
+    			System.out.println("No logged-in user found, redirecting to login page.");
         		
         		request.setAttribute("errorMessage", "No logged-in user found, redirecting to login page.");
 	            response.sendRedirect(request.getContextPath() + "/login.jsp"); // No logged-in user found, so redirect to login page.
-	        } else {
-	            chain.doFilter(req, res); // Logged-in user found, so just continue request.
-	        }
-        
+    		}else{
+    			chain.doFilter(req, res); // Logged-in user found, so just continue request.
+    		}
+        }
 	}
 
 	/**
