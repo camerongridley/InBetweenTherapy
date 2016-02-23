@@ -24,4 +24,22 @@ public class UserAdmin extends User implements Serializable{
 		setMainMenuURL(Constants.URL_ADMIN_MAIN_MENU);
 	}
 
+	@Override
+	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isAuthorizedForStage(int stageID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isAuthorizedForTask(int taskID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

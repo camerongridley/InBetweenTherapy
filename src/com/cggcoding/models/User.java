@@ -153,21 +153,12 @@ public abstract class User implements Serializable{
  
 	}
 
-	//UNSURE make these methods abstract
-	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID){
-		//TODO implement
-		return true;
-	}
+	public abstract boolean isAuthorizedForTreatmentPlan(int treatmentPlanID);
 	
-	public boolean isAuthorizedForStage(int stageID){
-		//TODO implement
-		return true;
-	}
+	public abstract boolean isAuthorizedForStage(int stageID);
 	
-	public boolean isAuthorizedForTask(int taskID){
-		//TODO implement
-		return true;
-	}
+	public abstract boolean isAuthorizedForTask(int taskID);
+	
 	
 	public TreatmentPlan createTreatmentPlanFromTemplate(int userIDTakingNewPlan, int treatmentPlanIDToCopy) throws ValidationException, DatabaseException{
 		Connection cn = null;

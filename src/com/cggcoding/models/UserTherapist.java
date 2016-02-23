@@ -96,5 +96,23 @@ public class UserTherapist extends User implements Serializable{
     	
     	return unstartedAssignedClientPlans;
     }
+
+	@Override
+	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isAuthorizedForStage(int stageID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isAuthorizedForTask(int taskID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
     
 }
