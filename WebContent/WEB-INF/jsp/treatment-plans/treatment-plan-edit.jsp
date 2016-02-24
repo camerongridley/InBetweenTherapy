@@ -24,7 +24,7 @@
 <c:if test="${path=='templateTreatmentPlan' }">
 <div class="row">
 	<div class="form-group">
-		<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
+		<form class="form-horizontal" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
 			<input type="hidden" name="requestedAction" value="plan-edit-load-plan"> 
 			<input type="hidden" name="path" value="${path }">
 			
@@ -44,7 +44,7 @@
 			
 		</form>	
 		<div class="col-xs-1">
-			<form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
+			<form class="form-horizontal" action="/secure/treatment-components/CreateTreatmentPlan" method="POST">
 				<input type="hidden" name="requestedAction" value="plan-create-start"> 
 				<input type="hidden" name="path" value="templateTreatmentPlan">
 				<button type="submit" class="btn btn-default glyphicon glyphicon-plus" aria-hidden="true" title="Add a new treatment plan."></button>
@@ -60,7 +60,7 @@
 </c:if>
 
 
-<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
+<form class="form-horizontal" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
 	<input type="hidden" name="requestedAction" value="plan-edit-update">
 	<input type="hidden" name="path" value="${path }"> 
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
@@ -153,7 +153,7 @@
 
 	<a id="stageListTop"></a>
 	<label for="stageList" class="control-label">Stages <a role="button"
-		href="/secure/CreateStage?requestedAction=add-stage-to-treatment-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}"
+		href="/secure/treatment-components/CreateStage?requestedAction=add-stage-to-treatment-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}"
 		class="btn btn-default btn-xs"
 		title="Add a stage to this treatment plan."> <span
 			class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -184,7 +184,7 @@
 					title="Delete stage from this treatment plan."> 
 					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 				</a> <a role="button"
-					href="/secure/EditStage?requestedAction=select-stage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" 
+					href="/secure/treatment-components/EditStage?requestedAction=select-stage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" 
 					class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 				</a>
@@ -208,7 +208,7 @@
 									<td>${task.title} <c:if test="${task.template}"><span class="badge" title="Number of repetitions.">${mappedStageTaskInfo.templateTaskRepetitions }</span></c:if>
 									
 										<!-- <a role="button"
-										href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
+										href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
 										class="btn btn-default btn-xs pull-right"
 										title="Edit this task"> <span
 											class="glyphicon glyphicon-edit" aria-hidden="true"></span>
@@ -237,7 +237,7 @@
 	role="dialog" aria-labelledby="newCoreTreatmentIssueModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
+			<form class="form-horizontal" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
 				<input type="hidden" name="requestedAction" value="create-new-treatment-issue"> 
 				<input type="hidden" name="path" value="${path }"> 
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
@@ -279,7 +279,7 @@
 		        
 		      </div>
 		      <div class="modal-footer">
-		      	<a role="button" href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
+		      	<a role="button" href="/secure/treatment-components/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
 				  OK
 				</a>
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -292,7 +292,7 @@
 
 <!-- Delete TreatmentPlan Modal -->
 <div class="modal" id="delete_plan_modal">
-	<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
+	<form class="form-horizontal" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="delete-plan"> 
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">

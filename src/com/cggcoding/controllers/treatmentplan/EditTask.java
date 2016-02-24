@@ -23,7 +23,7 @@ import com.cggcoding.utils.messaging.WarningMessages;
 /**
  * Servlet implementation class EditTask
  */
-@WebServlet("/secure/EditTask")
+@WebServlet("/secure/treatment-components/EditTask")
 public class EditTask extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -73,7 +73,7 @@ public class EditTask extends HttpServlet {
 		try {
 			
 			
-			//Here we check that a task has been selected (currently the only time this isn't true is with path plan-edit-selection).
+			//Here we check that a task has been selected (currently the only time this isn't true is with path plan-edit-start).
     		//If so, then load it and use it's userID prop to get it's owner
     		if(taskID != 0){
     			task = Task.load(taskID);

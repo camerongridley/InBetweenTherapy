@@ -34,7 +34,7 @@ import com.cggcoding.utils.messaging.WarningMessages;
 /**
  * Servlet implementation class EditStage
  */
-@WebServlet("/secure/EditStage")
+@WebServlet("/secure/treatment-components/EditStage")
 public class EditStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -87,7 +87,7 @@ public class EditStage extends HttpServlet {
 		
 		try{
     		//TODO make sure to remove ownerUserID and clientUserID from edit jsps since I have switched things to not need to maintain this value - get it from treatmentPlan/stage/task			
-			//Here we check that a stage has been selected (currently the only time this is true isn't with path plan-edit-selection).
+			//Here we check that a stage has been selected (currently the only time this is true isn't with path plan-edit-start).
     		//If so, then load it and use it's userID prop to get it's owner
     		if(stageID != 0){
     			stage = Stage.load(stageID);

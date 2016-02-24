@@ -27,19 +27,19 @@ public class UserAdmin extends User implements Serializable{
 	@Override
 	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isAuthorizedForStage(int stageID) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isAuthorizedForTask(int taskID) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }

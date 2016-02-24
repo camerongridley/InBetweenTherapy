@@ -29,7 +29,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class EditTreatmentPlan
  */
-@WebServlet("/secure/EditTreatmentPlan")
+@WebServlet("/secure/treatment-components/EditTreatmentPlan")
 public class EditTreatmentPlan extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -85,7 +85,7 @@ public class EditTreatmentPlan extends HttpServlet {
     	
     	try {
     		
-    		//Here we check that a treatmentPlan has been selected (currently the only time this is true is with path plan-edit-selection).
+    		//Here we check that a treatmentPlan has been selected (currently the only time this is true is with path plan-edit-start).
     		//If so, then load it and use it's userID prop to get it's owner
     		if(treatmentPlanID != 0){
     			treatmentPlan = TreatmentPlan.load(treatmentPlanID);
@@ -122,7 +122,7 @@ public class EditTreatmentPlan extends HttpServlet {
                 //Now run actions specific to requestedAction
 				switch (requestedAction){
 					//Forwards to page that allows for selecting the plan user wants to edit
-		            case "plan-edit-selection"://
+		            case "plan-edit-start"://
 		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 		            //Updates the plan's basic info
