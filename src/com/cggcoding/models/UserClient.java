@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -18,9 +19,10 @@ public class UserClient extends User implements Serializable{
 	
 	DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
 	
-	public UserClient(int userID, String email){
-		super(userID, email);
+	public UserClient(int userID, String userName, String firstName, String lastName, String email){
+		super(userID, userName, firstName, lastName, email);
 		activeTreatmentPlanId = -1;
+		setMainMenuURL(Constants.URL_CLIENT_MAIN_MENU);
 	}
 
 	
@@ -55,5 +57,26 @@ public class UserClient extends User implements Serializable{
 		boolean isCompleted = true;
 		
 		return databaseActionHandler.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
+	}
+
+
+	@Override
+	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean isAuthorizedForStage(int stageID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean isAuthorizedForTask(int taskID) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

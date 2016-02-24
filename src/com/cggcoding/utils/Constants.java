@@ -17,7 +17,7 @@ public class Constants {
 	
 	//The defaults holder id is the primary key value for any database models that are responsible for holding templates of child classes.
 	//This primarily refers to the TreatmentPlan Stage Defaults Holder Plan and the Stage Task Defaults Holder Plan.
-	public static final int DEFAULTS_HOLDER_PRIMARY_KEY_ID = 1;
+	public static final int TEMPLATES_HOLDER_PRIMARY_KEY_ID = 1;
 	
 	public static final int TEMPLATE_ORDER_NUMBER = 0;
 	
@@ -54,6 +54,8 @@ public class Constants {
 	public static final String URL_THERAPIST_MANAGE_CLIENT_MAIN = "/WEB-INF/jsp/therapist-tools/manage-clients-main.jsp";
 	public static final String URL_THERAPIST_MANAGE_CLIENT_PLANS = "/WEB-INF/jsp/therapist-tools/manage-client-plans.jsp";
 	
+	public static final String URL_CLIENT_SELECT_PLAN = "/WEB-INF/jsp/client-tools/select-plan.jsp";
+	
 	public static final String URL_CREATE_TREATMENT_PLAN = "/WEB-INF/jsp/treatment-plans/treatment-plan-create.jsp";
 	public static final String URL_CREATE_STAGE = "/WEB-INF/jsp/treatment-plans/stage-create.jsp";
 	public static final String URL_CREATE_TASK = "/WEB-INF/jsp/treatment-plans/task-create.jsp";
@@ -61,7 +63,9 @@ public class Constants {
 	public static final String URL_EDIT_STAGE = "/WEB-INF/jsp/treatment-plans/stage-edit.jsp";
 	public static final String URL_EDIT_TASK = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 
-	public static final String URL_INDEX = "/index.jsp";;
+	public static final String URL_INDEX = "/index.jsp";
+
+	public static final String URL_RUN_TREATMENT_PLAN = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
 	
 
 	

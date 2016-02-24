@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
@@ -20,7 +21,7 @@ public class UserTherapist extends User implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	private Map<Integer, UserClient> clientMap;
-    private List<TreatmentIssue> defaultTreatmentIssues;
+    private List<TreatmentIssue> coreTreatmentIssues;
     private List<TreatmentPlan> allAssignedClientPlans;
     private List<TreatmentPlan> activeAssignedClientPlans;
     private List<TreatmentPlan> unstartedAssignedClientPlans;
@@ -28,11 +29,12 @@ public class UserTherapist extends User implements Serializable{
 
     private static DatabaseActionHandler dao= new MySQLActionHandler();
         
-    public UserTherapist(int userID, String email){
-        super(userID, email);
+    public UserTherapist(int userID, String userName, String firstName, String lastName, String email){
+        super(userID, userName, firstName, lastName, email);
         this.clientMap = new HashMap<>();
-        this.defaultTreatmentIssues = new ArrayList<>();
+        this.coreTreatmentIssues = new ArrayList<>();
         this.allAssignedClientPlans = new ArrayList<>();
+        setMainMenuURL(Constants.URL_THERAPIST_MAIN_MENU);
     }
 
 	public Map<Integer, UserClient> getClientMap() {
@@ -94,5 +96,23 @@ public class UserTherapist extends User implements Serializable{
     	
     	return unstartedAssignedClientPlans;
     }
+
+	@Override
+	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isAuthorizedForStage(int stageID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isAuthorizedForTask(int taskID) {
+		// TODO Auto-generated method stub
+		return false;
+	}
     
 }

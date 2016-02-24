@@ -1,5 +1,8 @@
 package com.cggcoding.utils;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.cggcoding.exceptions.DatabaseException;
@@ -9,6 +12,7 @@ import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
 import com.cggcoding.models.TaskTwoTextBoxes;
 
@@ -18,12 +22,12 @@ public class CommonServletFunctions {
 
 	}
 
-	public static void createDefaultTreatmentIssue(HttpServletRequest request, int userID) throws ValidationException, DatabaseException{
-		String newIssueName = request.getParameter("newDefaultTreatmentIssue");
+	public static void createCoreTreatmentIssue(HttpServletRequest request, int userID) throws ValidationException, DatabaseException{
+		String newIssueName = request.getParameter("newCoreTreatmentIssue");
 		TreatmentIssue issue = new TreatmentIssue(newIssueName, userID);
 		issue.create();
 		
-		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
+		request.setAttribute("coreTreatmentIssues", TreatmentIssue.getCoreTreatmentIssues());
 	}
 	
 	//TODO delete this after fully transitioned to updateTaskParametersFromRequest
@@ -111,12 +115,23 @@ public class CommonServletFunctions {
 	}
 	
 	
-	public static void setDefaultTreatmentIssuesInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
-		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
+	public static void setCoreTreatmentIssuesInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
+		request.setAttribute("coreTreatmentIssues", TreatmentIssue.getCoreTreatmentIssues());
 	}
 	
-	public static void setDefaultTreatmentPlansInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
-		request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+	public static void setCoreTreatmentPlansInRequest(HttpServletRequest request) throws DatabaseException, ValidationException{
+		request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
+	}
+	
+	public static void putClientPlansInRequest(HttpServletRequest request, UserTherapist therapistUser, int clientUserID) throws DatabaseException, ValidationException{
+		//load all client plans into therapist user object
+		List<TreatmentPlan> allClientPlans = therapistUser.loadAllAssignedClientTreatmentPlans(clientUserID);
+		request.setAttribute("allAssignedClientPlans", allClientPlans);
+		
+		//call methods that return subcategories of client plans
+		request.setAttribute("activeAssignedClientPlans", therapistUser.loadActiveAssignedClientTreatmentPlans());
+		request.setAttribute("unstartedAssignedClientPlans", therapistUser.loadUnstartedAssignedClientTreatmentPlans());
+		request.setAttribute("completedAssignedClientPlans", therapistUser.loadCompletedAssignedClientTreatmentPlans());
 	}
 	
 }

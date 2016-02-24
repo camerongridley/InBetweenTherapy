@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
+import com.cggcoding.models.Task;
 import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -63,22 +64,24 @@ public class EditTreatmentPlan extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
 		
-		//TODO update the common servlet variable with these in all other servlets
+		/*-----------Common Treatment Plan object variables------------*/
 		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
     	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
-		/*-----------End Common Servlet variables---------------*/
-		
+		TreatmentPlan treatmentPlan = null;
+		Stage stage = null;
+		Task task = null;
 		int ownerUserID = 0;
 		User owner = null;
+		/*-----------End Treatment Plan object variables---------------*/
+
 
     	String planTitle = request.getParameter("planTitle");
     	String planDescription = request.getParameter("planDescription");
-    	int defaultIssueID = ParameterUtils.parseIntParameter(request, "defaultTreatmentIssue");
-    	int customIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssue");
-    	
-    	TreatmentPlan treatmentPlan = null;
+    	int coreTreatmentIssueID = ParameterUtils.parseIntParameter(request, "coreTreatmentIssueID");
+    	int customIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssueID");
     	
     	try {
     		
@@ -95,7 +98,6 @@ public class EditTreatmentPlan extends HttpServlet {
 	    			owner = User.loadBasic(treatmentPlan.getUserID());
 	    		}
 	    		
-	    		request.setAttribute("owner", owner);
     		}
     		
     		
@@ -103,8 +105,8 @@ public class EditTreatmentPlan extends HttpServlet {
     		
     		//OPTIMIZE re-consider use of CommonServletFunctions - maybe make another class that is CommonServletDatabaseCalls and passes a connection. In this page it is possible that in 1 request, CommonServletFunctions will open and close 3 connections
     		//set default lists in the request
-    		CommonServletFunctions.setDefaultTreatmentIssuesInRequest(request);
-    		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+    		CommonServletFunctions.setCoreTreatmentIssuesInRequest(request);
+    		CommonServletFunctions.setCoreTreatmentPlansInRequest(request);
 
 			if(user.hasRole(Constants.USER_ADMIN)|| user.hasRole(Constants.USER_THERAPIST)){
 				
@@ -125,63 +127,76 @@ public class EditTreatmentPlan extends HttpServlet {
 		            	break;
 		            //Updates the plan's basic info
 		            case "plan-edit-update":
-		                //detect which treatment issue source was used and validate
-		                int treatmentIssueID = determineTreatmentIssueID(defaultIssueID, customIssueID);
-		                
-		                //updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
-		                if(treatmentPlanID==0){
-		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
-		            	}
-		            	
-		                if(planTitle.isEmpty() || planDescription.isEmpty()){
-		                	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
-		                }
+		            	//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
+						if(request.getParameter("submitButton").equals("save")){
+							//detect which treatment issue source was used and validate
+			                int treatmentIssueID = determineTreatmentIssueID(coreTreatmentIssueID, customIssueID);
+			                
+			                //updateTreatmentPlan(request, treatmentPlan, treatmentPlanID, planTitle, planDescription, treatmentIssueID);
+			                if(treatmentPlanID==0){
+			            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+			            	}
+			            	
+			                if(planTitle.isEmpty() || planDescription.isEmpty()){
+			                	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
+			                }
 
-		                //TODO possibly change this to use a static method TreatmentPlan.updateBasic(planTitle, planDescription, treatmentIssueID);???
+			                //TODO possibly change this to use a static method TreatmentPlan.updateBasic(planTitle, planDescription, treatmentIssueID);???
+			                
+			                //treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+			                
+			                treatmentPlan.setTitle(planTitle);
+			                treatmentPlan.setDescription(planDescription);
+			                treatmentPlan.setTreatmentIssueID(treatmentIssueID);
+			                
+			                treatmentPlan.update();
+			                
+			                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
+						}
 		                
-		                //treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-		                
-		                treatmentPlan.setTitle(planTitle);
-		                treatmentPlan.setDescription(planDescription);
-		                treatmentPlan.setTreatmentIssueID(treatmentIssueID);
-		                
-		                treatmentPlan.update();
-		                
-		                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
-		                
-		                //TODO eval path first?
+						//regardless of whether Save or Cancel button was pressed this determines where to forward and what to set in request
 		                if(user.hasRole(Constants.USER_ADMIN)){
 		                	forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 		                }
 		                
 		                if(user.hasRole(Constants.USER_THERAPIST)){
-		                	UserTherapist userTherapist = (UserTherapist)user;
-		    				
-		    				//set the default treatment plans and the custom plans for this therapist into the request
-		    				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
-		    				
-		                	userTherapist.loadAllAssignedClientTreatmentPlans(ownerUserID);
-		            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
-		            		request.setAttribute("unstartedAssignedClientPlans", userTherapist.loadUnstartedAssignedClientTreatmentPlans());
-		            		request.setAttribute("completedAssignedClientPlans", userTherapist.loadCompletedAssignedClientTreatmentPlans());
-			                
-			                forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
+		                	switch(path){
+		                		case Constants.PATH_MANAGE_CLIENT:
+			                		UserTherapist userTherapist = (UserTherapist)user;
+			    				
+				    				//set the default treatment plans and the custom plans for this therapist into the request
+				    				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
+				    				
+				    				User client = User.loadBasic(treatmentPlan.getUserID());
+			        				request.setAttribute("client", client);
+				    				
+			        				CommonServletFunctions.putClientPlansInRequest(request, userTherapist, client.getUserID());
+			        				
+					                forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
+					                
+					                break;
+					                
+		                		default: 
+		                			user.getMainMenuURL();
+		                	} 
+		                	
 		                }
 		                
 		            	break;
 		            case "plan-edit-load-plan":
-
+		            	request.setAttribute("scrollTo", "selectTreatmentPlan");
 		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
-		            case "create-default-treatment-issue":
-		            	CommonServletFunctions.createDefaultTreatmentIssue(request, user.getUserID());
+		            case "create-new-treatment-issue":
+		            	CommonServletFunctions.createCoreTreatmentIssue(request, user.getUserID());
 
 						forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 		            	break;
 		            case "stage-delete":
 						//TODO delete: treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						treatmentPlan.deleteStage(stageID);
-				    	request.setAttribute("treatmentPlan", treatmentPlan);
+						
+						request.setAttribute("scrollTo", "stageListTop");
 						
 						forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 						break;
@@ -191,11 +206,12 @@ public class EditTreatmentPlan extends HttpServlet {
 		            		throw new ValidationException(ErrorMessages.PLAN_DELETE_ERROR);
 		            	}else{
 			            	TreatmentPlan.delete(treatmentPlanID);
-			            	request.removeAttribute("treatmentPlan");
 			            	request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_DELETED);
 			            	
+			            	treatmentPlan = null;
+			            	
 			            	//reload default options so dropdown list is properly updated
-			            	CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+			            	CommonServletFunctions.setCoreTreatmentPlansInRequest(request);
 		            	}
 		            	
 		            	forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
@@ -204,7 +220,12 @@ public class EditTreatmentPlan extends HttpServlet {
 				}
 	    		
 				//set the TreatmentPlan in the request after all actions with it have been completed
+				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
+				request.setAttribute("coreTasks", Task.getCoreTasks());
 				request.setAttribute("treatmentPlan", treatmentPlan);
+				request.setAttribute("stage", stage);
+				request.setAttribute("task", task);
+				request.setAttribute("owner", owner);
 				
 				
 			} else if(user.hasRole(Constants.USER_CLIENT)){
@@ -221,8 +242,9 @@ public class EditTreatmentPlan extends HttpServlet {
     		//create a temporary treatmentPlan to hold title and description info that might be changed for plan that is in the process of creation - UNSURE if this will cause accidental replacement of the other fields that I am just supplying false and 0 to
     		treatmentPlan = TreatmentPlan.getInstanceBasic(ParameterUtils.parseIntParameter(request, "treatmentPlanID"), user.getUserID(), request.getParameter("planTitle"), request.getParameter("planDescription"), 0, false, false, false,0,0,0, Constants.ADMIN_ROLE_ID);
     		request.setAttribute("treatmentPlan", treatmentPlan);
-    		request.setAttribute("defaultTreatmentIssue", defaultIssueID);
+    		request.setAttribute("coreTreatmentIssueID", coreTreatmentIssueID);
     		request.setAttribute("existingCustomTreatmentIssue", customIssueID);
+    		request.setAttribute("owner", owner);
     		
     		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
 			//e.printStackTrace();
@@ -279,19 +301,19 @@ public class EditTreatmentPlan extends HttpServlet {
         request.setAttribute("treatmentPlan", treatmentPlan);
 	}*/
 	
-	private int determineTreatmentIssueID(int defaultIssueID, int customIssueID) throws ValidationException{
+	private int determineTreatmentIssueID(int coreIssueID, int customIssueID) throws ValidationException{
 		//detect which treatment issue source was used and validate
         int treatmentIssueID = 0;
-        if(defaultIssueID == 0 && customIssueID == 0){
+        if(coreIssueID == 0 && customIssueID == 0){
         	throw new ValidationException(ErrorMessages.ISSUE_NONE_SELECTED);
         }
-        if(defaultIssueID > 0 && customIssueID > 0){
+        if(coreIssueID > 0 && customIssueID > 0){
         	throw new ValidationException(ErrorMessages.ISSUE_MULTIPLE_SELECTED);
         }
-        if(defaultIssueID > 0 && customIssueID <= 0){
-        	treatmentIssueID = defaultIssueID;
+        if(coreIssueID > 0 && customIssueID <= 0){
+        	treatmentIssueID = coreIssueID;
         }
-        if(defaultIssueID <= 0 && customIssueID > 0){
+        if(coreIssueID <= 0 && customIssueID > 0){
         	treatmentIssueID = customIssueID;
         }
         
@@ -303,7 +325,7 @@ public class EditTreatmentPlan extends HttpServlet {
      * There are 3 options for setting the issue type for the new plan.  Since only 1 issue can be selected, here we first get all the possible parameters from the request
      * and if more than one has been selected, notify the user that they can only choose 1.  Otherwise, use the selected treatment issue.
      * @param user
-     * @param defaultIssueIDAsString
+     * @param coreIssueIDAsString
      * @param existingIssueIDAsString
      * @param newIssueName
      * @param request
@@ -311,14 +333,14 @@ public class EditTreatmentPlan extends HttpServlet {
      * @throws ValidationException
      * @throws DatabaseException
      */
-    private int getTreatmentIssueID(User user, String defaultIssueIDAsString, String existingIssueIDAsString, String newIssueName, HttpServletRequest request) throws ValidationException, DatabaseException{
+    private int getTreatmentIssueID(User user, String coreIssueIDAsString, String existingIssueIDAsString, String newIssueName, HttpServletRequest request) throws ValidationException, DatabaseException{
         int issueID = 0;
         boolean hasNewCustomIssue = !newIssueName.isEmpty();
 
         int numOfIDs = 0;
-        if(defaultIssueIDAsString != null){
-	        if(!defaultIssueIDAsString.equals("")){
-	            issueID = Integer.parseInt(defaultIssueIDAsString);
+        if(coreIssueIDAsString != null){
+	        if(!coreIssueIDAsString.equals("")){
+	            issueID = Integer.parseInt(coreIssueIDAsString);
 	            numOfIDs++;
 	        }
         }

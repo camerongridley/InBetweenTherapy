@@ -18,6 +18,7 @@ import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.SuccessMessages;
@@ -74,15 +75,14 @@ public class ManageClients extends HttpServlet {
 				
 				clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
 				
-				//XXX This works, but isn't stateless since getting from session var user
 				User client = clientMap.get(clientUserID);
 				request.setAttribute("client", client);
 				
 				//TODO do I still need this or can it be handled by treatmentPlanID?
-				int defaultTreatmentPlanID = ParameterUtils.parseIntParameter(request, "defaultTreatmentPlanID");
+				int coreTreatmentPlanID = ParameterUtils.parseIntParameter(request, "coreTreatmentPlanID");
 				
 				//set the default treatment plans and the custom plans for this therapist into the request
-				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 				
 				//based on the client retrieved from the request, load all plans that the therapist has access to
 				
@@ -110,12 +110,15 @@ public class ManageClients extends HttpServlet {
 						break;
 					case "select-treatment-plan-for-assignment":
 						//TODO load the preview of the selected treatment plan and put into request
+						
+						request.setAttribute("scrollTo", "selectTreatmentPlan");
+						
 						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
 					case "copy-plan-to-client":
 						boolean isTemplate = false;
-						//therapistUser.copyTreatmentPlanForClient(clientUserID, defaultTreatmentPlanID, isTemplate);
-						therapistUser.createTreatmentPlanFromTemplate(clientUserID, defaultTreatmentPlanID);
+						//therapistUser.copyTreatmentPlanForClient(clientUserID, coreTreatmentPlanID, isTemplate);
+						therapistUser.createTreatmentPlanFromTemplate(clientUserID, coreTreatmentPlanID);
 						request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COPIED_TO_CLIENT);
 						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
@@ -128,11 +131,11 @@ public class ManageClients extends HttpServlet {
 						break;
 				}
 				
-				putClientPlansInRequest(request, therapistUser, clientUserID);
+				CommonServletFunctions.putClientPlansInRequest(request, therapistUser, clientUserID);
 				
 				//put these back in the request so other forms can maintain selections of other forms as well as display selected items of the dropdown boxes
 				request.setAttribute("client", client);
-				request.setAttribute("defaultTreatmentPlanID", defaultTreatmentPlanID);
+				request.setAttribute("coreTreatmentPlanID", coreTreatmentPlanID);
 			}
 		
 		}catch(DatabaseException | ValidationException e){
@@ -154,11 +157,6 @@ public class ManageClients extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 	}
 	
-	private void putClientPlansInRequest(HttpServletRequest request, UserTherapist therapistUser, int clientUserID) throws DatabaseException, ValidationException{
-		therapistUser.loadAllAssignedClientTreatmentPlans(clientUserID);
-		request.setAttribute("activeAssignedClientPlans", therapistUser.loadActiveAssignedClientTreatmentPlans());
-		request.setAttribute("unstartedAssignedClientPlans", therapistUser.loadUnstartedAssignedClientTreatmentPlans());
-		request.setAttribute("completedAssignedClientPlans", therapistUser.loadCompletedAssignedClientTreatmentPlans());
-	}
+	
 
 }

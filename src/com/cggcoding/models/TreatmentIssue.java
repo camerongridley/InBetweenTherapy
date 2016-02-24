@@ -143,7 +143,7 @@ public class TreatmentIssue implements Serializable, DatabaseModel{
 		
 	}
     
-	public static ArrayList<TreatmentIssue> getDefaultTreatmentIssues() throws DatabaseException {
-		return dao.treatmentIssueGetDefaults();
+	public static ArrayList<TreatmentIssue> getCoreTreatmentIssues() throws DatabaseException {
+		return dao.treatmentIssueGetCoreList();
 	}
 }

@@ -81,8 +81,6 @@ public class LogIn extends HttpServlet {
 			} catch (DatabaseException e) {
 				e.printStackTrace();
 				request.setAttribute("errorMessage", e.getMessage());
-				//response.sendRedirect(Constants.URL_INDEX);
-			    request.getRequestDispatcher("/index.jsp").forward(request, response);
 			}
 	        
 	        request.getRequestDispatcher(forwardTo).forward(request, response);

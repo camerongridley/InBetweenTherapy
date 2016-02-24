@@ -233,17 +233,21 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		return stages.size();
 	}
 	
-	//TODO update so this gives a value that incorporates each stages percent complete
 	public int percentComplete(){
-		double stagesComplete = 0;
+		double totalTasks = 0;
+		double tasksComplete = 0;
 		for(Stage stage : stages){
-			if(stage.isCompleted()){
-				stagesComplete = stagesComplete + 1;
+			for(Task task : stage.getTasks()){
+				totalTasks++;
+				if(task.isCompleted()){
+					tasksComplete++;
+				}
 			}
+			
 		}
 		
-		if(stagesComplete!=0){
-			return (int) (stagesComplete/getNumberOfStages()*100);
+		if(tasksComplete!=0){
+			return (int) (tasksComplete/totalTasks*100);
 		} else {
 			return 0;
 		}
@@ -540,22 +544,28 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	public static TreatmentPlan load(Connection cn, int treatmentPlanID) throws ValidationException, SQLException{
 		TreatmentPlan plan = null;
 		
-		//Load the basic plan
-		plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
-        
-		//Load the Stages
-		if(plan.isTemplate()){
-			List<MapTreatmentPlanStageTemplate> stageMap = dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID);
-			plan.setTreatmentPlanStageTemplateMapList(stageMap);
-			
-			//OPTIMIZE modify so dao.treatmentPlanLoadClientStages can be used here too - maybe rename treatmentPlanLoadClientStages then
-			for(MapTreatmentPlanStageTemplate planStageDetail : plan.treatmentPlanStageTemplateMapList){
-				plan.addStage(Stage.load(cn, planStageDetail.getStageID()));
+		if(treatmentPlanID != 0){
+			//Load the basic plan
+			plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
+	        
+			//Load the Stages
+			if(plan.isTemplate()){
+				List<MapTreatmentPlanStageTemplate> stageMap = dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID);
+				plan.setTreatmentPlanStageTemplateMapList(stageMap);
+				
+				//OPTIMIZE modify so dao.treatmentPlanLoadClientStages can be used here too - maybe rename treatmentPlanLoadClientStages then
+				for(MapTreatmentPlanStageTemplate planStageDetail : plan.treatmentPlanStageTemplateMapList){
+					plan.addStage(Stage.load(cn, planStageDetail.getStageID()));
+				}
+				
+			}else{
+				plan.setStages(dao.treatmentPlanLoadClientStages(cn, treatmentPlanID));
 			}
 			
-		}else{
-			plan.setStages(dao.treatmentPlanLoadClientStages(cn, treatmentPlanID));
+			//reset the active view so the plan starts off on the current view
+			plan.setActiveViewStageIndex(plan.getCurrentStageIndex());
 		}
+		
 		
 		return plan;
 	}
@@ -566,24 +576,26 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
         
         dao.throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
         
-        try {
-        	cn = dao.getConnection();
-        	
-            plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
-            
-            if(plan.isTemplate()){
-            	plan.setTreatmentPlanStageTemplateMapList(dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID));
-            }
-            
-        } catch (SQLException e) {
-			
-			e.printStackTrace();
-			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-		} finally {
-			DbUtils.closeQuietly(cn);
+        if(treatmentPlanID!=0){
+	        try {
+	        	cn = dao.getConnection();
+	        	
+	            plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
+	            
+	            if(plan.isTemplate()){
+	            	plan.setTreatmentPlanStageTemplateMapList(dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID));
+	            }
+	            
+	        } catch (SQLException e) {
+				
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+	        }
+	        
+	        dao.throwValidationExceptionIfNull(plan);
         }
-
-        dao.throwValidationExceptionIfNull(plan);
         
         return plan;
 		
@@ -764,9 +776,10 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	
 	protected Stage createStageFromTemplate(Connection cn, int stageIDBeingCopied, MapTreatmentPlanStageTemplate planStageTemplateInfo) throws ValidationException, SQLException{
 		Stage newStage = Stage.loadBasic(cn, stageIDBeingCopied);
+		newStage.loadGoals(cn);
 		//Stage newStage = Stage.getInstanceWithoutID(stageBeingCopied.getTreatmentPlanID(), this.userID, stageBeingCopied.getTitle(), stageBeingCopied.getDescription(), stageBeingCopied.getClientStageOrder(), false);
 		
-		
+		//get the list of Tasks from the MapStageTaskTemplate list to know which task to create, then clear that list from the client instantiation of the Stage
 		List<MapStageTaskTemplate> stageTaskInfoList = newStage.getMapStageTaskTemplates();
 		newStage.setMapStageTaskTemplates(new ArrayList<>());
 		
@@ -784,13 +797,11 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			newStage.setClientStageOrder(this.getStageOrderDefaultValue());
 		}
 		
+		//copy basic info including goals
 		newStage.createBasic(cn);
 
 		//copy stage goals
-		for(StageGoal goal : newStage.getGoals()){
-			goal.setStageID(newStage.getStageID());
-			goal.create(cn);
-		}
+		newStage.createGoals(cn);
 		
 		for(MapStageTaskTemplate stageTaskInfo : stageTaskInfoList){
 			newStage.createTaskFromTemplate(cn, stageTaskInfo.getTaskID(), stageTaskInfo);
@@ -854,8 +865,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		return stageBeingCopied;
 	}*/
 	
-	public static List<TreatmentPlan> getDefaultTreatmentPlans() throws DatabaseException, ValidationException {
-		return dao.treatmentPlanGetDefaults();
+	public static List<TreatmentPlan> getCoreTreatmentPlans() throws DatabaseException, ValidationException {
+		return dao.treatmentPlanGetCoreList();
 	}
 	
 	/**Calculates and returns size value for Bootstrap's col width for each stage node in the stage navigation bar of run-treatment-plan.jsp.  

@@ -440,28 +440,31 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public static Stage load(Connection cn, int stageID) throws SQLException, ValidationException{
 		Stage stage = null;
         
-        dao.throwValidationExceptionIfTemplateHolderID(stageID);
-        
-    	stage = dao.stageLoadBasic(cn, stageID);
-    	
-    	stage.setGoals(dao.stageLoadGoals(cn, stage.getStageID()));
-    	
-    	if(stage.isTemplate()){
-    		//get list of templates and set local variable
-    		List<MapStageTaskTemplate> taskMap = dao.mapStageTaskTemplateLoad(cn, stageID);
-    		stage.setMapStageTaskTemplates(taskMap);
-    		
-    		//loop through map and load Task templates to local List
-    		for(MapStageTaskTemplate stageTaskTempaltes : taskMap){
-    			stage.addTask(Task.load(cn, stageTaskTempaltes.getTaskID()));
-    		}
-    	}else{
-    		stage.setTasks(dao.stageLoadClientTasks(cn, stage.getStageID()));
-    	}
-		
+		if(stageID!=0){
+			dao.throwValidationExceptionIfTemplateHolderID(stageID);
+	        
+	    	stage = dao.stageLoadBasic(cn, stageID);
+	    	
+	    	stage.loadGoals(cn);
+	    	
+	    	if(stage.isTemplate()){
+	    		//get list of templates and set local variable
+	    		List<MapStageTaskTemplate> taskMap = dao.mapStageTaskTemplateLoad(cn, stageID);
+	    		stage.setMapStageTaskTemplates(taskMap);
+	    		
+	    		//loop through map and load Task templates to local List
+	    		for(MapStageTaskTemplate stageTaskTempaltes : taskMap){
+	    			stage.addTask(Task.load(cn, stageTaskTempaltes.getTaskID()));
+	    		}
+	    	}else{
+	    		stage.setTasks(dao.stageLoadClientTasks(cn, stage.getStageID()));
+	    	}
+			
 
+	        
+	        dao.throwValidationExceptionIfNull(stage);
+		}
         
-        dao.throwValidationExceptionIfNull(stage);
         
         return stage;
 	}
@@ -488,21 +491,39 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public static Stage loadBasic(Connection cn, int stageID) throws SQLException, ValidationException{
 		Stage stage = null;
         
-        dao.throwValidationExceptionIfTemplateHolderID(stageID);
+		if(stageID!=0){
+			dao.throwValidationExceptionIfTemplateHolderID(stageID);
+	        
+	    	stage = dao.stageLoadBasic(cn, stageID);
+	    	
+	    	if(stage.isTemplate()){
+	    		stage.setMapStageTaskTemplates(dao.mapStageTaskTemplateLoad(cn, stageID));
+	    	}
+	    	
+	        dao.throwValidationExceptionIfNull(stage);
+		}
         
-    	stage = dao.stageLoadBasic(cn, stageID);
-
-    	stage.setGoals(dao.stageLoadGoals(cn, stageID));
-    	
-    	if(stage.isTemplate()){
-    		stage.setMapStageTaskTemplates(dao.mapStageTaskTemplateLoad(cn, stageID));
-    	}
-    	
-        dao.throwValidationExceptionIfNull(stage);
         
         return stage;
 	}
 
+	
+	/**---Database Interaction---
+	 * Creates a new Stage in the database that only contains the basic (i.e. Tasks, Goals, etc. or other lists) stage information contained in the Stage model.
+	 * @param cn
+	 * @throws ValidationException
+	 * @throws SQLException
+	 */
+	protected void createBasic(Connection cn) throws ValidationException, SQLException{
+		
+		if(this.title.isEmpty()){
+    		throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
+    	}
+		
+		if(dao.stageValidateNewTitle(cn, this)){
+			dao.stageCreateBasic(cn, this);
+		}
+	}
 	
 	@Override
 	public Stage create() throws ValidationException, DatabaseException{
@@ -552,26 +573,6 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return savedStage;*/
 	}
 	
-	protected void createBasic(Connection cn) throws ValidationException, SQLException{
-		
-		if(this.title.isEmpty()){
-    		throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
-    	}
-		
-		if(dao.stageValidateNewTitle(cn, this)){
-			dao.stageCreateBasic(cn, this);
-			
-			for(StageGoal goal : getGoals()){
-				if(goal.isValidGoal()){
-					//set the newly generated stageID in the goal
-					goal.setStageID(this.stageID);
-					goal.create(cn);
-				}
-			}
-
-		}
-	}
-	
 	protected void create(Connection cn) throws ValidationException, SQLException{
 		
 		if(this.title.isEmpty()){
@@ -579,15 +580,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
     	}
 		
 		if(dao.stageValidateNewTitle(cn, this)){
-			dao.stageCreateBasic(cn, this);
+			createBasic(cn);
 			
-			for(StageGoal goal : getGoals()){
-				if(goal.isValidGoal()){
-					//set the newly generated stageID in the goal
-					goal.setStageID(this.stageID);
-					goal.create(cn);
-				}
-			}
+			createGoals(cn);
 			
 			for(Task task : getTasks()){
 				//set the newly generated stageID in the task
@@ -609,7 +604,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 * @throws DatabaseException
 	 */
 	public static Stage createTemplate(int userID, String title, String description) throws ValidationException, DatabaseException{
-		Stage stageTemplate = new Stage(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID, userID, title, description, Constants.TEMPLATE_ORDER_NUMBER, true);
+		Stage stageTemplate = new Stage(Constants.TEMPLATES_HOLDER_PRIMARY_KEY_ID, userID, title, description, Constants.TEMPLATE_ORDER_NUMBER, true);
 		
 		stageTemplate.create();
 		
@@ -716,6 +711,57 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	    }	
 	}
 	
+	
+	protected void loadGoals(Connection cn) throws SQLException, ValidationException{
+		this.setGoals(dao.stageLoadGoals(cn, stageID));
+	}
+	
+	public void createGoals() throws DatabaseException, ValidationException{
+		Connection cn = null;
+		
+        try {
+        	cn= dao.getConnection();
+        	
+        	cn.setAutoCommit(false);
+        	
+			createGoals(cn);
+			
+			cn.commit();
+			
+        } catch (SQLException | ValidationException e) {
+        	e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
+				e1.printStackTrace();
+			}
+			if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+		}
+	}
+	
+	protected void createGoals(Connection cn) throws SQLException, ValidationException{
+		for(StageGoal goal : getGoals()){
+			if(goal.isValidGoal()){
+				//set the newly generated stageID in the goal
+				goal.setStageID(this.stageID);
+				goal.create(cn);
+			}
+		}
+	}
+	
 	protected static void delete(Connection cn, int stageID) throws ValidationException, SQLException {
         	dao.stageDelete(cn, stageID);
 
@@ -807,6 +853,33 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 		
 		return createdTasks;
+	}
+	
+	/**---Database Interaction---
+	 * Creates a new Stage for an existing client-owned TreatmentPlan with the supplied title and description. 
+	 * Sets treatmentPlanID with this plan's ID, userID with this plan's userID, clientStageOrder based on the number of existing Stages in the TreatmentPlan, and template is set to false.
+	 * Then it inserts the new stage into the database with stage.create() and then adds the stage to the local Stages list.
+	 * @param taskTitle - Title of new Task
+	 * @param taskInstructions - Description of the Task
+	 * @return
+	 * @throws ValidationException
+	 * @throws DatabaseException
+	 */
+	public Task createClientTask(Task clientTask) throws ValidationException, DatabaseException{
+		if(!this.template){
+			clientTask.setStageID(this.stageID);
+			clientTask.setUserID(this.userID);
+			clientTask.setClientTaskOrder(this.getTaskOrderDefaultValue());
+
+			clientTask.create();
+			
+			this.addTask(clientTask);
+		} else {
+			throw new ValidationException(ErrorMessages.STAGE_CLIENT_ONLY_ALLOWED_IN_PLAN_TEMPLATE);
+		}
+		
+		
+		return clientTask;
 	}
 	
 //TODO delete
@@ -1076,8 +1149,8 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return copiedStage;
 	}
 	
-	public static List<Stage> getDefaultStages() throws DatabaseException, ValidationException{
-		return dao.stagesGetDefaults();
+	public static List<Stage> getCoreStages() throws DatabaseException, ValidationException{
+		return dao.stagesGetCoreList();
 	}
 
 	

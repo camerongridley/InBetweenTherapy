@@ -14,8 +14,8 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Update Treatment Plan</h1>
-	<h3>Plan Owner: ${owner.email}</h3>
+	<h2>Edit Treatment Plan</h2>
+	<c:import url="/WEB-INF/jsp/includes/breadcrumbs.jsp" />
 </div>
 
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
@@ -28,15 +28,15 @@
 			<input type="hidden" name="requestedAction" value="plan-edit-load-plan"> 
 			<input type="hidden" name="path" value="${path }">
 			
-				<label for="selectedDefaultTreatmentPlanID"
+				<label for="selectedCoreTreatmentPlanID"
 					class="col-sm-2 control-label">Select a Treatment Plan</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="selectedDefaultTreatmentPlanID"
-						name="treatmentPlanID">
+				<a id="selectTreatmentPlan"></a>
+					<select class="form-control" id="selectedCoreTreatmentPlanID" name="treatmentPlanID">
 						<option value="">Select a treatment plan to edit.</option>
-						<c:forEach var="defaultPlan" items="${defaultTreatmentPlanList }">
-							<option value="${defaultPlan.treatmentPlanID}"
-								<c:if test="${defaultPlan.treatmentPlanID == treatmentPlan.treatmentPlanID }">selected</c:if>>${defaultPlan.title}</option>
+						<c:forEach var="corePlan" items="${coreTreatmentPlansList }">
+							<option value="${corePlan.treatmentPlanID}"
+								<c:if test="${corePlan.treatmentPlanID == treatmentPlan.treatmentPlanID }">selected</c:if>>${corePlan.title}</option>
 						</c:forEach>
 					</select>
 		
@@ -51,12 +51,7 @@
 			</form>
 		</div>	
 		<div class="col-xs-1">
-			<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
-				<input type="hidden" name="requestedAction" value="delete-plan"> 
-				<input type="hidden" name="path" value="${path }">
-				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-				<button type="submit" class="btn btn-default glyphicon glyphicon-remove" aria-hidden="true" title="Delete this treatment plan."></button>
-			</form>
+			<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal" aria-hidden="true" title="Delete this treatment plan."></button>
 		</div>
 	</div>
 </div>
@@ -107,15 +102,14 @@
 
 
 		<div class="row form-group">
-			<label for="defaultTreatmentIssue" class="col-sm-2 control-label">Default
-				Tx Issues</label>
+			<label for="coreTreatmentIssueID" class="col-sm-2 control-label">Core Treatment Issues</label>
 			<div class="col-sm-9">
-				<select class="form-control" id="defaultTreatmentIssue"
-					name="defaultTreatmentIssue">
+				<select class="form-control" id="coreTreatmentIssueID"
+					name="coreTreatmentIssueID">
 					<option value="">Select a default treatment issue.</option>
-					<c:forEach items="${defaultTreatmentIssues}" var="defaultIssue">
-						<option value="${defaultIssue.treatmentIssueID}"
-							<c:if test="${defaultIssue.treatmentIssueID == treatmentPlan.treatmentIssueID}">selected</c:if>>${defaultIssue.treatmentIssueName}</option>
+					<c:forEach items="${coreTreatmentIssues}" var="coreIssue">
+						<option value="${coreIssue.treatmentIssueID}"
+							<c:if test="${coreIssue.treatmentIssueID == treatmentPlan.treatmentIssueID}">selected</c:if>>${coreIssue.treatmentIssueName}</option>
 					</c:forEach>
 				</select>
 			</div>
@@ -123,7 +117,7 @@
 				<c:if test='${user.role.equals("admin") }'>
 					<button type="button" class="btn btn-default" title="Add a new default treatment issue."
 						aria-label="Left Align" data-toggle="modal"
-						data-target="#newDefaultTreatmentIssueModal">
+						data-target="#newCoreTreatmentIssueModal">
 						<span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
 					</button>
 				</c:if>	
@@ -132,11 +126,11 @@
 
 		<c:if test="${customTreatmentIssues != null }">
 			<div class="row form-group">
-				<label for="customTreatmentIssue" class="col-sm-2 control-label">Existing
+				<label for="customTreatmentIssueID" class="col-sm-2 control-label">Existing
 					Custom Tx Issues</label>
 				<div class="col-sm-10">
-					<select class="form-control" id="customTreatmentIssue"
-						name="customTreatmentIssue">
+					<select class="form-control" id="customTreatmentIssueID"
+						name="customTreatmentIssueID">
 						<option value="">Or select an issue you've previously
 							created.</option>
 						<c:forEach items="${customTreatmentIssues}" var="customIssue">
@@ -157,9 +151,8 @@
 	</div>
 
 
-
-	<label for="stageList" class="control-label">Stages <a
-		role="button"
+	<a id="stageListTop"></a>
+	<label for="stageList" class="control-label">Stages <a role="button"
 		href="/secure/CreateStage?requestedAction=add-stage-to-treatment-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}"
 		class="btn btn-default btn-xs"
 		title="Add a stage to this treatment plan."> <span
@@ -186,7 +179,7 @@
 				<a role="button" data-toggle="collapse" href="#collapse${stage.stageID }" aria-expanded="true" aria-controls="collapse${stage.stageID }">
 					${stageOrder+1 } - <span class="">${stage.title }</span>
 				</a> 
-				<a role="button" href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}"
+				<a role="button" data-toggle="modal" data-target="#delete_stage_modal${stage.stageID }"
 					class="btn btn-default btn-xs pull-right"
 					title="Delete stage from this treatment plan."> 
 					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -231,38 +224,36 @@
 		</div>
 	</c:forEach>
 
-	<div class="row form-group">
-		<div class="col-sm-offset-2 col-sm-10">
-			<button type="submit" class="btn btn-default">Save</button>
-		</div>
-	</div>
+	<div class="form-group">
+        <div class="col-sm-12 save-button">
+            <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+            <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
+        </div>
+    </div>
 </form>
 
-<!-- New Default Treatment Issue Modal -->
-<div class="modal fade" id="newDefaultTreatmentIssueModal" tabindex="-1"
-	role="dialog" aria-labelledby="newDefaultTreatmentIssueModalLabel">
+<!-- New Core Treatment Issue Modal -->
+<div class="modal fade" id="newCoreTreatmentIssueModal" tabindex="-1"
+	role="dialog" aria-labelledby="newCoreTreatmentIssueModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
-			<form class="form-horizontal" action="/secure/EditTreatmentPlan"
-				method="POST">
-				<input type="hidden" name="requestedAction"
-					value="create-default-treatment-issue"> <input
-					type="hidden" name="path" value="${path }"> <input
-					type="hidden" name="treatmentPlanID"
-					value="${treatmentPlan.treatmentPlanID}">
+			<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
+				<input type="hidden" name="requestedAction" value="create-new-treatment-issue"> 
+				<input type="hidden" name="path" value="${path }"> 
+				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"
 						aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<h4 class="modal-title" id="newDefaultTreatmentIssueModalLabel">Enter
-						a new default Treatment Issue</h4>
+					<h4 class="modal-title" id="newCoreTreatmentIssueModalLabel">Enter
+						a new core Treatment Issue</h4>
 				</div>
 				<div class="modal-body">
 					<input type="text" class="form-control"
-						id="newDefaultTreatmentIssue" name="newDefaultTreatmentIssue"
-						value="${fn:escapeXml(newDefaultTreatmentIssue) }"
-						placeholder="Enter a new default treatment issue.">
+						id="newCoreTreatmentIssue" name="newCoreTreatmentIssue"
+						value="${fn:escapeXml(newCoreTreatmentIssue) }"
+						placeholder="Enter a new core treatment issue.">
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -272,10 +263,64 @@
 		</div>
 	</div>
 </div>
+<!-- End New Default Treatment Issue Modal -->
+
+<!-- Delete Stage Modal -->
+<c:forEach items="${treatmentPlan.stages }" var="stage">
+	<div class="modal" id="delete_stage_modal${stage.stageID }">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		          <h4 class="modal-title">Delete Stage</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>Are you sure you want to delete <strong>${stage.title}</strong> from ${treatmentPlan.title}?</p>
+		        
+		      </div>
+		      <div class="modal-footer">
+		      	<a role="button" href="/secure/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
+				  OK
+				</a>
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+</c:forEach>
+<!-- End Delete Stage Modal -->
+
+<!-- Delete TreatmentPlan Modal -->
+<div class="modal" id="delete_plan_modal">
+	<form class="form-horizontal" action="/secure/EditTreatmentPlan" method="POST">
+		<input type="hidden" name="requestedAction" value="delete-plan"> 
+		<input type="hidden" name="path" value="${path }">
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+		
+		
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		          <h4 class="modal-title">Delete Treatment Plan</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>Are you sure you want to delete <strong>${treatmentPlan.title}</strong> from ${owner.userName}'s account?</p>
+		        
+		      </div>
+		      <div class="modal-footer">
+		      	<button type="submit" class="btn btn-default" aria-hidden="true" title="Delete this treatment plan.">OK</button>
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		      </div>
+		    </div>
+		  </div>
+	</form>
+</div>
+<!-- End Delete TreatmentPlan Modal -->
 
 <script>
 	$(function() {
-		$('#selectedDefaultTreatmentPlanID').change(function() {
+		$('#selectedCoreTreatmentPlanID').change(function() {
 			this.form.submit();
 		});
 	});

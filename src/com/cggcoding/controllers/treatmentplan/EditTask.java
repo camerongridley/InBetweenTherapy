@@ -12,6 +12,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
@@ -55,36 +56,29 @@ public class EditTask extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
 		
+		/*-----------Common Treatment Plan object variables------------*/
 		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
     	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
-		/*-----------End Common Servlet variables---------------*/
-		
-		//TODO delete? int userID =  user.getUserID();
+		TreatmentPlan treatmentPlan = null;
+		Stage stage = null;
+		Task task = null;
 		int ownerUserID = 0;
 		User owner = null;
-		Task task = null;
+		/*-----------End Treatment Plan object variables---------------*/
 		
-		
-		
-		/*These variables helps remember where to send the user back to when they are done editing the Task.
-		If the Task being edited is a template the stageID will be TEMPLATE_HOLDER_ID, and not the Stage template being working on.
-		If the Task being edited is part of a client's plan, then the stageID will be the stageID that is contained within the task.
-		Need to maintain it between requests*/
-		request.setAttribute("stageID", stageID);
-		request.setAttribute("treatmentPlanID", treatmentPlanID);
 
 		try {
-			//put user-independent attributes acquired from database in the request
-			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
-			request.setAttribute("taskTemplateList", Task.getDefaultTasks());
 			
-			//TODO make sure to remove ownerUserID and clientUserID from edit jsps since I have switched things to not need to maintain this value - get it from treatmentPlan/stage/task			
+			
 			//Here we check that a task has been selected (currently the only time this isn't true is with path plan-edit-selection).
     		//If so, then load it and use it's userID prop to get it's owner
     		if(taskID != 0){
     			task = Task.load(taskID);
+    			stage = Stage.load(stageID);//load the entire stage since we need everything loaded to determine certain properties, such as the taskOrder
+    			treatmentPlan = TreatmentPlan.loadBasic(treatmentPlanID);//only need basic info such as title so use loadBasic()
         		ownerUserID = task.getUserID();
         		
         		//Set the User var "owner". If the owner of the plan that is being edited is different than the logged in user, then load the appropriate owner info
@@ -110,7 +104,9 @@ public class EditTask extends HttpServlet {
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-select-task"):
-						
+						if(path.equals(Constants.PATH_TEMPLATE_TASK)){
+							request.setAttribute("scrollTo", "taskSelection");
+						}
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-select-task-type"):
@@ -124,26 +120,29 @@ public class EditTask extends HttpServlet {
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-update"):
-						if(task.getTaskID()==0){
-							throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+						//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
+						if(request.getParameter("submitButton").equals("save")){
+							if(task.getTaskID()==0){
+								throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+							}
+							
+							newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
+							updateDataBase = true;
+							task =Task.convertToType(task, newTaskTypeID, updateDataBase);
+						
+							task = CommonServletFunctions.updateTaskParametersFromRequest(request, task);
+							
+							task.update();
 						}
-						
-						newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
-						updateDataBase = true;
-						task =Task.convertToType(task, newTaskTypeID, updateDataBase);
-					
-						task = CommonServletFunctions.updateTaskParametersFromRequest(request, task);
-						
-						task.update();
-						
+							
 						switch(path){
 							case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
 							case Constants.PATH_TEMPLATE_STAGE:
 							case Constants.PATH_CLIENT_TREATMENT_PLAN:
 		            		case Constants.PATH_MANAGE_CLIENT:
-								request.setAttribute("stage", Stage.load(stageID));
-								request.setAttribute("defaultStageList", Stage.getDefaultStages());
-								
+								stage = Stage.load(stageID);
+								request.setAttribute("coreStagesList", Stage.getCoreStages());
+								task = null;
 								forwardTo = Constants.URL_EDIT_STAGE;
 								
 								break;
@@ -154,14 +153,21 @@ public class EditTask extends HttpServlet {
 			            		} else if(user.getRole().equals(Constants.USER_THERAPIST)){
 			            			forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 			            		}
+		            			break;
 						}
-						
+
 						request.setAttribute("warningMessage", null);
 						
 						break;
 				}
 				
+				//put user-independent attributes acquired from database in the request
+				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
+				request.setAttribute("coreTasks", Task.getCoreTasks());
+				request.setAttribute("treatmentPlan", treatmentPlan);
+				request.setAttribute("stage", stage);
 				request.setAttribute("task", task);
+				request.setAttribute("owner", owner);
 				
 			} else if(user.hasRole(Constants.USER_CLIENT)){
 				forwardTo = "clientMainMenu.jsp";
@@ -174,9 +180,10 @@ public class EditTask extends HttpServlet {
 		} catch (DatabaseException | ValidationException e) {
 			//put in temporary task object so values can be saved in inputs after error
 			request.setAttribute("task", task);
-			request.setAttribute("stageID", stageID);
-			request.setAttribute("treatmentPlanID", treatmentPlanID);
+			request.setAttribute("stage", stage);
+			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("errorMessage", e.getMessage());
+			request.setAttribute("owner", owner);
 			
 			e.printStackTrace();
 

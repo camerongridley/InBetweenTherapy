@@ -7,9 +7,8 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
     <div class="page-header">
-    
-        <c:if test="${path == 'templateStage' }"><h1>Create a Stage Template</h1></c:if>
-        <c:if test="${path != 'templateStage' }"><h2>Add a Stage to: ${treatmentPlan.title} (${treatmentPlan.treatmentPlanID })</h2></c:if>
+        <h2>Create a Stage<c:if test="${path == 'templateStage' }"> Template</c:if></h2>
+        <c:import url="/WEB-INF/jsp/includes/breadcrumbs.jsp" />
     </div>
     
 	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
@@ -17,21 +16,21 @@
 	<c:if test="${path != 'templateStage' }">
 		<div class="well well-sm">
 			<form class="form-horizontal" action="/secure/CreateStage" method="POST">
-				<input type="hidden" name="requestedAction" value="stage-add-default-template">
+				<input type="hidden" name="requestedAction" value="stage-add-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 				
 				<div>
-					<h3>Add a Predefined Stage</h3>
+					<h3>Add a Core Stage</h3>
 				</div>
 				
 		        <div class="form-group">
-		            <label for="defaultStage" class="col-sm-2 control-label">Default Stages</label>
+		            <label for="coreStage" class="col-sm-2 control-label">Core Stages</label>
 		            <div class="col-sm-10">
-		                <select class="form-control" id="defaultStageID" name="defaultStageID">
-		                    <option  value="">Select a default stage.</option>
-		                    <c:forEach items="${defaultStages}" var="defaultStage">
-		                        <option value="${defaultStage.stageID}" <c:if test="${defaultStage.stageID == defaultStageID}">selected</c:if>>${defaultStage.title}</option>
+		                <select class="form-control" id="coreStageID" name="coreStageID">
+		                    <option  value="">Select a core stage.</option>
+		                    <c:forEach items="${coreStages}" var="coreStage">
+		                        <option value="${coreStage.stageID}" <c:if test="${coreStage.stageID == coreStageID}">selected</c:if>>${coreStage.title}</option>
 		                    </c:forEach>
 		                </select>
 		            </div>
@@ -43,10 +42,11 @@
 		        </div>
 		
 		        <div class="form-group">
-		            <div class="col-sm-offset-2 col-sm-10">
-		                <button type="submit" class="btn btn-default">Save</button>
-		            </div>
-		        </div>
+	            <div class="col-sm-offset-2 col-sm-10 save-button">
+	                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save & Continue</button>
+	                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
+	            </div>
+	        </div>
 		    </form>
 		</div>
 		
@@ -56,7 +56,7 @@
 	
 	<div class="well well-sm">
 		<form class="form-horizontal" action="/secure/CreateStage" method="POST">
-			<input type="hidden" name="requestedAction" value="stage-create-title">
+			<input type="hidden" name="requestedAction" value="stage-create-new">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 			
@@ -77,7 +77,12 @@
 	            </div>
 	        </div>
 	        
-	        <button type="submit" class="btn btn-default col-sm-offset-2">Save</button>
+	        <div class="form-group">
+	            <div class="col-sm-offset-2 col-sm-10 save-button">
+	                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save & Continue</button>
+	                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
+	            </div>
+	        </div>
 
 	    </form>
 	</div>

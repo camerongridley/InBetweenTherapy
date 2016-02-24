@@ -21,37 +21,38 @@
 
 			<input type="hidden" name="stageIndex" value=${stage.clientStageOrder } >
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >
+			<input type="hidden" name="clientUserID" value=${client.userID } >
 			<input type="hidden" name="requestedAction" value="change-stage">
 			<input type="hidden" name="path" value="${path }">
 			
-		<!--For stage that is currently being viewed (enabled-active)-->
-
-		<c:if test="${stage.clientStageOrder == treatmentPlan.activeViewStageIndex && stage.inProgress}">
-			<div class="progress-stage progress-stage-enabled-active col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
-				${stage.title } <a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal"> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-			</div>
-		</c:if>
-		
-		<!--For stage that is accessible but NOT the active view (enabled-inactive)  removed this condition:  && stage.clientStageOrder <= treatmentPlan.currentStageIndex-->
-		<c:if test="${stage.clientStageOrder != treatmentPlan.activeViewStageIndex  && stage.inProgress}">
-			<div class="progress-stage progress-stage-enabled-inactive col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
-				<a href='#' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
-			</div>
-		</c:if>
-		
-		<!--For stage that is disabled at this time and active as current view (disabled-active)-->
-		<c:if test="${stage.clientStageOrder == treatmentPlan.activeViewStageIndex && !stage.inProgress  && !stage.completed}">
-			<div class="progress-stage progress-stage-disabled-active col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
-				${stage.title } <a href="#" type="button" data-toggle="modal" data-target="#stageInfoModal"> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
-			</div>
-		</c:if>
-		
-		<!--For stage that is disabled at this time and inactive as current view (disabled-inactive)-->
-		<c:if test="${stage.clientStageOrder != treatmentPlan.activeViewStageIndex && !stage.inProgress && !stage.completed}">
-			<div class="progress-stage progress-stage-disabled-inactive col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
-				<a href='#' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
-			</div>
-		</c:if>
+			<!--For stage that is currently being viewed (enabled-active)-->
+	
+			<c:if test="${stage.clientStageOrder == treatmentPlan.activeViewStageIndex && stage.inProgress}">
+				<div class="progress-stage progress-stage-enabled-active col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
+					${stage.title } <a href="" type="button" data-toggle="modal" data-target="#stageInfoModal"> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+				</div>
+			</c:if>
+			
+			<!--For stage that is accessible but NOT the active view (enabled-inactive)  removed this condition:  && stage.clientStageOrder <= treatmentPlan.currentStageIndex-->
+			<c:if test="${stage.clientStageOrder != treatmentPlan.activeViewStageIndex  && stage.inProgress}">
+				<div class="progress-stage progress-stage-enabled-inactive col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
+					<a href='' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
+				</div>
+			</c:if>
+			
+			<!--For stage that is disabled at this time and active as current view (disabled-active)-->
+			<c:if test="${stage.clientStageOrder == treatmentPlan.activeViewStageIndex && !stage.inProgress  && !stage.completed}">
+				<div class="progress-stage progress-stage-disabled-active col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
+					${stage.title } <a href="" type="button" data-toggle="modal" data-target="#stageInfoModal"> <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+				</div>
+			</c:if>
+			
+			<!--For stage that is disabled at this time and inactive as current view (disabled-inactive)-->
+			<c:if test="${stage.clientStageOrder != treatmentPlan.activeViewStageIndex && !stage.inProgress && !stage.completed}">
+				<div class="progress-stage progress-stage-disabled-inactive col-sm-${treatmentPlan.stageNodeDisplayColWidthForBootstrap()}">
+					<a href='' onclick='this.parentNode.parentNode.submit(); return false;'>${stage.title }</a>
+				</div>
+			</c:if>
 		
 		</form>
 	</c:forEach>
@@ -96,6 +97,8 @@
 		<form action="/secure/UpdateTaskCompletion" method="post" class="form-inline">
 			<input type="hidden" name="requestedAction" value="update-client-plan">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
+			<input type="hidden" name="clientID" value=${client.userID } >
+			<input type="hidden" name="path" value="${path }">
 			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
 			<div class="progress-stage-detail">
 				<strong>
@@ -232,10 +235,19 @@
 			<c:choose>
 				<c:when test='${path.equals("manageClients") }'>
 				<!--  -->
-					<button type="button" class="btn btn-primary" onclick="">Done</button>
+					<div class="form-group">
+			            <div class="col-sm-12 save-button">
+			                <button type="submit" class="btn btn-primary">Done</button>
+			            </div>
+			        </div>
 				</c:when>
 				<c:otherwise>
-					<button type="submit" class="btn btn-primary">Save</button>
+					<div class="form-group">
+			            <div class="col-sm-12 save-button">
+			                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+			                <button type="submit" name="submitButton"  value="back" class="btn btn-default">Back</button>
+			            </div>
+			        </div>
 				</c:otherwise>
 			</c:choose>
 
@@ -246,13 +258,5 @@
 	</div>
 </div>
 
-<script>
-	$(function() {
-	    $('#defaultTreatmentPlanID').change(function() {
-	    	this.form.submit();
-	    });
-	    
-	});
-</script>
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />

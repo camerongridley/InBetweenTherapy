@@ -137,7 +137,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	}
 	
 	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
-		taskTemplate.setStageID(Constants.DEFAULTS_HOLDER_PRIMARY_KEY_ID);
+		taskTemplate.setStageID(Constants.TEMPLATES_HOLDER_PRIMARY_KEY_ID);
 		taskTemplate.setClientTaskOrder(Constants.TEMPLATE_ORDER_NUMBER);
 		taskTemplate.setTemplate(true);
 		
@@ -145,6 +145,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		
 		return taskTemplate;
 	}
+	
+	
 	
 	public static Task load(int taskID) throws DatabaseException{
 		Connection cn = null;
@@ -713,8 +715,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	
 	public abstract void transferAdditionalData(Task taskWithNewData);
 
-	public static List<Task> getDefaultTasks() throws DatabaseException{
-		return dao.taskGetDefaults();
+	public static List<Task> getCoreTasks() throws DatabaseException{
+		return dao.taskGetCoreList();
 	}
 	
 	public static Map<Integer, String> getTaskTypeMap() throws DatabaseException {

@@ -71,7 +71,7 @@ public interface DatabaseActionHandler {
 	 * @throws DatabaseException
 	 * @throws ValidationException 
 	 */
-	List<TreatmentPlan> treatmentPlanGetDefaults() throws DatabaseException, ValidationException;
+	List<TreatmentPlan> treatmentPlanGetCoreList() throws DatabaseException, ValidationException;
 	
 	void treatmentPlanDelete(Connection cn, int treatmentPlanID) throws SQLException, ValidationException;
 	
@@ -105,7 +105,7 @@ public interface DatabaseActionHandler {
 	 * @throws DatabaseException
 	 * @throws ValidationException 
 	 */
-	List<Stage> stagesGetDefaults() throws DatabaseException, ValidationException;
+	List<Stage> stagesGetCoreList() throws DatabaseException, ValidationException;
 	
 	List<MapStageTaskTemplate> stageUpdateTemplateTasks(Connection cn, int stageID, List<MapStageTaskTemplate> taskTemplates) throws SQLException;
 	
@@ -164,7 +164,7 @@ public interface DatabaseActionHandler {
 	boolean treatmentIssueValidateUpdatedName(Connection cn, TreatmentIssue issue)
 			throws ValidationException, SQLException;
 	
-	ArrayList<TreatmentIssue> treatmentIssueGetDefaults() throws DatabaseException;
+	ArrayList<TreatmentIssue> treatmentIssueGetCoreList() throws DatabaseException;
 
 	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
 
@@ -175,7 +175,7 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	//*************************************** Task Methods **********************************
 	//**************************************************************************************************
-	List<Task> taskGetDefaults() throws DatabaseException;
+	List<Task> taskGetCoreList() throws DatabaseException;
 	
 	Task taskGenericLoad(Connection cn, int taskID) throws SQLException;
 	

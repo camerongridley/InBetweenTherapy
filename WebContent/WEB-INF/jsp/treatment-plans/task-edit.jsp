@@ -7,8 +7,8 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 <div class="page-header">
-	<h1>Edit Task <c:if test="${task.template}">Template</c:if></h1>
-	<h3>Task Owner: ${owner.email}</h3>
+	<h2>Edit Task <c:if test="${task.template}">Template</c:if></h2>
+	<c:import url="/WEB-INF/jsp/includes/breadcrumbs.jsp" />
 </div>
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
@@ -16,17 +16,18 @@
 <form class="form-horizontal" action="/secure/EditTask" method="POST">
 	<input type="hidden" name="requestedAction" value="edit-task-select-task">
 	<input type="hidden" name="path" value="${path }">
-	<input type="hidden" name="stageID" value="${stageID }" >
-	<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+	<input type="hidden" name="stageID" value="${stage.stageID }" >
+	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 
 	<c:if test='${path=="templateTask"}'>
 		<div class="form-group">
 			<label for="defaultTaskListID" class="col-sm-2 control-label">Select Task</label>
 			<div class="col-sm-8">
+			<a id="taskSelection"></a>
 				<select class="form-control" id="defaultTaskListID" name="taskID">
 				    <option  value="">Select a default task.</option>
-				    	<c:forEach items="${taskTemplateList}" var="taskTemplate">
-							<option value="${taskTemplate.taskID}" <c:if test="${taskTemplate.taskID == task.taskID }">selected</c:if> >${fn:escapeXml(taskTemplate.title)}</option>
+				    	<c:forEach items="${coreTasks}" var="coreTask">
+							<option value="${coreTask.taskID}" <c:if test="${coreTask.taskID == task.taskID }">selected</c:if> >${fn:escapeXml(coreTask.title)}</option>
 						</c:forEach>
 				</select>
 			</div>
@@ -39,8 +40,8 @@
 	<input type="hidden" name="requestedAction" value="edit-task-select-task-type">
 	<input type="hidden" name="path" value="${path }">
 	<input type="hidden" name="taskID" value="${task.taskID }">
-	<input type="hidden" name="stageID" value="${stageID }" >
-	<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+	<input type="hidden" name="stageID" value="${stage.stageID }" >
+	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 	
 	<div class="form-group">
 	    <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
@@ -60,8 +61,8 @@
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">
 		<input type="hidden" name="taskID" value="${task.taskID }">
-		<input type="hidden" name="stageID" value="${stageID }">
-		<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
+		<input type="hidden" name="stageID" value="${stage.stageID }">
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 		<input type="hidden" name="parentTaskID" value="${task.parentTaskID }">
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
@@ -119,8 +120,9 @@
 		</c:if>
         
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Submit</button>
+            <div class="col-sm-offset-2 col-sm-10 save-button">
+                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
             </div>
         </div>
     </form>

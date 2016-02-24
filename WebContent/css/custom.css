@@ -31,6 +31,19 @@ h2{
 	margin: 20px 0 15px;
 }
 
+.breadcrumb-icon{
+	font-weight: bold;
+	text-align: center;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 3px;
+    color: white;
+    background-color: #eb9316
+    /* background-image: linear-gradient(to bottom,#f0ad4e 0,#eb9316 100%); */
+}
+
 .theme-dropdown .dropdown-menu {
   position: static;
   display: block;

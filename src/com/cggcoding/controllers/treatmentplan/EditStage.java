@@ -67,21 +67,23 @@ public class EditStage extends HttpServlet {
 		String requestedAction = request.getParameter("requestedAction");
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
+		/*-----------End Common Servlet variables---------------*/
 		
+		/*-----------Common Treatment Plan object variables------------*/
 		int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
     	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
-		/*-----------End Common Servlet variables---------------*/
-		
+		TreatmentPlan treatmentPlan = null;
+		Stage stage = null;
+		Task task = null;
 		int ownerUserID = 0;
 		User owner = null;
+		/*-----------End Treatment Plan object variables---------------*/
+		
+
 		int originalOrder = ParameterUtils.parseIntParameter(request, "taskOrder");
 		String stageTitle = request.getParameter("stageTitle");
 		String stageDescription = request.getParameter("stageDescription");
-		Stage stage = null;
-
-		//TODO keep this line? Can I instead maintain this on the jsp side by using stage.treatmentPlanID? Requires figuring out what to do when stage.TreatmentPlanID is the stage template holder
-		request.setAttribute("treatmentPlanID", treatmentPlanID);
 		
 		try{
     		//TODO make sure to remove ownerUserID and clientUserID from edit jsps since I have switched things to not need to maintain this value - get it from treatmentPlan/stage/task			
@@ -89,6 +91,7 @@ public class EditStage extends HttpServlet {
     		//If so, then load it and use it's userID prop to get it's owner
     		if(stageID != 0){
     			stage = Stage.load(stageID);
+    			treatmentPlan = TreatmentPlan.loadBasic(treatmentPlanID);//only need basic info such as title so use loadBasic()
         		ownerUserID = stage.getUserID();
         		
         		//Set the User var "owner". If the owner of the plan that is being edited is different than the logged in user, then load the appropriate owner info
@@ -98,8 +101,6 @@ public class EditStage extends HttpServlet {
 	    			owner = User.loadBasic(stage.getUserID());
 	    		}
 	    		
-	    		request.setAttribute("owner", owner);
-	    		
 	    		//if this Stage is a template, remind the user that all instances of this stage will be changed
 	    		if(stage.isTemplate()){
 					request.setAttribute("warningMessage", WarningMessages.EDITING_STAGE_TEMPLATE);
@@ -107,7 +108,7 @@ public class EditStage extends HttpServlet {
     		}
     		
     		//OPTIMIZE move to only relevant requestedActions
-			request.setAttribute("defaultStageList", Stage.getDefaultStages());
+			request.setAttribute("coreStagesList", Stage.getCoreStages());
 			
 			if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
 								
@@ -119,46 +120,56 @@ public class EditStage extends HttpServlet {
 		            case "select-stage" :
 		            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN)){
 		            		request.setAttribute("treatmentPlan", TreatmentPlan.load(treatmentPlanID));
+		            	} 
+		            	if(path.equals(Constants.PATH_TEMPLATE_STAGE)){
+		            		request.setAttribute("scrollTo", "selectStage");
 		            	}
+		            	
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 		            	break;
 		            	
-		            case "stage-edit-basic-info" :
-		            	if(stageID==0){
-		            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
-		            	}
+		            case "stage-edit-update" :
+		            	//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
+						if(request.getParameter("submitButton").equals("save")){
+							if(stageID==0){
+			            		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+			            	}
 
-		            	stage.setTitle(stageTitle);
-		            	stage.setDescription(stageDescription);
+			            	stage.setTitle(stageTitle);
+			            	stage.setDescription(stageDescription);
+			            	
+			            	for(StageGoal goal: stage.getGoals()){
+			            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
+			            	}
+			            	
+			            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
+			            		//get the repetition value for each task template inside this stage template and set it the edited stage to be updated when stage.update() is called
+				            	for(MapStageTaskTemplate stageTaskInfo : stage.getMapStageTaskTemplates()){
+				            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
+				            		stageTaskInfo.setTemplateTaskRepetitions(templateReps);
+				            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
+				            	}	
+			            	}
+			            	
+			            	stage.update();//OPTIMIZE could create a new method that takes all relevant info and calls static method in stage that loads and updates all with the same connection
+			            	
+			            	request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
+						}
 		            	
-		            	for(StageGoal goal: stage.getGoals()){
-		            		goal.setDescription(request.getParameter("stageGoalDescription" + goal.getStageGoalID()));
-		            	}
-		            	
-		            	if(path.equals(Constants.PATH_TEMPLATE_TREATMENT_PLAN) || path.equals(Constants.PATH_TEMPLATE_STAGE)){
-		            		//get the repetition value for each task template inside this stage template and set it the edited stage to be updated when stage.update() is called
-			            	for(MapStageTaskTemplate stageTaskInfo : stage.getMapStageTaskTemplates()){
-			            		int templateReps = ParameterUtils.parseIntParameter(request, "taskTemplateRepetitions" + stageTaskInfo.getTaskID());
-			            		stageTaskInfo.setTemplateTaskRepetitions(templateReps);
-			            		//get order info from request and set in stageTaskInfo here if decide to change so order is a dropdown choice
-			            	}	
-		            	}
-		            	
-		            	stage.update();//OPTIMIZE could create a new method that takes all relevant info and calls static method in stage that loads and updates all with the same connection
-		            	
-		            	request.setAttribute("successMessage", SuccessMessages.STAGE_UPDATED);
 		            	
 		            	switch(path){
 		            		//case for both Client and Template TreatmentPlan as well as ManageClient is the same
 		            		case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
 		            		case Constants.PATH_CLIENT_TREATMENT_PLAN:
 		            		case Constants.PATH_MANAGE_CLIENT:
-		            			request.setAttribute("treatmentPlan", TreatmentPlan.load(treatmentPlanID));
-			            		request.setAttribute("defaultTreatmentIssues", TreatmentIssue.getDefaultTreatmentIssues());
-			            		CommonServletFunctions.setDefaultTreatmentPlansInRequest(request);
+		            			treatmentPlan =  TreatmentPlan.load(treatmentPlanID);
+			            		request.setAttribute("coreTreatmentIssues", TreatmentIssue.getCoreTreatmentIssues());
+			            		CommonServletFunctions.setCoreTreatmentPlansInRequest(request);
 			            		
 			            		//forward to same place regardless of if user is an admin or therapist
 			            		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
+			            		//make stage null since we are done with it and don't want it to be null in the request when returning to edit treatment plan url
+			            		stage = null;
 		            			break;
 			            		
 		            		case Constants.PATH_TEMPLATE_STAGE:
@@ -176,7 +187,7 @@ public class EditStage extends HttpServlet {
 		            				UserTherapist userTherapist = (UserTherapist)user;
 				    				
 				    				//set the default treatment plans and the custom plans for this therapist into the request
-				    				request.setAttribute("defaultTreatmentPlanList", TreatmentPlan.getDefaultTreatmentPlans());
+				    				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 				    				
 				                	userTherapist.loadAllAssignedClientTreatmentPlans(ownerUserID);
 				            		request.setAttribute("activeAssignedClientPlans", userTherapist.loadActiveAssignedClientTreatmentPlans());
@@ -191,6 +202,7 @@ public class EditStage extends HttpServlet {
 		            			break;
 		            	}
 		            	
+		            	
 		            	request.setAttribute("warningMessage", null);
 		            	
 		            	break;
@@ -200,6 +212,7 @@ public class EditStage extends HttpServlet {
 		            	StageGoal goal = StageGoal.getInstanceWithoutID(stageID, goalDescription);
 		            	stage.saveNewGoal(goal);
 		            	
+		            	request.setAttribute("scrollTo", "goalListTop");
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 		            	break;
 		            	
@@ -213,25 +226,22 @@ public class EditStage extends HttpServlet {
 					case("delete-task"):
 						deleteTask(request, stage);
 					
+						request.setAttribute("scrollTo", "taskListTop");
 		            	forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 					
 					case("increase-task-order"):					
-						
-						//TODO delete? stage = Stage.load(stageID);
-						
+
 						stage.orderIncrementTask(taskID, originalOrder);
 						
-						//TODO delete? request.setAttribute("stage", stage);
+						request.setAttribute("scrollTo", "task" + taskID);
 						forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 						
 					case("decrease-task-order"):
-						//TODO delete? stage = Stage.load(stageID);
-					
 						stage.orderDecrementTask(taskID, originalOrder);
 						
-						//TODO delete? request.setAttribute("stage", stage);
+						request.setAttribute("scrollTo", "task" + taskID);
 						forwardTo = Constants.URL_EDIT_STAGE;
 						break;
 		            default:
@@ -239,7 +249,10 @@ public class EditStage extends HttpServlet {
 		                forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 				}
 				
-		    	request.setAttribute("stage", stage);
+				request.setAttribute("treatmentPlan", treatmentPlan);
+				request.setAttribute("stage", stage);
+				request.setAttribute("task", task);
+				request.setAttribute("owner", owner);
 				
 			} else if(user.hasRole(Constants.USER_CLIENT)){
 				forwardTo = "clientMainMenu.jsp";
@@ -256,6 +269,8 @@ public class EditStage extends HttpServlet {
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
 			request.setAttribute("treatmentPlanID", treatmentPlanID);
+			request.setAttribute("owner", owner);
+			
             forwardTo = Constants.URL_EDIT_STAGE;
 		}
 		
