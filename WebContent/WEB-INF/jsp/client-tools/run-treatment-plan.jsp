@@ -7,8 +7,11 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 
-<h1>Treatment Issue: ${treatmentPlan.title }</h1>
-
+<h1>Treatment Plan: ${treatmentPlan.title }
+<c:if test='${user.role.equals("therapist") }'>
+<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&clientUserID=${client.userID}" 
+type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></c:if>
+</h1>
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
 <div class="form-horizontal">
@@ -104,6 +107,13 @@
 				<strong>
 					Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${activeViewStagePercentComplete}% Complete
 				</strong>
+				<c:if test='${user.role.equals("therapist") }'>
+				<a role="button"
+					href="/secure/treatment-components/EditStage?requestedAction=select-stage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}" 
+					class="btn btn-default btn-xs" title="Edit this stage.">
+					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+				</a>
+				</c:if>
 			</div>
 			<div class="progress">
 				<div class="progress-bar progress-bar-success" role="progressbar"
@@ -112,6 +122,7 @@
 					<strong>${activeViewStagePercentComplete }%</strong>
 				</div>
 			</div>
+			
 			<!--INCOMPLETE PRIMARY TASKS-->
 			<c:forEach var="task"
 				items="${treatmentPlan.activeViewStage.incompleteTasks }"
@@ -125,7 +136,13 @@
 						<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							${task.title } - Task Type: ${task.taskTypeName } 
 						</a>
-
+						<c:if test='${user.role.equals("therapist") }'>
+							<a role="button"
+								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${activeViewStage.stageID}&taskID=${task.taskID}" 
+								class="btn btn-default btn-xs" title="Edit this task">
+								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+							</a>
+						</c:if>
 					</div>
 					<!--Generic Task Detail-->
 					<c:if test="${task.taskTypeName == 'TaskGeneric' }">
@@ -172,22 +189,22 @@
 			<c:forEach var="task"
 				items="${treatmentPlan.activeViewStage.completedTasks }"
 				varStatus="taskStatus">
-				<div class="panel panel-default panel-task"
-					title="Click the task title to expand and see task details.">
+				<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 					<div class="panel-heading panel-heading-task">
-						<input type="hidden" name="allTaskIDs" value="${task.taskID}" /> <input
-							type="hidden" name="taskTypeName${task.taskID}"
-							value="${task.taskTypeName}" /> <input class="responsive-checkbox" type="checkbox"
-							id="${task.taskID }" aria-label="Task: ${task.title }"
-							value="${task.taskID }" name="taskChkBx[]" checked
-							<c:if test="${task.disabled }">disabled</c:if>> <a
-							role="button" data-toggle="collapse"
-							href="#collapse${task.taskID }" aria-expanded="true"
-							aria-controls="collapse${task.taskID }"> <span
-							class="task-completed">${task.title }</span> - 
-							${task.dateCompletedFormatted }
-							
-						</a>
+						<input type="hidden" name="allTaskIDs" value="${task.taskID}" /> 
+						<input type="hidden" name="taskTypeName${task.taskID}" value="${task.taskTypeName}" /> 
+						<input class="responsive-checkbox" type="checkbox" id="${task.taskID }" aria-label="Task: ${task.title }" value="${task.taskID }" name="taskChkBx[]" checked
+							<c:if test="${task.disabled }">disabled</c:if>> 
+							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }"> 
+							<span class="task-completed">${task.title }</span> -  ${task.dateCompletedFormatted }
+							</a>
+							<c:if test='${user.role.equals("therapist") }'>
+							<a role="button"
+								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${activeViewStage.stageID}&taskID=${task.taskID}" 
+								class="btn btn-default btn-xs" title="Edit this task">
+								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+							</a>
+						</c:if>
 					</div>
 					<div id="collapse${task.taskID }" class="panel-collapse collapse"
 						role="tabpanel" aria-labelledby="heading${task.taskID }">
@@ -223,6 +240,13 @@
 						value="0" name="taskChkBx[]" <c:if test="${task.disabled }">disabled</c:if>> <a role="button"
 						data-toggle="collapse" href="#collapse121212" aria-expanded="true"
 						aria-controls="collapse121212"> Sample Extra Task </a>
+						<c:if test='${user.role.equals("therapist") }'>
+							<a role="button"
+								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${activeViewStage.stageID}&taskID=${task.taskID}" 
+								class="btn btn-default btn-xs" title="Edit this task">
+								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+							</a>
+						</c:if>
 				</div>
 				<div id="collapse121212" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading121212">
 					<div class="panel-body panel-body-task">Extra task
