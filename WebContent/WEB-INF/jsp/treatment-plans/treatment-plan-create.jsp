@@ -19,7 +19,7 @@
     
 	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
     
-    <form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
+    <form class="form-horizontal" action="/secure/treatment-components/CreateTreatmentPlan" method="POST">
         <input type="hidden" name="requestedAction" value="plan-create-new" >
         <input type="hidden" name="path" value="${path }" >
         <div class="form-group">
@@ -98,7 +98,7 @@
 	<div class="modal fade" id="newCoreTreatmentIssueModal" tabindex="-1" role="dialog" aria-labelledby="newCoreTreatmentIssueModalLabel">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
-		    <form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
+		    <form class="form-horizontal" action="/secure/treatment-components/CreateTreatmentPlan" method="POST">
 		    <input type="hidden" name="requestedAction" value="create-new-treatment-issue">
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >

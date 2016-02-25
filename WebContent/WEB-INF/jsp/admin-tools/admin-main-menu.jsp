@@ -22,7 +22,7 @@
 	<div class="col-md-6">
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="/secure/CreateTreatmentPlan"
+			<form class="form-inline" action="/secure/treatment-components/CreateTreatmentPlan"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary">Create
@@ -34,12 +34,12 @@
 			</p>
 
 			<p>
-			<form class="form-inline" action="/secure/EditTreatmentPlan" method="POST">
+			<form class="form-inline" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary">Edit
 						Treatment Plan Template</button>
 				</div>
-				<input type="hidden" name="requestedAction" value="plan-edit-selection">
+				<input type="hidden" name="requestedAction" value="plan-edit-start">
 				<input type="hidden" name="path" value="templateTreatmentPlan">
 			</form>
 			</p>
@@ -47,7 +47,7 @@
 
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="/secure/CreateStage"
+			<form class="form-inline" action="/secure/treatment-components/CreateStage"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary">Create Stage
@@ -58,7 +58,7 @@
 			</form>
 			</p>
 			<p>
-			<form class="form-inline" action="/secure/EditStage"
+			<form class="form-inline" action="/secure/treatment-components/EditStage"
 				method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Edit
@@ -72,7 +72,7 @@
 
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="/secure/CreateTask" method="POST">
+			<form class="form-inline" action="/secure/treatment-components/CreateTask" method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Create
 						Task Template</button>
@@ -82,7 +82,7 @@
 			</form>
 			</p>
 			<p>
-			<form class="form-inline" action="/secure/EditTask" method="POST">
+			<form class="form-inline" action="/secure/treatment-components/EditTask" method="POST">
 				<div>
 					<button type="submit" class="btn btn-primary" >Edit
 						Task Template</button>

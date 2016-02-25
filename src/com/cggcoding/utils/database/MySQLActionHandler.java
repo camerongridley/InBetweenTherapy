@@ -347,6 +347,70 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return assignedTreatmentPlans;
 	}
     
+    @Override
+    public boolean userOwnsTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        int planCount = 0;
+        
+        try {
+    		ps = cn.prepareStatement("SELECT COUNT(*) FROM treatment_plan WHERE treatment_plan_id=? AND treatment_plan_user_id_fk=?");
+            ps.setInt(1, treatmentPlanID);
+            ps.setInt(2, authenticatedUser.getUserID());
+
+            rs = ps.executeQuery();
+
+
+            while (rs.next()){
+                planCount = rs.getInt("COUNT(*)");
+            }
+
+        
+        } finally {
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);	
+		}
+
+
+        if(planCount == 1){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean userAssignedTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        int planCount = 0;
+        
+        try {
+    		ps = cn.prepareStatement("SELECT COUNT(*) FROM treatment_plan WHERE treatment_plan_id=? AND treatment_plan_assigned_by_user_id_fk=?");
+            ps.setInt(1, treatmentPlanID);
+            ps.setInt(2, authenticatedUser.getUserID());
+
+            rs = ps.executeQuery();
+
+
+            while (rs.next()){
+                planCount = rs.getInt("COUNT(*)");
+            }
+
+        
+        } finally {
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);	
+		}
+
+
+        if(planCount == 1){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
 	@Override
 	public List<TreatmentPlan> treatmentPlanGetCoreList() throws DatabaseException, ValidationException {
 		Connection cn = null;

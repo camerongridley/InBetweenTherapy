@@ -15,7 +15,7 @@
 	
 	<c:if test='${path!="templateTask" }'>
 		<div class="well well-sm">
-			<form class="form-horizontal" action="/secure/CreateTask" method="POST">
+			<form class="form-horizontal" action="/secure/treatment-components/CreateTask" method="POST">
 				<input type="hidden" name="requestedAction" value="task-add-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="stageID" value="${stage.stageID }">
@@ -81,7 +81,7 @@
 	
 	
 	<div class="well well-sm">
-		<form class="form-horizontal" action="/secure/CreateTask" method="POST">
+		<form class="form-horizontal" action="/secure/treatment-components/CreateTask" method="POST">
 			<input type="hidden" name="requestedAction" value="task-type-select">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">
@@ -106,7 +106,7 @@
 	        </div>	
 	    </form>
 	        
-	    <form class="form-horizontal" action="/secure/CreateTask" method="POST">
+	    <form class="form-horizontal" action="/secure/treatment-components/CreateTask" method="POST">
 			<input type="hidden" name="requestedAction" value="task-create-new">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">

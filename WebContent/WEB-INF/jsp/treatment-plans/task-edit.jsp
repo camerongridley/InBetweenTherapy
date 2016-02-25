@@ -13,7 +13,7 @@
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 
-<form class="form-horizontal" action="/secure/EditTask" method="POST">
+<form class="form-horizontal" action="/secure/treatment-components/EditTask" method="POST">
 	<input type="hidden" name="requestedAction" value="edit-task-select-task">
 	<input type="hidden" name="path" value="${path }">
 	<input type="hidden" name="stageID" value="${stage.stageID }" >
@@ -36,7 +36,7 @@
 	</c:if>
 </form>
 
-<form class="form-horizontal" action="/secure/EditTask" method="POST">
+<form class="form-horizontal" action="/secure/treatment-components/EditTask" method="POST">
 	<input type="hidden" name="requestedAction" value="edit-task-select-task-type">
 	<input type="hidden" name="path" value="${path }">
 	<input type="hidden" name="taskID" value="${task.taskID }">
@@ -56,7 +56,7 @@
 	</div>
 </form>
 	
-<form class="form-horizontal" action="/secure/EditTask" method="POST">
+<form class="form-horizontal" action="/secure/treatment-components/EditTask" method="POST">
 		<input type="hidden" name="requestedAction" value="edit-task-update">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">

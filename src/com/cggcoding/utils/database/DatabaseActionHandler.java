@@ -211,6 +211,14 @@ public interface DatabaseActionHandler {
 	boolean throwValidationExceptionIfZero(int arg) throws ValidationException;
 
 	
+	//**************************************************************************************************
+	//*************************************** Authentication Methods **********************************
+	//**************************************************************************************************
+	boolean userOwnsTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException;
+
+	boolean userAssignedTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException;
+
+	
 
 	
 
