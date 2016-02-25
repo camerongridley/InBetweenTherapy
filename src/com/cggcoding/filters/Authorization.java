@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
@@ -74,50 +75,59 @@ public class Authorization implements Filter {
     			System.out.println("txPlanID: " + treatmentPlanID + "; stageID: " + stageID + "; taskID: " + taskID);
     			
     			//do an auth check on the most senior ID present - if all end up being 0, then authorize (this misses ability to authorize create requests!) 
-    			if(treatmentPlanID!=0){
-    				System.out.println("check for TxPlan auth.");
-    				if(!user.isAuthorizedForTreatmentPlan(treatmentPlanID)){
-    					authorized = false;
-    				}
-    				
-    			} else if (stageID!=0){
-    				System.out.println("check for Stage auth.");
-    				if(!user.isAuthorizedForStage(stageID)){
-    					authorized = false;
-    				}
-    				
-    			} else if (taskID!=0){
-    				System.out.println("check for Task auth.");
-    				if(!user.isAuthorizedForTask(taskID)){
-    					authorized = false;
-    				}
-    			}/* else {
-    				//separate check for inserting to database since won't have any ids available at that time
-    				String reqAction = httpRequest.getParameter("requestedAction");
-    				
-    				if(reqAction!=null){
-    					switch(reqAction){
-        				case "plan-create-start":
-        				case "plan-edit-start":
-        					authorized = true;
-        					break;
-        					
-        				default:
-        					//none of the cases have been met so consider as unauthorized access attempt and forward to unauthorizied access error page
-        					System.out.println("Unauthorized Access.");
-        					httpRequest.setAttribute("errorMessage", ErrorMessages.UNAUTHORIZED_ACCESS);
-        					//httpResponse.sendRedirect(httpRequest.getContextPath() + "/unauthorized-access.jsp");
-        					//httpRequest.getRequestDispatcher("/secure/unauthorized-access.jsp").forward(request, response);
-        				}
-    				} else {
-    					//none of the ID fields are present and there is no path, so forward to unauthorized access
-    					System.out.println("Unauthorized Access.");
-    					httpRequest.setAttribute("errorMessage", ErrorMessages.UNAUTHORIZED_ACCESS);
-    					//httpResponse.sendRedirect(httpRequest.getContextPath() + "/secure/unauthorized-access.jsp");
-    				}
-    				
-    				
-    			}*/
+    			try {
+	    			if(treatmentPlanID!=0){
+	    				System.out.println("check for TxPlan auth.");
+	    				
+					if(!user.isAuthorizedForTreatmentPlan(treatmentPlanID)){
+						authorized = false;
+					}
+						
+	    				
+	    			} else if (stageID!=0){
+	    				System.out.println("check for Stage auth.");
+	    				if(!user.isAuthorizedForStage(stageID)){
+	    					authorized = false;
+	    				}
+	    				
+	    			} else if (taskID!=0){
+	    				System.out.println("check for Task auth.");
+	    				if(!user.isAuthorizedForTask(taskID)){
+	    					authorized = false;
+	    				}
+	    			}/* else {
+	    				//separate check for inserting to database since won't have any ids available at that time
+	    				String reqAction = httpRequest.getParameter("requestedAction");
+	    				
+	    				if(reqAction!=null){
+	    					switch(reqAction){
+	        				case "plan-create-start":
+	        				case "plan-edit-start":
+	        					authorized = true;
+	        					break;
+	        					
+	        				default:
+	        					//none of the cases have been met so consider as unauthorized access attempt and forward to unauthorizied access error page
+	        					System.out.println("Unauthorized Access.");
+	        					httpRequest.setAttribute("errorMessage", ErrorMessages.UNAUTHORIZED_ACCESS);
+	        					//httpResponse.sendRedirect(httpRequest.getContextPath() + "/unauthorized-access.jsp");
+	        					//httpRequest.getRequestDispatcher("/secure/unauthorized-access.jsp").forward(request, response);
+	        				}
+	    				} else {
+	    					//none of the ID fields are present and there is no path, so forward to unauthorized access
+	    					System.out.println("Unauthorized Access.");
+	    					httpRequest.setAttribute("errorMessage", ErrorMessages.UNAUTHORIZED_ACCESS);
+	    					//httpResponse.sendRedirect(httpRequest.getContextPath() + "/secure/unauthorized-access.jsp");
+	    				}
+	    				
+	    				
+	    			}*/
+    			
+    			} catch (DatabaseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    			
     			System.out.println("authorized=" + authorized);
     			
     			if(authorized){

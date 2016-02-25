@@ -30,7 +30,7 @@ public abstract class User implements Serializable{
 	private List<TreatmentPlan> treatmentPlanList;
 	private String mainMenuURL;
 	
-	private static DatabaseActionHandler dao= new MySQLActionHandler();
+	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
 	public User (int userID, String userName, String firstName, String lastName, String email){
 		this.userID = userID;
@@ -153,12 +153,15 @@ public abstract class User implements Serializable{
  
 	}
 
-	public abstract boolean isAuthorizedForTreatmentPlan(int treatmentPlanID);
+	public abstract boolean isAuthorizedForTreatmentPlan(int treatmentPlanID) throws DatabaseException;
 	
 	public abstract boolean isAuthorizedForStage(int stageID);
 	
 	public abstract boolean isAuthorizedForTask(int taskID);
 	
+	protected boolean userOwnsTreatmentPlan(Connection cn, int treatmentPlanID) throws SQLException{
+		return dao.userOwnsTreatmentPlan(cn, this, treatmentPlanID);
+	}
 	
 	public TreatmentPlan createTreatmentPlanFromTemplate(int userIDTakingNewPlan, int treatmentPlanIDToCopy) throws ValidationException, DatabaseException{
 		Connection cn = null;
