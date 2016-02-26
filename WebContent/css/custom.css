@@ -181,6 +181,11 @@ h2{
 	margin-top:10px;
 }
 
+.run-plan-edit-button{
+	background-color: #337ab7; 
+	color: #fff
+}
+
 .hide-overflow
 {
     overflow:hidden;
@@ -197,8 +202,8 @@ h2{
     }
     
     .responsive-checkbox {
-		width: 13px; 
-    	height: 13px;
+		width: 16px; 
+    	height: 16px;
     	margin-top: 4px;
     }
     
@@ -227,5 +232,14 @@ h2{
 	.page-header{
 		margin: 40px 0 20px;
 	}
+}
+
+/* For Extra-Large Screen Width */
+@media (min-width: 1200px){
+	.responsive-checkbox {
+		width: 13px; 
+    	height: 13px;
+    	margin-top: 4px;
+    }
 }
 

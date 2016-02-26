@@ -10,7 +10,7 @@
 <h1>Treatment Plan: ${treatmentPlan.title }
 <c:if test='${user.role.equals("therapist") }'>
 <a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&clientUserID=${client.userID}" 
-type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></c:if>
+type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Align" title="Edit the Treatment Plan"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></c:if>
 </h1>
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
@@ -110,7 +110,7 @@ type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Tr
 				<c:if test='${user.role.equals("therapist") }'>
 				<a role="button"
 					href="/secure/treatment-components/EditStage?requestedAction=select-stage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}" 
-					class="btn btn-default btn-xs" title="Edit this stage.">
+					class="btn btn-default btn-xs run-plan-edit-button" title="Edit this stage.">
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 				</a>
 				</c:if>
@@ -139,7 +139,7 @@ type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Tr
 						<c:if test='${user.role.equals("therapist") }'>
 							<a role="button"
 								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${activeViewStage.stageID}&taskID=${task.taskID}" 
-								class="btn btn-default btn-xs" title="Edit this task">
+								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
 								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 							</a>
 						</c:if>
@@ -201,7 +201,7 @@ type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Tr
 							<c:if test='${user.role.equals("therapist") }'>
 							<a role="button"
 								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${activeViewStage.stageID}&taskID=${task.taskID}" 
-								class="btn btn-default btn-xs" title="Edit this task">
+								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
 								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 							</a>
 						</c:if>
@@ -243,8 +243,8 @@ type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Tr
 						<c:if test='${user.role.equals("therapist") }'>
 							<a role="button"
 								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${activeViewStage.stageID}&taskID=${task.taskID}" 
-								class="btn btn-default btn-xs" title="Edit this task">
-								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
+								<span class="glyphicon glyphicon-edit run-plan-edit-button" aria-hidden="true"></span>
 							</a>
 						</c:if>
 				</div>
