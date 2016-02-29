@@ -66,6 +66,7 @@ public class Constants {
 	public static final String URL_INDEX = "/index.jsp";
 
 	public static final String URL_RUN_TREATMENT_PLAN = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
+	public static final String URL_STAGE_COMPLETE = "/WEB-INF/jsp/client-tools/stage-complete.jsp";
 	
 	public static final String URL_ERROR_GENERAL = "/WEB-INF/jsp/error.jsp";
 	public static final String URL_ERROR_UNAUTHORIZED_ACCESS = "/WEB-INF/jsp/unauthorized-access.jsp";

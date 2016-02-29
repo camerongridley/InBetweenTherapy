@@ -9,14 +9,26 @@ body {
 	padding-top: 15Px;
 	padding-bottom:15px;
     margin-bottom: 15px;
+    background-color: #337ab7;
+    /*background-image: url("../img/sunset.jpg");
+    background-size: auto;*/
+}
+
+.jumbotron img {
+	opacity:0.4;
 }
 
 .jumbotron h1 {
 	font-size: 30px;
+	color: #fff;
 }
 
 .jumbotron h2 {
 	font-size: 20px;
+}
+
+.jumbotron p {
+	color: black;
 }
 
 h1{

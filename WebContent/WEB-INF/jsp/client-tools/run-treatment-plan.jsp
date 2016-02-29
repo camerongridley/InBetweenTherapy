@@ -138,7 +138,7 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 						</a>
 						<c:if test='${user.role.equals("therapist") }'>
 							<a role="button"
-								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${activeViewStage.stageID}&taskID=${task.taskID}" 
+								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}" 
 								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
 								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 							</a>
@@ -200,7 +200,7 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 							</a>
 							<c:if test='${user.role.equals("therapist") }'>
 							<a role="button"
-								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${activeViewStage.stageID}&taskID=${task.taskID}" 
+								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}" 
 								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
 								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 							</a>
@@ -242,7 +242,7 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 						aria-controls="collapse121212"> Sample Extra Task </a>
 						<c:if test='${user.role.equals("therapist") }'>
 							<a role="button"
-								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${activeViewStage.stageID}&taskID=${task.taskID}" 
+								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}" 
 								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
 								<span class="glyphicon glyphicon-edit run-plan-edit-button" aria-hidden="true"></span>
 							</a>

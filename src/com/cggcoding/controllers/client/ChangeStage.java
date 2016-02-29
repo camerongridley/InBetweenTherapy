@@ -57,6 +57,15 @@ public class ChangeStage extends HttpServlet {
         		client = User.loadBasic(clientUserID);
         	}
         	
+        	switch(requestedAction){
+	        	case "stage-complete-continue":
+	        		
+	        		break;
+	        	case "stage-complete-back":
+	        		
+	        		break;
+        	}
+        	
 	        treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 	
 	        int newViewID = Integer.parseInt(request.getParameter("stageIndex"));

@@ -67,6 +67,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 				//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
 				if(request.getParameter("submitButton").equals("save")){
 					client = user;
+					forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 					
 					Stage activeStage = treatmentPlan.getActiveViewStage();
 					
@@ -85,6 +86,8 @@ public class UpdateTaskCompletion extends HttpServlet {
 					//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
 					if(updatedStage.isCompleted()){
 						updatedStage = treatmentPlan.nextStage();
+						request.setAttribute("stage", updatedStage);
+						forwardTo = Constants.URL_STAGE_COMPLETE;
 					}
 					
 					if(treatmentPlan.isCompleted()){
@@ -96,7 +99,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 					request.setAttribute("treatmentPlan", treatmentPlan);
 					request.setAttribute("activeStage", updatedStage);
 					
-					forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
+					
 				} else {
 					//Cancel/Back button was pressed
 					client = user;
