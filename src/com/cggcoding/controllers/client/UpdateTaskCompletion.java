@@ -69,6 +69,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 					client = user;
 					forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 					
+					//TODO maybe get activeViewStage index from the request?
 					Stage activeStage = treatmentPlan.getActiveViewStage();
 					
 					//get checked values from the request and convert to List<Integer>
@@ -101,7 +102,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 					
 					
 				} else {
-					//Cancel/Back button was pressed
+					//Cancel/Done button was pressed
 					client = user;
 					forwardTo = Constants.URL_CLIENT_MAIN_MENU;
 				}

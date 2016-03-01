@@ -68,8 +68,8 @@ public class ChangeStage extends HttpServlet {
         	
 	        treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 	
-	        int newViewID = Integer.parseInt(request.getParameter("stageIndex"));
-	        treatmentPlan.setActiveViewStageIndex(newViewID);
+	        int newViewStageIndex = Integer.parseInt(request.getParameter("stageIndex"));
+	        treatmentPlan.setActiveViewStageIndex(newViewStageIndex);
 	        activeStage = treatmentPlan.getActiveViewStage();
 	        
 			treatmentPlan.updateBasic();

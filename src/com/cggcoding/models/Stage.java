@@ -298,6 +298,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	private int getTaskOrderDefaultValue(){
 		return tasks.size();
 	}
+	
+	public boolean isDisabledForModification(){
+		return (this.completed == false && this.inProgress==false);
+	}
 
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
 	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap) throws ValidationException, DatabaseException{
@@ -321,8 +325,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 		if(getPercentComplete()==1){
 			this.markComplete();
+			this.setInProgress(false);
 		} else {
 			this.markIncomplete();
+			this.setInProgress(true);
 		}
 		
 		update();

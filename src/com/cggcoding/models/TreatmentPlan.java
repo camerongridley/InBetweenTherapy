@@ -562,8 +562,9 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 				plan.setStages(dao.treatmentPlanLoadClientStages(cn, treatmentPlanID));
 			}
 			
+			//FIXME - this causes Null Pointer exception when clicking save when on view other than the currentView
 			//reset the active view so the plan starts off on the current view
-			plan.setActiveViewStageIndex(plan.getCurrentStageIndex());
+			//plan.setActiveViewStageIndex(plan.getCurrentStageIndex());
 		}
 		
 		
