@@ -13,7 +13,7 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
     <div class="page-header">
-        <h1>Main Menu</h1>
+        <h1>Your Treatment Plans</h1>
     </div>
     <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 

@@ -124,7 +124,6 @@ public class Authorization implements Filter {
 	    			}*/
     			
     			} catch (DatabaseException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
     			

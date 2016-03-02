@@ -87,6 +87,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	 * @throws ValidationException 
 	 */
 	public void initialize() throws ValidationException, DatabaseException{
+		//OPTIMIZE pass 1 connection to methods that make database calls
 		if(stages.size() != 0){
 			Stage firstStage = stages.get(0);
 			firstStage.setInProgress(true);
@@ -254,8 +255,10 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	public Stage nextStage() throws DatabaseException, ValidationException{
-
+		
+		//check if the user is interacting with the current stage or a previously completed stage
 		if(activeViewStageIndex == currentStageIndex){
+			//check if the current stage is the last stage. If so,then the TreatmentPlan is completed. If not, increase the currentStageIndex and set the new activeView
 			if(currentStageIndex < getNumberOfStages()-1){
 				currentStageIndex++;
 				activeViewStageIndex = currentStageIndex;
@@ -265,6 +268,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 				this.setInProgress(false);
 				
 			}
+		} else {
+			activeViewStageIndex++;
 		}
 		
 		Stage nextStage = stages.get(activeViewStageIndex);
@@ -561,10 +566,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			}else{
 				plan.setStages(dao.treatmentPlanLoadClientStages(cn, treatmentPlanID));
 			}
-			
-			//FIXME - this causes Null Pointer exception when clicking save when on view other than the currentView
-			//reset the active view so the plan starts off on the current view
-			//plan.setActiveViewStageIndex(plan.getCurrentStageIndex());
+
 		}
 		
 		

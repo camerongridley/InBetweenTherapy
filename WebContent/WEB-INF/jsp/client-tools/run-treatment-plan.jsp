@@ -269,7 +269,7 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 					<div class="form-group">
 			            <div class="col-sm-12 save-button">
 			            
-			                <button type="submit" name="submitButton" value="save" class="btn btn-default"  <c:if test="${treatmentPlan.activeViewStage.isDisabledForModification() }">disabled</c:if>>Save</button>
+			                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button><!--Uncomment this and move within the <button> tag to have the Save button disable<c:if test="${treatmentPlan.activeViewStage.isDisabledForModification() }">disabled</c:if>-->
 			                <button type="submit" name="submitButton"  value="done" class="btn btn-default">Done</button>
 			            </div>
 			        </div>

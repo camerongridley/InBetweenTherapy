@@ -43,7 +43,8 @@ public final class ErrorMessages {
 	public static final String STAGE_IS_NOT_TEMPLATE = "You appear to be trying to add a task template to a stage that is not a template.  This is not allowed.  Please try again or contact customer support.";
 	public static final String STAGE_CONTAINS_TASK_TEMPLATE = "This stage template already contains the task you've chosen.  Go to the Edit Task page to increase the number of repetitions for this task.";
 	public static final String STAGE_CLIENT_ONLY_ALLOWED_IN_PLAN_TEMPLATE = "Client Stages can only be added to Treatment Plans that are NOT templates.  It appears the Treatment Plan you have loaded is a template.  Please try again.";
-
+	public static final String STAGE_LOCKED = "This stage is locked and cannot be saved.  Make sure you have completed previous stages in order to unlock and be able to make changes to this stage.";
+	
 	//Tasks
 	public static final String TASK_MISSING_INFO = "You must select a task type as well as enter a task name and instructions.";
 	public static final String TASK_INVALID_ID = "There appears to be a problem with your task.  Please email customer support with a detailed explanation of what happened.";

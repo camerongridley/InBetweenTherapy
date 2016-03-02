@@ -56,12 +56,15 @@ public class UpdateTaskCompletion extends HttpServlet {
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
 		
+		TreatmentPlan treatmentPlan = null;
+		Stage updatedStage = null;
+		
 		try{
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 			User client = null;
 			
 			//OPTIMIZE change this so just the basic treatment plan and the stage being displayed is loaded.
-			TreatmentPlan treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+			treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 			
 			if(user.getRole().equals(Constants.USER_CLIENT)){
 				//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
@@ -71,31 +74,40 @@ public class UpdateTaskCompletion extends HttpServlet {
 					
 					//TODO maybe get activeViewStage index from the request?
 					Stage activeStage = treatmentPlan.getActiveViewStage();
+					updatedStage = activeStage;
 					
-					//get checked values from the request and convert to List<Integer>
-					List<Integer> checkedTaskIDs = convertStringArrayToInt(request.getParameterValues("taskChkBx[]"));
-			
-					//get all Task ids from hidden field so we can get at unchecked values
-					List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
-			
-					//build maps containing new data to pass back to service layer for updating
-					Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(user, checkedTaskIDs, allTaskIDs, request);
-			
-					//call to service layer to save and process the new task data and return an updated Stage
-					Stage updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
-			
-					//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
-					if(updatedStage.isCompleted()){
-						updatedStage = treatmentPlan.nextStage();
+					if(activeStage.isInProgress()){
+						//get checked values from the request and convert to List<Integer>
+						List<Integer> checkedTaskIDs = convertStringArrayToInt(request.getParameterValues("taskChkBx[]"));
+				
+						//get all Task ids from hidden field so we can get at unchecked values
+						List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
+				
+						//build maps containing new data to pass back to service layer for updating
+						Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(user, checkedTaskIDs, allTaskIDs, request);
+				
+						//call to service layer to save and process the new task data and return an updated Stage
+						updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
+				
+						//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
+						if(updatedStage.isCompleted()){
+							updatedStage = treatmentPlan.nextStage();
+							//request.setAttribute("stage", updatedStage);
+							forwardTo = Constants.URL_STAGE_COMPLETE;
+						}
+						
+						if(treatmentPlan.isCompleted()){
+							request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COMPLETED);
+						}
+						
+						treatmentPlan.update();
+					}else {
 						request.setAttribute("stage", updatedStage);
-						forwardTo = Constants.URL_STAGE_COMPLETE;
+						throw new ValidationException(ErrorMessages.STAGE_LOCKED);
 					}
 					
-					if(treatmentPlan.isCompleted()){
-						request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COMPLETED);
-					}
 					
-					treatmentPlan.update();
+					
 					
 					request.setAttribute("treatmentPlan", treatmentPlan);
 					request.setAttribute("activeStage", updatedStage);
@@ -127,8 +139,12 @@ public class UpdateTaskCompletion extends HttpServlet {
 		} catch (DatabaseException e){
 			e.printStackTrace();
 			request.setAttribute("errorMessage", ErrorMessages.GENERAL_DB_ERROR);
+			request.setAttribute("treatmentPlan", treatmentPlan);
+			request.setAttribute("activeStage", updatedStage);
 		} catch (ValidationException e) {
 			request.setAttribute("errorMessage", e.getMessage());
+			request.setAttribute("treatmentPlan", treatmentPlan);
+			request.setAttribute("activeStage", updatedStage);
 			e.printStackTrace();
 		}
 		

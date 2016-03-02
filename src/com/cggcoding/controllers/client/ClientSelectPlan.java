@@ -80,6 +80,9 @@ public class ClientSelectPlan extends HttpServlet {
 							selectedPlan.initialize();
 						}
 						
+						//set the active stage view to that of the current stage
+						selectedPlan.setActiveViewStageIndex(selectedPlan.getCurrentStageIndex());
+						
 						client.setActiveTreatmentPlanId(assignedTreatmentPlanID);
 						
 						Stage activeStage = selectedPlan.getActiveViewStage();

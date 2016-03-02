@@ -315,7 +315,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return this;
 	}
 	
-	/**Once a task is completed this is called to update the progress meter and associated metrics
+	/**Once a task is completed this is called to update the progress meter and associated metrics.  Also determines if the Stage will be marked completed.
 	 * @throws DatabaseException 
 	 * @throws ValidationException 
 	 */
@@ -325,10 +325,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 		if(getPercentComplete()==1){
 			this.markComplete();
-			this.setInProgress(false);
+			//this.setInProgress(false);
 		} else {
 			this.markIncomplete();
-			this.setInProgress(true);
+			//this.setInProgress(true);
 		}
 		
 		update();
