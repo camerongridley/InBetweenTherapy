@@ -8,7 +8,7 @@
 
 <div class="page-header">
 	<h1>Stage Complete!</h1>
-	<h2>Congratulations, you have finished the stage: ${stage.title}</h2>
+	<h2>Congratulations, you have finished the stage: ${treatmentPlan.activeViewStage.title}</h2>
 </div>
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>

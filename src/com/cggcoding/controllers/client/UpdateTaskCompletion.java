@@ -102,7 +102,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 						
 						treatmentPlan.update();
 					}else {
-						request.setAttribute("stage", updatedStage);
+						//request.setAttribute("stage", updatedStage);
 						throw new ValidationException(ErrorMessages.STAGE_LOCKED);
 					}
 					
@@ -110,7 +110,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 					
 					
 					request.setAttribute("treatmentPlan", treatmentPlan);
-					request.setAttribute("activeStage", updatedStage);
+					//TODO delete line: request.setAttribute("activeStage", updatedStage);
 					
 					
 				} else {
@@ -140,11 +140,11 @@ public class UpdateTaskCompletion extends HttpServlet {
 			e.printStackTrace();
 			request.setAttribute("errorMessage", ErrorMessages.GENERAL_DB_ERROR);
 			request.setAttribute("treatmentPlan", treatmentPlan);
-			request.setAttribute("activeStage", updatedStage);
+			//TODO delete line: request.setAttribute("activeStage", updatedStage);
 		} catch (ValidationException e) {
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("treatmentPlan", treatmentPlan);
-			request.setAttribute("activeStage", updatedStage);
+			//TODO delete line: request.setAttribute("activeStage", updatedStage);
 			e.printStackTrace();
 		}
 		

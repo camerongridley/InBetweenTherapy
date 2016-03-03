@@ -71,13 +71,13 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="stageInfoModalLabel">${activeStage.title} Overview and Goals</h4>
+				<h4 class="modal-title" id="stageInfoModalLabel">${treatmentPlan.activeViewStage.title} Overview and Goals</h4>
 			</div>
 			<div class="modal-body">
-				<p>${activeStage.description}</p>
+				<p>${treatmentPlan.activeViewStage.description}</p>
 				<div class="well well-sm">
 					Goals:
-					<c:forEach items="${activeStage.goals}" var="goal">
+					<c:forEach items="${treatmentPlan.activeViewStage.goals}" var="goal">
 						<ul>
 							<li>
 								${goal.description}
