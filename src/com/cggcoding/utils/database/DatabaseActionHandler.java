@@ -35,6 +35,12 @@ public interface DatabaseActionHandler {
 	//**************************************************
 	// *************** User Methods *******************
 	//**************************************************
+	boolean userValidateNewUsername(Connection cn, String userName) throws SQLException;
+	
+	boolean userValidateNewEmail(Connection cn, String email)  throws SQLException;
+	
+	User userCreateNewUser(Connection cn, User newUser, String password) throws SQLException;
+	
 	User userLoadByID(int userID) throws DatabaseException, ValidationException;
 	
 	public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException;
@@ -217,6 +223,11 @@ public interface DatabaseActionHandler {
 	boolean userOwnsTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException;
 
 	boolean userAssignedTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException;
+
+	
+
+
+
 
 	
 

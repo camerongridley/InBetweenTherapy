@@ -79,6 +79,103 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
 	
+	@Override
+	public boolean userValidateNewUsername(Connection cn, String userName) throws SQLException{
+
+		PreparedStatement ps = null;
+	    ResultSet userInfo = null;
+	    int userNameExists = 0;
+	    
+	    try {
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE user_name=?");
+	        ps.setString(1, userName);
+	
+	        userInfo = ps.executeQuery();
+	
+	
+	        while (userInfo.next()){
+	            userNameExists = userInfo.getInt("COUNT(*)");
+	        }
+	
+	    } finally {
+			DbUtils.closeQuietly(userInfo);
+			DbUtils.closeQuietly(ps);
+		}
+	
+	
+	    if(userNameExists == 1){
+	        return false;
+	    } else {
+	        return true;
+	    }
+	}
+
+	@Override
+	public boolean userValidateNewEmail(Connection cn, String email) throws SQLException{
+
+		PreparedStatement ps = null;
+	    ResultSet userInfo = null;
+	    int emailNameExists = 0;
+	    
+	    try {
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE email=?");
+	        ps.setString(1, email);
+	
+	        userInfo = ps.executeQuery();
+	
+	
+	        while (userInfo.next()){
+	            emailNameExists = userInfo.getInt("COUNT(*)");
+	        }
+	
+	    } finally {
+			DbUtils.closeQuietly(userInfo);
+			DbUtils.closeQuietly(ps);
+		}
+	
+	
+	    if(emailNameExists == 1){
+	        return false;
+	    } else {
+	        return true;
+	    }
+	}
+	
+	@Override
+	public User userCreateNewUser(Connection cn, User newUser, String password) throws SQLException{
+
+		PreparedStatement ps = null;
+		ResultSet generatedKeys = null;
+	    
+	    try {
+	    	String sql = "INSERT INTO user (user_user_role_id_fk, user_name, first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?, ?)";
+	    	
+	    	ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	    	
+	        ps.setInt(1, newUser.getRoleID());
+	        ps.setString(2, newUser.getUserName());
+	        ps.setString(3, newUser.getFirstName());
+	        ps.setString(4, newUser.getLastName());
+	        ps.setString(5, newUser.getEmail());
+	        ps.setString(6, password);
+
+	        int success = ps.executeUpdate();
+	
+	        generatedKeys = ps.getGeneratedKeys();
+	        
+            while (generatedKeys.next()){
+            	newUser.setUserID(generatedKeys.getInt(1));;
+            }
+	
+	    } finally {
+			DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+		}
+	
+	
+	    return newUser;
+	}
+	
     /* (non-Javadoc)
 	 * @see com.cggcoding.utils.database.DatabaseActionHandler#validateUser(java.lang.String, java.lang.String)
 	 */
@@ -142,18 +239,13 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	switch (rsUserInfo.getString("role")){
             		case "admin":
             			user = new UserAdmin(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
-            			user.addRole("admin");
-            			user.setRole("admin");
             			break;
             		case "therapist":
             			user = new UserTherapist(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
-            			user.addRole("therapist");
-            			user.setRole("therapist");
             			break;
             		case "client":
             			user = new UserClient(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
-            			user.addRole("client");
-            			user.setRole("client");
+
             			((UserClient)user).setActiveTreatmentPlanId(rsUserInfo.getInt("active_treatment_plan_id"));
             			break;
             	}

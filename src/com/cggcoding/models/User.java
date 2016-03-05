@@ -10,6 +10,7 @@ import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
@@ -42,6 +43,80 @@ public abstract class User implements Serializable{
 		roles = new ArrayList<>();
 		this.treatmentPlanList = new ArrayList<>();
 		this.mainMenuURL = "";
+	}
+	
+	public static User registerNewUser(String userName, String firstName, String lastName, String password, String passwordConfirm, String email, String roleType) throws ValidationException, DatabaseException{
+		
+		if(userName.equals("") || firstName.equals("") || lastName.equals("") || password.equals("") || passwordConfirm.equals("") || email.equals("") || roleType == null || roleType.equals("")){
+			throw new ValidationException(ErrorMessages.MISSING_USER_INFORMATION);
+		}
+
+		
+		//validate that the passwords match
+		if(!password.equals(passwordConfirm)){
+			throw new ValidationException(ErrorMessages.PASSWORDS_DONT_MATCH);
+		}
+
+		Connection cn = null;
+		User newUser = null;
+	
+		try {
+			cn = dao.getConnection();
+			cn.setAutoCommit(false);
+		
+			//validate that they userName is available
+			if(!dao.userValidateNewUsername(cn, userName)){
+				throw new ValidationException(ErrorMessages.USERNAME_ALREADY_EXISTS);
+			}
+			
+			if(!dao.userValidateNewEmail(cn, email)){
+				throw new ValidationException(ErrorMessages.EMAIL_ALREADY_EXISTS);
+			}
+			
+			//create user
+			switch (roleType){
+				case Constants.USER_ADMIN:
+					newUser = new UserAdmin(0, userName, firstName, lastName, email);
+					break;
+				case Constants.USER_THERAPIST:
+					newUser = new UserTherapist(0, userName, firstName, lastName, email);
+					break;
+					
+				case Constants.USER_CLIENT:
+					newUser = new UserClient(0, userName, firstName, lastName, email);
+					break;
+			}
+
+			dao.userCreateNewUser(cn, newUser, password);
+			
+			cn.commit();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
+				e1.printStackTrace();
+			}
+			/*if(e.getClass().getSimpleName().equals("ValidationException")){
+			throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}*/
+			
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+	    }
+		 
+		 return newUser;
+		 
 	}
 	
 	public void setUserID(int userID) {

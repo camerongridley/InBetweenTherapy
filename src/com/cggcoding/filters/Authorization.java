@@ -58,14 +58,14 @@ public class Authorization implements Filter {
     		System.out.println("The session has timed out.  Please log in again.");
     		
     		httpRequest.setAttribute("errorMessage", "The session has timed out.  Please log in again.");
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login.jsp");
+            httpResponse.sendRedirect(httpRequest.getContextPath() + Constants.URL_LOGIN);
     	} else {
     		User user = (User)session.getAttribute("user");
     		
     		if (user == null){
     			System.out.println("No logged-in user found, redirecting to login page.");
         		httpRequest.setAttribute("errorMessage", "No logged-in user found, redirecting to login page.");
-	            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login.jsp"); // No logged-in user found, so redirect to login page.
+	            httpResponse.sendRedirect(httpRequest.getContextPath() + Constants.URL_LOGIN); // No logged-in user found, so redirect to login page.
     		}else{
     			//do authorization checks
     			int treatmentPlanID = ParameterUtils.parseIntParameter(httpRequest, "treatmentPlanID");

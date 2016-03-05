@@ -18,6 +18,7 @@
             <input type="checkbox" value="remember-me"> Remember me
           </label>
         </div>
+        <p><a href="/registration.jsp">Register for a new account.</a></p>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
       </form>
 

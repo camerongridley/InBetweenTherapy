@@ -59,6 +59,10 @@ public final class ErrorMessages {
 	
 	//Other
 	public static final String USER_NOT_FOUND = "We cannont find the user you are looking for.  Please try again or contact customer support.";
+	public static final String PASSWORDS_DONT_MATCH = "The passwords you entered do not match.  Please try again.";
+	public static final String USERNAME_ALREADY_EXISTS = "That username already exists.  Please pick another one.";
+	public static final String MISSING_USER_INFORMATION = "Oops! It looks like we are missing some information that is needed to register.  Please fill out all of the required fields.";
+	public static final String EMAIL_ALREADY_EXISTS = "That email already is already being used by another user.  Please pick another one or contact customer support for further assistance.";
 	
 	
 	

@@ -10,6 +10,8 @@ public class Constants {
 	}
 	
 	public static final int ADMIN_ROLE_ID = 1;
+	public static final int THERAPIST_ROLE_ID = 2;
+	public static final int CLIENT_ROLE_ID = 3;
 	
 	public static final String USER_ADMIN = "admin";
 	public static final String USER_CLIENT = "client";
@@ -64,12 +66,15 @@ public class Constants {
 	public static final String URL_EDIT_TASK = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 
 	public static final String URL_INDEX = "/index.jsp";
+	public static final String URL_LOGIN = "/login.jsp";
+	public static final String URL_REGISTRATION = "/registration.jsp";
 
 	public static final String URL_RUN_TREATMENT_PLAN = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
 	public static final String URL_STAGE_COMPLETE = "/WEB-INF/jsp/client-tools/stage-complete.jsp";
 	
 	public static final String URL_ERROR_GENERAL = "/WEB-INF/jsp/error.jsp";
 	public static final String URL_ERROR_UNAUTHORIZED_ACCESS = "/WEB-INF/jsp/unauthorized-access.jsp";
+	
 	
 	
 }

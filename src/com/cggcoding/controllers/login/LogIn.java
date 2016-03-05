@@ -58,6 +58,7 @@ public class LogIn extends HttpServlet {
     	
         
 	        try {
+	        	//XXX remove dao here and switch to using a static method in User
 				boolean userExists = databaseActionHandler.userValidate(email, password);
 
 				//use the above to get authenticate the user and get create a User object
@@ -76,9 +77,9 @@ public class LogIn extends HttpServlet {
 					}
 					
 				} else {
-				    throw new DatabaseException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+				    throw new ValidationException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
 				}
-			} catch (DatabaseException e) {
+			} catch (DatabaseException | ValidationException e) {
 				e.printStackTrace();
 				request.setAttribute("errorMessage", e.getMessage());
 			}

@@ -26,6 +26,9 @@ public class UserAdmin extends User implements Serializable{
 
 	public UserAdmin(int userID, String userName, String firstName, String lastName, String email) {
 		super(userID, userName, firstName, lastName, email);
+		this.setRoleID(Constants.ADMIN_ROLE_ID);
+		this.addRole(Constants.USER_ADMIN);
+		this.setRole(Constants.USER_ADMIN);
 		this.customTreatmentIssues = new ArrayList<>();
 		setMainMenuURL(Constants.URL_ADMIN_MAIN_MENU);
 	}

@@ -21,6 +21,9 @@ public class UserClient extends User implements Serializable{
 	
 	public UserClient(int userID, String userName, String firstName, String lastName, String email){
 		super(userID, userName, firstName, lastName, email);
+		this.setRoleID(Constants.CLIENT_ROLE_ID);
+		this.addRole(Constants.USER_CLIENT);
+		this.setRole(Constants.USER_CLIENT);
 		activeTreatmentPlanId = -1;
 		setMainMenuURL(Constants.URL_CLIENT_MAIN_MENU);
 	}

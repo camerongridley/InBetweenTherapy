@@ -31,6 +31,9 @@ public class UserTherapist extends User implements Serializable{
         
     public UserTherapist(int userID, String userName, String firstName, String lastName, String email){
         super(userID, userName, firstName, lastName, email);
+        this.setRoleID(Constants.THERAPIST_ROLE_ID);
+        this.addRole(Constants.USER_THERAPIST);
+		this.setRole(Constants.USER_THERAPIST);
         this.clientMap = new HashMap<>();
         this.coreTreatmentIssues = new ArrayList<>();
         this.allAssignedClientPlans = new ArrayList<>();
