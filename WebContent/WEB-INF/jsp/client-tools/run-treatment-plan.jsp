@@ -22,9 +22,9 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 	<c:forEach var="stage" items="${treatmentPlan.stages }" varStatus="status">
 		<form id="stageNode${stage.stageID }" action="/secure/ChangeStage" method="POST">
 
-			<input type="hidden" name="stageIndex" value=${stage.clientStageOrder } >
+			<input type="hidden" name="stageIndex" value="${stage.clientStageOrder }" >
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >
-			<input type="hidden" name="clientUserID" value=${client.userID } >
+			<input type="hidden" name="clientUserID" value="${client.userID }" >
 			<input type="hidden" name="requestedAction" value="change-stage">
 			<input type="hidden" name="path" value="${path }">
 			
@@ -100,8 +100,9 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 		<form action="/secure/UpdateTaskCompletion" method="post" class="form-inline">
 			<input type="hidden" name="requestedAction" value="update-client-plan">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-			<input type="hidden" name="clientID" value=${client.userID } >
+			<input type="hidden" name="clientID" value="${client.userID }" >
 			<input type="hidden" name="path" value="${path }">
+			<input type="hidden" name="stageIndex" value="${treatmentPlan.activeViewStage.clientStageOrder }">
 			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
 			<div class="progress-stage-detail">
 				<strong>

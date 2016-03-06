@@ -72,7 +72,8 @@ public class UpdateTaskCompletion extends HttpServlet {
 					client = user;
 					forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 					
-					//TODO maybe get activeViewStage index from the request?
+					int stageIndex = ParameterUtils.parseIntParameter(request, "stageIndex");
+					treatmentPlan.setActiveViewStageIndex(stageIndex);
 					Stage activeStage = treatmentPlan.getActiveViewStage();
 					updatedStage = activeStage;
 					

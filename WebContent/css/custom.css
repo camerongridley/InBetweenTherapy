@@ -9,26 +9,40 @@ body {
 	padding-top: 15Px;
 	padding-bottom:15px;
     margin-bottom: 15px;
-    background-color: #337ab7;
-    /*background-image: url("../img/sunset.jpg");
-    background-size: auto;*/
+    background-image: linear-gradient(to bottom,#5bc0de 0,#2aabd2 100%);
+    background-repeat: repeat-x;
+    border-color: #28a4c9;
+    text-shadow: 0 -1px 0 rgba(0,0,0,.2);
+    color: #fff;
+
+    background-image: url("../img/lightbluetile.jpg");
+    background-repeat:no-repeat;
+	-webkit-background-size:cover;
+	-moz-background-size:cover;
+	-o-background-size:cover;
+	background-size:cover;
+	background-position:center;
+	background-color:rgba(255,0,0,0.5);/* supposed to change bg image opacity but isn't working */
 }
 
-.jumbotron img {
+.jumbotron .item img {
 	opacity:0.4;
 }
 
 .jumbotron h1 {
 	font-size: 30px;
 	color: #fff;
+	font-family: "Work sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 .jumbotron h2 {
 	font-size: 20px;
+	color: #fff;
 }
 
 .jumbotron p {
-	color: black;
+	color: #214e76;
+	text-shadow: 1px 0px #c0c0c0;
 }
 
 h1{

@@ -76,18 +76,21 @@ public class ClientSelectPlan extends HttpServlet {
 					case "select-plan-load":
 						int assignedTreatmentPlanID = ParameterUtils.parseIntParameter(request, "selectedPlanID");
 						TreatmentPlan selectedPlan = TreatmentPlan.load(assignedTreatmentPlanID);
-						if(request.getParameter("initialize").equals("yes")){
-							selectedPlan.initialize();
-						}
 						
 						//set the active stage view to that of the current stage
 						selectedPlan.setActiveViewStageIndex(selectedPlan.getCurrentStageIndex());
 						
 						client.setActiveTreatmentPlanId(assignedTreatmentPlanID);
 						
-						Stage activeStage = selectedPlan.getActiveViewStage();
+						if(request.getParameter("initialize").equals("yes")){
+							selectedPlan.initialize();
+						}
 						
-						request.setAttribute("activeStage", activeStage);
+						
+						
+						//TODO delete me if ok - Stage activeStage = selectedPlan.getActiveViewStage();
+						
+						//TODO delete me if ok - request.setAttribute("activeStage", activeStage);
 						request.setAttribute("treatmentPlan", selectedPlan);
 						forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 						break;

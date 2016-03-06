@@ -94,7 +94,10 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			firstStage.updateBasic();
 		}
 		
+		//set the Plan to inProgress and reset all stageView indexes (these may have changed if the therapist edited the plan after assigning it and before the client started it)
 		this.setInProgress(true);
+		this.setActiveViewStageIndex(0);
+		this.setCurrentStageIndex(0);
 		
 		updateBasic();
 		
@@ -188,6 +191,10 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 
 	public Stage getActiveViewStage() {
 		return stages.get(activeViewStageIndex);
+	}
+	
+	public Stage getStageByClientOrder(int stageIndex){
+		return stages.get(stageIndex);
 	}
 	
 	public boolean isInProgress() {
