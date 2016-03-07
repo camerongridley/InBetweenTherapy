@@ -191,7 +191,7 @@
 			          <h4 class="modal-title">Delete Treatment Plan</h4>
 			      </div>
 			      <div class="modal-body">
-			        <p>Are you sure you want to delete <strong>${treatmentPlan.title}</strong> from ${client.userName}'s account?</p>
+			        <p>Are you sure you want to delete <strong>${treatmentPlan.title}</strong> from ${client.userName}'s account? <span class="warning-message" >You cannot undo this.</span></p>
 			        
 			      </div>
 			      <div class="modal-footer">

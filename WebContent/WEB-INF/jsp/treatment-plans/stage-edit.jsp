@@ -207,7 +207,7 @@
 		          <h4 class="modal-title">Delete Task</h4>
 		      </div>
 		      <div class="modal-body">
-		        <p>Are you sure you want to delete <strong>${task.title}</strong> from ${stage.title}?</p>
+		        <p>Are you sure you want to delete <strong>${task.title}</strong> from ${stage.title}? <span class="warning-message" >You cannot undo this.</span></p>
 		        
 		      </div>
 		      <div class="modal-footer">

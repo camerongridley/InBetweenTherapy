@@ -558,7 +558,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 		if(treatmentPlanID != 0){
 			//Load the basic plan
-			plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
+			plan = loadBasic(cn, treatmentPlanID);
 	        
 			//Load the Stages
 			if(plan.isTemplate()){
@@ -590,7 +590,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	        try {
 	        	cn = dao.getConnection();
 	        	
-	            plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
+	            plan = loadBasic(cn, treatmentPlanID);
 	            
 	            if(plan.isTemplate()){
 	            	plan.setTreatmentPlanStageTemplateMapList(dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID));
@@ -611,6 +611,27 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
+	public static TreatmentPlan loadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException{
+
+        TreatmentPlan plan = null;
+        
+        dao.throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
+        
+        if(treatmentPlanID!=0){
+ 	
+            plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
+            
+            dao.throwValidationExceptionIfNull(plan);
+            
+            if(plan.isTemplate()){
+            	plan.setTreatmentPlanStageTemplateMapList(dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID));
+            }
+
+        }
+        
+        return plan;
+		
+	}
 	
 	//TODO rename to deleteStageTemplate and refactor to use MapTreatmentPlanStageTemplate class
 	public TreatmentPlan deleteStage(int stageID) throws ValidationException, DatabaseException {

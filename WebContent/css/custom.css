@@ -22,7 +22,7 @@ body {
 	-o-background-size:cover;
 	background-size:cover;
 	background-position:center;
-	background-color:rgba(255,0,0,0.5);/* supposed to change bg image opacity but isn't working */
+	background-color:rgba(#337ab7,0,0,0.5);/* supposed to change bg image opacity but isn't working */
 }
 
 .jumbotron .item img {
@@ -210,6 +210,11 @@ h2{
 .run-plan-edit-button{
 	background-color: #337ab7; 
 	color: #fff
+}
+
+.warning-message{
+	color:red;
+	font-weight: bold;
 }
 
 .hide-overflow

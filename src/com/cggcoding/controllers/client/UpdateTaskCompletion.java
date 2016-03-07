@@ -116,6 +116,11 @@ public class UpdateTaskCompletion extends HttpServlet {
 					
 				} else {
 					//Cancel/Done button was pressed
+					//if the activeStageView is not the currentStageView, then reset the activeView and save in db so it is properly set when the user logs in next
+					if(treatmentPlan.getActiveViewStageIndex()!=treatmentPlan.getCurrentStageIndex()){
+						treatmentPlan.setActiveViewStageIndex(treatmentPlan.getCurrentStageIndex());
+						treatmentPlan.updateBasic();
+					}
 					client = user;
 					forwardTo = Constants.URL_CLIENT_MAIN_MENU;
 				}

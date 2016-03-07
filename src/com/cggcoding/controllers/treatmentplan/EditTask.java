@@ -18,6 +18,7 @@ import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
+import com.cggcoding.utils.messaging.SuccessMessages;
 import com.cggcoding.utils.messaging.WarningMessages;
 
 /**
@@ -133,6 +134,8 @@ public class EditTask extends HttpServlet {
 							task = CommonServletFunctions.updateTaskParametersFromRequest(request, task);
 							
 							task.update();
+							
+							request.setAttribute("successMessage", SuccessMessages.TASK_UPDATED);
 						}
 							
 						switch(path){

@@ -108,7 +108,7 @@
             	<c:choose>
 				  <c:when test="${user == null }">
 				  	<li><a href="/login.jsp">Sign In&nbsp;<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></a></li>
-				  	<li><a href="/registration.jsp">Register&nbsp;<span class="glyphicon glyphicon-registration-mark" aria-hidden="true"></span></a></li>
+				  	<li><a href="/registration.jsp">Register&nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
 				  </c:when>
 
 				  <c:otherwise>
