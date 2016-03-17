@@ -67,13 +67,13 @@
 	        <div class="form-group">
 	            <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value="${fn:escapeXml(stageTitle)}" placeholder="Enter a stage name here.">
+	                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value='<c:out value="${stageTitle}"/>' placeholder="Enter a stage name here.">
 	            </div>
 	        </div>
 	        <div class="form-group">
 	            <label for="stageDescription" class="col-sm-2 control-label">Stage Description</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="stageDescription" name="stageDescription" value="${fn:escapeXml(stageDescription)}" placeholder="Describe the stage.">
+	                <input type="text" class="form-control" id="stageDescription" name="stageDescription" value='<c:out value="${stageDescription}"/>' placeholder="Describe the stage.">
 	            </div>
 	        </div>
 	        

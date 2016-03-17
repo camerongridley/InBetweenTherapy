@@ -33,7 +33,7 @@
 			                <select class="form-control" id="defaultTaskList" name="taskID">
 			                    <option  value="">Select a core task.</option>
 			                    <c:forEach items="${coreTasks}" var="defaultTask">
-			                        <option value="${defaultTask.taskID}">${fn:escapeXml(defaultTask.title)}</option>
+			                        <option value="${defaultTask.taskID}"><c:out value="${defaultTask.title }"/></option>
 			                    </c:forEach>
 			                </select>
 			            </div>
@@ -99,7 +99,7 @@
 	                <select class="form-control" id="taskTypeID" name="taskTypeID">
 	                    <option  value="">Select a task type.</option>
 	                    <c:forEach items="${taskTypeMap}" var="taskType">
-	                        <option value="${taskType.key}" <c:if test="${taskType.key == task.taskTypeID}">selected</c:if> >${fn:escapeXml(taskType.value)}</option>
+	                        <option value="${taskType.key}" <c:if test="${taskType.key == task.taskTypeID}">selected</c:if> ><c:out value="${taskType.value}"/></option>
 	                    </c:forEach>
 	                </select>
 	            </div>
@@ -120,19 +120,19 @@
 	        <div class="form-group">
 	            <label for="taskTitle" class="col-sm-2 control-label">Task Name</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="taskTitle" name="taskTitle" value="<c:out value="${fn:escapeXml(task.title) }"/>" placeholder="Enter a task name here.">
+	                <input type="text" class="form-control" id="taskTitle" name="taskTitle" value="<c:out value="${task.title }"/>" placeholder="Enter a task name here.">
 	            </div>
 	        </div>
 	        <div class="form-group">
 	            <label for="taskInstructions" class="col-sm-2 control-label">Instructions</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="taskInstructions" name="taskInstructions" value="<c:out value="${fn:escapeXml(task.instructions) }"/>" placeholder="Describe the task">
+	                <input type="text" class="form-control" id="taskInstructions" name="taskInstructions" value="<c:out value="${task.instructions }"/>" placeholder="Describe the task">
 	            </div>
 	        </div>
 			<div class="form-group">
 	            <label for="resourceLink" class="col-sm-2 control-label">Resource Link</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${fn:escapeXml(task.resourceLink) }"/>" placeholder="Add a link to related resources for this task.">
+	                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${task.resourceLink }"/>" placeholder="Add a link to related resources for this task.">
 	            </div>
 	        </div>
 
@@ -142,25 +142,25 @@
 				<div class="form-group">
 		            <label for="extraTextLabel1" class="col-sm-2 control-label">Extra TextBox 1 Label</label>
 		            <div class="col-sm-10">
-		                <input type="text" class="form-control" id="extraTextLabel1" name="extraTextLabel1" value="<c:out value="${fn:escapeXml(task.extraTextLabel1) }"/>" placeholder="Enter a name for the label of the first extra textbox.">
+		                <input type="text" class="form-control" id="extraTextLabel1" name="extraTextLabel1" value="<c:out value="${task.extraTextLabel1 }"/>" placeholder="Enter a name for the label of the first extra textbox.">
 		            </div>
 		        </div>
 		        <div class="form-group">
 		            <label for="extraTextValue1" class="col-sm-2 control-label">Extra TextBox 1 Value</label>
 		            <div class="col-sm-10">
-		                <input type="text" class="form-control" id="extraTextValue1" name="extraTextValue1" value="<c:out value="${fn:escapeXml(task.extraTextValue1) }"/>" placeholder="Enter a value for the first extra textbox. Leave empty if this for a client entry.">
+		                <input type="text" class="form-control" id="extraTextValue1" name="extraTextValue1" value="<c:out value="${task.extraTextValue1 }"/>" placeholder="Enter a value for the first extra textbox. Leave empty if this for a client entry.">
 		            </div>
 		        </div>
 		        <div class="form-group">
 		            <label for="extraTextLabel2" class="col-sm-2 control-label">Extra TextBox 2 Label</label>
 		            <div class="col-sm-10">
-		                <input type="text" class="form-control" id="extraTextLabel2" name="extraTextLabel2" value="<c:out value="${fn:escapeXml(task.extraTextLabel2) }"/>" placeholder="Enter a name for the label of the first extra textbox.">
+		                <input type="text" class="form-control" id="extraTextLabel2" name="extraTextLabel2" value="<c:out value="${task.extraTextLabel2 }"/>" placeholder="Enter a name for the label of the first extra textbox.">
 		            </div>
 		        </div>
 		        <div class="form-group">
 		            <label for="extraTextValue2" class="col-sm-2 control-label">Extra TextBox 2 Value</label>
 		            <div class="col-sm-10">
-		                <input type="text" class="form-control" id="extraTextValue2" name="extraTextValue2" value="<c:out value="${fn:escapeXml(task.extraTextValue2) }"/>" placeholder="Enter a value for the second extra textbox. Leave empty if this for a client entry.">
+		                <input type="text" class="form-control" id="extraTextValue2" name="extraTextValue2" value="<c:out value="${task.extraTextValue2 }"/>" placeholder="Enter a value for the second extra textbox. Leave empty if this for a client entry.">
 		            </div>
 		        </div>
 			</c:if>

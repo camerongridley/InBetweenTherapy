@@ -70,7 +70,7 @@
 		<label for="planName" class="col-sm-2 control-label">Plan Name</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control" id="planTitle"
-				name="planTitle" value="${fn:escapeXml(treatmentPlan.title) }"
+				name="planTitle" value="<c:out value="${treatmentPlan.title }"/>"
 				placeholder="Enter a treatment plan name here.">
 		</div>
 	</div>
@@ -79,7 +79,7 @@
 			Description</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control" id="planDescription"
-				name="planDescription" value="${fn:escapeXml(treatmentPlan.description) }"
+				name="planDescription" value="<c:out value="${treatmentPlan.description }"/>"
 				placeholder="Describe the treatment plan.">
 		</div>
 	</div>
@@ -134,7 +134,7 @@
 						<option value="">Or select an issue you've previously
 							created.</option>
 						<c:forEach items="${customTreatmentIssues}" var="customIssue">
-							<option value="${customIssue.treatmentIssueID}">${fn:escapeXml(customIssue.treatmentIssueName)}</option>
+							<option value="${customIssue.treatmentIssueID}"><c:out value="${customIssue.treatmentIssueName }"/>"</option>
 						</c:forEach>
 					</select>
 				</div>
@@ -252,7 +252,7 @@
 				<div class="modal-body">
 					<input type="text" class="form-control"
 						id="newCoreTreatmentIssue" name="newCoreTreatmentIssue"
-						value="${fn:escapeXml(newCoreTreatmentIssue) }"
+						value="<c:out value="${newCoreTreatmentIssue }"/>"
 						placeholder="Enter a new core treatment issue.">
 				</div>
 				<div class="modal-footer">

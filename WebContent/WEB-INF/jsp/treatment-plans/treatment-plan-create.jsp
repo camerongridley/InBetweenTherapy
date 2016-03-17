@@ -25,13 +25,13 @@
         <div class="form-group">
             <label for="planTitle" class="col-sm-2 control-label">Plan Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="planTitle" name="planTitle" value="${fn:escapeXml(planTitle) }" placeholder="Enter a treatment plan name here.">
+                <input type="text" class="form-control" id="planTitle" name="planTitle" value="<c:out value="${planTitle }"/>" placeholder="Enter a treatment plan name here.">
             </div>
         </div>
         <div class="form-group">
             <label for="planDescription" class="col-sm-2 control-label">Plan Description</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="planDescription" name="planDescription" value="${fn:escapeXml(planDescription) }" placeholder="Describe the treatment plan.">
+                <input type="text" class="form-control" id="planDescription" name="planDescription" value="<c:out value="${planDescription }"/>" placeholder="Describe the treatment plan.">
             </div>
         </div>
 		
@@ -112,7 +112,7 @@
 		        <h4 class="modal-title" id="newCoreTreatmentIssueModalLabel">Enter a new core Treatment Issue</h4>
 		      </div>
 		      <div class="modal-body">
-		        <input type="text" class="form-control" id="newCoreTreatmentIssue" name="newCoreTreatmentIssue" value="${fn:escapeXml(newCoreTreatmentIssue) }" placeholder="Enter a new core treatment issue.">
+		        <input type="text" class="form-control" id="newCoreTreatmentIssue" name="newCoreTreatmentIssue" value="<c:out value="${newCoreTreatmentIssue }"/>" placeholder="Enter a new core treatment issue.">
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
