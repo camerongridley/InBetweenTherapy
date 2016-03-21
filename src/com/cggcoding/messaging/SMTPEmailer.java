@@ -58,7 +58,7 @@ public class SMTPEmailer {
 		
 	}*/
 	
-	private static String USER_NAME = "cgridley@cggcoding.com";  // GMail user name (just the part before "@gmail.com")
+	private static String USER_NAME = "doitright.therapy";  // GMail user name (just the part before "@gmail.com")
     private static String PASSWORD = "Do!tRight13"; // GMail password
     private static String RECIPIENT = "cgridley@gmail.com";
 
@@ -76,10 +76,10 @@ public class SMTPEmailer {
         Properties props = System.getProperties();
         String host = "smtp.gmail.com";
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "jdz2.dailyrazor.com");
+        props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.user", from);
         props.put("mail.smtp.password", pass);
-        props.put("mail.smtp.port", "465");
+        props.put("mail.smtp.port", "587");
         props.put("mail.smtp.auth", "true");
 
         Session session = Session.getDefaultInstance(props);
