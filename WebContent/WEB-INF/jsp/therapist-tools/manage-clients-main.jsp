@@ -37,5 +37,24 @@
         </div>
 	</form>
 
+	<form class="form-horizontal" action="/secure/ManageClients" method="POST">
+		<input type="hidden" name="requestedAction" value="invite-client">
+		<input type="hidden" name="path" value="${path }">
+		
+        <div class="form-group">
+            <label for="clientUserID" class="col-sm-2 control-label">Invite New Client:</label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="clientInvitationName" name="clientInvitationName" value="<c:out value="${clientInvitationName }"/>" placeholder="Enter the client's name">
+            </div>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="clientInvitationEmail" name="clientInvitationEmail" value="<c:out value="${clientInvitationEmail }"/>" placeholder="Enter the client's email address">
+            </div>
+        </div>
+        <div class="form-group">
+	        <div class="col-sm-offset-2 col-sm-10">
+	        	<button type="submit" class="btn btn-default">Send Invitation</button>
+	        </div>
+        </div>
+	</form>
 	
 <c:import url="/WEB-INF/jsp/footer.jsp" />

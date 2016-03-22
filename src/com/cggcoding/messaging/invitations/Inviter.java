@@ -1,8 +1,8 @@
 package com.cggcoding.messaging.invitations;
 
-import java.util.UUID;
-
 import com.cggcoding.messaging.SMTPEmailer;
+import com.cggcoding.models.User;
+import com.cggcoding.utils.Constants;
 
 public class Inviter{
 	private InvitationDetail invitation;
@@ -19,20 +19,18 @@ public class Inviter{
 		this.invitation = invitation;
 	}
 
-	//TODO add client name and therapist name to the InvitationDetail
-	public static boolean sendInvitation(InvitationDetail invitation){
-		String uuid = UUID.randomUUID().toString();
-		this.invitation.setInvitationCode(uuid);
-		System.out.println("uuid = " + uuid);
-		
+	public static boolean sendInvitation(InvitationDetail invitation, User sentFromUser, String sendToEmail){
+
 		String subject = "Invitation to join DoItRight!";
-		String body = "_____ has invited you to join DoItRight! as a client.  Please click the link "
-				+ "below to be taken to the site and register.  Using the link provided will automatically "
-				+ "connect you with your therapist.  Or if you'd prefer to go to the site on your own, visit doitright.cggcoding.com"
-				+ "and click sign up.  Then at the registration page, enter your enter the invitation code " + invitation.getInvitationCode()
-				+ " when applicable.";
+		String body = "Dear " + invitation.getSendToName() + ",\n\n"
+				+ sentFromUser.getFirstName() + " " + sentFromUser.getLastName() + " has invited you to join DoItRight! as a client. "
+				+ "Please click the link below to be taken to the site and register.  Using the link provided will automatically "
+				+ "connect you with your therapist.  Or if you'd prefer to go directly to " + Constants.rootURL
+				+ " and click \"Register\".  Then at the registration page, enter your enter the invitation code " + invitation.getInvitationCode()
+				+ " when applicable."
+				+ "\n\nNow get going!\n\nThe DoItRight Team";
 		
-		SMTPEmailer.sendEmail(therapistName, clientEmailAddress, subject, body);
+		SMTPEmailer.sendEmail(sendToEmail, subject, body);
 		
 		return true;
 	}

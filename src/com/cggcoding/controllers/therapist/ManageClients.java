@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -132,9 +133,18 @@ public class ManageClients extends HttpServlet {
 		            	forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
 					case "invite-client":
-						String clientEmail = request.getParameter("clientInvitationEmail");
-						InvitationDetail invitation = InvitationDetail.createInvitation(user.getUserID(), clientEmail);
-						Inviter.sendInvitation(invitation);
+						System.out.println("Inviting client...");
+						ServletContext context = session.getServletContext();
+						System.out.println("Context Path: " + context.getContextPath());
+						
+						String sendToEmail = request.getParameter("clientInvitationEmail");
+						String sendToName = request.getParameter("clientInvitationName");
+						InvitationDetail invitation = InvitationDetail.createInvitation(user.getUserID(), sendToEmail, sendToName);
+						Inviter.sendInvitation(invitation, user, sendToEmail);
+						
+						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_MAIN;
+						request.setAttribute("successMessage", SuccessMessages.INVITATION_SENT_SUCCESS);
+						request.setAttribute("clientMap", clientMap);
 						break;
 				}
 				

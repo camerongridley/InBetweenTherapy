@@ -24,4 +24,8 @@ public final class SuccessMessages {
 	public static final String TASK_TEMPLATE_CREATE = "The task template has been successfully added to your profile.";
 	public static final String TASK_ADDED_TO_STAGE = "The task has been successfully added to the stage.";
 	public static final String TASK_UPDATED = "The task has been saved.";
+	
+	//INVITATIONS
+	public static String INVITATION_SENT_SUCCESS = "The invitation was sent successfully.";
+
 }

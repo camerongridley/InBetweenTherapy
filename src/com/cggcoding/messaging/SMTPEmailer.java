@@ -62,7 +62,7 @@ public class SMTPEmailer {
     private static String PASSWORD = "Do!tRight13"; // GMail password
     //private static String RECIPIENT = "cgridley@gmail.com";
 
-    public static void sendEmail(String therapistName, String clientEmailAddress, String subject, String body) {
+    public static void sendEmail(String clientEmailAddress, String subject, String body) {
         String from = USER_NAME;
         String pass = PASSWORD;
         String[] to = { clientEmailAddress }; // list of recipient email addresses
