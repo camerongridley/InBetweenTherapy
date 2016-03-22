@@ -14,6 +14,8 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.messaging.SMTPEmailer;
+import com.cggcoding.messaging.invitations.InvitationDetail;
+import com.cggcoding.messaging.invitations.Inviter;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -95,7 +97,6 @@ public class ManageClients extends HttpServlet {
 						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_MAIN;
 						break;
 					case "select-client":
-						SMTPEmailer.sendEmail();
 						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
 					case "load-client-view-treatment-plan":
@@ -133,7 +134,7 @@ public class ManageClients extends HttpServlet {
 					case "invite-client":
 						String clientEmail = request.getParameter("clientInvitationEmail");
 						InvitationDetail invitation = InvitationDetail.createInvitation(user.getUserID(), clientEmail);
-						Inviter inviter = new Inviter(invitation);
+						Inviter.sendInvitation(invitation);
 						break;
 				}
 				

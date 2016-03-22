@@ -60,14 +60,12 @@ public class SMTPEmailer {
 	
 	private static String USER_NAME = "doitright.therapy";  // GMail user name (just the part before "@gmail.com")
     private static String PASSWORD = "Do!tRight13"; // GMail password
-    private static String RECIPIENT = "cgridley@gmail.com";
+    //private static String RECIPIENT = "cgridley@gmail.com";
 
-    public static void sendEmail() {
+    public static void sendEmail(String therapistName, String clientEmailAddress, String subject, String body) {
         String from = USER_NAME;
         String pass = PASSWORD;
-        String[] to = { RECIPIENT }; // list of recipient email addresses
-        String subject = "Java send mail example";
-        String body = "Welcome to JavaMail!";
+        String[] to = { clientEmailAddress }; // list of recipient email addresses
 
         sendFromGMail(from, pass, to, subject, body);
     }

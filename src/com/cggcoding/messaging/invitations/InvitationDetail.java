@@ -1,4 +1,4 @@
-package com.cggcoding.controllers.therapist;
+package com.cggcoding.messaging.invitations;
 
 import java.time.LocalDateTime;
 
