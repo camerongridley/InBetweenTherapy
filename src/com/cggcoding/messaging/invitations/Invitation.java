@@ -3,7 +3,7 @@ package com.cggcoding.messaging.invitations;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class InvitationDetail {
+public class Invitation {
 	private String invitationCode;
 	private int sentFromUserID;
 	private String sendToEmail;
@@ -13,14 +13,14 @@ public class InvitationDetail {
 	private boolean accepted;
 	
 
-	private InvitationDetail(int sentFromUserID, String sendToEmail, String sendToName) {
+	private Invitation(int sentFromUserID, String sendToEmail, String sendToName) {
 		this.sentFromUserID = sentFromUserID;
 		this.sendToEmail = sendToEmail;
 		this.sendToName = sendToName;
 	}
 	
-	public static InvitationDetail createInvitation(int sentFromUserID, String sendToEmail, String sendToName){
-		InvitationDetail invitation = new InvitationDetail(sentFromUserID, sendToEmail, sendToName);
+	public static Invitation createInvitation(int sentFromUserID, String sendToEmail, String sendToName){
+		Invitation invitation = new Invitation(sentFromUserID, sendToEmail, sendToName);
 		
 		invitation.generateInvitationCode();
 

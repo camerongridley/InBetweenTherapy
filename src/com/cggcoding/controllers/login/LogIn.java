@@ -70,7 +70,10 @@ public class LogIn extends HttpServlet {
 						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 					} else if(user.hasRole(Constants.USER_THERAPIST)){
 						UserTherapist userTherapist = (UserTherapist)user;
-						userTherapist.setClientMap(userTherapist.loadClients());
+						Map<Integer, UserClient> clientMap = userTherapist.loadClients();
+						userTherapist.setClientMap(clientMap);
+					
+						request.setAttribute("clientMap", clientMap);
 						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 					}if(user.hasRole(Constants.USER_CLIENT)){
 						forwardTo = Constants.URL_CLIENT_MAIN_MENU;

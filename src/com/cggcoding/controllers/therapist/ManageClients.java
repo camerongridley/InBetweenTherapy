@@ -15,8 +15,8 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.messaging.SMTPEmailer;
-import com.cggcoding.messaging.invitations.InvitationDetail;
-import com.cggcoding.messaging.invitations.Inviter;
+import com.cggcoding.messaging.invitations.Invitation;
+import com.cggcoding.messaging.invitations.InvitationHandler;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
@@ -139,10 +139,10 @@ public class ManageClients extends HttpServlet {
 						
 						String sendToEmail = request.getParameter("clientInvitationEmail");
 						String sendToName = request.getParameter("clientInvitationName");
-						InvitationDetail invitation = InvitationDetail.createInvitation(user.getUserID(), sendToEmail, sendToName);
-						Inviter.sendInvitation(invitation, user, sendToEmail);
+						Invitation invitation = Invitation.createInvitation(user.getUserID(), sendToEmail, sendToName);
+						InvitationHandler.sendInvitation(invitation, user, sendToEmail);
 						
-						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_MAIN;
+						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 						request.setAttribute("successMessage", SuccessMessages.INVITATION_SENT_SUCCESS);
 						request.setAttribute("clientMap", clientMap);
 						break;

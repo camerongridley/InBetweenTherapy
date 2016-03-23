@@ -37,7 +37,7 @@
         </div>
 	</form>
 
-	<form class="form-horizontal" action="/secure/ManageClients" method="POST">
+	<%-- <form class="form-horizontal" action="/secure/ManageClients" method="POST">
 		<input type="hidden" name="requestedAction" value="invite-client">
 		<input type="hidden" name="path" value="${path }">
 		
@@ -55,6 +55,6 @@
 	        	<button type="submit" class="btn btn-default">Send Invitation</button>
 	        </div>
         </div>
-	</form>
+	</form> --%>
 	
 <c:import url="/WEB-INF/jsp/footer.jsp" />

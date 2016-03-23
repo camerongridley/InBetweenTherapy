@@ -4,22 +4,22 @@ import com.cggcoding.messaging.SMTPEmailer;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.Constants;
 
-public class Inviter{
-	private InvitationDetail invitation;
+public class InvitationHandler{
+	private Invitation invitation;
 	
-	public Inviter(InvitationDetail invitation){
+	public InvitationHandler(Invitation invitation){
 		this.invitation = invitation;
 	}
 
-	public InvitationDetail getInvitation() {
+	public Invitation getInvitation() {
 		return invitation;
 	}
 
-	public void setInvitation(InvitationDetail invitation) {
+	public void setInvitation(Invitation invitation) {
 		this.invitation = invitation;
 	}
 
-	public static boolean sendInvitation(InvitationDetail invitation, User sentFromUser, String sendToEmail){
+	public static boolean sendInvitation(Invitation invitation, User sentFromUser, String sendToEmail){
 
 		String subject = "Invitation to join DoItRight!";
 		String body = "Dear " + invitation.getSendToName() + ",\n\n"
@@ -35,7 +35,7 @@ public class Inviter{
 		return true;
 	}
 	
-	public InvitationDetail getInvitationStatus(int therpistUserID, String clientEmail){
+	public Invitation getInvitationStatus(int therpistUserID, String clientEmail){
 		
 		return null;
 	}
