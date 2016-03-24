@@ -1,6 +1,7 @@
 package com.cggcoding.messaging.invitations;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public class Invitation {
@@ -11,6 +12,7 @@ public class Invitation {
 	private LocalDateTime dateInvited;
 	private LocalDateTime dateAccepted;
 	private boolean accepted;
+	private List<Integer> treatmentPlanIDsToCopy;
 	
 
 	private Invitation(int sentFromUserID, String sendToEmail, String sendToName) {
@@ -97,4 +99,13 @@ public class Invitation {
 	public void setAccepted(boolean accepted) {
 		this.accepted = accepted;
 	}
+
+	public List<Integer> getTreatmentPlanIDsToCopy() {
+		return treatmentPlanIDsToCopy;
+	}
+
+	public void setTreatmentPlanIDsToCopy(List<Integer> treatmentPlanIDsToCopy) {
+		this.treatmentPlanIDsToCopy = treatmentPlanIDsToCopy;
+	}
+	
 }

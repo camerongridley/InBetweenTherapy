@@ -79,7 +79,7 @@ public class UserTherapist extends User implements Serializable{
     }
     
     public List<TreatmentPlan> loadCompletedAssignedClientTreatmentPlans(){
-    	this.unstartedAssignedClientPlans = new ArrayList<>();
+    	this.completedAssignedClientPlans = new ArrayList<>();
     	for(TreatmentPlan plan : allAssignedClientPlans){
     		if(plan.isCompleted()){
     			completedAssignedClientPlans.add(plan);
@@ -90,7 +90,7 @@ public class UserTherapist extends User implements Serializable{
     }
     
     public List<TreatmentPlan> loadUnstartedAssignedClientTreatmentPlans(){
-    	this.completedAssignedClientPlans = new ArrayList<>();
+    	this.unstartedAssignedClientPlans = new ArrayList<>();
     	for(TreatmentPlan plan : allAssignedClientPlans){
     		if(!plan.isCompleted() && !plan.isInProgress()){
     			unstartedAssignedClientPlans.add(plan);

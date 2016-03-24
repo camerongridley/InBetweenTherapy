@@ -1,6 +1,8 @@
 package com.cggcoding.controllers.navigation;
 
 import java.io.IOException;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -8,7 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserClient;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 
 /**
@@ -57,6 +62,15 @@ public class MenuNav extends HttpServlet {
 				forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 				break;
 			case "therapist":
+				UserTherapist therapistUser = (UserTherapist)user;
+				try {
+					Map<Integer, UserClient> clientMap = therapistUser.loadClients();
+					request.setAttribute("clientMap", clientMap);
+				} catch (DatabaseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 				break;
 			case "client":
