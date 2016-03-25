@@ -33,7 +33,7 @@ public class InvitationHandler{
 		this.invitation = invitation;
 	}
 
-	public static boolean sendInvitation(Invitation invitation, User sentFromUser, String sendToEmail) throws DatabaseException{
+	public static boolean sendInvitation(Invitation invitation, User sentFromUser, String sendToEmail) throws DatabaseException, ValidationException{
 
 		//prepare the invitation
 		String subject = "Invitation to join DoItRight!";
@@ -47,9 +47,6 @@ public class InvitationHandler{
 		
 		invitation.setDateInvited(LocalDateTime.now());
 		
-		//TODO DELETE THiS, only for testing
-		invitation.addTreatmentPlanID(2);
-		
 		//insert the invitation into the database
 		Connection cn = null;
 		
@@ -57,8 +54,11 @@ public class InvitationHandler{
 			cn = dao.getConnection();
 			
 			cn.setAutoCommit(false);
-
-			dao.invitationCreate(cn, invitation);
+			if(dao.invitationCheckForExisting(cn, invitation)){
+				dao.invitationCreate(cn, invitation);
+			}else{
+				throw new ValidationException("You have already sent that person and invitation.");
+			}
 			
 			cn.commit();
 		} catch (SQLException e) {

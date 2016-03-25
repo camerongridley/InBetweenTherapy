@@ -230,6 +230,8 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	void invitationCreate(Connection cn, Invitation invitation) throws SQLException;
 
+	boolean invitationCheckForExisting(Connection cn, Invitation invitation) throws SQLException;
+
 	
 
 

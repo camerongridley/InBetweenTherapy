@@ -298,6 +298,37 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 
         return user;
     }
+    @Override
+	public boolean invitationCheckForExisting(Connection cn,  Invitation invitation) throws SQLException{
+
+		PreparedStatement ps = null;
+	    ResultSet invitationInfo = null;
+	    int invitationExists = 0;
+	    
+	    try {
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM invitiation WHERE recipient_email=? AND sender_user_id_fk=?");
+	        ps.setString(1, invitation.getRecipientEmail());
+	        ps.setInt(2, invitation.getSenderUserID());
+	        
+	        invitationInfo = ps.executeQuery();
+	
+	
+	        while (invitationInfo.next()){
+	            invitationExists = invitationInfo.getInt("COUNT(*)");
+	        }
+	
+	    } finally {
+			DbUtils.closeQuietly(invitationInfo);
+			DbUtils.closeQuietly(ps);
+		}
+	
+	
+	    if(invitationExists >= 1){
+	        return false;
+	    } else {
+	        return true;
+	    }
+	}
     
     @Override
 	public void invitationCreate(Connection cn, Invitation invitation) throws SQLException{
@@ -320,18 +351,23 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	        ps.setString(8, invitation.getRecipientLastName());
 
 	        int success = ps.executeUpdate();
+	        
+	        DbUtils.closeQuietly(ps);
 	
-	        //now loop through all the treatmentPlanIDs in the invitation that are to be copied into the invitees account when the register
-	        for(int treatmentPlanID : invitation.getTreatmentPlanIDsToCopy()){
-	        	sql = "INSERT INTO invitation_treatment_plans (invitation_code_fk, invitation_treatment_plan_id_fk) VALUES (?, ?)";
+	        //now loop through all the treatmentPlanIDs in the invitation that are to be copied into the invitees account when they register
+	        
+        	sql = "INSERT INTO invitation_treatment_plans (invitation_code_fk, invitation_treatment_plan_id_fk) VALUES (?, ?)";
+	    	
+	    	ps = cn.prepareStatement(sql);
 		    	
-		    	ps = cn.prepareStatement(sql);
-		    	
+		    for(int treatmentPlanID : invitation.getTreatmentPlanIDsToCopy()){
 		        ps.setString(1, invitation.getInvitationCode());
 		        ps.setInt(2, treatmentPlanID);
 
-		        ps.executeUpdate();
+		        ps.addBatch();
 	        }
+		    
+		    ps.executeBatch();
 	
 	    } finally {
 			DbUtils.closeQuietly(ps);
