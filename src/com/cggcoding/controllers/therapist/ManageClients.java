@@ -137,10 +137,11 @@ public class ManageClients extends HttpServlet {
 						ServletContext context = session.getServletContext();
 						System.out.println("Context Path: " + context.getContextPath());
 						
-						String sendToEmail = request.getParameter("clientInvitationEmail");
-						String sendToName = request.getParameter("clientInvitationName");
-						Invitation invitation = Invitation.createInvitation(user.getUserID(), sendToEmail, sendToName);
-						InvitationHandler.sendInvitation(invitation, user, sendToEmail);
+						String recipientEmail = request.getParameter("recipientInvitationEmail");
+						String recipientFirstName = request.getParameter("recipientFirstName");
+						String recipientLastName = request.getParameter("recipientLastName");
+						Invitation invitation = Invitation.createInvitation(user.getUserID(), recipientEmail, recipientFirstName, recipientLastName);
+						InvitationHandler.sendInvitation(invitation, user, recipientEmail);
 						
 						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 						request.setAttribute("successMessage", SuccessMessages.INVITATION_SENT_SUCCESS);
@@ -156,9 +157,10 @@ public class ManageClients extends HttpServlet {
 			}
 		
 		}catch(DatabaseException | ValidationException e){
-			if(requestedAction.equals("select-client")){
+
+			if(requestedAction.equals("select-client")||requestedAction.equals("invite-client")){
 				request.setAttribute("clientMap", therapistUser.getClientMap());
-				forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_MAIN;
+				forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 			} else {
 				request.setAttribute("activeAssignedClientPlans", therapistUser.loadActiveAssignedClientTreatmentPlans());
 				request.setAttribute("unstartedAssignedClientPlans", therapistUser.loadUnstartedAssignedClientTreatmentPlans());

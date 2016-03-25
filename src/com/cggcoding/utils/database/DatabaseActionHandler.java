@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
@@ -223,6 +224,11 @@ public interface DatabaseActionHandler {
 	boolean userOwnsTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException;
 
 	boolean userAssignedTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException;
+
+	//**************************************************************************************************
+	//*************************************** Messaging Methods **********************************
+	//**************************************************************************************************
+	void invitationCreate(Connection cn, Invitation invitation) throws SQLException;
 
 	
 

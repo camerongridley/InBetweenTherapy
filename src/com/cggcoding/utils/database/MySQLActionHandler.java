@@ -12,6 +12,7 @@ import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.*;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.SqlBuilders;
@@ -297,6 +298,46 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 
         return user;
     }
+    
+    @Override
+	public void invitationCreate(Connection cn, Invitation invitation) throws SQLException{
+
+		PreparedStatement ps = null;
+	    
+	    try {
+	    	//first insert primary invitation data into the invitation table
+	    	String sql = "INSERT INTO invitiation (invitation_code, recipient_email, sender_user_id_fk, date_intived, date_accepted, accepted, recipient_first_name, recipient_last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	    	
+	    	ps = cn.prepareStatement(sql);
+	    	
+	        ps.setString(1, invitation.getInvitationCode());
+	        ps.setString(2, invitation.getRecipientEmail());
+	        ps.setInt(3, invitation.getSenderUserID());
+	        ps.setTimestamp(4, convertLocalTimeDateToTimstamp(invitation.getDateInvited()));
+	        ps.setTimestamp(5, convertLocalTimeDateToTimstamp(invitation.getDateAccepted()));
+	        ps.setBoolean(6, invitation.isAccepted());
+	        ps.setString(7, invitation.getRecipientFirstName());
+	        ps.setString(8, invitation.getRecipientLastName());
+
+	        int success = ps.executeUpdate();
+	
+	        //now loop through all the treatmentPlanIDs in the invitation that are to be copied into the invitees account when the register
+	        for(int treatmentPlanID : invitation.getTreatmentPlanIDsToCopy()){
+	        	sql = "INSERT INTO invitation_treatment_plans (invitation_code_fk, invitation_treatment_plan_id_fk) VALUES (?, ?)";
+		    	
+		    	ps = cn.prepareStatement(sql);
+		    	
+		        ps.setString(1, invitation.getInvitationCode());
+		        ps.setInt(2, treatmentPlanID);
+
+		        ps.executeUpdate();
+	        }
+	
+	    } finally {
+			DbUtils.closeQuietly(ps);
+		}
+	
+	}
     
     //XXX Make this public and called from User class?
     private List<Integer> userGetAdminIDs(Connection cn) throws DatabaseException{

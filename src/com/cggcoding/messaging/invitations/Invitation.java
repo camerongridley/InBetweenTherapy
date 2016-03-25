@@ -1,28 +1,35 @@
 package com.cggcoding.messaging.invitations;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class Invitation {
 	private String invitationCode;
-	private int sentFromUserID;
-	private String sendToEmail;
-	private String sendToName;
+	private int senderUserID;
+	private String recipientEmail;
+	private String recipientFirstName;
+	private String recipientLastName;
 	private LocalDateTime dateInvited;
 	private LocalDateTime dateAccepted;
 	private boolean accepted;
 	private List<Integer> treatmentPlanIDsToCopy;
 	
 
-	private Invitation(int sentFromUserID, String sendToEmail, String sendToName) {
-		this.sentFromUserID = sentFromUserID;
-		this.sendToEmail = sendToEmail;
-		this.sendToName = sendToName;
+	private Invitation(int senderUserID, String recipientEmail, String recipientFirstName, String recipientLastName) {
+		this.senderUserID = senderUserID;
+		this.recipientEmail = recipientEmail;
+		this.recipientFirstName = recipientFirstName;
+		this.recipientLastName = recipientLastName;
+		dateInvited = null;
+		dateAccepted = null;
+		accepted = false;
+		treatmentPlanIDsToCopy = new ArrayList<>();
 	}
 	
-	public static Invitation createInvitation(int sentFromUserID, String sendToEmail, String sendToName){
-		Invitation invitation = new Invitation(sentFromUserID, sendToEmail, sendToName);
+	public static Invitation createInvitation(int senderUserID, String recipientEmail, String recipientFirstName, String recipientLastName){
+		Invitation invitation = new Invitation(senderUserID, recipientEmail, recipientFirstName, recipientLastName);
 		
 		invitation.generateInvitationCode();
 
@@ -52,28 +59,36 @@ public class Invitation {
 		this.invitationCode = invitationCode;
 	}
 
-	public int getSentFromUserID() {
-		return sentFromUserID;
+	public int getSenderUserID() {
+		return senderUserID;
 	}
 
-	public void setSentFromUserID(int sentFromUserID) {
-		this.sentFromUserID = sentFromUserID;
+	public void setSenderUserID(int senderUserID) {
+		this.senderUserID = senderUserID;
 	}
 
-	public String getSendToEmail() {
-		return sendToEmail;
+	public String getRecipientEmail() {
+		return recipientEmail;
 	}
 
-	public void setSendToEmail(String sendToEmail) {
-		this.sendToEmail = sendToEmail;
+	public void setRecipientEmail(String recipientEmail) {
+		this.recipientEmail = recipientEmail;
 	}
 
-	public String getSendToName() {
-		return sendToName;
+	public String getRecipientFirstName() {
+		return recipientFirstName;
 	}
 
-	public void setSendToName(String sendToName) {
-		this.sendToName = sendToName;
+	public void setRecipientFirstName(String recipientFirstName) {
+		this.recipientFirstName = recipientFirstName;
+	}
+
+	public String getRecipientLastName() {
+		return recipientLastName;
+	}
+
+	public void setRecipientLastName(String recipientLastName) {
+		this.recipientLastName = recipientLastName;
 	}
 
 	public LocalDateTime getDateInvited() {
@@ -106,6 +121,18 @@ public class Invitation {
 
 	public void setTreatmentPlanIDsToCopy(List<Integer> treatmentPlanIDsToCopy) {
 		this.treatmentPlanIDsToCopy = treatmentPlanIDsToCopy;
+	}
+	
+	public void addTreatmentPlanID(int treatmentPlanID){
+		this.treatmentPlanIDsToCopy.add(treatmentPlanID);
+	}
+	
+	public void removeTreatmentPlanID(int treatmentPlanID){
+		for(int i=0; i < this.getTreatmentPlanIDsToCopy().size(); i++){
+			if(treatmentPlanIDsToCopy.get(i)==treatmentPlanID){
+				treatmentPlanIDsToCopy.remove(i);
+			}
+		}
 	}
 	
 }

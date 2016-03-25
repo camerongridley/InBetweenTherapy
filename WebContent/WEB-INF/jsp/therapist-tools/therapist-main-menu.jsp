@@ -88,14 +88,17 @@
 				
 		        <div class="form-group">
 		            <div class="col-sm-12">
-		                <input type="text" class="form-control" id="clientInvitationName" name="clientInvitationName" value="<c:out value="${clientInvitationName }"/>" placeholder="Enter the client's name">
+		                <input type="text" class="form-control" id="recipientFirstName" name="recipientFirstName" value="<c:out value="${recipientFirstName }"/>" placeholder="Enter the recipient's firstname">
 		            </div>
 		            <div class="col-sm-12">
-		                <input type="text" class="form-control" id="clientInvitationEmail" name="clientInvitationEmail" value="<c:out value="${clientInvitationEmail }"/>" placeholder="Enter the client's email address">
+		                <input type="text" class="form-control" id="recipientLastName" name="recipientLastName" value="<c:out value="${recipientLastName }"/>" placeholder="Enter the recipient's name">
+		            </div>
+		            <div class="col-sm-12">
+		                <input type="text" class="form-control" id="recipientInvitationEmail" name="recipientInvitationEmail" value="<c:out value="${recipientInvitationEmail }"/>" placeholder="Enter the recipient's email address">
 		            </div>
 		        </div>
 		        <div class="form-group">
-			        <div class="col-sm-offset-2 col-sm-10">
+			        <div class="col-sm-12">
 			        	<button type="submit" class="btn btn-default">Send Invitation</button>
 			        </div>
 		        </div>
