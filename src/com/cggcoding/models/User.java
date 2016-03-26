@@ -10,6 +10,7 @@ import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
@@ -45,7 +46,7 @@ public abstract class User implements Serializable{
 		this.mainMenuURL = "";
 	}
 	
-	public static User registerNewUser(String userName, String firstName, String lastName, String password, String passwordConfirm, String email, String roleType) throws ValidationException, DatabaseException{
+	public static User registerNewUser(String userName, String firstName, String lastName, String password, String passwordConfirm, String email, String roleType, String invitationCode) throws ValidationException, DatabaseException{
 		
 		if(userName.equals("") || firstName.equals("") || lastName.equals("") || password.equals("") || passwordConfirm.equals("") || email.equals("") || roleType == null || roleType.equals("")){
 			throw new ValidationException(ErrorMessages.MISSING_USER_INFORMATION);
@@ -88,10 +89,14 @@ public abstract class User implements Serializable{
 			}
 
 			dao.userCreateNewUser(cn, newUser, password);
-			
+
+			if(!invitationCode.equals("")){
+				newUser.processInvitationAcceptance(cn, invitationCode);
+			}
+
 			cn.commit();
 			
-		} catch (SQLException e) {
+		} catch (SQLException | ValidationException e) {
 			e.printStackTrace();
 			try {
 				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
@@ -100,11 +105,11 @@ public abstract class User implements Serializable{
 				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
 				e1.printStackTrace();
 			}
-			/*if(e.getClass().getSimpleName().equals("ValidationException")){
-			throw new ValidationException(e.getMessage());
-			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+			if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else {
 				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-			}*/
+			}
 			
 		} finally {
 			try {
@@ -118,6 +123,8 @@ public abstract class User implements Serializable{
 		 return newUser;
 		 
 	}
+	
+	public abstract void processInvitationAcceptance(Connection cn, String invitationCode) throws SQLException, ValidationException;
 	
 	public void setUserID(int userID) {
 		this.userID = userID;
@@ -238,10 +245,8 @@ public abstract class User implements Serializable{
 		return dao.userOwnsTreatmentPlan(cn, this, treatmentPlanID);
 	}
 	
-	public TreatmentPlan createTreatmentPlanFromTemplate(int userIDTakingNewPlan, int treatmentPlanIDToCopy) throws ValidationException, DatabaseException{
-		Connection cn = null;
-		
-		TreatmentPlan newPlan = TreatmentPlan.loadBasic(treatmentPlanIDToCopy);
+	protected TreatmentPlan createTreatmentPlanFromTemplate(Connection cn, int userIDTakingNewPlan, int treatmentPlanIDToCopy) throws SQLException, ValidationException{
+		TreatmentPlan newPlan = TreatmentPlan.loadBasic(cn, treatmentPlanIDToCopy);
 		//TreatmentPlan newPlan = TreatmentPlan.getInstanceWithoutID(planToCopy.getTitle(), this.userID, planToCopy.getDescription(), planToCopy.getTreatmentIssueID());
 		
 		//most of these should be set to their defaults, but am just resetting them here as a precaution
@@ -252,25 +257,37 @@ public abstract class User implements Serializable{
     	newPlan.setInProgress(false);
     	newPlan.setCompleted(false);
     	newPlan.setActiveViewStageIndex(0);
+    	
+    	
+
+    	newPlan.createBasic(cn);
+    	
+    	//loop through and change all the userIDs to the userID supplied by the method argument
+    	//OPTIMIZE O(N3) complexity here with 3 nested for loops.  Is there a better way to do this?
+    	
+    	for(MapTreatmentPlanStageTemplate planStageInfo : newPlan.getTreatmentPlanStageTemplateMapList()){
+    		newPlan.createStageFromTemplate(cn, planStageInfo.getStageID(), planStageInfo);
+    	}
+    	
+    	/*if ever switch to have copy client plans, then this code would be useful
+    	 * for(Stage stage : planToCopy.getStages()){
+    		MapTreatmentPlanStageTemplate planStageInfo = newPlan.getMappedStageTemplateByStageID(stage.getStageID());
+    		newPlan.copyStageIntoClientTreatmentPlan(cn, stage, planStageInfo);
+    	}*/
+    	
+    	return newPlan;
+	}
+	
+	public TreatmentPlan createTreatmentPlanFromTemplate(int userIDTakingNewPlan, int treatmentPlanIDToCopy) throws ValidationException, DatabaseException{
+		Connection cn = null;
+		
+		TreatmentPlan newPlan = null;
 
         try {
         	cn = dao.getConnection();
         	cn.setAutoCommit(false);
-
-        	newPlan.createBasic(cn);
         	
-        	//loop through and change all the userIDs to the userID supplied by the method argument
-        	//OPTIMIZE O(N3) complexity here with 3 nested for loops.  Is there a better way to do this?
-        	
-        	for(MapTreatmentPlanStageTemplate planStageInfo : newPlan.getTreatmentPlanStageTemplateMapList()){
-        		newPlan.createStageFromTemplate(cn, planStageInfo.getStageID(), planStageInfo);
-        	}
-        	
-        	/*if ever switch to have copy client plans, then this code would be useful
-        	 * for(Stage stage : planToCopy.getStages()){
-        		MapTreatmentPlanStageTemplate planStageInfo = newPlan.getMappedStageTemplateByStageID(stage.getStageID());
-        		newPlan.copyStageIntoClientTreatmentPlan(cn, stage, planStageInfo);
-        	}*/
+        	createTreatmentPlanFromTemplate(cn, userIDTakingNewPlan, treatmentPlanIDToCopy);
         	
         	cn.commit();
         	

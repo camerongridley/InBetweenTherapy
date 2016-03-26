@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
@@ -11,6 +14,7 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.messaging.SMTPEmailer;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserClient;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
@@ -60,8 +64,11 @@ public class InvitationHandler{
 				throw new ValidationException("You have already sent that person and invitation.");
 			}
 			
+			//send the invitation via email
+			SMTPEmailer.sendEmail(sendToEmail, subject, body);
+			
 			cn.commit();
-		} catch (SQLException e) {
+		} catch (SQLException e) {//TODO add catching messaging exceptions here and throw validation messages
 			e.printStackTrace();
 			try {
 				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
@@ -72,7 +79,26 @@ public class InvitationHandler{
 			}
 			
 			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-			
+		 } catch (AddressException e) {
+				e.printStackTrace();
+				try {
+					System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+					cn.rollback();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+				}
+				throw new ValidationException(ErrorMessages.INVITATION_INVALID_EMAIL_ADDRESS);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+			}
+			throw new ValidationException(ErrorMessages.INVITATION_UNSUCCESSFUL_SEND);
 		} finally {
 			try {
 				cn.setAutoCommit(true);
@@ -82,11 +108,13 @@ public class InvitationHandler{
 			DbUtils.closeQuietly(cn);
 	    }
 		
-		//send the invitation via email
-		SMTPEmailer.sendEmail(sendToEmail, subject, body);
+		
 		
 		return true;
 	}
+	
+    
+
 	
 	public Invitation getInvitationStatus(int therpistUserID, String clientEmail){
 		

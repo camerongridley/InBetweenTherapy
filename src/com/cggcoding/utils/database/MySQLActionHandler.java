@@ -306,7 +306,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	    int invitationExists = 0;
 	    
 	    try {
-			ps = cn.prepareStatement("SELECT COUNT(*) FROM invitiation WHERE recipient_email=? AND sender_user_id_fk=?");
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM invitation WHERE recipient_email=? AND sender_user_id_fk=?");
 	        ps.setString(1, invitation.getRecipientEmail());
 	        ps.setInt(2, invitation.getSenderUserID());
 	        
@@ -337,7 +337,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	    
 	    try {
 	    	//first insert primary invitation data into the invitation table
-	    	String sql = "INSERT INTO invitiation (invitation_code, recipient_email, sender_user_id_fk, date_intived, date_accepted, accepted, recipient_first_name, recipient_last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	    	String sql = "INSERT INTO invitation (invitation_code, recipient_email, sender_user_id_fk, date_invited, date_accepted, accepted, recipient_first_name, recipient_last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 	    	
 	    	ps = cn.prepareStatement(sql);
 	    	
@@ -374,6 +374,110 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 		}
 	
 	}
+    
+    @Override
+    public void invitationDelete(Connection cn, int invitationCode) throws SQLException{
+    	PreparedStatement ps = null;
+        
+    	try{
+	        ps = cn.prepareStatement("DELETE FROM invitation WHERE invitation_code=?");
+	        ps.setInt(1, invitationCode);
+	
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
+    }
+    
+    //TODO load the treamtnPlanIDsToCopy - just set to null for now
+    @Override
+    public Invitation invitationLoad(Connection cn, String invitationCode) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Invitation invitation = null;
+        List<Integer> treatmentPlanIDsToCopy = new ArrayList<>();
+        
+        try {
+    		String sql = "SELECT * FROM invitation WHERE invitation_code =?";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setString(1, invitationCode);
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	Timestamp timestamp = rs.getTimestamp("date_invited");
+            	LocalDateTime dateInvited = convertTimestampToLocalDateTime(timestamp);
+            	timestamp = rs.getTimestamp("date_accepted");
+            	LocalDateTime dateAccepted = convertTimestampToLocalDateTime(timestamp);
+            	
+            	invitation = new Invitation(rs.getString("invitation_code"), rs.getInt("sender_user_id_fk"), rs.getString("recipient_email"), 
+            			rs.getString("recipient_first_name"), rs.getString("recipient_last_name"), dateInvited, dateAccepted, rs.getBoolean("accepted"), treatmentPlanIDsToCopy); 
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        //throwValidationExceptionIfNull(stage);
+        
+        return invitation;
+    	
+    }
+    
+    @Override
+    public boolean invitationUpdate(Connection cn, Invitation invitation) throws SQLException{
+    	PreparedStatement ps = null;
+        int success = 0;
+        
+        try {
+        		
+    		String sql = "UPDATE invitation SET recipient_email=?, sender_user_id_fk=?, date_invited=?, date_accepted=?, accepted=?, recipient_first_name=?, recipient_last_name=? WHERE invitation_code=?";
+        	
+            ps = cn.prepareStatement(sql);
+
+            ps.setString(1, invitation.getRecipientEmail());
+            ps.setInt(2, invitation.getSenderUserID());
+            ps.setTimestamp(3, convertLocalTimeDateToTimstamp(invitation.getDateInvited()));
+            ps.setTimestamp(4, convertLocalTimeDateToTimstamp(invitation.getDateAccepted()));
+            ps.setBoolean(5, invitation.isAccepted());
+            ps.setString(6, invitation.getRecipientFirstName());
+            ps.setString(7, invitation.getRecipientLastName());
+            ps.setString(8, invitation.getInvitationCode());
+
+
+            success = ps.executeUpdate();
+        	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success == 1;
+    	
+    }
+    
+    @Override
+    public void therapistCreateClientConnection(Connection cn, int therapistUserID, int clientUserID) throws SQLException{
+
+		PreparedStatement ps = null;
+	    
+	    try {
+	    	//first insert primary invitation data into the invitation table
+	    	String sql = "INSERT INTO therapist_user_id_client_user_id_maps (therapist_user_id, client_user_id) VALUES (?, ?)";
+	    	
+	    	ps = cn.prepareStatement(sql);
+	    	
+	        ps.setInt(1, therapistUserID);
+	        ps.setInt(2, clientUserID);
+
+	        int success = ps.executeUpdate();
+	
+	    } finally {
+			DbUtils.closeQuietly(ps);
+		}
+    }
     
     //XXX Make this public and called from User class?
     private List<Integer> userGetAdminIDs(Connection cn) throws DatabaseException{
@@ -1192,10 +1296,11 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
                 ps.setInt(4,taskInfo.getTaskID());
                 ps.setInt(5,stageID);
                 
-                ps.executeUpdate();
+                //ps.executeUpdate();
+                ps.addBatch();
         	}            
 
-            //ps.executeBatch();
+            ps.executeBatch();
             
         } finally {
 			DbUtils.closeQuietly(ps);

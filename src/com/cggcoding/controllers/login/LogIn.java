@@ -80,6 +80,7 @@ public class LogIn extends HttpServlet {
 					}
 					
 				} else {
+					forwardTo = Constants.URL_LOGIN;
 				    throw new ValidationException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
 				}
 			} catch (DatabaseException | ValidationException e) {

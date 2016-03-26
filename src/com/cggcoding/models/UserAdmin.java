@@ -81,4 +81,10 @@ public class UserAdmin extends User implements Serializable{
 		return true;
 	}
 
+	@Override
+	public void processInvitationAcceptance(Connection cn, String invitationCode) throws SQLException, ValidationException {
+		//nothing to do here - only applies to therapists and clients
+		
+	}
+
 }

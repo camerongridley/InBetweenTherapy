@@ -6,11 +6,15 @@ import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
+import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 public class SMTPEmailer {
 
@@ -62,7 +66,7 @@ public class SMTPEmailer {
     private static String PASSWORD = "Do!tRight13"; // GMail password
     //private static String RECIPIENT = "cgridley@gmail.com";
 
-    public static void sendEmail(String clientEmailAddress, String subject, String body) {
+    public static void sendEmail(String clientEmailAddress, String subject, String body) throws ValidationException, AddressException, MessagingException {
         String from = USER_NAME;
         String pass = PASSWORD;
         String[] to = { clientEmailAddress }; // list of recipient email addresses
@@ -70,7 +74,7 @@ public class SMTPEmailer {
         sendFromGMail(from, pass, to, subject, body);
     }
 
-    private static void sendFromGMail(String from, String pass, String[] to, String subject, String body) {
+    private static void sendFromGMail(String from, String pass, String[] to, String subject, String body) throws ValidationException, AddressException, MessagingException {
         Properties props = System.getProperties();
         String host = "smtp.gmail.com";
         props.put("mail.smtp.starttls.enable", "true");
@@ -83,32 +87,25 @@ public class SMTPEmailer {
         Session session = Session.getDefaultInstance(props);
         MimeMessage message = new MimeMessage(session);
 
-        try {
-            message.setFrom(new InternetAddress(from));
-            InternetAddress[] toAddress = new InternetAddress[to.length];
+        message.setFrom(new InternetAddress(from));
+        InternetAddress[] toAddress = new InternetAddress[to.length];
 
-            // To get the array of addresses
-            for( int i = 0; i < to.length; i++ ) {
-                toAddress[i] = new InternetAddress(to[i]);
-            }
+        // To get the array of addresses
+        for( int i = 0; i < to.length; i++ ) {
+            toAddress[i] = new InternetAddress(to[i]);
+        }
 
-            for( int i = 0; i < toAddress.length; i++) {
-                message.addRecipient(Message.RecipientType.TO, toAddress[i]);
-            }
+        for( int i = 0; i < toAddress.length; i++) {
+            message.addRecipient(Message.RecipientType.TO, toAddress[i]);
+        }
 
-            message.setSubject(subject);
-            message.setText(body);
-            Transport transport = session.getTransport("smtp");
-            transport.connect(host, from, pass);
-            transport.sendMessage(message, message.getAllRecipients());
-            transport.close();
-        }
-        catch (AddressException ae) {
-            ae.printStackTrace();
-        }
-        catch (MessagingException me) {
-            me.printStackTrace();
-        }
+        message.setSubject(subject);
+        message.setText(body);
+        Transport transport = session.getTransport("smtp");
+        transport.connect(host, from, pass);
+        transport.sendMessage(message, message.getAllRecipients());
+        transport.close();
+       
     }
 
 }

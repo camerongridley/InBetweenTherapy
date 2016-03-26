@@ -10,7 +10,9 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.InvitationHandler;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 
@@ -55,11 +57,12 @@ public class Registration extends HttpServlet {
 		String passwordConfirm = request.getParameter("passwordConfirm");
 		String email = request.getParameter("email");
 		String userRole = request.getParameter("userRole");
+		String invitationCode = request.getParameter("invitationCode");
 		
 		
 		try{
-			user = User.registerNewUser(userName, firstName, lastName, password, passwordConfirm, email, userRole);
-			
+			user = User.registerNewUser(userName, firstName, lastName, password, passwordConfirm, email, userRole, invitationCode);
+
 			request.getSession().setAttribute("user", user);
 			
 			forwardTo = user.getMainMenuURL();
@@ -71,6 +74,7 @@ public class Registration extends HttpServlet {
 			request.setAttribute("email", email);
 			request.setAttribute("firstName", firstName);
 			request.setAttribute("lastName", lastName);
+			request.setAttribute("invitationCode", invitationCode);
 			request.setAttribute("userRole", userRole);
 			forwardTo = Constants.URL_REGISTRATION;
 		}

@@ -59,11 +59,19 @@
 		                <p class="help-block">Please confirm password</p>
 		              </div>
 		            </div>
+		            
+		            <div class="control-group">
+		              <label class="control-label" for="invitationCode">Invitation Code</label>
+		              <div class="controls">
+		                <input type="text" id="invitationCode" name="invitationCode" placeholder="" class="form-control input-lg"  value="${invitationCode }">
+		                <p class="help-block">If you have an invitation code, enter it here.</p>
+		              </div>
+		            </div>
 		         
 		         	<label class="control-label" for="userRole">Register as a:</label>
 		         	<div class="radio">
 					  <label>
-					    <input type="radio" name="userRole" id="userRole" value="client" <c:if test='${userRole.equals("client") || userRole.equals("")}'>checked</c:if>>
+					    <input type="radio" name="userRole" id="userRole" value="client" <c:if test='${userRole.equals("client") || userRole.isEmpty() || userRole==null}'>checked</c:if>>
 					    Client
 					  </label>
 					</div>

@@ -64,6 +64,10 @@ public final class ErrorMessages {
 	public static final String MISSING_USER_INFORMATION = "Oops! It looks like we are missing some information that is needed to register.  Please fill out all of the required fields.";
 	public static final String EMAIL_ALREADY_EXISTS = "That email already is already being used by another user.  Please pick another one or contact customer support for further assistance.";
 	
+	public static final String INVITATION_NOT_FOUND = "There was no invitation found with that invitation code.  Please try again or contact the person who invited you to request a new invitation.";
+	public static final String INVITATION_INVALID_EMAIL_ADDRESS = "The email address you entered is invalid.  The invitation was not sent.  Please try again.";
+	public static final String INVITATION_UNSUCCESSFUL_SEND = "The invitation email failed to send properly.  Please check the email address you are sending to and try again.";
+	
 	
 	
 	

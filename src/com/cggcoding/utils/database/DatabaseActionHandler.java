@@ -232,6 +232,14 @@ public interface DatabaseActionHandler {
 
 	boolean invitationCheckForExisting(Connection cn, Invitation invitation) throws SQLException;
 
+	void invitationDelete(Connection cn, int invitationCode) throws SQLException;
+
+	boolean invitationUpdate(Connection cn, Invitation invitation) throws SQLException;
+
+	Invitation invitationLoad(Connection cn, String invitationCode) throws SQLException;
+
+	void therapistCreateClientConnection(Connection cn, int therapistUserID, int clientUserID) throws SQLException;
+
 	
 
 

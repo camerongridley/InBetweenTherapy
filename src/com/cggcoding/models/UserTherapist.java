@@ -1,16 +1,23 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.dbutils.DbUtils;
+
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 /**
  * Created by cgrid_000 on 8/8/2015.
@@ -99,7 +106,22 @@ public class UserTherapist extends User implements Serializable{
     	
     	return unstartedAssignedClientPlans;
     }
+    
+    @Override
+    public void processInvitationAcceptance(Connection cn, String invitationCode) throws SQLException, ValidationException{
 
+    	Invitation invitation = Invitation.load(cn, invitationCode);
+    	
+    	invitation.setAccepted(true);
+    	invitation.setDateAccepted(LocalDateTime.now());
+    	
+    	invitation.update(cn);
+    	
+    	//TODO here can check for newUser type and handle for other scenarios such as when a therapist invites another therapist
+    	dao.therapistCreateClientConnection(cn, invitation.getSenderUserID(), this.getUserID());
+    	
+    }
+    
 	@Override
 	public boolean isAuthorizedForTreatmentPlan(int treatmentPlanID) {
 		// TODO Auto-generated method stub

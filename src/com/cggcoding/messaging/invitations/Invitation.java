@@ -1,9 +1,16 @@
 package com.cggcoding.messaging.invitations;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.utils.database.DatabaseActionHandler;
+import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 public class Invitation {
 	private String invitationCode;
@@ -16,6 +23,7 @@ public class Invitation {
 	private boolean accepted;
 	private List<Integer> treatmentPlanIDsToCopy;
 	
+	private static DatabaseActionHandler dao = new MySQLActionHandler();
 
 	private Invitation(int senderUserID, String recipientEmail, String recipientFirstName, String recipientLastName) {
 		this.senderUserID = senderUserID;
@@ -26,6 +34,21 @@ public class Invitation {
 		dateAccepted = null;
 		accepted = false;
 		treatmentPlanIDsToCopy = new ArrayList<>();
+	}
+	
+	public Invitation(String invitationCode, int senderUserID, String recipientEmail, String recipientFirstName,
+			String recipientLastName, LocalDateTime dateInvited, LocalDateTime dateAccepted, boolean accepted,
+			List<Integer> treatmentPlanIDsToCopy) {
+		super();
+		this.invitationCode = invitationCode;
+		this.senderUserID = senderUserID;
+		this.recipientEmail = recipientEmail;
+		this.recipientFirstName = recipientFirstName;
+		this.recipientLastName = recipientLastName;
+		this.dateInvited = dateInvited;
+		this.dateAccepted = dateAccepted;
+		this.accepted = accepted;
+		this.treatmentPlanIDsToCopy = treatmentPlanIDsToCopy;
 	}
 	
 	public static Invitation createInvitation(int senderUserID, String recipientEmail, String recipientFirstName, String recipientLastName){
@@ -133,6 +156,20 @@ public class Invitation {
 				treatmentPlanIDsToCopy.remove(i);
 			}
 		}
+	}
+	
+	public static Invitation load(Connection cn, String invitationCode) throws SQLException, ValidationException{
+		Invitation invitation = dao.invitationLoad(cn, invitationCode);
+		
+		if(invitation==null){
+			throw new ValidationException(ErrorMessages.INVITATION_NOT_FOUND);
+		}
+		
+		return invitation;
+	}
+	
+	public void update(Connection cn) throws SQLException, ValidationException{
+		dao.invitationUpdate(cn, this);
 	}
 	
 }

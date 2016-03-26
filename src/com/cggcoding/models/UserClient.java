@@ -1,13 +1,20 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
+import com.cggcoding.utils.messaging.ErrorMessages;
 
 public class UserClient extends User implements Serializable{
 	/**
@@ -17,7 +24,7 @@ public class UserClient extends User implements Serializable{
 
 	private int activeTreatmentPlanId;
 	
-	DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
+	DatabaseActionHandler dao = new MySQLActionHandler();
 	
 	public UserClient(int userID, String userName, String firstName, String lastName, String email){
 		super(userID, userName, firstName, lastName, email);
@@ -45,21 +52,21 @@ public class UserClient extends User implements Serializable{
 		boolean inProgress = false;
 		boolean isCompleted = false;
 		
-		return databaseActionHandler.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
+		return dao.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
 	}
 	
 	public List<TreatmentPlan> getInProgressTreatmentPlans() throws DatabaseException, ValidationException{
 		boolean inProgress = true;
 		boolean isCompleted = false;
 		
-		return databaseActionHandler.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
+		return dao.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
 	}
 	
 	public List<TreatmentPlan> getCompletedTreatmentPlans() throws DatabaseException, ValidationException{
 		boolean inProgress = false;
 		boolean isCompleted = true;
 		
-		return databaseActionHandler.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
+		return dao.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
 	}
 
 
@@ -82,4 +89,27 @@ public class UserClient extends User implements Serializable{
 		// TODO Auto-generated method stub
 		return true;
 	}
+
+
+	@Override
+	public void processInvitationAcceptance(Connection cn, String invitationCode) throws SQLException, ValidationException{
+
+    	Invitation invitation = Invitation.load(cn, invitationCode);
+    	
+    	invitation.setAccepted(true);
+    	invitation.setDateAccepted(LocalDateTime.now());
+    	
+    	invitation.update(cn);
+    	
+    	invitation.addTreatmentPlanID(2);
+    	invitation.addTreatmentPlanID(11);
+    	
+    	//TODO here can check for newUser type and handle for other scenarios such as when a therapist invites another therapist
+    	dao.therapistCreateClientConnection(cn, invitation.getSenderUserID(), this.getUserID());
+    	
+    	for(int treatmentPlanID : invitation.getTreatmentPlanIDsToCopy()){
+    		this.createTreatmentPlanFromTemplate(cn, this.getUserID(), treatmentPlanID);
+    	}
+
+    }
 }

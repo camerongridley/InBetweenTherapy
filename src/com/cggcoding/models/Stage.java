@@ -968,7 +968,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			if(task.isTemplate()){
 				updateTaskTemplateList(cn, tasks);
 			}else{
-				//OPTIMIZE Could replace this with method in dao that takes List<Task> and loops through updating
+				//OPTIMIZE Could replace this with method in dao that takes List<Task> and loops through updating using preparedStatement.addBatch()
 				for(Task updateTask : tasks){
 					updateTask.update(cn);
 				}
