@@ -44,6 +44,8 @@ public interface DatabaseActionHandler {
 	
 	User userLoadByID(int userID) throws DatabaseException, ValidationException;
 	
+	User userLoadByEmailAddress(Connection cn, String emailAddress) throws ValidationException, SQLException;
+	
 	public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException;
 	
 	List<TreatmentPlan> userGetClientTreatmentPlans(int clientUserID, boolean inProgress, boolean isCompleted)
@@ -230,15 +232,21 @@ public interface DatabaseActionHandler {
 	//**************************************************************************************************
 	void invitationCreate(Connection cn, Invitation invitation) throws SQLException;
 
-	boolean invitationCheckForExisting(Connection cn, Invitation invitation) throws SQLException;
+	boolean invitationAlreadyExists(Connection cn, Invitation invitation) throws SQLException;
 
-	void invitationDelete(Connection cn, int invitationCode) throws SQLException;
+	void invitationDelete(Connection cn, String invitationCode) throws SQLException;
 
 	boolean invitationUpdate(Connection cn, Invitation invitation) throws SQLException;
 
 	Invitation invitationLoad(Connection cn, String invitationCode) throws SQLException;
 
 	void therapistCreateClientConnection(Connection cn, int therapistUserID, int clientUserID) throws SQLException;
+
+	List<String> invitationGetSentInvitationCodes(Connection cn, int senderUserID) throws SQLException;
+
+	
+
+
 
 	
 

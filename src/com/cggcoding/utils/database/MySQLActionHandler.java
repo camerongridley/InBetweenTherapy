@@ -3,6 +3,7 @@ package com.cggcoding.utils.database;
 import java.io.Serializable;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -298,8 +299,39 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 
         return user;
     }
+    
     @Override
-	public boolean invitationCheckForExisting(Connection cn,  Invitation invitation) throws SQLException{
+	public User userLoadByEmailAddress(Connection cn, String emailAddress) throws ValidationException, SQLException{
+
+    	PreparedStatement ps = null;
+        ResultSet rsUserInfo = null;
+        User user = null;
+        
+        try {
+            ps = cn.prepareStatement("SELECT * FROM user WHERE email = ?");
+            ps.setString(1, emailAddress);
+
+            rsUserInfo = ps.executeQuery();
+            
+            while (rsUserInfo.next()){
+            	user = new UserAdmin(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
+            }
+            
+            //XXX decide if want to uncomment this - commented out because I want it to return null when there is no user found for when checking if a user with this email exists when sending invitations to join the site
+            /*if(user==null){
+            	throw new ValidationException(ErrorMessages.USER_NOT_FOUND);
+            }*/
+
+        } finally {
+        	DbUtils.closeQuietly(rsUserInfo);
+			DbUtils.closeQuietly(ps);
+        }
+
+        return user;
+    }
+    
+    @Override
+	public boolean invitationAlreadyExists(Connection cn,  Invitation invitation) throws SQLException{
 
 		PreparedStatement ps = null;
 	    ResultSet invitationInfo = null;
@@ -324,9 +356,9 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	
 	
 	    if(invitationExists >= 1){
-	        return false;
-	    } else {
 	        return true;
+	    } else {
+	        return false;
 	    }
 	}
     
@@ -376,12 +408,12 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-    public void invitationDelete(Connection cn, int invitationCode) throws SQLException{
+    public void invitationDelete(Connection cn, String invitationCode) throws SQLException{
     	PreparedStatement ps = null;
         
     	try{
 	        ps = cn.prepareStatement("DELETE FROM invitation WHERE invitation_code=?");
-	        ps.setInt(1, invitationCode);
+	        ps.setString(1, invitationCode);
 	
 	        ps.executeUpdate();
     	}finally{
@@ -409,6 +441,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             while (rs.next()){
             	Timestamp timestamp = rs.getTimestamp("date_invited");
             	LocalDateTime dateInvited = convertTimestampToLocalDateTime(timestamp);
+            	
             	timestamp = rs.getTimestamp("date_accepted");
             	LocalDateTime dateAccepted = convertTimestampToLocalDateTime(timestamp);
             	
@@ -456,6 +489,36 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         return success == 1;
     	
+    }
+    
+    @Override
+    public List<String> invitationGetSentInvitationCodes(Connection cn, int senderUserID) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Invitation invitation = null;
+        List<String> invitationCodes = new ArrayList<>();
+        
+        try {
+    		String sql = "SELECT invitation_code FROM invitation WHERE sender_user_id_fk =? ORDER BY date_invited";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, senderUserID);
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	invitationCodes.add(rs.getString("invitation_code"));
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        //throwValidationExceptionIfNull(stage);
+        
+        return invitationCodes;
     }
     
     @Override

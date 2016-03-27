@@ -1,6 +1,7 @@
 package com.cggcoding.controllers.navigation;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
@@ -66,7 +69,10 @@ public class MenuNav extends HttpServlet {
 				try {
 					Map<Integer, UserClient> clientMap = therapistUser.loadClients();
 					request.setAttribute("clientMap", clientMap);
-				} catch (DatabaseException e) {
+					//get the invitations sent and put in request
+					List<Invitation> invitations = therapistUser.getInvitationsSent();
+					request.setAttribute("invitationList", invitations);
+				} catch (DatabaseException | ValidationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

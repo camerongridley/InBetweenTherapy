@@ -101,15 +101,22 @@ public class UserClient extends User implements Serializable{
     	
     	invitation.update(cn);
     	
-    	invitation.addTreatmentPlanID(2);
-    	invitation.addTreatmentPlanID(11);
-    	
     	//TODO here can check for newUser type and handle for other scenarios such as when a therapist invites another therapist
     	dao.therapistCreateClientConnection(cn, invitation.getSenderUserID(), this.getUserID());
     	
-    	for(int treatmentPlanID : invitation.getTreatmentPlanIDsToCopy()){
-    		this.createTreatmentPlanFromTemplate(cn, this.getUserID(), treatmentPlanID);
-    	}
+    	try {
+			User invitationSender = User.loadBasic(invitation.getSenderUserID());
+			
+			for(int treatmentPlanID : invitation.getTreatmentPlanIDsToCopy()){
+	    		invitationSender.createTreatmentPlanFromTemplate(cn, this.getUserID(), treatmentPlanID);
+	    	}
+			
+		} catch (DatabaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	
 
     }
 }

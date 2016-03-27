@@ -8,7 +8,7 @@ public class Constants {
 	public Constants() {
 		
 	}
-	public static final String rootURL = "http://doitright.cggcoding.com";
+	public static final String ROOT_URL = "http://localhost:8181";//"http://doitright.cggcoding.com";
 	
 	public static final int ADMIN_ROLE_ID = 1;
 	public static final int THERAPIST_ROLE_ID = 2;

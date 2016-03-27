@@ -1,6 +1,7 @@
 package com.cggcoding.controllers.therapist;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -71,11 +72,13 @@ public class ManageClients extends HttpServlet {
 		
 		int clientUserID = 0;
 		UserTherapist therapistUser = null;;
-		
+		List<Invitation> invitations = null;
 		try {
 			if(user.hasRole(Constants.USER_THERAPIST)){
 				therapistUser = (UserTherapist)user;
 				Map<Integer, UserClient> clientMap = therapistUser.loadClients();
+				
+				invitations = therapistUser.getInvitationsSent();
 				
 				clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
 				
@@ -94,6 +97,7 @@ public class ManageClients extends HttpServlet {
 					case "client-management-menu":
 						//get list of clients for the therapist who is logged in and put that list in the request
 						request.setAttribute("clientMap", clientMap);
+						
 						
 						forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_MAIN;
 						break;
@@ -133,7 +137,6 @@ public class ManageClients extends HttpServlet {
 		            	forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 						break;
 					case "invite-client":
-						System.out.println("Inviting client...");
 						ServletContext context = session.getServletContext();
 						System.out.println("Context Path: " + context.getContextPath());
 						
@@ -143,8 +146,21 @@ public class ManageClients extends HttpServlet {
 						Invitation invitation = Invitation.createInvitation(user.getUserID(), recipientEmail, recipientFirstName, recipientLastName);
 						InvitationHandler.sendInvitation(invitation, user, recipientEmail);
 						
+						invitations.add(invitation);
+						
 						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 						request.setAttribute("successMessage", SuccessMessages.INVITATION_SENT_SUCCESS);
+						request.setAttribute("clientMap", clientMap);
+						break;
+					case "invitation-delete":
+						String invitationCode = request.getParameter("invitationCode");
+						Invitation.delete(invitationCode);
+						
+						//reload invitation list
+						invitations = therapistUser.getInvitationsSent();
+						
+						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
+						request.setAttribute("successMessage", SuccessMessages.INVITATION_DELETED);
 						request.setAttribute("clientMap", clientMap);
 						break;
 				}
@@ -154,12 +170,16 @@ public class ManageClients extends HttpServlet {
 				//put these back in the request so other forms can maintain selections of other forms as well as display selected items of the dropdown boxes
 				request.setAttribute("client", client);
 				request.setAttribute("coreTreatmentPlanID", coreTreatmentPlanID);
+				
+				
+				request.setAttribute("invitationList", invitations);
 			}
 		
 		}catch(DatabaseException | ValidationException e){
 
 			if(requestedAction.equals("select-client")||requestedAction.equals("invite-client")){
 				request.setAttribute("clientMap", therapistUser.getClientMap());
+				request.setAttribute("invitationList", invitations);
 				forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 			} else {
 				request.setAttribute("activeAssignedClientPlans", therapistUser.loadActiveAssignedClientTreatmentPlans());

@@ -37,14 +37,15 @@ public class InvitationHandler{
 		this.invitation = invitation;
 	}
 
-	public static boolean sendInvitation(Invitation invitation, User sentFromUser, String sendToEmail) throws DatabaseException, ValidationException{
+	public static Invitation sendInvitation(Invitation invitation, User sentFromUser, String sendToEmail) throws DatabaseException, ValidationException{
 
 		//prepare the invitation
+		String invitationLink = Constants.ROOT_URL + "/InvitationRegistration?email=" + invitation.getRecipientEmail() + "&firstName=" + invitation.getRecipientFirstName() + "&lastName=" + invitation.getRecipientLastName() + "&invitationCode=" + invitation.getInvitationCode();
 		String subject = "Invitation to join DoItRight!";
 		String body = "Dear " + invitation.getRecipientFirstName() + ",\n\n"
 				+ sentFromUser.getFirstName() + " " + sentFromUser.getLastName() + " has invited you to join DoItRight! as a client. "
 				+ "Please click the link below to be taken to the site and register.  Using the link provided will automatically "
-				+ "connect you with your therapist.  Or if you'd prefer to go directly to " + Constants.rootURL
+				+ "connect you with your therapist. \n\n" + invitationLink + "\n\nOr if you'd prefer to go directly to " + Constants.ROOT_URL
 				+ " and click \"Register\".  Then at the registration page, enter your enter the invitation code " + invitation.getInvitationCode()
 				+ " when applicable."
 				+ "\n\nNow get going!\n\nThe DoItRight Team";
@@ -58,11 +59,17 @@ public class InvitationHandler{
 			cn = dao.getConnection();
 			
 			cn.setAutoCommit(false);
-			if(dao.invitationCheckForExisting(cn, invitation)){
-				dao.invitationCreate(cn, invitation);
-			}else{
-				throw new ValidationException("You have already sent that person and invitation.");
+			
+			if(dao.invitationAlreadyExists(cn, invitation)){
+				throw new ValidationException(ErrorMessages.INVITATION_ALREADY_INVITED);
 			}
+			
+			//TODO allow for an existing user to get linked up to a therapist
+			if(User.loadBasicByEmail(cn, invitation.getRecipientEmail()) != null){
+				throw new ValidationException(ErrorMessages.INTIVATION_USER_ALREADY_REGISTERED);
+			}
+			
+			dao.invitationCreate(cn, invitation);
 			
 			//send the invitation via email
 			SMTPEmailer.sendEmail(sendToEmail, subject, body);
@@ -110,7 +117,7 @@ public class InvitationHandler{
 		
 		
 		
-		return true;
+		return invitation;
 	}
 	
     

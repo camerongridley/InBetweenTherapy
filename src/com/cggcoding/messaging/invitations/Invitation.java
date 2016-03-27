@@ -3,10 +3,14 @@ package com.cggcoding.messaging.invitations;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.dbutils.DbUtils;
+
+import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
@@ -24,6 +28,7 @@ public class Invitation {
 	private List<Integer> treatmentPlanIDsToCopy;
 	
 	private static DatabaseActionHandler dao = new MySQLActionHandler();
+	DateTimeFormatter dateFormat = DateTimeFormatter.ISO_LOCAL_DATE; 
 
 	private Invitation(int senderUserID, String recipientEmail, String recipientFirstName, String recipientLastName) {
 		this.senderUserID = senderUserID;
@@ -172,4 +177,32 @@ public class Invitation {
 		dao.invitationUpdate(cn, this);
 	}
 	
+	public static void delete(String invitationCode) throws DatabaseException{
+		Connection cn = null;
+		
+		try{
+			cn = dao.getConnection();
+			
+			dao.invitationDelete(cn, invitationCode);
+		} catch (SQLException e){
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		}finally{
+			DbUtils.closeQuietly(cn);
+		}
+		
+	}
+	
+	public String getFormattedDateInvited(){
+		return this.getDateInvited().format(dateFormat);
+	}
+	
+	public String getFormattedDateAccepted(){
+		if(this.dateAccepted != null){
+			return this.getDateAccepted().format(dateFormat);
+		}else{
+			return "";
+		}
+		
+	}
 }

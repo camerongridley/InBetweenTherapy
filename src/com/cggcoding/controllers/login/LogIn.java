@@ -2,6 +2,7 @@ package com.cggcoding.controllers.login;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserAdmin;
 import com.cggcoding.models.UserClient;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import javax.servlet.ServletException;
@@ -72,7 +74,10 @@ public class LogIn extends HttpServlet {
 						UserTherapist userTherapist = (UserTherapist)user;
 						Map<Integer, UserClient> clientMap = userTherapist.loadClients();
 						userTherapist.setClientMap(clientMap);
-					
+						
+						List<Invitation> invitations = userTherapist.getInvitationsSent();
+						
+						request.setAttribute("invitationList", invitations);
 						request.setAttribute("clientMap", clientMap);
 						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 					}if(user.hasRole(Constants.USER_CLIENT)){

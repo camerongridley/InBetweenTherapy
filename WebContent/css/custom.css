@@ -224,6 +224,10 @@ h2{
     text-overflow:ellipsis;
 }
 
+.panel-icon{
+	padding-right:5px;
+}
+
 /* For Large Screen Width */
 @media (min-width: 768px){
     .form-inline .form-control {

@@ -10,30 +10,28 @@ import javax.servlet.http.HttpSession;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
-import com.cggcoding.messaging.invitations.InvitationHandler;
 import com.cggcoding.models.User;
-import com.cggcoding.models.UserClient;
-import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 
 /**
- * Servlet implementation class Registration
+ * Servlet implementation class InvitationRegistration
  */
-@WebServlet("/Registration")
-public class Registration extends HttpServlet {
+@WebServlet("/InvitationRegistration")
+public class InvitationRegistration extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Registration() {
+    public InvitationRegistration() {
         super();
+        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		processRequest(request, response);
 	}
 
@@ -53,35 +51,18 @@ public class Registration extends HttpServlet {
 		String path = request.getParameter("path");
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
-		
-		String userName = request.getParameter("userName");
+
 		String firstName = request.getParameter("firstName");
 		String lastName = request.getParameter("lastName");
-		String password = request.getParameter("password");
-		String passwordConfirm = request.getParameter("passwordConfirm");
 		String email = request.getParameter("email");
-		String userRole = request.getParameter("userRole");
 		String invitationCode = request.getParameter("invitationCode");
 		
-		
-		try{
-			user = User.registerNewUser(userName, firstName, lastName, password, passwordConfirm, email, userRole, invitationCode);
+		request.setAttribute("email", email);
+		request.setAttribute("firstName", firstName);
+		request.setAttribute("lastName", lastName);
+		request.setAttribute("invitationCode", invitationCode);
 
-			request.getSession().setAttribute("user", user);
-			
-			forwardTo = user.getMainMenuURL();
-			
-		}catch (DatabaseException | ValidationException e){
-			e.printStackTrace();
-			request.setAttribute("errorMessage", e.getMessage());
-			request.setAttribute("userName", userName);
-			request.setAttribute("email", email);
-			request.setAttribute("firstName", firstName);
-			request.setAttribute("lastName", lastName);
-			request.setAttribute("invitationCode", invitationCode);
-			request.setAttribute("userRole", userRole);
-			forwardTo = Constants.URL_REGISTRATION;
-		}
+		forwardTo = Constants.URL_REGISTRATION;
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 	}

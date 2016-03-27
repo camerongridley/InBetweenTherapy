@@ -25,7 +25,9 @@ public final class SuccessMessages {
 	public static final String TASK_ADDED_TO_STAGE = "The task has been successfully added to the stage.";
 	public static final String TASK_UPDATED = "The task has been saved.";
 	
+	
 	//INVITATIONS
-	public static String INVITATION_SENT_SUCCESS = "The invitation was sent successfully.";
+	public static final String INVITATION_SENT_SUCCESS = "The invitation was sent successfully.";
+	public static final String INVITATION_DELETED = "The invitation was deleted.";
 
 }

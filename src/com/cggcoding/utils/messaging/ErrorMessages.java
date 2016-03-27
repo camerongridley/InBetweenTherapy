@@ -67,6 +67,8 @@ public final class ErrorMessages {
 	public static final String INVITATION_NOT_FOUND = "There was no invitation found with that invitation code.  Please try again or contact the person who invited you to request a new invitation.";
 	public static final String INVITATION_INVALID_EMAIL_ADDRESS = "The email address you entered is invalid.  The invitation was not sent.  Please try again.";
 	public static final String INVITATION_UNSUCCESSFUL_SEND = "The invitation email failed to send properly.  Please check the email address you are sending to and try again.";
+	public static final String INVITATION_ALREADY_INVITED = "You have already sent that person an invitation.";
+	public static final String INTIVATION_USER_ALREADY_REGISTERED = "A user with that email address is already registered.";
 	
 	
 	

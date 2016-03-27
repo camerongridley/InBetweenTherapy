@@ -385,6 +385,55 @@ public abstract class User implements Serializable{
 		return dao.userLoadByID(userID);
 	}
 	
+	public static User loadBasicByEmail(Connection cn, String emailAddress) throws SQLException, ValidationException{
+		return dao.userLoadByEmailAddress(cn, emailAddress);
+	}
+	
+	public List<Invitation> getInvitationsSent() throws DatabaseException, ValidationException{
+		Connection cn = null;
+		List<Invitation> invitationList = new ArrayList<>();
+		
+        try {
+        	cn = dao.getConnection();
+        	cn.setAutoCommit(false);
+		
+			
+			
+			List<String> invitationCodes = dao.invitationGetSentInvitationCodes(cn, this.getUserID());
+			
+			for(String code : invitationCodes){
+				invitationList.add(Invitation.load(cn, code));
+			}
+			
+			cn.commit();
+        	
+        } catch (SQLException | ValidationException e) {
+        	e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
+				e1.printStackTrace();
+			}
+			if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
+			
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+        }
+		
+		return invitationList;
+	}
+	
 	@Override
 	public String toString(){
 		return "User id:" + email + ", User email: " + email;
