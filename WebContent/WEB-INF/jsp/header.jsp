@@ -10,7 +10,6 @@
     <meta name="author" content="">
     <link rel="icon" href="/favicon.ico">
 
-    <title>Do It Right!</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -39,7 +38,6 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/index.jsp">Do It Right!</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -126,7 +124,6 @@
 
       <!-- Main component for a primary marketing message or call to action -->
       <div class="jumbotron">
-        <h1>Do It Right!</h1>
         <p>Get the most out of therapy.</p>
        <!--
         <p>
