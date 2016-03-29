@@ -10,6 +10,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.TaskGeneric;
+import com.cggcoding.models.TaskKeyword;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
 import com.cggcoding.models.MapStageTaskTemplate;
@@ -175,7 +176,7 @@ public interface DatabaseActionHandler {
 	
 	ArrayList<TreatmentIssue> treatmentIssueGetCoreList() throws DatabaseException;
 
-	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
+	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(Connection cn, int userID) throws SQLException;
 
 	boolean treatmentIssueUpdate(Connection cn, TreatmentIssue issue) throws ValidationException, SQLException;
 
@@ -207,8 +208,17 @@ public interface DatabaseActionHandler {
 	boolean taskTwoTextBoxesUpdateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask)
 			throws SQLException, ValidationException;
 
+	Map<String, TaskKeyword> keywordAdminListLoad(Connection cn) throws SQLException;
 	
+	TaskKeyword keywordCreate(Connection cn, TaskKeyword taskKeyword) throws SQLException;
+
+	boolean keywordUpdate(Connection cn, TaskKeyword taskKeyword) throws SQLException;
+
+	void keywordDelete(Connection cn, int keywordID) throws SQLException;
 	
+	boolean keywordMapCreate(Connection cn, int taskID, int taskKeywordID) throws SQLException;
+
+	void keywordMapDelete(Connection cn, int taskID, int taskKeywordID) throws SQLException;
 	
 	//**************************************************************************************************
 	//*************************************** Misc Methods **********************************
@@ -243,6 +253,14 @@ public interface DatabaseActionHandler {
 	void therapistCreateClientConnection(Connection cn, int therapistUserID, int clientUserID) throws SQLException;
 
 	List<String> invitationGetSentInvitationCodes(Connection cn, int senderUserID) throws SQLException;
+
+	
+
+
+	
+	
+
+	
 
 	
 

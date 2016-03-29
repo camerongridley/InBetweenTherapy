@@ -10,6 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="/favicon.ico">
 
+    <title>In/Between</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -38,6 +39,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
+          <a class="navbar-brand" href="/index.jsp">In/Between</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -124,6 +126,7 @@
 
       <!-- Main component for a primary marketing message or call to action -->
       <div class="jumbotron">
+        <h1>In/Between</h1>
         <p>Get the most out of therapy.</p>
        <!--
         <p>

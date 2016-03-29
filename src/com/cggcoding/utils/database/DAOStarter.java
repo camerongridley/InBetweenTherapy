@@ -153,8 +153,6 @@ public class DAOStarter {
     	}finally{
     		DbUtils.closeQuietly(ps);
     	}
-    	
-
     }
     
 }

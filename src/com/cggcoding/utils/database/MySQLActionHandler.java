@@ -543,7 +543,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     //XXX Make this public and called from User class?
-    private List<Integer> userGetAdminIDs(Connection cn) throws DatabaseException{
+    private List<Integer> userGetAdminIDs(Connection cn) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         List<Integer> adminIDList = new ArrayList<>();
@@ -559,10 +559,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	adminIDList.add(rs.getInt("user_id"));
             }
         	
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
@@ -1998,9 +1994,11 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			cn = getConnection();
 			List<Integer> userIDs = userGetAdminIDs(cn);
 			for(int adminUserID : userIDs){
-				issues.addAll(treatmentIssueGetListByUserID(adminUserID));
+				issues.addAll(treatmentIssueGetListByUserID(cn, adminUserID));
 			}
-			
+		}catch (SQLException e){
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
 		} finally {
 			DbUtils.closeQuietly(cn);
 		}
@@ -2010,15 +2008,14 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 
 
     @Override
-	public ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException{
-    	Connection cn = null;
+	public ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(Connection cn, int userID) throws SQLException{
+    	
     	PreparedStatement ps = null;
         ResultSet rs = null;
         
         ArrayList<TreatmentIssue> issues = new ArrayList<>();
         
         try {
-        	cn = getConnection();
         	
         	String sql = "SELECT treatment_issue.treatment_issue_id, treatment_issue.issue, user.user_id "
             		+ "FROM user INNER JOIN treatment_issue ON user.user_id = treatment_issue.treatment_issue_user_id_fk "
@@ -2034,13 +2031,9 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	issues.add(issue);
             }
 
-        } catch (SQLException e) {
-        	e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
         
         return issues;
@@ -2292,7 +2285,157 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	    }
 
 	}
+    
+    @Override
+    public Map<String, TaskKeyword> keywordAdminListLoad(Connection cn) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<String, TaskKeyword> keywordMap = new HashMap<>();
         
+        
+        try {
+        	List<Integer> adminIDList = userGetAdminIDs(cn);
+        	
+        	String baseStatement = "SELECT * FROM task_keywords WHERE task_keywords_user_id_fk in (";
+        	
+        	String orderByClause = "ORDER BY task_keyword";
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, orderByClause);
+        	
+    		ps = cn.prepareStatement(sql);
+    		
+    		for(int i = 0; i < adminIDList.size(); i++){
+    			ps.setInt(i+1, adminIDList.get(i));
+    		}
+            
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+            	TaskKeyword taskKeyword = new TaskKeyword(rs.getInt("task_keyword_id"), rs.getString("keyword"), rs.getInt("task_keywords_user_id_fk")); //here build object with constructor or static factory method 
+            	keywordMap.put(rs.getString("keyword"), taskKeyword);
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        //throwValidationExceptionIfNull(stage);
+        
+        return keywordMap;
+    	
+    }
+    
+    @Override
+    public TaskKeyword keywordCreate(Connection cn, TaskKeyword taskKeyword) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+    		String sql = "INSERT INTO task_keywords (keyword, task_keywords_user_id_fk) "
+            		+ "VALUES (?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            /* set the prepared statement arguments*/
+            ps.setString(1, taskKeyword.getKeyword());
+            ps.setInt(2, taskKeyword.getUserID());
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	taskKeyword.setTaskKeywordID(generatedKeys.getInt(1));
+            }
+        	
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return taskKeyword;
+    }
+    
+    @Override
+    public boolean keywordUpdate(Connection cn, TaskKeyword taskKeyword) throws SQLException{
+    	PreparedStatement ps = null;
+        int success = 0;
+        
+        try {
+        		
+    		String sql = "UPDATE task_keywords SET keyword=?, task_keywords_user_id_fk=? WHERE task_keyword_id=?";
+        	
+            ps = cn.prepareStatement(sql);
+
+            ps.setInt(1, taskKeyword.getTaskKeywordID());
+            ps.setString(2, taskKeyword.getKeyword());
+            ps.setInt(3, taskKeyword.getUserID());
+            
+            success = ps.executeUpdate();
+        	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success == 1;
+    	
+    }
+    
+    @Override
+    public void keywordDelete(Connection cn, int keywordID) throws SQLException{
+    	PreparedStatement ps = null;
+        
+    	try{
+	        ps = cn.prepareStatement("DELETE FROM task_keywords WHERE task_keyword_id=?");
+	        ps.setInt(1, keywordID);
+	
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
+    }
+        
+    @Override
+    public boolean keywordMapCreate(Connection cn, int taskID, int taskKeywordID) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        int success = 0;
+        try {
+    		String sql = "INSERT INTO task_keyword_maps (task_generic_id_fk, task_keyword_id_fk) "
+            		+ "VALUES (?, ?)";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            /* set the prepared statement arguments*/
+            ps.setInt(1, taskID);
+            ps.setInt(2, taskKeywordID);
+
+            success = ps.executeUpdate();
+	
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success==1;
+    }
+    
+    @Override
+    public void keywordMapDelete(Connection cn, int taskID, int taskKeywordID) throws SQLException{
+    	PreparedStatement ps = null;
+        
+    	try{
+	        ps = cn.prepareStatement("DELETE FROM task_keyword_maps WHERE task_generic_id_fk=? AND task_keyword_id_fk=?");
+	        ps.setInt(1, taskID);
+	        ps.setInt(1, taskKeywordID);
+	        
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
+    }
+    
     private Timestamp convertLocalTimeDateToTimstamp(LocalDateTime ldt){
     	Timestamp timestamp = null;
     	

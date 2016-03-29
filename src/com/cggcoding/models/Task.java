@@ -42,7 +42,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private boolean extraTask;
 	private boolean template;
 	private int templateID;
-	int clientRepetition;
+	private int clientRepetition;
+	private Map<String, TaskKeyword> keywords;
 	boolean disabled; //this property is not maintained in the database and is set upon or after loading.  It's purpose is to tell the view if assiciated control should be disabled
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
