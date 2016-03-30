@@ -70,7 +70,7 @@ public class TaskKeyword {
 	}
 	
 	public static Map<String, TaskKeyword> loadCoreList(Connection cn, String invitationCode) throws SQLException, ValidationException{
-		Map<String, TaskKeyword> keywords = dao.keywordAdminListLoad(cn);
+		Map<String, TaskKeyword> keywords = dao.keywordCoreListLoad(cn);
 		
 		return keywords;
 	}

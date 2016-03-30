@@ -2287,7 +2287,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-    public Map<String, TaskKeyword> keywordAdminListLoad(Connection cn) throws SQLException{
+    public Map<String, TaskKeyword> keywordCoreListLoad(Connection cn) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         Map<String, TaskKeyword> keywordMap = new HashMap<>();

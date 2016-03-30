@@ -208,7 +208,7 @@ public interface DatabaseActionHandler {
 	boolean taskTwoTextBoxesUpdateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask)
 			throws SQLException, ValidationException;
 
-	Map<String, TaskKeyword> keywordAdminListLoad(Connection cn) throws SQLException;
+	Map<String, TaskKeyword> keywordCoreListLoad(Connection cn) throws SQLException;
 	
 	TaskKeyword keywordCreate(Connection cn, TaskKeyword taskKeyword) throws SQLException;
 
