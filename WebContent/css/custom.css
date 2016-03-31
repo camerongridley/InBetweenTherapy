@@ -228,6 +228,15 @@ h2{
 	padding-right:5px;
 }
 
+.keyword {
+	border-style: ridge;
+    border-width: 3px;
+    border-radius: 7px;
+    white-space: nowrap;
+    margin-right: 5px;
+    padding:5px;
+}
+
 /* For Large Screen Width */
 @media (min-width: 768px){
     .form-inline .form-control {

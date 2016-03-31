@@ -12,6 +12,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
+import com.cggcoding.models.TaskKeyword;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.CommonServletFunctions;
@@ -90,6 +91,7 @@ public class EditTask extends HttpServlet {
 	    		}
 	    		
 	    		request.setAttribute("owner", owner);
+	    		request.setAttribute("coreTaskKeyords", TaskKeyword.loadCoreList());
 	    		
 	    		//if this Task is a template, remind the user that all instances of this task will be changed
 	    		if(task.isTemplate()){

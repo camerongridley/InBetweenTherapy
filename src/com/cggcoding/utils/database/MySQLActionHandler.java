@@ -1547,13 +1547,18 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	Timestamp timestamp = rs.getTimestamp("task_date_completed");
-            	LocalDateTime dateCompleted = convertTimestampToLocalDateTime(timestamp);
+            	if(rs.isFirst()){
+            		Timestamp timestamp = rs.getTimestamp("task_date_completed");
+                	LocalDateTime dateCompleted = convertTimestampToLocalDateTime(timestamp);
+                	
+                	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
+                			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
+                			dateCompleted, rs.getInt("client_task_order"), rs.getBoolean("is_extra_task"), 
+                			rs.getBoolean("task_is_template"), rs.getInt("task_template_id"), rs.getInt("client_repetition"));
+            	}
             	
-            	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
-            			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
-            			dateCompleted, rs.getInt("client_task_order"), rs.getBoolean("is_extra_task"), 
-            			rs.getBoolean("task_is_template"), rs.getInt("task_template_id"), rs.getInt("client_repetition"));
+            	//task.addKeyword(new TaskKeyword(rs.getInt("task_keyword_id"),rs.getString("keyword"),rs.getInt("task_keyword_user_id_fk")));
+            	
             }
 
         } finally {
@@ -2296,9 +2301,9 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         try {
         	List<Integer> adminIDList = userGetAdminIDs(cn);
         	
-        	String baseStatement = "SELECT * FROM task_keywords WHERE task_keywords_user_id_fk in (";
+        	String baseStatement = "SELECT * FROM task_keyword WHERE task_keyword_user_id_fk in (";
         	
-        	String orderByClause = "ORDER BY task_keyword";
+        	String orderByClause = "ORDER BY keyword";
         	
         	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, orderByClause);
         	
@@ -2311,7 +2316,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
             
             while (rs.next()){
-            	TaskKeyword taskKeyword = new TaskKeyword(rs.getInt("task_keyword_id"), rs.getString("keyword"), rs.getInt("task_keywords_user_id_fk")); //here build object with constructor or static factory method 
+            	TaskKeyword taskKeyword = new TaskKeyword(rs.getInt("task_keyword_id"), rs.getString("keyword"), rs.getInt("task_keyword_user_id_fk")); //here build object with constructor or static factory method 
             	keywordMap.put(rs.getString("keyword"), taskKeyword);
             }
 
@@ -2332,7 +2337,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         ResultSet generatedKeys = null;
         
         try {
-    		String sql = "INSERT INTO task_keywords (keyword, task_keywords_user_id_fk) "
+    		String sql = "INSERT INTO task_keyword (keyword, task_keyword_user_id_fk) "
             		+ "VALUES (?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -2364,7 +2369,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         		
-    		String sql = "UPDATE task_keywords SET keyword=?, task_keywords_user_id_fk=? WHERE task_keyword_id=?";
+    		String sql = "UPDATE task_keyword SET keyword=?, task_keyword_user_id_fk=? WHERE task_keyword_id=?";
         	
             ps = cn.prepareStatement(sql);
 
@@ -2387,7 +2392,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	PreparedStatement ps = null;
         
     	try{
-	        ps = cn.prepareStatement("DELETE FROM task_keywords WHERE task_keyword_id=?");
+	        ps = cn.prepareStatement("DELETE FROM task_keyword WHERE task_keyword_id=?");
 	        ps.setInt(1, keywordID);
 	
 	        ps.executeUpdate();

@@ -118,8 +118,24 @@
 	            </div>
 	        </div>
 		</c:if>
-        
-        <div class="form-group">
+		
+		<div class="form-group">
+            <label for="taskTitle" class="col-sm-2 control-label">Keywords</label>
+            <div class="col-sm-10">
+            	
+                <c:forEach var="keyword" items="${coreTaskKeyords}">
+                	<c:set var="keywordValue" value="${keyword.value}"></c:set>
+
+				<span class="keyword">
+				      <input type="checkbox" value="${keywordValue.taskKeywordID}"> ${keywordValue.keyword}
+				</span>
+
+				</c:forEach>
+				
+            </div>
+        </div>
+		<div class="form-group">
+
             <div class="col-sm-offset-2 col-sm-10 save-button">
                 <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
                 <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>

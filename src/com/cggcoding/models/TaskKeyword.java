@@ -69,8 +69,20 @@ public class TaskKeyword {
 		
 	}
 	
-	public static Map<String, TaskKeyword> loadCoreList(Connection cn, String invitationCode) throws SQLException, ValidationException{
-		Map<String, TaskKeyword> keywords = dao.keywordCoreListLoad(cn);
+	public static Map<String, TaskKeyword> loadCoreList() throws ValidationException, DatabaseException{
+		Connection cn = null;
+		Map<String, TaskKeyword> keywords = null;
+		try{
+			cn = dao.getConnection();
+			
+			keywords = dao.keywordCoreListLoad(cn);
+		} catch (SQLException e){
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		}finally{
+			DbUtils.closeQuietly(cn);
+		}
+		 
 		
 		return keywords;
 	}
@@ -93,6 +105,12 @@ public class TaskKeyword {
 			DbUtils.closeQuietly(cn);
 		}
 		
+	}
+	
+	
+	public boolean checkIfKeywordExists(String keyword, int forUserID){
+		//TODO implement method
+		return false;
 	}
 	
 }

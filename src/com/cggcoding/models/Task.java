@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +71,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.templateID = 0;
 		this.clientRepetition = 1;
 
+		this.keywords = new HashMap<>();
 	}
 	
 	/**Constructor for use before Task is inserted into the database, so no taskID is available to set, therefore a temporary value of 0 is given to taskID.  Since this is a new task and
@@ -101,6 +103,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.template = template;
 		this.templateID = templateID;
 		this.clientRepetition = clientRepetition;
+		
+		this.keywords = new HashMap<>();
 	}
 	
 	
@@ -135,6 +139,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.template = template;
 		this.templateID = templateID;
 		this.clientRepetition = clientRepetition;
+		
+		this.keywords = new HashMap<>();
 	}
 	
 	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
@@ -712,6 +718,22 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		
 		//update in database
 		update();		
+	}
+	
+	public boolean hasKeyword(String keyword){
+		if(keywords.get(keyword)!=null){
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public void addKeyword(TaskKeyword taskKeyword){
+		keywords.put(taskKeyword.getKeyword(), taskKeyword);
+	}
+	
+	public void removeKeyword(String keyword){
+		keywords.remove(keyword);
 	}
 	
 	public abstract void transferAdditionalData(Task taskWithNewData);
