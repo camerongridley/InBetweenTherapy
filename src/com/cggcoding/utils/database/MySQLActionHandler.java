@@ -1538,7 +1538,11 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         Task task = null;
         
         try {
-    		String sql = "SELECT * FROM task_generic WHERE task_generic_id =?";
+    		String sql = "SELECT task_generic.*, task_keyword.task_keyword_id, task_keyword.keyword, task_keyword.task_keyword_user_id_fk "
+    				+ "FROM task_keyword RIGHT JOIN (task_generic LEFT JOIN task_keyword_maps "
+    				+ "ON task_generic.task_generic_id = task_keyword_maps.task_generic_id_fk) "
+    				+ "ON task_keyword.task_keyword_id = task_keyword_maps.task_keyword_id_fk "
+    				+ "WHERE task_generic.task_generic_id =?";
         	
             ps = cn.prepareStatement(sql);
             
@@ -1548,16 +1552,19 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
    
             while (rs.next()){
             	if(rs.isFirst()){
-            		Timestamp timestamp = rs.getTimestamp("task_date_completed");
+            		Timestamp timestamp = rs.getTimestamp("task_generic.task_date_completed");
                 	LocalDateTime dateCompleted = convertTimestampToLocalDateTime(timestamp);
                 	
-                	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
-                			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
+                	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic.task_generic_id"), rs.getInt("task_generic.task_generic_stage_id_fk"), rs.getInt("task_generic.task_generic_user_id_fk"), rs.getInt("task_generic.task_generic_task_type_id_fk"), 
+                			rs.getInt("task_generic.parent_task_id"), rs.getString("task_generic.task_title"), rs.getString("task_generic.instructions"), rs.getString("task_generic.resource_link"), rs.getBoolean("task_generic.task_completed"), 
                 			dateCompleted, rs.getInt("client_task_order"), rs.getBoolean("is_extra_task"), 
-                			rs.getBoolean("task_is_template"), rs.getInt("task_template_id"), rs.getInt("client_repetition"));
+                			rs.getBoolean("task_generic.task_is_template"), rs.getInt("task_generic.task_template_id"), rs.getInt("task_generic.client_repetition"));
             	}
             	
-            	//task.addKeyword(new TaskKeyword(rs.getInt("task_keyword_id"),rs.getString("keyword"),rs.getInt("task_keyword_user_id_fk")));
+            	if(rs.getString("task_keyword.task_keyword_id")!=null){
+            		task.addKeyword(new TaskKeyword(rs.getInt("task_keyword.task_keyword_id"),rs.getString("task_keyword.keyword"),rs.getInt("task_keyword.task_keyword_user_id_fk")));
+            	}
+            	
             	
             }
 

@@ -722,10 +722,10 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	
 	public boolean hasKeyword(String keyword){
 		if(keywords.get(keyword)!=null){
-			return false;
+			return true;
 		}
 		
-		return true;
+		return false;
 	}
 	
 	public void addKeyword(TaskKeyword taskKeyword){

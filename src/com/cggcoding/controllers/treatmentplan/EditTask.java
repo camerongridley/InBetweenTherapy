@@ -71,6 +71,8 @@ public class EditTask extends HttpServlet {
 		User owner = null;
 		/*-----------End Treatment Plan object variables---------------*/
 		
+		int newTaskTypeID = 0;
+		boolean updateDataBase = false;
 
 		try {
 			
@@ -113,19 +115,24 @@ public class EditTask extends HttpServlet {
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-select-task-type"):
-						int newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
+						if(task==null || task.getTaskID()==0){
+							throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+						}
+					
+						newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
 						//TODO delete? task.setTaskTypeID(newTaskTypeID);
 					
 						//do not update database here.  that should only happen once user has submitted the overall update request
-						boolean updateDataBase = false;
+						updateDataBase = false;
 						task =Task.convertToType(task, newTaskTypeID, updateDataBase);
+						
 	
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-update"):
 						//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
 						if(request.getParameter("submitButton").equals("save")){
-							if(task.getTaskID()==0){
+							if(task==null || task.getTaskID()==0){
 								throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
 							}
 							
@@ -189,6 +196,15 @@ public class EditTask extends HttpServlet {
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("owner", owner);
+			
+			try {
+				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
+				request.setAttribute("coreTasks", Task.getCoreTasks());
+			} catch (DatabaseException e1) {
+				request.setAttribute("erorMessage", ErrorMessages.GENERAL_DB_ERROR);
+				e1.printStackTrace();
+			}
+			
 			
 			e.printStackTrace();
 
