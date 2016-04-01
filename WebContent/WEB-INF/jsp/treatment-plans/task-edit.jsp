@@ -126,7 +126,8 @@
                 <c:forEach var="keyword" items="${coreTaskKeyords}">
                 	<c:set var="keywordValue" value="${keyword.value}"></c:set>
 
-				<span class="keyword">
+				<!-- use label-default for core keywords and label-primary for custom keywords -->
+				<span class="keyword label-default">
 				      <input type="checkbox" value="${keywordValue.taskKeywordID}"> ${keywordValue.keyword}
 				</span>
 
