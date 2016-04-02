@@ -14,35 +14,35 @@ import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
-public class TaskKeyword {
-	private int taskKeywordID;
+public class Keyword {
+	private int keywordID;
 	private String keyword;
 	private int userID;
 	
 	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
-	public TaskKeyword(){
+	public Keyword(){
 	}
 	
-	public TaskKeyword(int taskKeywordID, String keyword, int userID) {
+	public Keyword(int keywordID, String keyword, int userID) {
 		super();
-		this.taskKeywordID = taskKeywordID;
+		this.keywordID = keywordID;
 		this.keyword = keyword;
 		this.userID = userID;
 	}
 
-	public TaskKeyword(String keyword, int userID) {
+	public Keyword(String keyword, int userID) {
 		super();
 		this.keyword = keyword;
 		this.userID = userID;
 	}
 
-	public int getTaskKeywordID() {
-		return taskKeywordID;
+	public int getKeywordID() {
+		return keywordID;
 	}
 
-	public void setTaskKeywordID(int taskKeywordID) {
-		this.taskKeywordID = taskKeywordID;
+	public void setKeywordID(int keywordID) {
+		this.keywordID = keywordID;
 	}
 
 	public String getKeyword() {
@@ -61,7 +61,7 @@ public class TaskKeyword {
 		this.userID = userID;
 	}
 	
-	public TaskKeyword create(Connection cn) throws SQLException {
+	public Keyword create(Connection cn) throws SQLException {
 		
 		dao.keywordCreate(cn, this);
 
@@ -69,9 +69,9 @@ public class TaskKeyword {
 		
 	}
 	
-	public static Map<String, TaskKeyword> loadCoreList() throws ValidationException, DatabaseException{
+	public static Map<String, Keyword> loadCoreList() throws ValidationException, DatabaseException{
 		Connection cn = null;
-		Map<String, TaskKeyword> keywords = null;
+		Map<String, Keyword> keywords = null;
 		try{
 			cn = dao.getConnection();
 			

@@ -10,7 +10,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.TaskGeneric;
-import com.cggcoding.models.TaskKeyword;
+import com.cggcoding.models.Keyword;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
 import com.cggcoding.models.MapStageTaskTemplate;
@@ -208,17 +208,17 @@ public interface DatabaseActionHandler {
 	boolean taskTwoTextBoxesUpdateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask)
 			throws SQLException, ValidationException;
 
-	Map<String, TaskKeyword> keywordCoreListLoad(Connection cn) throws SQLException;
+	Map<String, Keyword> keywordCoreListLoad(Connection cn) throws SQLException;
 	
-	TaskKeyword keywordCreate(Connection cn, TaskKeyword taskKeyword) throws SQLException;
+	Keyword keywordCreate(Connection cn, Keyword keyword) throws SQLException;
 
-	boolean keywordUpdate(Connection cn, TaskKeyword taskKeyword) throws SQLException;
+	boolean keywordUpdate(Connection cn, Keyword keyword) throws SQLException;
 
 	void keywordDelete(Connection cn, int keywordID) throws SQLException;
 	
-	boolean keywordMapCreate(Connection cn, int taskID, int taskKeywordID) throws SQLException;
+	boolean keywordMapCreate(Connection cn, int taskID, int keywordID) throws SQLException;
 
-	void keywordMapDelete(Connection cn, int taskID, int taskKeywordID) throws SQLException;
+	void keywordMapDelete(Connection cn, int taskID, int keywordID) throws SQLException;
 	
 	//**************************************************************************************************
 	//*************************************** Misc Methods **********************************

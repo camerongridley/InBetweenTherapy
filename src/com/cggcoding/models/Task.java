@@ -44,7 +44,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private boolean template;
 	private int templateID;
 	private int clientRepetition;
-	private Map<String, TaskKeyword> keywords;
+	private Map<String, Keyword> keywords;
 	boolean disabled; //this property is not maintained in the database and is set upon or after loading.  It's purpose is to tell the view if assiciated control should be disabled
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
@@ -728,8 +728,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return false;
 	}
 	
-	public void addKeyword(TaskKeyword taskKeyword){
-		keywords.put(taskKeyword.getKeyword(), taskKeyword);
+	public void addKeyword(Keyword keyword){
+		keywords.put(keyword.getKeyword(), keyword);
 	}
 	
 	public void removeKeyword(String keyword){

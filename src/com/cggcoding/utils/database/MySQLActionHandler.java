@@ -1562,7 +1562,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	}
             	
             	if(rs.getString("task_keyword.task_keyword_id")!=null){
-            		task.addKeyword(new TaskKeyword(rs.getInt("task_keyword.task_keyword_id"),rs.getString("task_keyword.keyword"),rs.getInt("task_keyword.task_keyword_user_id_fk")));
+            		task.addKeyword(new Keyword(rs.getInt("task_keyword.task_keyword_id"),rs.getString("task_keyword.keyword"),rs.getInt("task_keyword.task_keyword_user_id_fk")));
             	}
             	
             	
@@ -2299,10 +2299,10 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-    public Map<String, TaskKeyword> keywordCoreListLoad(Connection cn) throws SQLException{
+    public Map<String, Keyword> keywordCoreListLoad(Connection cn) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<String, TaskKeyword> keywordMap = new HashMap<>();
+        Map<String, Keyword> keywordMap = new HashMap<>();
         
         
         try {
@@ -2323,8 +2323,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
             
             while (rs.next()){
-            	TaskKeyword taskKeyword = new TaskKeyword(rs.getInt("task_keyword_id"), rs.getString("keyword"), rs.getInt("task_keyword_user_id_fk")); //here build object with constructor or static factory method 
-            	keywordMap.put(rs.getString("keyword"), taskKeyword);
+            	Keyword keyword = new Keyword(rs.getInt("task_keyword_id"), rs.getString("keyword"), rs.getInt("task_keyword_user_id_fk")); //here build object with constructor or static factory method 
+            	keywordMap.put(rs.getString("keyword"), keyword);
             }
 
         } finally {
@@ -2339,7 +2339,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
-    public TaskKeyword keywordCreate(Connection cn, TaskKeyword taskKeyword) throws SQLException{
+    public Keyword keywordCreate(Connection cn, Keyword keyword) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet generatedKeys = null;
         
@@ -2350,15 +2350,15 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             
             /* set the prepared statement arguments*/
-            ps.setString(1, taskKeyword.getKeyword());
-            ps.setInt(2, taskKeyword.getUserID());
+            ps.setString(1, keyword.getKeyword());
+            ps.setInt(2, keyword.getUserID());
 
             int success = ps.executeUpdate();
             
             generatedKeys = ps.getGeneratedKeys();
    
             while (generatedKeys.next()){
-            	taskKeyword.setTaskKeywordID(generatedKeys.getInt(1));
+            	keyword.setKeywordID(generatedKeys.getInt(1));
             }
         	
         } finally {
@@ -2366,11 +2366,11 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			DbUtils.closeQuietly(ps);
         }
         
-        return taskKeyword;
+        return keyword;
     }
     
     @Override
-    public boolean keywordUpdate(Connection cn, TaskKeyword taskKeyword) throws SQLException{
+    public boolean keywordUpdate(Connection cn, Keyword keyword) throws SQLException{
     	PreparedStatement ps = null;
         int success = 0;
         
@@ -2380,9 +2380,9 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         	
             ps = cn.prepareStatement(sql);
 
-            ps.setInt(1, taskKeyword.getTaskKeywordID());
-            ps.setString(2, taskKeyword.getKeyword());
-            ps.setInt(3, taskKeyword.getUserID());
+            ps.setInt(1, keyword.getKeywordID());
+            ps.setString(2, keyword.getKeyword());
+            ps.setInt(3, keyword.getUserID());
             
             success = ps.executeUpdate();
         	
@@ -2409,7 +2409,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
         
     @Override
-    public boolean keywordMapCreate(Connection cn, int taskID, int taskKeywordID) throws SQLException{
+    public boolean keywordMapCreate(Connection cn, int taskID, int keywordID) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         int success = 0;
@@ -2421,7 +2421,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             
             /* set the prepared statement arguments*/
             ps.setInt(1, taskID);
-            ps.setInt(2, taskKeywordID);
+            ps.setInt(2, keywordID);
 
             success = ps.executeUpdate();
 	
@@ -2434,13 +2434,13 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
-    public void keywordMapDelete(Connection cn, int taskID, int taskKeywordID) throws SQLException{
+    public void keywordMapDelete(Connection cn, int taskID, int keywordID) throws SQLException{
     	PreparedStatement ps = null;
         
     	try{
 	        ps = cn.prepareStatement("DELETE FROM task_keyword_maps WHERE task_generic_id_fk=? AND task_keyword_id_fk=?");
 	        ps.setInt(1, taskID);
-	        ps.setInt(1, taskKeywordID);
+	        ps.setInt(1, keywordID);
 	        
 	        ps.executeUpdate();
     	}finally{

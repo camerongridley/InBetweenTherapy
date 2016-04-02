@@ -128,7 +128,7 @@
 
 				<!-- use label-default for core keywords and label-primary for custom keywords -->
 				<span class="keyword label-default">
-				      <input type="checkbox" value="${keywordValue.taskKeywordID}" <c:if test="${task.hasKeyword(keyword.key) }"> checked</c:if>> ${keywordValue.keyword}
+				      <input type="checkbox" value="${keywordValue.keywordID}" <c:if test="${task.hasKeyword(keyword.key) }"> checked</c:if>> ${keywordValue.keyword}
 				</span>
 				
 				
