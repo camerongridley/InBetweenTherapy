@@ -1538,10 +1538,10 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         Task task = null;
         
         try {
-    		String sql = "SELECT task_generic.*, task_keyword.task_keyword_id, task_keyword.keyword, task_keyword.task_keyword_user_id_fk "
-    				+ "FROM task_keyword RIGHT JOIN (task_generic LEFT JOIN task_keyword_maps "
+    		String sql = "SELECT task_generic.*, keyword.keyword_id, keyword.keyword, keyword.keyword_user_id_fk "
+    				+ "FROM keyword RIGHT JOIN (task_generic LEFT JOIN task_keyword_maps "
     				+ "ON task_generic.task_generic_id = task_keyword_maps.task_generic_id_fk) "
-    				+ "ON task_keyword.task_keyword_id = task_keyword_maps.task_keyword_id_fk "
+    				+ "ON keyword.keyword_id = task_keyword_maps.task_keyword_id_fk "
     				+ "WHERE task_generic.task_generic_id =?";
         	
             ps = cn.prepareStatement(sql);
@@ -1561,8 +1561,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
                 			rs.getBoolean("task_generic.task_is_template"), rs.getInt("task_generic.task_template_id"), rs.getInt("task_generic.client_repetition"));
             	}
             	
-            	if(rs.getString("task_keyword.task_keyword_id")!=null){
-            		task.addKeyword(new Keyword(rs.getInt("task_keyword.task_keyword_id"),rs.getString("task_keyword.keyword"),rs.getInt("task_keyword.task_keyword_user_id_fk")));
+            	if(rs.getString("keyword.keyword_id")!=null){
+            		task.addKeyword(new Keyword(rs.getInt("keyword.keyword_id"),rs.getString("keyword.keyword"),rs.getInt("keyword.keyword_user_id_fk")));
             	}
             	
             	
@@ -2308,7 +2308,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         try {
         	List<Integer> adminIDList = userGetAdminIDs(cn);
         	
-        	String baseStatement = "SELECT * FROM task_keyword WHERE task_keyword_user_id_fk in (";
+        	String baseStatement = "SELECT * FROM keyword WHERE keyword_user_id_fk in (";
         	
         	String orderByClause = "ORDER BY keyword";
         	
@@ -2323,7 +2323,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
             
             while (rs.next()){
-            	Keyword keyword = new Keyword(rs.getInt("task_keyword_id"), rs.getString("keyword"), rs.getInt("task_keyword_user_id_fk")); //here build object with constructor or static factory method 
+            	Keyword keyword = new Keyword(rs.getInt("keyword_id"), rs.getString("keyword"), rs.getInt("keyword_user_id_fk")); //here build object with constructor or static factory method 
             	keywordMap.put(rs.getString("keyword"), keyword);
             }
 
@@ -2344,7 +2344,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         ResultSet generatedKeys = null;
         
         try {
-    		String sql = "INSERT INTO task_keyword (keyword, task_keyword_user_id_fk) "
+    		String sql = "INSERT INTO keyword (keyword, keyword_user_id_fk) "
             		+ "VALUES (?, ?)";
         	
             ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -2376,7 +2376,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         		
-    		String sql = "UPDATE task_keyword SET keyword=?, task_keyword_user_id_fk=? WHERE task_keyword_id=?";
+    		String sql = "UPDATE keyword SET keyword=?, keyword_user_id_fk=? WHERE keyword_id=?";
         	
             ps = cn.prepareStatement(sql);
 
@@ -2399,7 +2399,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	PreparedStatement ps = null;
         
     	try{
-	        ps = cn.prepareStatement("DELETE FROM task_keyword WHERE task_keyword_id=?");
+	        ps = cn.prepareStatement("DELETE FROM keyword WHERE keyword_id=?");
 	        ps.setInt(1, keywordID);
 	
 	        ps.executeUpdate();
