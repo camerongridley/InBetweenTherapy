@@ -207,7 +207,11 @@ public interface DatabaseActionHandler {
 
 	boolean taskTwoTextBoxesUpdateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask)
 			throws SQLException, ValidationException;
-
+	
+	//**************************************************************************************************
+	//*************************************** Keyword Methods **********************************
+	//**************************************************************************************************
+	
 	Map<Integer, Keyword> keywordCoreListLoad(Connection cn) throws SQLException;
 	
 	Keyword keywordCreate(Connection cn, Keyword keyword) throws SQLException;
@@ -216,9 +220,15 @@ public interface DatabaseActionHandler {
 
 	void keywordDelete(Connection cn, int keywordID) throws SQLException;
 	
-	boolean keywordMapCreate(Connection cn, int taskID, int keywordID) throws SQLException;
+	boolean keywordTaskMapCreate(Connection cn, int taskID, int keywordID) throws SQLException;
 
-	void keywordMapDelete(Connection cn, int taskID, int keywordID) throws SQLException;
+	/**
+	 * @param cn
+	 * @param taskID
+	 * @param keywordID
+	 * @throws SQLException
+	 */
+	void keywordTaskMapDelete(Connection cn, int taskID, int keywordID) throws SQLException;
 	
 	//**************************************************************************************************
 	//*************************************** Misc Methods **********************************

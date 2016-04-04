@@ -120,7 +120,11 @@
 		</c:if>
 		
 		<div class="form-group">
-            <label for="taskTitle" class="col-sm-2 control-label">Keywords</label>
+            <label for="taskTitle" class="col-sm-2 control-label">Keywords 
+            	<button type="button" class="btn btn-default btn-xs" aria-label="Left Align" data-toggle="modal" data-target="#newTaskKeywordModal" title="Add a new keyword to this task">
+					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+				</button>
+            </label>
             <div class="col-sm-10">
 
                 <c:forEach var="keyword" items="${coreTaskKeyords}">
@@ -143,6 +147,32 @@
             </div>
         </div>
     </form>
+	
+	<!-- New Task Keyword Modal -->
+	<div class="modal fade" id="newTaskKeywordModal" tabindex="-1" role="dialog" aria-labelledby="newTaskKeywordModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+		    <form class="form-horizontal" action="/secure/treatment-components/EditTask" method="POST">
+		    <input type="hidden" name="requestedAction" value="task-edit-add-new-keyword">
+		    <input type="hidden" name="path" value="${path }" >
+		    <input type="hidden" name="stageID" value="${stage.stageID}" >
+		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="newTaskKeywordModalLabel">Enter a new keyword for ${task.title}.</h4>
+		      </div>
+		      <div class="modal-body">
+		        <input type="text" class="form-control" id="newTaskKeyword" name="newTaskKeyword" value="" placeholder="Enter a new keyword. It will also be added to the core list.">
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        <button type="submit" class="btn btn-primary">Save</button>
+		      </div>
+		    </form>  
+	    </div>
+	  </div>
+	</div>
+	<!-- End New Task Keyword Modal -->
 	
 	<script>
 		$(function() {

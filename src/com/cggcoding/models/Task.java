@@ -400,6 +400,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	
 	protected void update(Connection cn) throws ValidationException, SQLException{
 		dao.taskGenericUpdate(cn, this);
+		updateKeywords(cn, this.updatedKeywordIDs);
 		updateAdditionalData(cn);
 
 	}
@@ -756,8 +757,23 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.updatedKeywordIDs = updatedKeywordIDs;
 	}
 	
-	public void updateKeywords(Connection cn, List<Integer> updatedKeywordIDs){
-		//TODO implement method
+	private void updateKeywords(Connection cn, List<Integer> updatedKeywordIDs) throws SQLException{
+		//loop updatedKeywordIDs to see if any new ones are present and if so create a map entry
+		for(int updatedKeyID : updatedKeywordIDs){
+			if(!this.getKeywords().containsKey(updatedKeyID)){
+				//updated keywordID is not present in this task's keyword list, so add it
+				dao.keywordTaskMapCreate(cn, this.getTaskID(), updatedKeyID);
+			}
+		}
+		
+		//loop through existing keywords and check it each exists in the updated list.  If not, then remove it from the mapping table
+		for(int currentKeyID : this.getKeywords().keySet()){
+			if(!updatedKeywordIDs.contains(currentKeyID)){
+				//updated keywordID is not present in this task's keyword list, so add it
+				dao.keywordTaskMapDelete(cn, this.getTaskID(), currentKeyID);
+			}
+		}
+		
 	}
 	
 	public abstract void transferAdditionalData(Task taskWithNewData);

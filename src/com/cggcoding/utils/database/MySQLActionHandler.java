@@ -1312,7 +1312,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return stage;
 	}
 	
-	//TODO rename this to reflect that it is loading live/non-template tasks
 	//OPTIMIZE instead of calling Task.load() for each record, could change SELECT statement to return all records from Task that match and build each Task inside this method.
 	@Override
 	public List<Task> stageLoadClientTasks(Connection cn, int stageID) throws SQLException {
@@ -1330,7 +1329,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
 
             while (rs.next()){
-            	tasks.add(Task.load(cn, rs.getInt("task_generic_id")));
+            	tasks.add(Task.load(cn, rs.getInt("task_generic_id")));//TODO change to add to list of taskIDs that is then passed to Task.load(List<Integer>);
             }
 
         } finally {
@@ -1581,6 +1580,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         return task;
 	}
+	
 	@Override
 	public void taskTwoTextBoxesCreateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws SQLException{
 		PreparedStatement ps = null;
@@ -2415,7 +2415,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
         
     @Override
-    public boolean keywordMapCreate(Connection cn, int taskID, int keywordID) throws SQLException{
+    public boolean keywordTaskMapCreate(Connection cn, int taskID, int keywordID) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         int success = 0;
@@ -2440,13 +2440,13 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
-    public void keywordMapDelete(Connection cn, int taskID, int keywordID) throws SQLException{
+    public void keywordTaskMapDelete(Connection cn, int taskID, int keywordID) throws SQLException{
     	PreparedStatement ps = null;
         
     	try{
 	        ps = cn.prepareStatement("DELETE FROM task_keyword_maps WHERE task_generic_id_fk=? AND task_keyword_id_fk=?");
 	        ps.setInt(1, taskID);
-	        ps.setInt(1, keywordID);
+	        ps.setInt(2, keywordID);
 	        
 	        ps.executeUpdate();
     	}finally{

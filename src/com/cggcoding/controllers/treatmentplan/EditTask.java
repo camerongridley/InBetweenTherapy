@@ -148,13 +148,7 @@ public class EditTask extends HttpServlet {
 							task.setUpdatedKeywordIDsList(updatedKeywordIDs);
 							
 							task.update();
-							
-							String[] kwords = request.getParameterValues("testingData[]");
-							for(int c=0; c<kwords.length; c++){
-								System.out.println("Jquery Test - keyword: " + kwords[c]);
-							}
-							//System.out.println("Testining jqery:" + request.getParameterValues("testingData"));
-							
+
 							request.setAttribute("successMessage", SuccessMessages.TASK_UPDATED);
 						}
 							
