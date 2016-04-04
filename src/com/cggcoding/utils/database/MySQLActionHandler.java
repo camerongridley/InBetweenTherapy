@@ -2299,10 +2299,10 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-    public Map<String, Keyword> keywordCoreListLoad(Connection cn) throws SQLException{
+    public Map<Integer, Keyword> keywordCoreListLoad(Connection cn) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<String, Keyword> keywordMap = new HashMap<>();
+        Map<Integer, Keyword> keywordMap = new HashMap<>();
         
         
         try {
@@ -2324,7 +2324,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             
             while (rs.next()){
             	Keyword keyword = new Keyword(rs.getInt("keyword_id"), rs.getString("keyword"), rs.getInt("keyword_user_id_fk")); //here build object with constructor or static factory method 
-            	keywordMap.put(rs.getString("keyword"), keyword);
+            	keywordMap.put(rs.getInt("keyword_id"), keyword);
             }
 
         } finally {

@@ -44,8 +44,10 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private boolean template;
 	private int templateID;
 	private int clientRepetition;
-	private Map<String, Keyword> keywords;
-	boolean disabled; //this property is not maintained in the database and is set upon or after loading.  It's purpose is to tell the view if assiciated control should be disabled
+	private Map<Integer, Keyword> keywords;
+	
+	private boolean disabled; //this property is not maintained in the database and is set upon or after loading.  It's purpose is to tell the view if assiciated control should be disabled
+	private List<Integer> updatedKeywordIDs; //not maintained in database, only for holding keywordIDs retrieved from the front end when updating the task
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
@@ -72,6 +74,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.clientRepetition = 1;
 
 		this.keywords = new HashMap<>();
+		this.updatedKeywordIDs = new ArrayList<>();
 	}
 	
 	/**Constructor for use before Task is inserted into the database, so no taskID is available to set, therefore a temporary value of 0 is given to taskID.  Since this is a new task and
@@ -105,6 +108,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.clientRepetition = clientRepetition;
 		
 		this.keywords = new HashMap<>();
+		this.updatedKeywordIDs = new ArrayList<>();
 	}
 	
 	
@@ -141,6 +145,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.clientRepetition = clientRepetition;
 		
 		this.keywords = new HashMap<>();
+		this.updatedKeywordIDs = new ArrayList<>();
 	}
 	
 	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
@@ -394,6 +399,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	protected void update(Connection cn) throws ValidationException, SQLException{
 		dao.taskGenericUpdate(cn, this);
 		updateAdditionalData(cn);
+
 	}
 
 	@Override
@@ -720,8 +726,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		update();		
 	}
 	
-	public boolean hasKeyword(String keyword){
-		if(keywords.get(keyword)!=null){
+	public boolean hasKeyword(Integer keywordID){
+		if(keywords.get(keywordID)!=null){
 			return true;
 		}
 		
@@ -729,11 +735,19 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	}
 	
 	public void addKeyword(Keyword keyword){
-		keywords.put(keyword.getKeyword(), keyword);
+		keywords.put(keyword.getKeywordID(), keyword);
 	}
 	
-	public void removeKeyword(String keyword){
-		keywords.remove(keyword);
+	public void removeKeyword(int keywordID){
+		keywords.remove(keywordID);
+	}
+	
+	public void setUpdatedKeywordIDsList(List<Integer> updatedKeywordIDs){
+		this.updatedKeywordIDs = updatedKeywordIDs;
+	}
+	
+	public void updateKeywords(Connection cn, List<Integer> updatedKeywordIDs){
+		//TODO implement method
 	}
 	
 	public abstract void transferAdditionalData(Task taskWithNewData);

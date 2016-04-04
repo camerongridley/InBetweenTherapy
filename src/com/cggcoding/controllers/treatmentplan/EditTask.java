@@ -1,6 +1,8 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -73,7 +75,8 @@ public class EditTask extends HttpServlet {
 		
 		int newTaskTypeID = 0;
 		boolean updateDataBase = false;
-
+		List<Integer> updatedKeywordIDs = ParameterUtils.parseIntArrayParameter(request, "keywords[]");
+		
 		try {
 			
 			
@@ -142,7 +145,15 @@ public class EditTask extends HttpServlet {
 						
 							task = CommonServletFunctions.updateTaskParametersFromRequest(request, task);
 							
+							task.setUpdatedKeywordIDsList(updatedKeywordIDs);
+							
 							task.update();
+							
+							String[] kwords = request.getParameterValues("testingData[]");
+							for(int c=0; c<kwords.length; c++){
+								System.out.println("Jquery Test - keyword: " + kwords[c]);
+							}
+							//System.out.println("Testining jqery:" + request.getParameterValues("testingData"));
 							
 							request.setAttribute("successMessage", SuccessMessages.TASK_UPDATED);
 						}

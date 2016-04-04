@@ -56,7 +56,7 @@
 	</div>
 </form>
 	
-<form class="form-horizontal" action="/secure/treatment-components/EditTask" method="POST">
+<form id="formUpdateTask" class="form-horizontal" action="/secure/treatment-components/EditTask" method="POST">
 		<input type="hidden" name="requestedAction" value="edit-task-update">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="taskTypeID" value="${task.taskTypeID }">
@@ -67,7 +67,7 @@
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
 		<input type="hidden" name="clientTaskOrder" value="${task.clientTaskOrder }">
-		
+
 				
         <div class="form-group">
             <label for="taskTitle" class="col-sm-2 control-label">Task Name</label>
@@ -122,19 +122,17 @@
 		<div class="form-group">
             <label for="taskTitle" class="col-sm-2 control-label">Keywords</label>
             <div class="col-sm-10">
-            	
+
                 <c:forEach var="keyword" items="${coreTaskKeyords}">
                 	<c:set var="keywordValue" value="${keyword.value}"></c:set>
 
 				<!-- use label-default for core keywords and label-primary for custom keywords -->
 				<span class="keyword label-default">
-				      <input type="checkbox" value="${keywordValue.keywordID}" <c:if test="${task.hasKeyword(keyword.key) }"> checked</c:if>> ${keywordValue.keyword}
+				      <input type="checkbox" name="keywords[]" value="${keywordValue.keywordID}" <c:if test="${task.hasKeyword(keyword.key) }">checked</c:if>> ${keywordValue.keyword}
 				</span>
-				
-				
 
 				</c:forEach>
-				
+
             </div>
         </div>
 		<div class="form-group">
@@ -157,6 +155,8 @@
 		    	
 		    });
 		});
+		
+		
 	</script>
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />

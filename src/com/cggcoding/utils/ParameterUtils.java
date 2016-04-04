@@ -1,5 +1,8 @@
 package com.cggcoding.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.cggcoding.models.TaskGeneric;
@@ -22,6 +25,28 @@ public class ParameterUtils {
 		} else{
 			return Integer.parseInt(request.getParameter(intParameterName));
 		}
+	}
+	
+	/** Checks specified int[] array parameter in request (usually for getting checkboxes). If it is null or empty returns null, otherwise parses the parameter string[] and return an array of int values
+	 * @param request HttpServletRequest
+	 * @param intParameterName the parameter name for a variable for the array of values to be parsed
+	 * @return int[] values of parameter or null if empty
+	 */
+	public static List<Integer> parseIntArrayParameter(HttpServletRequest request, String intParameterName){
+		String[] stringParameters = null;
+		List<Integer> parsedParameters = new ArrayList<>();
+		
+		if(request.getParameterValues(intParameterName)==null || request.getParameterValues(intParameterName).length < 1){
+			return null;
+		} else{
+			stringParameters = request.getParameterValues(intParameterName);
+			
+			for(int i = 0; i < stringParameters.length; i++){
+				parsedParameters.add(Integer.parseInt(stringParameters[i]));
+			}
+		}
+		
+		return parsedParameters;
 	}
 	
 	/** Checks specified int parameter in request. If it is null or empty returns 1, otherwise parses the parameter string and return the int value

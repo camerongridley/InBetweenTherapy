@@ -69,9 +69,9 @@ public class Keyword {
 		
 	}
 	
-	public static Map<String, Keyword> loadCoreList() throws ValidationException, DatabaseException{
+	public static Map<Integer, Keyword> loadCoreList() throws ValidationException, DatabaseException{
 		Connection cn = null;
-		Map<String, Keyword> keywords = null;
+		Map<Integer, Keyword> keywords = null;
 		try{
 			cn = dao.getConnection();
 			
