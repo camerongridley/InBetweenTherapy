@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -1536,7 +1537,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         Task task = null;
-        
+        Map<Integer, Keyword> keywords = new HashMap<>();
         try {
     		String sql = "SELECT task_generic.*, keyword.keyword_id, keyword.keyword, keyword.keyword_user_id_fk "
     				+ "FROM keyword RIGHT JOIN (task_generic LEFT JOIN task_keyword_maps "
@@ -1551,19 +1552,24 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	if(rs.isFirst()){
+            	if(rs.getString("keyword.keyword_id")!=null){
+            		keywords.put(rs.getInt("keyword.keyword_id"), new Keyword(rs.getInt("keyword.keyword_id"),rs.getString("keyword.keyword"),rs.getInt("keyword.keyword_user_id_fk")));
+            	}
+            	
+            	if(rs.isLast()){
             		Timestamp timestamp = rs.getTimestamp("task_generic.task_date_completed");
                 	LocalDateTime dateCompleted = convertTimestampToLocalDateTime(timestamp);
                 	
-                	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic.task_generic_id"), rs.getInt("task_generic.task_generic_stage_id_fk"), rs.getInt("task_generic.task_generic_user_id_fk"), rs.getInt("task_generic.task_generic_task_type_id_fk"), 
-                			rs.getInt("task_generic.parent_task_id"), rs.getString("task_generic.task_title"), rs.getString("task_generic.instructions"), rs.getString("task_generic.resource_link"), rs.getBoolean("task_generic.task_completed"), 
-                			dateCompleted, rs.getInt("client_task_order"), rs.getBoolean("is_extra_task"), 
-                			rs.getBoolean("task_generic.task_is_template"), rs.getInt("task_generic.task_template_id"), rs.getInt("task_generic.client_repetition"));
+                	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic.task_generic_id"), rs.getInt("task_generic.task_generic_stage_id_fk"), rs.getInt("task_generic.task_generic_user_id_fk"), 
+                			rs.getInt("task_generic.task_generic_task_type_id_fk"), rs.getInt("task_generic.parent_task_id"), rs.getString("task_generic.task_title"), 
+                			rs.getString("task_generic.instructions"), rs.getString("task_generic.resource_link"), rs.getBoolean("task_generic.task_completed"), 
+                			dateCompleted, rs.getInt("client_task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_generic.task_is_template"), 
+                			rs.getInt("task_generic.task_template_id"), rs.getInt("task_generic.client_repetition"), keywords);
+            	
+                	//task.setKeywords(keywords);
             	}
             	
-            	if(rs.getString("keyword.keyword_id")!=null){
-            		task.addKeyword(new Keyword(rs.getInt("keyword.keyword_id"),rs.getString("keyword.keyword"),rs.getInt("keyword.keyword_user_id_fk")));
-            	}
+            	
             	
             	
             }
@@ -2302,7 +2308,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     public Map<Integer, Keyword> keywordCoreListLoad(Connection cn) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<Integer, Keyword> keywordMap = new HashMap<>();
+        Map<Integer, Keyword> keywordMap = new LinkedHashMap<>();
         
         
         try {

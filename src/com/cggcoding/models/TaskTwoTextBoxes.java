@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -34,10 +35,11 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	private TaskTwoTextBoxes(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,
 			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int clientTaskOrder,
 			boolean extraTask, boolean template, int templateID, int clientRepetition,
+			Map<Integer, Keyword> keywords,
 			String extraTextLabel1, String extraTextValue1,
 			String extraTextLabel2, String extraTextValue2) {
 		super(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed,
-				dateCompleted, clientTaskOrder, extraTask, template, templateID, clientRepetition);
+				dateCompleted, clientTaskOrder, extraTask, template, templateID, clientRepetition, keywords);
 		this.extraTextLabel1 = extraTextLabel1;
 		this.extraTextValue1 = extraTextValue1;
 		this.extraTextLabel2 = extraTextLabel2;
@@ -58,11 +60,13 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	
 	public static TaskTwoTextBoxes getInstanceFull(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title,	String instructions, 
 			String resourceLink, boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition,
+			Map<Integer, Keyword> keywords,
 			String extraTextLabel1, String extraTextValue1,
 			String extraTextLabel2, String extraTextValue2){
 		
 		return new TaskTwoTextBoxes(taskID, stageID, userID, taskTypeID, parentTaskID, title,instructions, 
 			resourceLink, completed, dateCompleted, clientTaskOrder, extraTask, template, templateID, clientRepetition,
+			keywords,
 			extraTextLabel1, extraTextValue1,
 			extraTextLabel2, extraTextValue2);
 	}
@@ -79,6 +83,7 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 		return new TaskTwoTextBoxes(genericTask.getTaskID(), genericTask.getStageID(), genericTask.getUserID(), Constants.TASK_TYPE_ID_TWO_TEXTBOXES_TASK, genericTask.getParentTaskID(), genericTask.getTitle(),
 				genericTask.getInstructions(), genericTask.getResourceLink(), genericTask.isCompleted(), genericTask.getDateCompleted(), genericTask.getClientTaskOrder(),
 				genericTask.isExtraTask(), genericTask.isTemplate(), genericTask.getTemplateID(), genericTask.getClientRepetition(),
+				genericTask.getKeywords(),
 				extraTextLabel1, extraTextValue1,
 				extraTextLabel2, extraTextValue2);
 	}
@@ -155,6 +160,7 @@ public class TaskTwoTextBoxes extends Task implements Serializable{
 	public Task copy(){
 		TaskTwoTextBoxes task =  getInstanceFull(0, getStageID(), getUserID(), getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
 					isCompleted(), getDateCompleted(), getClientTaskOrder(), isExtraTask(), false, getTemplateID(), getClientRepetition(),
+					getKeywords(),
 					extraTextLabel1, extraTextValue1, extraTextLabel2, extraTextValue2);
 		
 		return task;

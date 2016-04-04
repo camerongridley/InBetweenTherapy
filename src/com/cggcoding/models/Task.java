@@ -127,7 +127,10 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @param extraTask
 	 * @param template
 	 */
-	protected Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition){
+	protected Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, 
+			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, 
+			int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition,
+			Map<Integer, Keyword> keywords){
 		this.taskID = taskID;
 		this.stageID = stageID;
 		this.userID = userID;
@@ -143,8 +146,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.template = template;
 		this.templateID = templateID;
 		this.clientRepetition = clientRepetition;
-		
-		this.keywords = new HashMap<>();
+		this.keywords = keywords;
 		this.updatedKeywordIDs = new ArrayList<>();
 	}
 	
@@ -616,6 +618,14 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 
 	public void setClientRepetition(int clientRepetition) {
 		this.clientRepetition = clientRepetition;
+	}
+
+	public Map<Integer, Keyword> getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(Map<Integer, Keyword> keywords) {
+		this.keywords = keywords;
 	}
 
 	public boolean isTemplate() {
