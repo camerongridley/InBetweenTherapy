@@ -96,7 +96,7 @@ public class EditTask extends HttpServlet {
 	    		}
 	    		
 	    		request.setAttribute("owner", owner);
-	    		request.setAttribute("coreTaskKeyords", Keyword.loadCoreList());
+	    		
 	    		
 	    		//if this Task is a template, remind the user that all instances of this task will be changed
 	    		if(task.isTemplate()){
@@ -130,6 +130,12 @@ public class EditTask extends HttpServlet {
 						task =Task.convertToType(task, newTaskTypeID, updateDataBase);
 						
 	
+						forwardTo = Constants.URL_EDIT_TASK;
+						break;
+					case ("task-edit-add-new-keyword"):
+						Keyword keyword = new Keyword(request.getParameter("newTaskKeyword"), user.getUserID());
+						task.createAndAddKeyword(keyword);
+						
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-update"):
@@ -185,6 +191,7 @@ public class EditTask extends HttpServlet {
 				request.setAttribute("stage", stage);
 				request.setAttribute("task", task);
 				request.setAttribute("owner", owner);
+				request.setAttribute("coreTaskKeyords", Keyword.loadCoreList());
 				
 			} else if(user.hasRole(Constants.USER_CLIENT)){
 				forwardTo = "clientMainMenu.jsp";

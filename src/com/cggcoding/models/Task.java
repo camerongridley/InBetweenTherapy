@@ -745,12 +745,64 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		return false;
 	}
 	
-	public void addKeyword(Keyword keyword){
+	/**Creates new keyword and adds it to the current task
+	 * @param keyword
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	public void createAndAddKeyword(Keyword keyword) throws DatabaseException, ValidationException{
+		Connection cn = null;
+
+		try{
+			cn = dao.getConnection();
+			cn.setAutoCommit(false);
+			
+			keyword.create(cn);
+			dao.keywordTaskMapCreate(cn, this.getTaskID(), keyword.getKeywordID());
+			
+			cn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+			}
+
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+	    }
+		
+
 		keywords.put(keyword.getKeywordID(), keyword);
 	}
 	
-	public void removeKeyword(int keywordID){
-		keywords.remove(keywordID);
+	
+	/**---DATABASE INTERATION---
+	 * Saves an existing keyword to the task
+	 * @param keywordID - an existing keyword
+	 * @throws SQLException 
+	 */
+	public void addKeyword(Connection cn, int keywordID) throws SQLException{
+		dao.keywordTaskMapCreate(cn, this.getTaskID(), keywordID);
+	}
+	
+	/**---DATABASE INTERATION---
+	 * Removes a keyword from the task
+	 * @param keywordID
+	 * @throws SQLException 
+	 */
+	public void removeKeyword(Connection cn, int keywordID) throws SQLException{
+		dao.keywordTaskMapDelete(cn, this.getTaskID(), keywordID);
 	}
 	
 	public void setUpdatedKeywordIDsList(List<Integer> updatedKeywordIDs){
@@ -762,7 +814,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		for(int updatedKeyID : updatedKeywordIDs){
 			if(!this.getKeywords().containsKey(updatedKeyID)){
 				//updated keywordID is not present in this task's keyword list, so add it
-				dao.keywordTaskMapCreate(cn, this.getTaskID(), updatedKeyID);
+				addKeyword(cn, updatedKeyID);
 			}
 		}
 		
@@ -770,7 +822,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		for(int currentKeyID : this.getKeywords().keySet()){
 			if(!updatedKeywordIDs.contains(currentKeyID)){
 				//updated keywordID is not present in this task's keyword list, so add it
-				dao.keywordTaskMapDelete(cn, this.getTaskID(), currentKeyID);
+				removeKeyword(cn, currentKeyID);
 			}
 		}
 		

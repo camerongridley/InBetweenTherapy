@@ -61,6 +61,26 @@ public class Keyword {
 		this.userID = userID;
 	}
 	
+	public Keyword create() throws DatabaseException {
+		Connection cn = null;
+		Keyword keyword = null;
+		
+			try{
+				cn = dao.getConnection();
+				
+				create(cn);
+				
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			} finally {
+				DbUtils.closeQuietly(cn);
+		    }
+
+		return keyword;
+	}
+	
 	public Keyword create(Connection cn) throws SQLException {
 		
 		dao.keywordCreate(cn, this);
