@@ -51,7 +51,7 @@
 			</form>
 		</div>	
 		<div class="col-xs-1">
-			<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal" aria-hidden="true" title="Delete this treatment plan."></button>
+			<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal" aria-hidden="true" title="Delete this treatment plan." <c:if test="${treatmentPlan==null }">disabled="disabled"</c:if>></button>
 		</div>
 	</div>
 </div>
@@ -71,7 +71,7 @@
 		<div class="col-sm-10">
 			<input type="text" class="form-control" id="planTitle"
 				name="planTitle" value="<c:out value="${treatmentPlan.title }"/>"
-				placeholder="Enter a treatment plan name here.">
+				placeholder="Enter a treatment plan name here." <c:if test="${treatmentPlan==null }">disabled="disabled"</c:if>>
 		</div>
 	</div>
 	<div class="row form-group">
@@ -80,7 +80,7 @@
 		<div class="col-sm-10">
 			<input type="text" class="form-control" id="planDescription"
 				name="planDescription" value="<c:out value="${treatmentPlan.description }"/>"
-				placeholder="Describe the treatment plan.">
+				placeholder="Describe the treatment plan." <c:if test="${treatmentPlan==null }">disabled="disabled"</c:if>>
 		</div>
 	</div>
 	<div class="well well-sm">
@@ -104,9 +104,8 @@
 		<div class="row form-group">
 			<label for="coreTreatmentIssueID" class="col-sm-2 control-label">Core Treatment Issues</label>
 			<div class="col-sm-9">
-				<select class="form-control" id="coreTreatmentIssueID"
-					name="coreTreatmentIssueID">
-					<option value="">Select a default treatment issue.</option>
+				<select class="form-control" id="coreTreatmentIssueID" name="coreTreatmentIssueID" <c:if test="${treatmentPlan==null }">disabled="disabled"</c:if>>
+					<option value="" >Select a default treatment issue.</option>
 					<c:forEach items="${coreTreatmentIssues}" var="coreIssue">
 						<option value="${coreIssue.treatmentIssueID}"
 							<c:if test="${coreIssue.treatmentIssueID == treatmentPlan.treatmentIssueID}">selected</c:if>>${coreIssue.treatmentIssueName}</option>
@@ -117,7 +116,9 @@
 				<c:if test='${user.role.equals("admin") }'>
 					<button type="button" class="btn btn-default" title="Add a new default treatment issue."
 						aria-label="Left Align" data-toggle="modal"
-						data-target="#newCoreTreatmentIssueModal">
+						data-target="#newCoreTreatmentIssueModal"
+						title="Add a new core treatment issue" 
+						<c:if test="${treatmentPlan==null }">disabled="disabled"</c:if>>
 						<span class="glyphicon glyphicon-plus" aria-hidden="true" ></span>
 					</button>
 				</c:if>	
@@ -141,7 +142,9 @@
 				<div class="col-sm-1">
 					<button type="button" class="btn btn-default"
 						aria-label="Left Align" data-toggle="modal"
-						data-target="#newCustomTreatmentIssueModal">
+						data-target="#newCustomTreatmentIssueModal" 
+						title="Add a new custom treatment issue." 
+						<c:if test="${treatmentPlan==null }">disabled="disabled"</c:if>>
 						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 					</button>
 				</div>
@@ -152,13 +155,15 @@
 
 
 	<a id="stageListTop"></a>
-	<label for="stageList" class="control-label">Stages <a role="button"
-		href="/secure/treatment-components/CreateStage?requestedAction=add-stage-to-treatment-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}"
-		class="btn btn-default btn-xs"
-		title="Add a stage to this treatment plan."> <span
-			class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-	</a>
-
+	<label for="stageList" class="control-label">Stages 
+	<c:if test="${treatmentPlan!=null }">
+		<a role="button"
+			href="/secure/treatment-components/CreateStage?requestedAction=add-stage-to-treatment-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}"
+			class="btn btn-default btn-xs"
+			title="Add a stage to this treatment plan."> <span
+				class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+		</a>
+	</c:if>
 	</label>
 	<c:forEach items="${treatmentPlan.stages }" var="stage">
 	<c:set var="mappedPlanStageInfo" value="${treatmentPlan.getMappedStageTemplateByStageID(stage.stageID)}" />
@@ -226,7 +231,7 @@
 
 	<div class="form-group">
         <div class="col-sm-12 save-button">
-            <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+            <button type="submit" name="submitButton" value="save" class="btn btn-default" <c:if test="${treatmentPlan==null }">disabled="disabled"</c:if>>Save</button>
             <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
         </div>
     </div>
@@ -257,7 +262,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="submit" class="btn btn-primary">Save</button>
+					<button type="submit" class="btn btn-primary" >Save</button>
 				</div>
 			</form>
 		</div>

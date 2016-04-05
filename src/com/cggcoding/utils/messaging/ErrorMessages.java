@@ -70,6 +70,9 @@ public final class ErrorMessages {
 	public static final String INVITATION_ALREADY_INVITED = "You have already sent that person an invitation.";
 	public static final String INTIVATION_USER_ALREADY_REGISTERED = "A user with that email address is already registered.";
 	
+	public static final String KEYWORD_ALREADY_EXISTS = "That keyword already exists.";
+	public static final String KEYWORD_EMPTY = "You did not enter any value for the new keyword.  Please try again.";
+	
 	
 	
 	

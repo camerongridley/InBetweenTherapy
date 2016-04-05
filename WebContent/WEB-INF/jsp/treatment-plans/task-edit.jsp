@@ -46,7 +46,7 @@
 	<div class="form-group">
 	    <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
 	    <div class="col-sm-10">
-	        <select class="form-control" id="taskTypeID" name="taskTypeID">
+	        <select class="form-control" id="taskTypeID" name="taskTypeID" <c:if test="${task==null }">disabled="disabled"</c:if>>
 	            <option  value="">Select a task type.</option>
 	            <c:forEach items="${taskTypeMap}" var="taskType">
 	                <option value="${taskType.key}" <c:if test="${taskType.key == task.taskTypeID}">selected</c:if> ><c:out value="${taskType.value}" /></option>
@@ -72,19 +72,22 @@
         <div class="form-group">
             <label for="taskTitle" class="col-sm-2 control-label">Task Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="taskTitle" name="taskTitle" value="<c:out value="${task.title }"/>" placeholder="Enter a task name here.">
+                <input type="text" class="form-control" id="taskTitle" name="taskTitle" <c:if test="${task==null }">disabled="disabled"</c:if>
+                 value="<c:out value="${task.title }"/>" placeholder="Enter a task name here.">
             </div>
         </div>
         <div class="form-group">
             <label for="taskInstructions" class="col-sm-2 control-label">Instructions</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="taskInstructions" name="taskInstructions" value="<c:out value="${task.instructions }"/>" placeholder="Provide instructions for the task.">
+                <input type="text" class="form-control" id="taskInstructions" name="taskInstructions" <c:if test="${task==null }">disabled="disabled"</c:if>
+                 value="<c:out value="${task.instructions }"/>" placeholder="Provide instructions for the task.">
             </div>
         </div>
 		<div class="form-group">
             <label for="resourceLink" class="col-sm-2 control-label">Resource Link</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${task.resourceLink }"/>" placeholder="Add a link to related resources for this task.">
+                <input type="text" class="form-control" id="resourceLink" name="resourceLink" <c:if test="${task==null }">disabled="disabled"</c:if>
+                 value="<c:out value="${task.resourceLink }"/>" placeholder="Add a link to related resources for this task.">
             </div>
         </div>
         <c:if test="${task.template }">
@@ -121,7 +124,7 @@
 		
 		<div class="form-group">
             <label for="taskTitle" class="col-sm-2 control-label">Keywords 
-            	<button type="button" class="btn btn-default btn-xs" aria-label="Left Align" data-toggle="modal" data-target="#newTaskKeywordModal" title="Add a new keyword to this task">
+            	<button type="button" class="btn btn-default btn-xs " <c:if test="${task==null }">disabled="disabled"</c:if> aria-label="Left Align" data-toggle="modal" data-target="#newTaskKeywordModal" title="Add a new keyword to this task">
 					<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</button>
             </label>
@@ -132,7 +135,7 @@
 
 				<!-- use label-default for core keywords and label-primary for custom keywords -->
 				<span class="keyword label-default">
-				      <input type="checkbox" name="keywords[]" value="${keywordValue.keywordID}" <c:if test="${task.hasKeyword(keyword.key) }">checked</c:if>> ${keywordValue.keyword}
+				      <input type="checkbox" name="keywords[]" value="${keywordValue.keywordID}" <c:if test="${task==null }">disabled="disabled"</c:if> <c:if test="${task.hasKeyword(keyword.key) }">checked</c:if>> ${keywordValue.keyword}
 				</span>
 
 				</c:forEach>
@@ -142,7 +145,7 @@
 		<div class="form-group">
 
             <div class="col-sm-offset-2 col-sm-10 save-button">
-                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+                <button type="submit" name="submitButton" value="save" class="btn btn-default" <c:if test="${task==null }">disabled="disabled"</c:if>>Save</button>
                 <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
             </div>
         </div>

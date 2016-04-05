@@ -178,7 +178,7 @@
 			
 	        <div class="form-group">
 	            <div class="col-sm-offset-2 col-sm-10 save-button">
-	                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save & Continue</button>
+	                <button type="submit" name="submitButton" value="save" class="btn btn-default" <c:if test="${task.taskTypeID==0 }">disabled="disabled"</c:if>>Save & Continue</button>
 	                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
 	            </div>
 	        </div>

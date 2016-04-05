@@ -45,13 +45,15 @@
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value="${stage.title }" placeholder="Enter a stage name here.">
+                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value="${stage.title }" <c:if test="${stage==null }">disabled="disabled"</c:if>
+                placeholder="Enter a stage name here.">
             </div>
         </div>
         <div class="form-group">
             <label for="stageDescription" class="col-sm-2 control-label">Stage Description</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="stageDescription" name="stageDescription" value="${stage.description }" placeholder="Describe the stage.">
+                <input type="text" class="form-control" id="stageDescription" name="stageDescription" <c:if test="${stage==null }">disabled="disabled"</c:if> 
+                value="${stage.description }" placeholder="Describe the stage.">
             </div>
         </div>
 
@@ -59,10 +61,11 @@
 		<div class="form-group">
 			<div class="col-sm-12">
 				<label for="stageGoalList" class="control-label">Stage Goals
-					<button type="button" class="btn btn-default btn-xs" aria-label="Left Align" data-toggle="modal" data-target="#newStageGoalModal" title="Add a goal to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
+				<c:if test="${stage != null }">
+					<button type="button" class="btn btn-default btn-xs" aria-label="Left Align" data-toggle="modal" data-target="#newStageGoalModal" title="Add a goal to this stage.">
 						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 					</button>
-					
+				</c:if>	
 				</label>
 			</div>
 				
@@ -84,11 +87,11 @@
 		
 		<a id="taskListTop"></a>
 		<label for="taskList" class="control-label">Tasks
-
-       			<a role="button" href="/secure/treatment-components/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
+			<c:if test="${stage != null }">
+       			<a role="button" href="/secure/treatment-components/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage.">
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</a>
-
+			</c:if>
 		</label>
 			
 			<c:forEach items="${stage.tasks }" var="task">
@@ -165,7 +168,7 @@
 			</c:forEach>
         <div class="form-group">
             <div class="col-sm-12 save-button">
-                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+                <button type="submit" name="submitButton" value="save" class="btn btn-default" <c:if test="${stage==null }">disabled="disabled"</c:if>>Save</button>
                 <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
             </div>
         </div>

@@ -133,7 +133,14 @@ public class EditTask extends HttpServlet {
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("task-edit-add-new-keyword"):
-						Keyword keyword = new Keyword(request.getParameter("newTaskKeyword"), user.getUserID());
+						String keywordValue = request.getParameter("newTaskKeyword");
+						if(task==null || task.getTaskID()==0){
+							throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+						}
+						if(keywordValue == null || keywordValue.isEmpty()){
+							throw new ValidationException(ErrorMessages.KEYWORD_EMPTY);
+						}
+						Keyword keyword = new Keyword(keywordValue, user.getUserID());
 						task.createAndAddKeyword(keyword);
 						
 						forwardTo = Constants.URL_EDIT_TASK;
@@ -212,8 +219,12 @@ public class EditTask extends HttpServlet {
 			try {
 				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
 				request.setAttribute("coreTasks", Task.getCoreTasks());
+				request.setAttribute("coreTaskKeyords", Keyword.loadCoreList());
 			} catch (DatabaseException e1) {
 				request.setAttribute("erorMessage", ErrorMessages.GENERAL_DB_ERROR);
+				e1.printStackTrace();
+			} catch (ValidationException e1) {
+				request.setAttribute("erorMessage", ErrorMessages.GENERAL_VALIDATION_ERROR);
 				e1.printStackTrace();
 			}
 			

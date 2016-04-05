@@ -18,6 +18,7 @@ import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 
 /**
@@ -761,6 +762,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 			dao.keywordTaskMapCreate(cn, this.getTaskID(), keyword.getKeywordID());
 			
 			cn.commit();
+		} catch (MySQLIntegrityConstraintViolationException constraintEx){
+			throw new DatabaseException(ErrorMessages.KEYWORD_ALREADY_EXISTS);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			try {
