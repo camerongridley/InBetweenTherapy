@@ -15,32 +15,45 @@
 
 	
 <div class="form-horizontal">
-
+	
 	<div class="col-sm-6">
 		<div class="panel panel-primary">
 		  <div class="panel-heading" title="Keywords">
-		    <h3 class="panel-title"><span class="glyphicon glyphicon-tags panel-icon" aria-hidden="true"></span>Keywords</h3>
+		    <h3 class="panel-title"><span class="glyphicon glyphicon-tags panel-icon" aria-hidden="true"></span>&nbsp;Keywords</h3>
 		  </div>
 		  <div class="panel-body">
 		    <form class="form-horizontal" action="/secure/ListManagement" method="POST">
 				<input type="hidden" name="requestedAction" value="invite-client">
 				<input type="hidden" name="path" value="${path }">
-				
-		        <div class="form-group">
-			        <c:forEach items="${coreTaskKeyords}" var="keyword">
-						<c:set var="keywordValue" value="${keyword.value}"></c:set>
-						<div class="col-sm-12">
-							${keywordValue.keyword}
-						</div>
-					
-					</c:forEach>
-		            
-		        </div>
-		        <div class="form-group">
-			        <div class="col-sm-12">
-			        	<button type="submit" class="btn btn-default">Save</button>
-			        </div>
-		        </div>
+				<table class="table table-striped"> 
+						<thead> 
+							<tr> 
+								<th></th> 
+								<th></th> 
+								<th></th>
+							</tr> 
+						</thead>
+						<tbody> 
+						<c:forEach items="${coreTaskKeyords}" var="keyword" varStatus="loopStatus">
+							<c:set var="keywordValue" value="${keyword.value}"></c:set>
+							<tr class="" title="Invitation Accepted"> 
+								<th scope=row>${loopStatus.count}.</th> 
+								<td>${keywordValue.keyword}</td>  
+								<td>
+									<a role="button" data-toggle="modal" data-target="#delete_invitation${invitation.invitationCode }"
+										class="btn btn-default btn-xs pull-right"
+										title="Delete keyword"> 
+										<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+									</a>			
+								</td>
+							</tr> 
+						</c:forEach>
+ 
+						</tbody> 
+				</table>
+
+				<button type="submit" class="btn btn-default">Save</button>
+
 			</form>
 		  </div>
 		</div>
@@ -55,21 +68,34 @@
 		    <form class="form-horizontal" action="/secure/ListManagement" method="POST">
 				<input type="hidden" name="requestedAction" value="invite-client">
 				<input type="hidden" name="path" value="${path }">
-				
-		        <div class="form-group">
-			        <c:forEach items="${coreTreatmentIssues}" var="treatmentIssue">
-						<div class="col-sm-12">
-							${treatmentIssue.treatmentIssueName}
-						</div>
-					
-					</c:forEach>
-		            
-		        </div>
-		        <div class="form-group">
-			        <div class="col-sm-12">
-			        	<button type="submit" class="btn btn-default">Save</button>
-			        </div>
-		        </div>
+				<table class="table table-striped"> 
+						<thead> 
+							<tr> 
+								<th></th> 
+								<th></th> 
+								<th></th>
+							</tr> 
+						</thead>
+						<tbody> 
+						<c:forEach items="${coreTreatmentIssues}" var="treatmentIssue" varStatus="loopStatus">
+							<tr class="" title="Invitation Accepted"> 
+								<th scope=row>${loopStatus.count}.</th> 
+								<td>${treatmentIssue.treatmentIssueName}</td>  
+								<td>
+									<a role="button" data-toggle="modal" data-target="#delete_invitation${invitation.invitationCode }"
+										class="btn btn-default btn-xs pull-right"
+										title="Delete keyword"> 
+										<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+									</a>			
+								</td>
+							</tr> 
+						</c:forEach>
+ 
+						</tbody> 
+				</table>
+
+				<button type="submit" class="btn btn-default">Save</button>
+
 			</form>
 		  </div>
 		</div>
