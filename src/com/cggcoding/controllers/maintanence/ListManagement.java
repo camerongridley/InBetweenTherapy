@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Keyword;
+import com.cggcoding.models.TreatmentIssue;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.messaging.ErrorMessages;
@@ -54,6 +55,7 @@ public class ListManagement extends HttpServlet {
 		
 		try {
 			request.setAttribute("coreTaskKeyords", Keyword.loadCoreList());
+			request.setAttribute("coreTreatmentIssues", TreatmentIssue.getCoreTreatmentIssues());
 		} catch (ValidationException | DatabaseException e) {
 			request.setAttribute("errorMessage", ErrorMessages.GENERAL_DB_ERROR);//TODO revisit what message is set in request. 
 			e.printStackTrace();

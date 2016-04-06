@@ -79,7 +79,7 @@
   	<div class="col-sm-6">
 		<div class="panel panel-primary">
 		  <div class="panel-heading" title="Invite New Client">
-		    <h3 class="panel-title"><span class="glyphicon glyphicon-envelope panel-icon" aria-hidden="true"></span>Invite New Client</h3>
+		    <h3 class="panel-title"><span class="glyphicon glyphicon-send panel-icon" aria-hidden="true"></span>Invite New Client</h3>
 		  </div>
 		  <div class="panel-body">
 		    <form class="form-horizontal" action="/secure/ManageClients" method="POST">
@@ -110,7 +110,7 @@
 	<div class="col-sm-6">
 		<div class="panel panel-primary">
 		  <div class="panel-heading" title="Invitation Status">
-		    <h3 class="panel-title"><span class="glyphicon glyphicon-stats panel-icon" aria-hidden="true"></span>Invitation Status</h3>
+		    <h3 class="panel-title"><span class="glyphicon glyphicon-envelope panel-icon" aria-hidden="true"></span>Invitation Status</h3>
 		  </div>
 		  <div class="panel-body">
 

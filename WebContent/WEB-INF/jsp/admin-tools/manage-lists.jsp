@@ -16,7 +16,6 @@
 	
 <div class="form-horizontal">
 
-</div>  
 	<div class="col-sm-6">
 		<div class="panel panel-primary">
 		  <div class="panel-heading" title="Keywords">
@@ -45,6 +44,36 @@
 			</form>
 		  </div>
 		</div>
-	</div>	
-
+	</div>
+	
+	<div class="col-sm-6">
+		<div class="panel panel-primary">
+		  <div class="panel-heading" title="Treatment Issues">
+		    <h3 class="panel-title"><span class="glyphicon glyphicon-certificate panel-icon" aria-hidden="true"></span>Treatment Issues</h3>
+		  </div>
+		  <div class="panel-body">
+		    <form class="form-horizontal" action="/secure/ListManagement" method="POST">
+				<input type="hidden" name="requestedAction" value="invite-client">
+				<input type="hidden" name="path" value="${path }">
+				
+		        <div class="form-group">
+			        <c:forEach items="${coreTreatmentIssues}" var="treatmentIssue">
+						<div class="col-sm-12">
+							${treatmentIssue.treatmentIssueName}
+						</div>
+					
+					</c:forEach>
+		            
+		        </div>
+		        <div class="form-group">
+			        <div class="col-sm-12">
+			        	<button type="submit" class="btn btn-default">Save</button>
+			        </div>
+		        </div>
+			</form>
+		  </div>
+		</div>
+	</div>
+	
+</div>
 <c:import url="/WEB-INF/jsp/footer.jsp" />
