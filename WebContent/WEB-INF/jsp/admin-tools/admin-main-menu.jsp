@@ -94,11 +94,12 @@
 		</div>
 		<div class="well well-sm">
 			<p>
-			<form class="form-inline" action="" method="POST">
+			<form class="form-inline" action="/secure/ListManagement" method="POST">
 				<div>
-					<button type="submit" class="btn btn-primary" disabled>Manage Lists</button>
+					<button type="submit" class="btn btn-primary">Manage Lists</button>
 				</div>
 				<input type="hidden" name="requestedAction" value="manage-lists">
+				<input type="hidden" name="path" value="adminMaintanence">
 			</form>
 			</p>
 		</div>

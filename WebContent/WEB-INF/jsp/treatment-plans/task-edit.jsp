@@ -122,6 +122,7 @@
 	        </div>
 		</c:if>
 		
+		<c:if test='${!path.equals("manageClients") }'>
 		<div class="form-group">
             <label for="taskTitle" class="col-sm-2 control-label">Keywords 
             	<button type="button" class="btn btn-default btn-xs " <c:if test="${task==null }">disabled="disabled"</c:if> aria-label="Left Align" data-toggle="modal" data-target="#newTaskKeywordModal" title="Add a new keyword to this task">
@@ -142,6 +143,8 @@
 
             </div>
         </div>
+        </c:if>
+        
 		<div class="form-group">
 
             <div class="col-sm-offset-2 col-sm-10 save-button">

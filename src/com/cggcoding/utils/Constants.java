@@ -75,6 +75,8 @@ public class Constants {
 	
 	public static final String URL_ERROR_GENERAL = "/WEB-INF/jsp/error.jsp";
 	public static final String URL_ERROR_UNAUTHORIZED_ACCESS = "/WEB-INF/jsp/unauthorized-access.jsp";
+
+	public static final String URL_LIST_MANAGEMENT = "/WEB-INF/jsp/admin-tools/manage-lists.jsp";
 	
 	
 	

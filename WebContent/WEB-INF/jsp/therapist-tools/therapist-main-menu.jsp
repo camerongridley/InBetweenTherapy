@@ -42,13 +42,13 @@
 	
 	<div class="col-sm-6">
 		<div class="panel panel-primary">
-		  <div class="panel-heading" title="Create Treatment Plan">
+		  <div class="panel-heading" title="Manage Clients">
 		    <h3 class="panel-title"><span class="glyphicon glyphicon-user panel-icon" aria-hidden="true"></span>Manage Clients</h3>
 		  </div>
 		  <div class="panel-body">
 			<form class="form-horizontal" action="/secure/ManageClients" method="POST">
 				<input type="hidden" name="requestedAction" value="select-client">
-				<input type="hidden" name="path" value="${path }">
+				<input type="hidden" name="path" value="manageClients">
 				<input type="hidden" name="coreTreatmentPlanID" value="${coreTreatmentPlanID }">
 				
 		        <div class="form-group">
@@ -109,7 +109,7 @@
 	
 	<div class="col-sm-6">
 		<div class="panel panel-primary">
-		  <div class="panel-heading" title="Invite New Client">
+		  <div class="panel-heading" title="Invitation Status">
 		    <h3 class="panel-title"><span class="glyphicon glyphicon-stats panel-icon" aria-hidden="true"></span>Invitation Status</h3>
 		  </div>
 		  <div class="panel-body">
