@@ -1,6 +1,8 @@
 package com.cggcoding.models;
 
 import java.io.Serializable;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import org.apache.commons.dbutils.DbUtils;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.messaging.invitations.Invitation;
+import com.cggcoding.security.PasswordEncryptionService;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
@@ -57,7 +60,22 @@ public abstract class User implements Serializable{
 		if(!password.equals(passwordConfirm)){
 			throw new ValidationException(ErrorMessages.PASSWORDS_DONT_MATCH);
 		}
+		
+		PasswordEncryptionService passwordService = new PasswordEncryptionService();
 
+		byte[] salt = null;
+		byte[] encryptedPassword = null;
+		try {
+			salt = passwordService.generateSalt();
+			encryptedPassword = passwordService.getEncryptedPassword(password, salt);
+		} catch (NoSuchAlgorithmException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		Connection cn = null;
 		User newUser = null;
 	
@@ -88,7 +106,7 @@ public abstract class User implements Serializable{
 					break;
 			}
 
-			dao.userCreateNewUser(cn, newUser, password);
+			dao.userCreateNewUser(cn, newUser, encryptedPassword, salt);
 
 			if(!invitationCode.equals("")){
 				newUser.processInvitationAcceptance(cn, invitationCode);
@@ -122,6 +140,51 @@ public abstract class User implements Serializable{
 		 
 		 return newUser;
 		 
+	}
+	
+	public static User login(String email, String passwordToCheck) throws ValidationException, DatabaseException{
+		PasswordEncryptionService passwordService = new PasswordEncryptionService();
+
+		byte[] salt = null;
+		byte[] encryptedPassword = null;
+		Connection cn = null;
+		User user = null;
+		
+		try {
+			cn = dao.getConnection();
+			cn.setAutoCommit(false);
+			
+			salt = dao.userGetPasswordSalt(cn, email);
+			encryptedPassword = dao.userGetEncryptedPassword(cn, email);
+			
+			if(passwordService.authenticate(passwordToCheck, encryptedPassword, salt)){
+				user = dao.userLoadInfo(cn, email, passwordToCheck);
+			}
+			
+			
+			if(user == null){
+				throw new ValidationException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+	    }
+
+		return user;
 	}
 	
 	public abstract void processInvitationAcceptance(Connection cn, String invitationCode) throws SQLException, ValidationException;

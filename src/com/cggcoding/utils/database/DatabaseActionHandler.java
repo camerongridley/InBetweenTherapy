@@ -31,8 +31,14 @@ public interface DatabaseActionHandler {
 	//**************************************************
 
 	boolean userValidate(String email, String password) throws DatabaseException;
+	
+	byte[] userGetPasswordSalt(Connection cn, String userEmail) throws SQLException;
+	
+	byte[] userGetEncryptedPassword(Connection cn, String emailAddress) throws SQLException;
 
-	User userLoadInfo(String email, String password) throws DatabaseException;
+	User userLoadInfo(Connection cn, String email, String password) throws DatabaseException;
+	
+	User userLoadByEmailAddress(Connection cn, String emailAddress) throws ValidationException, SQLException;
 	
 	//**************************************************
 	// *************** User Methods *******************
@@ -41,11 +47,9 @@ public interface DatabaseActionHandler {
 	
 	boolean userValidateNewEmail(Connection cn, String email)  throws SQLException;
 	
-	User userCreateNewUser(Connection cn, User newUser, String password) throws SQLException;
+	User userCreateNewUser(Connection cn, User newUser, byte[] encryptedPassword, byte[] passwordSalt) throws SQLException;
 	
 	User userLoadByID(int userID) throws DatabaseException, ValidationException;
-	
-	User userLoadByEmailAddress(Connection cn, String emailAddress) throws ValidationException, SQLException;
 	
 	public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException;
 	
@@ -263,6 +267,9 @@ public interface DatabaseActionHandler {
 	void therapistCreateClientConnection(Connection cn, int therapistUserID, int clientUserID) throws SQLException;
 
 	List<String> invitationGetSentInvitationCodes(Connection cn, int senderUserID) throws SQLException;
+
+	
+
 
 	
 

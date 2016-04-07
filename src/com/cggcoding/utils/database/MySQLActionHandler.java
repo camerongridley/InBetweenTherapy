@@ -145,13 +145,13 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
 	
 	@Override
-	public User userCreateNewUser(Connection cn, User newUser, String password) throws SQLException{
+	public User userCreateNewUser(Connection cn, User newUser, byte[] encryptedPassword, byte[] passwordSalt) throws SQLException{
 
 		PreparedStatement ps = null;
 		ResultSet generatedKeys = null;
 	    
 	    try {
-	    	String sql = "INSERT INTO user (user_user_role_id_fk, user_name, first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?, ?)";
+	    	String sql = "INSERT INTO user (user_user_role_id_fk, user_name, first_name, last_name, email, encrypted_password, password_salt) VALUES (?, ?, ?, ?, ?, ?, ?)";
 	    	
 	    	ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	    	
@@ -160,7 +160,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	        ps.setString(3, newUser.getFirstName());
 	        ps.setString(4, newUser.getLastName());
 	        ps.setString(5, newUser.getEmail());
-	        ps.setString(6, password);
+	        ps.setBytes(6, encryptedPassword);
+	        ps.setBytes(7, passwordSalt);
 
 	        int success = ps.executeUpdate();
 	
@@ -220,19 +221,74 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         }
     }
 
+    @Override
+    public byte[] userGetPasswordSalt(Connection cn, String emailAddress) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        byte[] encryptedPassword = null;
+        
+        try {
+            ps = cn.prepareStatement("SELECT password_salt FROM user WHERE email = ?");
+            ps.setString(1, emailAddress);
+
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+            	encryptedPassword = rs.getBytes("password_salt");
+            }
+            
+            //XXX decide if want to uncomment this - commented out because I want it to return null when there is no user found for when checking if a user with this email exists when sending invitations to join the site
+            /*if(user==null){
+            	throw new ValidationException(ErrorMessages.USER_NOT_FOUND);
+            }*/
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return encryptedPassword;
+    }
+    
+    @Override
+    public byte[] userGetEncryptedPassword(Connection cn, String emailAddress) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        byte[] encryptedPassword = null;
+        
+        try {
+            ps = cn.prepareStatement("SELECT encrypted_password FROM user WHERE email = ?");
+            ps.setString(1, emailAddress);
+
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+            	encryptedPassword = rs.getBytes("encrypted_password");
+            }
+            
+            //XXX decide if want to uncomment this - commented out because I want it to return null when there is no user found for when checking if a user with this email exists when sending invitations to join the site
+            /*if(user==null){
+            	throw new ValidationException(ErrorMessages.USER_NOT_FOUND);
+            }*/
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return encryptedPassword;
+    }
+    
     //XXX can I move the switch statement into the User model?
     @Override
-	public User userLoadInfo(String email, String password) throws DatabaseException{
-    	Connection cn = null;
+	public User userLoadInfo(Connection cn, String email, String password) throws DatabaseException{
     	PreparedStatement ps = null;
         ResultSet rsUserInfo = null;
         User user = null;
         
         try {
-        	cn = getConnection();
-            ps = cn.prepareStatement("SELECT user.user_id, user.user_name, user.first_name, user.last_name, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?) AND ((user.password)=?))");
+            ps = cn.prepareStatement("SELECT user.user_id, user.user_name, user.first_name, user.last_name, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?))");
             ps.setString(1, email);
-            ps.setString(2, password);
 
             rsUserInfo = ps.executeQuery();
             
@@ -261,7 +317,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         } finally {
         	DbUtils.closeQuietly(rsUserInfo);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
 
         return user;

@@ -56,16 +56,16 @@ public class LogIn extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String userRole = "";
-        DatabaseActionHandler databaseActionHandler = new MySQLActionHandler();
+        DatabaseActionHandler dao = new MySQLActionHandler();
     	
         
 	        try {
 	        	//XXX remove dao here and switch to using a static method in User
-				boolean userExists = databaseActionHandler.userValidate(email, password);
+				//boolean userExists = dao.userValidate(email, password);
 
 				//use the above to get authenticate the user and get create a User object
-				if(userExists){
-					user = databaseActionHandler.userLoadInfo(email, password);
+				//if(userExists){
+					user = User.login(email, password);
 					request.getSession().setAttribute("user", user);
 					
 					if(user.hasRole(Constants.USER_ADMIN)){
@@ -79,15 +79,17 @@ public class LogIn extends HttpServlet {
 						
 						request.setAttribute("invitationList", invitations);
 						request.setAttribute("clientMap", clientMap);
+						//TODO load HashMaps of clientIDs/hashedIDs
+						
 						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 					}if(user.hasRole(Constants.USER_CLIENT)){
 						forwardTo = Constants.URL_CLIENT_MAIN_MENU;
 					}
 					
-				} else {
+				/*} else {
 					forwardTo = Constants.URL_LOGIN;
 				    throw new ValidationException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
-				}
+				}*/
 			} catch (DatabaseException | ValidationException e) {
 				e.printStackTrace();
 				request.setAttribute("errorMessage", e.getMessage());

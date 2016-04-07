@@ -1,6 +1,9 @@
 package com.cggcoding.controllers.login;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,6 +17,7 @@ import com.cggcoding.messaging.invitations.InvitationHandler;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.models.UserTherapist;
+import com.cggcoding.security.PasswordEncryptionService;
 import com.cggcoding.utils.Constants;
 
 /**
@@ -63,8 +67,13 @@ public class Registration extends HttpServlet {
 		String userRole = request.getParameter("userRole");
 		String invitationCode = request.getParameter("invitationCode");
 		
+		PasswordEncryptionService passwordService = new PasswordEncryptionService();
+		
 		
 		try{
+			byte[] salt = passwordService.generateSalt();
+			byte[] encryptedPassword = passwordService.getEncryptedPassword(password, salt);
+			
 			user = User.registerNewUser(userName, firstName, lastName, password, passwordConfirm, email, userRole, invitationCode);
 
 			request.getSession().setAttribute("user", user);
@@ -81,6 +90,12 @@ public class Registration extends HttpServlet {
 			request.setAttribute("invitationCode", invitationCode);
 			request.setAttribute("userRole", userRole);
 			forwardTo = Constants.URL_REGISTRATION;
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
