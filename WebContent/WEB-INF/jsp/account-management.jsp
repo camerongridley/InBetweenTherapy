@@ -15,7 +15,10 @@
         <div class="col-lg-4">
           <h2>User Information</h2>
           <p>List user info here.</p>
-          <p><a class="btn btn-primary" href="#" role="button">View details &raquo;</a></p>
+          <form class="form-horizontal" action="/secure/AccountManagement" method="POST">
+          	<input type="hidden" name="requestedAction" value="user-edit-account-info">
+          	<p><button type="submit" name="submitButton" class="btn btn-default">Edit Account</button></p>
+          </form>
         </div>
         <div class="col-lg-4">
           <h2>Treatment Plan Management</h2>

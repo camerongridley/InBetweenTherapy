@@ -51,8 +51,16 @@ public class AccountManagement extends HttpServlet {
 		String destination = request.getParameter("destination");
 		
 		
-		if(user!=null){
-			forwardTo = "/WEB-INF/jsp/account-management.jsp";
+		if(user!=null && requestedAction != null){
+
+			switch(requestedAction){
+				case "user-account-management":
+					forwardTo = "/WEB-INF/jsp/account-management.jsp";
+					break;
+				case "user-edit-account-info":
+					forwardTo = "/WEB-INF/jsp/account-info-edit.jsp";
+					break;
+			}
 			switch(user.getRole()){
 			case "admin":
 				
