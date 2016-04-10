@@ -8,8 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.User;
 import com.cggcoding.utils.Constants;
+import com.cggcoding.utils.messaging.SuccessMessages;
 
 /**
  * Servlet implementation class AccountManagement
@@ -55,10 +58,49 @@ public class AccountManagement extends HttpServlet {
 
 			switch(requestedAction){
 				case "user-account-management":
-					forwardTo = "/WEB-INF/jsp/account-management.jsp";
+					forwardTo = Constants.URL_ACCOUNT_MANAGEMENT;
 					break;
 				case "user-edit-account-info":
-					forwardTo = "/WEB-INF/jsp/account-info-edit.jsp";
+
+					forwardTo = Constants.URL_ACCOUNT_EDIT;
+					break;
+				case "user-update-account-info":
+					String originalUserName= user.getUserName();
+					String originalFirstName = user.getFirstName();
+					String originalLastName = user.getLastName();
+					String originalEmail = user.getEmail();
+					
+					String userName = request.getParameter("userName");
+					String firstName = request.getParameter("firstName");
+					String lastName = request.getParameter("lastName");
+					String email = request.getParameter("email");
+					String password = request.getParameter("password");
+					String newPassword = request.getParameter("newPassword");
+					String newPasswordConfirm = request.getParameter("newPasswordConfirm");
+					
+					
+					user.setUserName(userName);
+					user.setFirstName(firstName);
+					user.setLastName(lastName);
+					user.setEmail(email);
+					
+				try {
+					user.update(password, newPassword, newPasswordConfirm);
+					request.setAttribute("successMessage", SuccessMessages.USER_UPDATED);
+					forwardTo = user.getMainMenuURL();
+				} catch (DatabaseException | ValidationException e) {
+					//set the user fields back to original state
+					user.setUserName(originalUserName);
+					user.setFirstName(originalFirstName);
+					user.setLastName(originalLastName);
+					user.setEmail(originalEmail);
+					request.setAttribute("errorMessage", e.getMessage());
+					forwardTo = Constants.URL_ACCOUNT_EDIT;
+					e.printStackTrace();
+				}
+					
+					
+					
 					break;
 			}
 			switch(user.getRole()){

@@ -29,5 +29,8 @@ public final class SuccessMessages {
 	//INVITATIONS
 	public static final String INVITATION_SENT_SUCCESS = "The invitation was sent successfully.";
 	public static final String INVITATION_DELETED = "The invitation was deleted.";
+	
+	//USER INFO
+	public static final String USER_UPDATED = "Your account information was updated.";
 
 }

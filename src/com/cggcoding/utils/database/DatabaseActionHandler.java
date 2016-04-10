@@ -21,6 +21,7 @@ import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
+import com.cggcoding.models.UserPassword;
 
 public interface DatabaseActionHandler {
 
@@ -32,9 +33,7 @@ public interface DatabaseActionHandler {
 
 	boolean userValidate(String email, String password) throws DatabaseException;
 	
-	byte[] userGetPasswordSalt(Connection cn, String userEmail) throws SQLException;
-	
-	byte[] userGetEncryptedPassword(Connection cn, String emailAddress) throws SQLException;
+	UserPassword userGetEncryptedPasswordAndSalt(Connection cn, String emailAddress) throws SQLException;
 
 	User userLoadInfo(Connection cn, String email, String password) throws DatabaseException;
 	
@@ -48,6 +47,15 @@ public interface DatabaseActionHandler {
 	boolean userValidateNewEmail(Connection cn, String email)  throws SQLException;
 	
 	User userCreateNewUser(Connection cn, User newUser, byte[] encryptedPassword, byte[] passwordSalt) throws SQLException;
+	
+	/**Updates the user's account information.  It checks if newUserPassword is null and if so, updates all other data.  If so, it also updates the user's password and salt
+	 * @param cn
+	 * @param user - The User object being updated
+	 * @param newUserPasswordData - nullable - Holds data for new password and salt when user changes password
+	 * @return
+	 * @throws SQLException
+	 */
+	boolean userUpdate(Connection cn, User user, UserPassword newUserPasswordData) throws SQLException;
 	
 	User userLoadByID(int userID) throws DatabaseException, ValidationException;
 	
@@ -267,6 +275,8 @@ public interface DatabaseActionHandler {
 	void therapistCreateClientConnection(Connection cn, int therapistUserID, int clientUserID) throws SQLException;
 
 	List<String> invitationGetSentInvitationCodes(Connection cn, int senderUserID) throws SQLException;
+
+	
 
 	
 

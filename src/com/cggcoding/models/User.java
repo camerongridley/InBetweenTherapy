@@ -49,146 +49,6 @@ public abstract class User implements Serializable{
 		this.mainMenuURL = "";
 	}
 	
-	public static User registerNewUser(String userName, String firstName, String lastName, String password, String passwordConfirm, String email, String roleType, String invitationCode) throws ValidationException, DatabaseException{
-		
-		if(userName.equals("") || firstName.equals("") || lastName.equals("") || password.equals("") || passwordConfirm.equals("") || email.equals("") || roleType == null || roleType.equals("")){
-			throw new ValidationException(ErrorMessages.MISSING_USER_INFORMATION);
-		}
-
-		
-		//validate that the passwords match
-		if(!password.equals(passwordConfirm)){
-			throw new ValidationException(ErrorMessages.PASSWORDS_DONT_MATCH);
-		}
-		
-		PasswordEncryptionService passwordService = new PasswordEncryptionService();
-
-		byte[] salt = null;
-		byte[] encryptedPassword = null;
-		try {
-			salt = passwordService.generateSalt();
-			encryptedPassword = passwordService.getEncryptedPassword(password, salt);
-		} catch (NoSuchAlgorithmException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		Connection cn = null;
-		User newUser = null;
-	
-		try {
-			cn = dao.getConnection();
-			cn.setAutoCommit(false);
-		
-			//validate that they userName is available
-			if(!dao.userValidateNewUsername(cn, userName)){
-				throw new ValidationException(ErrorMessages.USERNAME_ALREADY_EXISTS);
-			}
-			
-			if(!dao.userValidateNewEmail(cn, email)){
-				throw new ValidationException(ErrorMessages.EMAIL_ALREADY_EXISTS);
-			}
-			
-			//create user
-			switch (roleType){
-				case Constants.USER_ADMIN:
-					newUser = new UserAdmin(0, userName, firstName, lastName, email);
-					break;
-				case Constants.USER_THERAPIST:
-					newUser = new UserTherapist(0, userName, firstName, lastName, email);
-					break;
-					
-				case Constants.USER_CLIENT:
-					newUser = new UserClient(0, userName, firstName, lastName, email);
-					break;
-			}
-
-			dao.userCreateNewUser(cn, newUser, encryptedPassword, salt);
-
-			if(!invitationCode.equals("")){
-				newUser.processInvitationAcceptance(cn, invitationCode);
-			}
-
-			cn.commit();
-			
-		} catch (SQLException | ValidationException e) {
-			e.printStackTrace();
-			try {
-				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
-				cn.rollback();
-			} catch (SQLException e1) {
-				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
-				e1.printStackTrace();
-			}
-			if(e.getClass().getSimpleName().equals("ValidationException")){
-				throw new ValidationException(e.getMessage());
-			}else {
-				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
-			}
-			
-		} finally {
-			try {
-				cn.setAutoCommit(true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			DbUtils.closeQuietly(cn);
-	    }
-		 
-		 return newUser;
-		 
-	}
-	
-	public static User login(String email, String passwordToCheck) throws ValidationException, DatabaseException{
-		PasswordEncryptionService passwordService = new PasswordEncryptionService();
-
-		byte[] salt = null;
-		byte[] encryptedPassword = null;
-		Connection cn = null;
-		User user = null;
-		
-		try {
-			cn = dao.getConnection();
-			cn.setAutoCommit(false);
-			
-			salt = dao.userGetPasswordSalt(cn, email);
-			encryptedPassword = dao.userGetEncryptedPassword(cn, email);
-			
-			if(passwordService.authenticate(passwordToCheck, encryptedPassword, salt)){
-				user = dao.userLoadInfo(cn, email, passwordToCheck);
-			}
-			
-			
-			if(user == null){
-				throw new ValidationException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
-			}
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				cn.setAutoCommit(true);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			DbUtils.closeQuietly(cn);
-	    }
-
-		return user;
-	}
-	
-	public abstract void processInvitationAcceptance(Connection cn, String invitationCode) throws SQLException, ValidationException;
-	
 	public void setUserID(int userID) {
 		this.userID = userID;
 	}
@@ -448,10 +308,185 @@ public abstract class User implements Serializable{
 		return dao.userLoadByID(userID);
 	}
 	
+	public static User create(Connection cn, User newUser, byte[] encryptedPassword, byte[] salt) throws SQLException{
+		return dao.userCreateNewUser(cn, newUser, encryptedPassword, salt);
+	}
+	
+	/**Allows user to update their user account information - can include a new password or not.
+	 * @param clearTextPasswordToAuthenticate - User is required to enter their password to update account info, so this is the password they entered and needs to be authenticated
+	 * @param newClearTextPassword - nullable - contains new password in the case the user wants to change their password
+	 * @param newClearTextPasswordConfirm - nullable - contains confirmation of new password
+
+	 * @throws DatabaseException
+	 * @throws ValidationException 
+	 */
+	public void update(String clearTextPasswordToAuthenticate, String newClearTextPassword, String newClearTextPasswordConfirm) throws DatabaseException, ValidationException{
+		
+		Connection cn = null;
+		
+		try{
+			cn = dao.getConnection();
+
+			update(cn, clearTextPasswordToAuthenticate, newClearTextPassword, newClearTextPasswordConfirm);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+		} finally {
+			DbUtils.closeQuietly(cn);
+	    }
+	}
+	
+	protected void update(Connection cn, String clearTextPasswordToAuthenticate, String newClearTextPassword, String newClearTextPasswordConfirm) throws SQLException, ValidationException {
+		UserPassword newUserPassword = encryptNewPassword(newClearTextPassword, newClearTextPasswordConfirm);
+		
+		if(passwordAuthenticated(cn, this.getEmail(), clearTextPasswordToAuthenticate)){
+			if(newClearTextPassword == null || newClearTextPassword.isEmpty()){
+				dao.userUpdate(cn, this, null);
+			}else{
+				dao.userUpdate(cn, this, newUserPassword);
+			}
+			
+		}else{
+			throw new ValidationException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+		}
+
+	}
+	
 	public static User loadBasicByEmail(Connection cn, String emailAddress) throws SQLException, ValidationException{
 		return dao.userLoadByEmailAddress(cn, emailAddress);
 	}
 	
+	public static User registerNewUser(String userName, String firstName, String lastName, String password, String passwordConfirm, String email, String roleType, String invitationCode) throws ValidationException, DatabaseException{
+		
+		if(userName.equals("") || firstName.equals("") || lastName.equals("") || password.equals("") || passwordConfirm.equals("") || email.equals("") || roleType == null || roleType.equals("")){
+			throw new ValidationException(ErrorMessages.MISSING_USER_INFORMATION);
+		}
+		
+		UserPassword userPassword = encryptNewPassword(password, passwordConfirm);
+
+		Connection cn = null;
+		User newUser = null;
+	
+		try {
+			cn = dao.getConnection();
+			cn.setAutoCommit(false);
+		
+			//validate that they userName is available
+			if(!dao.userValidateNewUsername(cn, userName)){
+				throw new ValidationException(ErrorMessages.USERNAME_ALREADY_EXISTS);
+			}
+			
+			if(!dao.userValidateNewEmail(cn, email)){
+				throw new ValidationException(ErrorMessages.EMAIL_ALREADY_EXISTS);
+			}
+			
+			//create user
+			switch (roleType){
+				case Constants.USER_ADMIN:
+					newUser = new UserAdmin(0, userName, firstName, lastName, email);
+					break;
+				case Constants.USER_THERAPIST:
+					newUser = new UserTherapist(0, userName, firstName, lastName, email);
+					break;
+					
+				case Constants.USER_CLIENT:
+					newUser = new UserClient(0, userName, firstName, lastName, email);
+					break;
+			}
+
+			User.create(cn, newUser, userPassword.getEncryptedPassword(), userPassword.getPasswordSalt());
+
+			if(!invitationCode.equals("")){
+				newUser.processInvitationAcceptance(cn, invitationCode);
+			}
+
+			cn.commit();
+			
+		} catch (SQLException | ValidationException e) {
+			e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
+				e1.printStackTrace();
+			}
+			if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else {
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
+			
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+	    }
+		 
+		 return newUser;
+		 
+	}
+	
+	 
+	
+	public static User login(String email, String passwordToCheck) throws ValidationException, DatabaseException{
+
+		Connection cn = null;
+		User user = null;
+		
+		try {
+			cn = dao.getConnection();
+			cn.setAutoCommit(false);
+
+			if(passwordAuthenticated(cn, email, passwordToCheck)){
+				user = dao.userLoadInfo(cn, email, passwordToCheck);
+			}
+			
+			
+			if(user == null){
+				throw new ValidationException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+	    }
+
+		return user;
+	}
+	
+	public static boolean passwordAuthenticated(Connection cn, String email, String passwordToAuthenticate) throws SQLException, ValidationException{
+		PasswordEncryptionService passwordService = new PasswordEncryptionService();
+		UserPassword userPassword = null;
+		boolean authenticated = false;
+		
+		if(passwordToAuthenticate == null || passwordToAuthenticate.isEmpty()){
+			throw new ValidationException(ErrorMessages.PASSWORD_MISSING);
+		}
+		userPassword = dao.userGetEncryptedPasswordAndSalt(cn, email);
+		
+		try {
+			authenticated = passwordService.authenticate(passwordToAuthenticate, userPassword.getEncryptedPassword(), userPassword.getPasswordSalt());
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return authenticated;
+	}
+	
+	public abstract void processInvitationAcceptance(Connection cn, String invitationCode) throws SQLException, ValidationException;
 	public List<Invitation> getInvitationsSent() throws DatabaseException, ValidationException{
 		Connection cn = null;
 		List<Invitation> invitationList = new ArrayList<>();
@@ -495,6 +530,35 @@ public abstract class User implements Serializable{
         }
 		
 		return invitationList;
+	}
+	
+	/**
+	 * @param password
+	 * @param passwordConfirm
+	 * @return UserPassword - can be null - holds newly generated hashed password and salt
+	 * @throws ValidationException
+	 */
+	public static UserPassword encryptNewPassword(String password, String passwordConfirm) throws ValidationException{
+		PasswordEncryptionService passwordService = new PasswordEncryptionService();
+		byte[] encryptedPassword = null;
+		byte[] salt = null;
+		UserPassword userPassword = null;
+		
+		//validate that the passwords match
+		if(!password.equals(passwordConfirm)){
+			throw new ValidationException(ErrorMessages.PASSWORDS_DONT_MATCH);
+		}
+		try {
+			salt = passwordService.generateSalt();
+			encryptedPassword = passwordService.getEncryptedPassword(password, salt);
+			userPassword = new UserPassword(encryptedPassword, salt);
+			
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return userPassword;
 	}
 	
 	@Override

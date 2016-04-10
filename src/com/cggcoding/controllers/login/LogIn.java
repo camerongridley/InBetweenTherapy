@@ -91,8 +91,9 @@ public class LogIn extends HttpServlet {
 				    throw new ValidationException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
 				}*/
 			} catch (DatabaseException | ValidationException e) {
-				e.printStackTrace();
+				forwardTo = Constants.URL_LOGIN;
 				request.setAttribute("errorMessage", e.getMessage());
+				e.printStackTrace();
 			}
 	        
 	        request.getRequestDispatcher(forwardTo).forward(request, response);

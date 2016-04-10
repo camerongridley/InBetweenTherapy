@@ -10,8 +10,8 @@
 <div class="row">
   	<div class="col-md-6">
     
-          <form class="form-horizontal" action="secure/AccountManagement" method="POST">
-          	<input type="hidden" name="requestedAction" value="user-save-account-info">
+          <form class="form-horizontal" action="/secure/AccountManagement" method="POST">
+          	<input type="hidden" name="requestedAction" value="user-update-account-info">
 			<input type="hidden" name="path" value="${path }">
 	          <fieldset>
 		            <div id="legend">
@@ -50,30 +50,82 @@
 		              <label class="control-label" for="password">Password</label>
 		              <div class="controls">
 		                <input type="password" id="password" name="password" placeholder="" class="form-control input-lg">
-		                <p class="help-block">Password should be at least 6 characters</p>
+		                <p class="help-block">Your password is required to update account info</p>
 		              </div>
 		            </div>
 		         
-		            <div class="control-group">
-		              <label class="control-label" for="passwordConfirm">Password (Confirm)</label>
-		              <div class="controls">
-		                <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="" class="form-control input-lg">
-		                <p class="help-block">Please confirm password</p>
-		              </div>
-		            </div>
-
-		         	<br>
+			        <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#changePasswordCollapse" aria-expanded="false" aria-controls="changePasswordCollapse">
+					  Change Password
+					</button>
+					<div class="collapse" id="changePasswordCollapse">
+					  <div class="well">
+								    
+						<div class="control-group" id="newPasswordDiv">
+			              <label class="control-label" for="newPassword">New Password</label>
+			              <div class="controls">
+			                <input type="password" id="newPassword" name="newPassword" placeholder="" class="form-control input-lg">
+			                <p class="help-block">The new password should be at least 6 characters</p>
+			              </div>
+			            </div>
+			            
+						<div class="control-group" id="newPasswordConfirmDiv">
+			              <label class="control-label" for="newPasswordConfirm">New Password (Confirm)</label>
+			              <div class="controls">
+			                <input type="password" id="newPasswordConfirm" name="newPasswordConfirm" placeholder="" class="form-control input-lg">
+			                <p class="help-block">Please confirm the password</p>
+			                <p class="help-block" id="pCheckPasswordMatch"></p>
+			              </div>
+			            </div>
+						<div class="registrationFormAlert" id="divCheckPasswordMatch">
+						</div>
+						
+					  </div>
+					</div>
+		            
+		            <p>
 		            <div class="control-group">
 		              <!-- Button -->
 		              <div class="controls">
-		                <button class="btn btn-success">Save Changes</button>
+		                <button class="btn btn-primary">Save Changes</button>
 		              </div>
 		            </div>
+		            </p>
 	          </fieldset>
         </form>
     
     </div> 
 </div>
 	
+<script>
+
+function checkPasswordMatch() {
+    var password = $("#newPassword").val();
+    var confirmPassword = $("#newPasswordConfirm").val();
+
+    if(password){
+    	$('#newPasswordDiv').addClass('has-success');
+    }else{
+    	$('#newPasswordDiv').removeClass('has-success');
+    }
+    
+    if (password != confirmPassword){
+    	$('#newPasswordConfirmDiv').addClass('has-error');
+    	$('#newPasswordConfirmDiv').removeClass('has-success');
+        $("#pCheckPasswordMatch").html("Passwords do not match!");
+    }else{
+    	$('#newPasswordConfirmDiv').addClass('has-success');
+    	$('#newPasswordConfirmDiv').removeClass('has-error');
+    	$("#pCheckPasswordMatch").html("Passwords match.");
+    }
+    	     
+}
+
+
+
+$(document).ready(function () {
+   $("#newPasswordConfirm").keyup(checkPasswordMatch);
+});
+
+</script>
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />

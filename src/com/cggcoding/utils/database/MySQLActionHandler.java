@@ -180,6 +180,51 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	    return newUser;
 	}
 	
+	@Override
+	public boolean userUpdate(Connection cn, User user, UserPassword newUserPassword) throws SQLException{
+		PreparedStatement ps = null;
+        int success = 0;
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE user SET user_name=?, first_name=?, last_name=?, email=? ");
+        
+        try {
+        	
+        	if(newUserPassword==null){
+        		sqlBuilder.append("WHERE user_id=?;");
+            	
+                ps = cn.prepareStatement(sqlBuilder.toString());
+
+                ps.setString(1, user.getUserName());
+    	        ps.setString(2, user.getFirstName());
+    	        ps.setString(3, user.getLastName());
+    	        ps.setString(4, user.getEmail());
+    	      
+    	        ps.setInt(5, user.getUserID());
+        	}else{
+        		sqlBuilder.append(", encrypted_password=?, password_salt=? WHERE user_id=?;");
+        		//sql = "UPDATE user SET user_name=?, first_name=?, last_name=?, email=?, encrypted_password=?, password_salt=? WHERE user_id=?;";
+            	
+                ps = cn.prepareStatement(sqlBuilder.toString());
+
+                ps.setString(1, user.getUserName());
+    	        ps.setString(2, user.getFirstName());
+    	        ps.setString(3, user.getLastName());
+    	        ps.setString(4, user.getEmail());
+    	        ps.setBytes(5, newUserPassword.getEncryptedPassword());
+    	        ps.setBytes(6, newUserPassword.getPasswordSalt());
+    	        ps.setInt(7, user.getUserID());
+        	}
+        	
+            
+
+            success = ps.executeUpdate();
+        	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success == 1;
+	}
+	
     /* (non-Javadoc)
 	 * @see com.cggcoding.utils.database.DatabaseActionHandler#validateUser(java.lang.String, java.lang.String)
 	 */
@@ -220,50 +265,21 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             return false;
         }
     }
-
-    @Override
-    public byte[] userGetPasswordSalt(Connection cn, String emailAddress) throws SQLException{
-    	PreparedStatement ps = null;
-        ResultSet rs = null;
-        byte[] encryptedPassword = null;
-        
-        try {
-            ps = cn.prepareStatement("SELECT password_salt FROM user WHERE email = ?");
-            ps.setString(1, emailAddress);
-
-            rs = ps.executeQuery();
-            
-            while (rs.next()){
-            	encryptedPassword = rs.getBytes("password_salt");
-            }
-            
-            //XXX decide if want to uncomment this - commented out because I want it to return null when there is no user found for when checking if a user with this email exists when sending invitations to join the site
-            /*if(user==null){
-            	throw new ValidationException(ErrorMessages.USER_NOT_FOUND);
-            }*/
-
-        } finally {
-        	DbUtils.closeQuietly(rs);
-			DbUtils.closeQuietly(ps);
-        }
-        
-        return encryptedPassword;
-    }
     
     @Override
-    public byte[] userGetEncryptedPassword(Connection cn, String emailAddress) throws SQLException{
+    public UserPassword userGetEncryptedPasswordAndSalt(Connection cn, String emailAddress) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        byte[] encryptedPassword = null;
+        UserPassword userPasswordInfo = null;
         
         try {
-            ps = cn.prepareStatement("SELECT encrypted_password FROM user WHERE email = ?");
+            ps = cn.prepareStatement("SELECT encrypted_password, password_salt FROM user WHERE email = ?");
             ps.setString(1, emailAddress);
 
             rs = ps.executeQuery();
             
             while (rs.next()){
-            	encryptedPassword = rs.getBytes("encrypted_password");
+            	userPasswordInfo = new UserPassword(rs.getBytes("encrypted_password"), rs.getBytes("password_salt"));
             }
             
             //XXX decide if want to uncomment this - commented out because I want it to return null when there is no user found for when checking if a user with this email exists when sending invitations to join the site
@@ -276,7 +292,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			DbUtils.closeQuietly(ps);
         }
         
-        return encryptedPassword;
+        return userPasswordInfo;
     }
     
     //XXX can I move the switch statement into the User model?

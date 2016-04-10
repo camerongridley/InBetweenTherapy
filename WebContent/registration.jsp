@@ -44,7 +44,7 @@
 		                <p class="help-block">Please provide your last name.</p>
 		              </div>
 		            </div>
-		            <div class="control-group">
+		            <div class="control-group" id="divPassword">
 		              <label class="control-label" for="password">Password</label>
 		              <div class="controls">
 		                <input type="password" id="password" name="password" placeholder="" class="form-control input-lg">
@@ -52,11 +52,12 @@
 		              </div>
 		            </div>
 		         
-		            <div class="control-group">
+		            <div class="control-group" id="divPasswordConfirm">
 		              <label class="control-label" for="passwordConfirm">Password (Confirm)</label>
 		              <div class="controls">
 		                <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="" class="form-control input-lg">
 		                <p class="help-block">Please confirm password</p>
+		                <p class="help-block" id="pCheckPasswordMatch"></p>
 		              </div>
 		            </div>
 		            
@@ -93,6 +94,34 @@
     
     </div> 
 </div>
+
+<script>
+	$(document).ready(function () {
+	   $("#divPasswordConfirm").keyup(checkPasswordMatch);
+	});
+	
+	function checkPasswordMatch() {
+	    var password = $("#password").val();
+	    var confirmPassword = $("#passwordConfirm").val();
+	
+	    if(password){
+	    	$('#divPassword').addClass('has-success');
+	    }else{
+	    	$('#divPassword').removeClass('has-success');
+	    }
+	    
+	    if (password != confirmPassword){
+	    	$('#divPasswordConfirm').addClass('has-error');
+	    	$('#divPasswordConfirm').removeClass('has-success');
+	        $("#pCheckPasswordMatch").html("Passwords do not match!");
+	    }else{
+	    	$('#divPasswordConfirm').addClass('has-success');
+	    	$('#divPasswordConfirm').removeClass('has-error');
+	    	$("#pCheckPasswordMatch").html("Passwords match.");
+	    }
+	    	     
+	}
+</script>
 	
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />

@@ -67,12 +67,7 @@ public class Registration extends HttpServlet {
 		String userRole = request.getParameter("userRole");
 		String invitationCode = request.getParameter("invitationCode");
 		
-		PasswordEncryptionService passwordService = new PasswordEncryptionService();
-		
-		
 		try{
-			byte[] salt = passwordService.generateSalt();
-			byte[] encryptedPassword = passwordService.getEncryptedPassword(password, salt);
 			
 			user = User.registerNewUser(userName, firstName, lastName, password, passwordConfirm, email, userRole, invitationCode);
 
@@ -90,12 +85,6 @@ public class Registration extends HttpServlet {
 			request.setAttribute("invitationCode", invitationCode);
 			request.setAttribute("userRole", userRole);
 			forwardTo = Constants.URL_REGISTRATION;
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

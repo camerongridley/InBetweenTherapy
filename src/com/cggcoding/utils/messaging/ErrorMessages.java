@@ -73,7 +73,7 @@ public final class ErrorMessages {
 	public static final String KEYWORD_ALREADY_EXISTS = "That keyword already exists.";
 	public static final String KEYWORD_EMPTY = "You did not enter any value for the new keyword.  Please try again.";
 	
-	
+	public static final String PASSWORD_MISSING = "Please enter a password to continue.";
 	
 	
 }

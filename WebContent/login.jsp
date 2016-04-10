@@ -43,7 +43,7 @@
 			<form class="form-inline" action="./LogIn" method="POST">
 				<div><button type="submit" class="btn btn-primary" style="margin-bottom:5px" title="Log in as cgridley@gmail.com">Log in Admin</button></div>
 				<input type="hidden" name="email" value="cgridley@gmail.com">
-				<input type="hidden" name="password" value="admin">
+				<input type="hidden" name="password" value="password">
 			</form>
 		</div>
 	</div>
