@@ -128,7 +128,7 @@ public class EditTreatmentPlan extends HttpServlet {
 		            //Updates the plan's basic info
 		            case "plan-edit-update":
 		            	//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
-						if(request.getParameter("submitButton").equals("save")){
+						//if(request.getParameter("submitButton").equals("save")){
 							//detect which treatment issue source was used and validate
 			                int treatmentIssueID = determineTreatmentIssueID(coreTreatmentIssueID, customIssueID);
 			                
@@ -152,36 +152,13 @@ public class EditTreatmentPlan extends HttpServlet {
 			                treatmentPlan.update();
 			                
 			                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
-						}
+						//}
 		                
-						//regardless of whether Save or Cancel button was pressed this determines where to forward and what to set in request
-		                if(user.hasRole(Constants.USER_ADMIN)){
-		                	forwardTo = Constants.URL_ADMIN_MAIN_MENU;
-		                }
+						forwardTo = determineForwardToAfterSaveOrCancel(user, request, path, treatmentPlan);
 		                
-		                if(user.hasRole(Constants.USER_THERAPIST)){
-		                	switch(path){
-		                		case Constants.PATH_MANAGE_CLIENT:
-			                		UserTherapist userTherapist = (UserTherapist)user;
-			    				
-				    				//set the default treatment plans and the custom plans for this therapist into the request
-				    				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
-				    				
-				    				User client = User.loadBasic(treatmentPlan.getUserID());
-			        				request.setAttribute("client", client);
-				    				
-			        				CommonServletFunctions.putClientPlansInRequest(request, userTherapist, client.getUserID());
-			        				
-					                forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
-					                
-					                break;
-					                
-		                		default: 
-		                			user.getMainMenuURL();
-		                	} 
-		                	
-		                }
-		                
+		            	break;
+		            case "plan-edit-update-cancel":
+		            	forwardTo = determineForwardToAfterSaveOrCancel(user, request, path, treatmentPlan);
 		            	break;
 		            case "plan-edit-load-plan":
 		            	request.setAttribute("scrollTo", "selectTreatmentPlan");
@@ -253,53 +230,39 @@ public class EditTreatmentPlan extends HttpServlet {
 		request.getRequestDispatcher(forwardTo).forward(request,response);
 	}
 	
-	//TODO delete?
-	/*private TreatmentPlan loadSelectedTreatmentPlanInRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException, ValidationException{
-		TreatmentPlan treatmentPlan = null;
-		if(treatmentPlanID != 0){
-			treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-	    	request.setAttribute("treatmentPlan", treatmentPlan);
-		} else {
-			request.setAttribute("treatmentPlan", null);
-		}
-    	
-    	return treatmentPlan;
-	}*/
-
-	//TODO delete?
-	/**Validates that there are values for planID, title, and description.  Constructs TreatmentPlan with new data and calls update method.  Finally puts the updated plan back in the request as"treatmentPlan".
-	 * @param request
-	 * @param treatmentPlan
-	 * @param treatmentPlanID
-	 * @param planTitle
-	 * @param planDescription
-	 * @param treatmentIssueID
-	 * @throws ValidationException
-	 * @throws DatabaseException
-	 */
-	/*private void updateTreatmentPlan(HttpServletRequest request, TreatmentPlan treatmentPlan, int treatmentPlanID, String planTitle, String planDescription, int treatmentIssueID) throws ValidationException, DatabaseException{
-		if(treatmentPlanID==0){
-    		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
-    	}
-    	
-        if(planTitle.isEmpty() || planDescription.isEmpty()){
-        	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
+	
+	private String determineForwardToAfterSaveOrCancel(User user, HttpServletRequest request, String path, TreatmentPlan treatmentPlan) throws DatabaseException, ValidationException{
+		String forwardTo = user.getMainMenuURL();
+		//regardless of whether Save or Cancel button was pressed this determines where to forward and what to set in request
+        if(user.hasRole(Constants.USER_ADMIN)){
+        	forwardTo = Constants.URL_ADMIN_MAIN_MENU;
         }
         
+        if(user.hasRole(Constants.USER_THERAPIST)){
+        	switch(path){
+        		case Constants.PATH_MANAGE_CLIENT:
+            		UserTherapist userTherapist = (UserTherapist)user;
+				
+    				//set the default treatment plans and the custom plans for this therapist into the request
+    				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
+    				
+    				User client = User.loadBasic(treatmentPlan.getUserID());
+    				request.setAttribute("client", client);
+    				
+    				CommonServletFunctions.putClientPlansInRequest(request, userTherapist, client.getUserID());
+    				
+	                forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
+	                
+	                break;
+	                
+        		default: 
+        			user.getMainMenuURL();
+        	} 
+        	
+        }
         
-        
-        //TODO possibly change this to use a static method TreatmentPlan.updateBasic(planTitle, planDescription, treatmentIssueID);???
-        //treatmentPlan = TreatmentPlan.load(treatmentPlanID);
-        
-        treatmentPlan.setTitle(planTitle);
-        treatmentPlan.setDescription(planDescription);
-        treatmentPlan.setTreatmentIssueID(treatmentIssueID);
-        
-        
-        treatmentPlan.update();
-
-        request.setAttribute("treatmentPlan", treatmentPlan);
-	}*/
+        return forwardTo;
+	}
 	
 	private int determineTreatmentIssueID(int coreIssueID, int customIssueID) throws ValidationException{
 		//detect which treatment issue source was used and validate
@@ -373,4 +336,53 @@ public class EditTreatmentPlan extends HttpServlet {
 
         return issueID;
     }
+    
+  //TODO delete?
+  	/*private TreatmentPlan loadSelectedTreatmentPlanInRequest(HttpServletRequest request, int treatmentPlanID) throws DatabaseException, ValidationException{
+  		TreatmentPlan treatmentPlan = null;
+  		if(treatmentPlanID != 0){
+  			treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+  	    	request.setAttribute("treatmentPlan", treatmentPlan);
+  		} else {
+  			request.setAttribute("treatmentPlan", null);
+  		}
+      	
+      	return treatmentPlan;
+  	}*/
+
+  	//TODO delete?
+  	/**Validates that there are values for planID, title, and description.  Constructs TreatmentPlan with new data and calls update method.  Finally puts the updated plan back in the request as"treatmentPlan".
+  	 * @param request
+  	 * @param treatmentPlan
+  	 * @param treatmentPlanID
+  	 * @param planTitle
+  	 * @param planDescription
+  	 * @param treatmentIssueID
+  	 * @throws ValidationException
+  	 * @throws DatabaseException
+  	 */
+  	/*private void updateTreatmentPlan(HttpServletRequest request, TreatmentPlan treatmentPlan, int treatmentPlanID, String planTitle, String planDescription, int treatmentIssueID) throws ValidationException, DatabaseException{
+  		if(treatmentPlanID==0){
+      		throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+      	}
+      	
+          if(planTitle.isEmpty() || planDescription.isEmpty()){
+          	throw new ValidationException(ErrorMessages.PLAN_MISSING_INFO);
+          }
+          
+          
+          
+          //TODO possibly change this to use a static method TreatmentPlan.updateBasic(planTitle, planDescription, treatmentIssueID);???
+          //treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+          
+          treatmentPlan.setTitle(planTitle);
+          treatmentPlan.setDescription(planDescription);
+          treatmentPlan.setTreatmentIssueID(treatmentIssueID);
+          
+          
+          treatmentPlan.update();
+
+          request.setAttribute("treatmentPlan", treatmentPlan);
+  	}*/
+  	
 }

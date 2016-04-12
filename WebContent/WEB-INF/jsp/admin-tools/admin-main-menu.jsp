@@ -21,28 +21,22 @@
 <div class="row">
 	<div class="col-md-6">
 		<div class="well well-sm">
-			<p>
-			<form class="form-inline" action="/secure/treatment-components/CreateTreatmentPlan"
+
+			<form class="form-inline form-inline-controls" action="/secure/treatment-components/CreateTreatmentPlan"
 				method="POST">
-				<div>
 					<button type="submit" class="btn btn-primary">Create
 						Treatment Plan Template</button>
-				</div>
 				<input type="hidden" name="requestedAction"	value="plan-create-start">
 				<input type="hidden" name="path" value="templateTreatmentPlan">
 			</form>
-			</p>
 
-			<p>
-			<form class="form-inline" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
-				<div>
+			<form class="form-inline form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
 					<button type="submit" class="btn btn-primary">Edit
 						Treatment Plan Template</button>
-				</div>
 				<input type="hidden" name="requestedAction" value="plan-edit-start">
 				<input type="hidden" name="path" value="templateTreatmentPlan">
 			</form>
-			</p>
+
 		</div>
 
 		<div class="well well-sm">

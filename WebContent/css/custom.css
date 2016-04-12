@@ -3,6 +3,10 @@ body {
   padding-bottom: 30px;
 }
 
+.form-inline-controls{
+	display:inline;
+}
+
 .jumbotron {
 	padding-left: 30px;
 	padding-left: 30px;
