@@ -63,7 +63,6 @@
 	<input type="hidden" name="requestedAction" value="plan-edit-update">
 	<input type="hidden" name="path" value="${path }"> 
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-	<input type="hidden" name="ownerUserID" value="${treatmentPlan.userID}">
 	
 	<div class="row form-group">
 		<label for="planName" class="col-sm-2 control-label">Plan Name</label>
@@ -158,13 +157,13 @@
 	<label for="stageList" class="control-label">Stages 
 	<c:if test="${treatmentPlan!=null }">
 		<form class="form-inline form-inline-controls" action="/secure/treatment-components/CreateStage" method="POST">
-				<input type="hidden" name="requestedAction" value="add-stage-to-treatment-plan">
-				<input type="hidden" name="path" value="${path }"> 
-				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-				<input type="hidden" name="ownerUserID" value="${treatmentPlan.userID}">
-		<button role="submit" class="btn btn-default btn-xs" title="Add a stage to this treatment plan."> 
-			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-		</button>
+			<input type="hidden" name="requestedAction" value="add-stage-to-treatment-plan">
+			<input type="hidden" name="path" value="${path }"> 
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+
+			<button role="submit" class="btn btn-default btn-xs" title="Add a stage to this treatment plan."> 
+				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+			</button>
 		</form>
 	</c:if>
 	</label>
@@ -197,7 +196,7 @@
 					<input type="hidden" name="path" value="${path }"> 
 					<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
 					<input type="hidden" name="stageID" value="${stage.stageID}">
-					<input type="hidden" name="ownerUserID" value="${treatmentPlan.userID}">
+					
 					<button role="button" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 						<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 					</button>
@@ -244,7 +243,6 @@
 				<input type="hidden" name="requestedAction" value="plan-edit-update-cancel">
 				<input type="hidden" name="path" value="${path }"> 
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-				<input type="hidden" name="ownerUserID" value="${treatmentPlan.userID}">
 				
             	<button type="submit" id="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
             </form>

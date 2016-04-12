@@ -813,21 +813,25 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	}
 	
 	private void updateKeywords(Connection cn, List<Integer> updatedKeywordIDs) throws SQLException{
-		//loop updatedKeywordIDs to see if any new ones are present and if so create a map entry
-		for(int updatedKeyID : updatedKeywordIDs){
-			if(!this.getKeywords().containsKey(updatedKeyID)){
-				//updated keywordID is not present in this task's keyword list, so add it
-				addKeyword(cn, updatedKeyID);
+		//if list of keywordIDs is null then the Task is part of a client's treatmentplan and so has no keywords
+		if(updatedKeywordIDs!=null){
+			//loop updatedKeywordIDs to see if any new ones are present and if so create a map entry
+			for(int updatedKeyID : updatedKeywordIDs){
+				if(!this.getKeywords().containsKey(updatedKeyID)){
+					//updated keywordID is not present in this task's keyword list, so add it
+					addKeyword(cn, updatedKeyID);
+				}
+			}
+			
+			//loop through existing keywords and check it each exists in the updated list.  If not, then remove it from the mapping table
+			for(int currentKeyID : this.getKeywords().keySet()){
+				if(!updatedKeywordIDs.contains(currentKeyID)){
+					//updated keywordID is not present in this task's keyword list, so add it
+					removeKeyword(cn, currentKeyID);
+				}
 			}
 		}
 		
-		//loop through existing keywords and check it each exists in the updated list.  If not, then remove it from the mapping table
-		for(int currentKeyID : this.getKeywords().keySet()){
-			if(!updatedKeywordIDs.contains(currentKeyID)){
-				//updated keywordID is not present in this task's keyword list, so add it
-				removeKeyword(cn, currentKeyID);
-			}
-		}
 		
 	}
 	
