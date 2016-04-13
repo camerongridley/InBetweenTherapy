@@ -20,7 +20,7 @@
 
 	<!-- url: The JDBC connection url for connecting to your MySQL database. -->
 
-	<Resource name="jdbc/DoItRight" 
+	<Resource name="jdbc/primaryDB" 
 		auth="Container" 
 		type="javax.sql.DataSource"
 		maxTotal="100" 
@@ -29,9 +29,9 @@
 		removeAbandoned="true"
 		removeAbandonedTimeout="300" 
 		logAbandoned="true"
-		username="cggcodin_website"
-		password="Password123!" 
+		username="inbetwee_website"
+		password="P!rates13!" 
 		driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://localhost:3306/cggcodin_doitright" />
+		url="jdbc:mysql://localhost:3306/inbetwee_primary" />
 
 </Context>

@@ -29,8 +29,8 @@ public class MySQLConnection implements Serializable, DatabaseConnection {
 			Context initCtx = new InitialContext();
 			Context envCtx = (Context) initCtx.lookup("java:comp/env");
 			
-			//The resource "jdbc/DoItRight" is set in /META-INF/context.xml - here all of the datasource connection properties are set
-			DataSource ds = (DataSource) envCtx.lookup("jdbc/DoItRight");
+			//The resource "jdbc/primaryDB" is set in /META-INF/context.xml - here all of the datasource connection properties are set
+			DataSource ds = (DataSource) envCtx.lookup("jdbc/primaryDB");
 			
 			cn = ds.getConnection();
 		} catch (NamingException | SQLException e) {
