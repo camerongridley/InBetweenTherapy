@@ -67,7 +67,7 @@ public class MenuNav extends HttpServlet {
 			case "therapist":
 				UserTherapist therapistUser = (UserTherapist)user;
 				try {
-					Map<Integer, UserClient> clientMap = therapistUser.loadClients();
+					Map<Integer, UserClient> clientMap = therapistUser.getClientMap();
 					request.setAttribute("clientMap", clientMap);
 					//get the invitations sent and put in request
 					List<Invitation> invitations = therapistUser.getInvitationsSent();

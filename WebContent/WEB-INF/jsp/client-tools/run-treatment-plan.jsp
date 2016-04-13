@@ -9,7 +9,7 @@
 
 <h1>Treatment Plan: ${treatmentPlan.title }
 <c:if test='${user.role.equals("therapist") }'>
-<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&clientUserID=${client.userID}" 
+<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}" 
 type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Align" title="Edit the Treatment Plan"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></c:if>
 </h1>
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />

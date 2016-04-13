@@ -76,7 +76,7 @@ public class ManageClients extends HttpServlet {
 		try {
 			if(user.hasRole(Constants.USER_THERAPIST)){
 				therapistUser = (UserTherapist)user;
-				Map<Integer, UserClient> clientMap = therapistUser.loadClients();
+				Map<Integer, UserClient> clientMap = therapistUser.getClientMap();
 				
 				invitations = therapistUser.getInvitationsSent();
 				

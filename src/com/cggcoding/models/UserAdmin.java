@@ -87,4 +87,10 @@ public class UserAdmin extends User implements Serializable{
 		
 	}
 
+	@Override
+	protected void performLoginSpecifics() throws DatabaseException {
+		// so far nothing to do here
+		
+	}
+
 }

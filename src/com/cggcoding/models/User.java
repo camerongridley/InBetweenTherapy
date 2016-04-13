@@ -444,6 +444,7 @@ public abstract class User implements Serializable{
 
 			if(passwordAuthenticated(cn, email, passwordToCheck)){
 				user = dao.userLoadInfo(cn, email, passwordToCheck);
+				user.performLoginSpecifics();
 			}
 			
 			
@@ -465,6 +466,12 @@ public abstract class User implements Serializable{
 
 		return user;
 	}
+	
+	/**
+	 * Perform actions needed that are specific to each user type
+	 * @throws DatabaseException 
+	 */
+	protected abstract void performLoginSpecifics() throws DatabaseException;
 	
 	public static boolean passwordAuthenticated(Connection cn, String email, String passwordToAuthenticate) throws SQLException, ValidationException{
 		PasswordEncryptionService passwordService = new PasswordEncryptionService();

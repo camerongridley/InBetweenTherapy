@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -33,7 +35,11 @@ public class UserTherapist extends User implements Serializable{
     private List<TreatmentPlan> activeAssignedClientPlans;
     private List<TreatmentPlan> unstartedAssignedClientPlans;
     private List<TreatmentPlan> completedAssignedClientPlans;
-
+    
+    private Map<Integer, String> userIDToUUID;
+    private Map<String, Integer> uuidToUserID;
+    private Map<Integer, UserClient> encodedClientMap;
+    
     private static DatabaseActionHandler dao= new MySQLActionHandler();
         
     public UserTherapist(int userID, String userName, String firstName, String lastName, String email){
@@ -45,6 +51,9 @@ public class UserTherapist extends User implements Serializable{
         this.coreTreatmentIssues = new ArrayList<>();
         this.allAssignedClientPlans = new ArrayList<>();
         setMainMenuURL(Constants.URL_THERAPIST_MAIN_MENU);
+        userIDToUUID = new HashMap<>();
+        uuidToUserID = new HashMap<>();
+        this.encodedClientMap = new HashMap<>();
     }
 
 	public Map<Integer, UserClient> getClientMap() {
@@ -55,7 +64,23 @@ public class UserTherapist extends User implements Serializable{
 		this.clientMap = clientMap;
 	}
 
-    public void addClient(UserClient client){
+	public Map<Integer, String> getUserIDToUUID() {
+		return userIDToUUID;
+	}
+
+	public void setUserIDToUUID(Map<Integer, String> userIDToUUID) {
+		this.userIDToUUID = userIDToUUID;
+	}
+
+	public Map<String, Integer> getUuidToUserID() {
+		return uuidToUserID;
+	}
+
+	public void setUuidToUserID(Map<String, Integer> uuidToUserID) {
+		this.uuidToUserID = uuidToUserID;
+	}
+
+	public void addClient(UserClient client){
     	this.clientMap.put(client.getUserID(), client);
     }
     
@@ -107,6 +132,25 @@ public class UserTherapist extends User implements Serializable{
     	return unstartedAssignedClientPlans;
     }
     
+
+	@Override
+	protected void performLoginSpecifics() throws DatabaseException {
+		//first load the clients for this therapist
+		loadClients();
+		//now pair client userIDs with a uuid and put into maps - uuids are for use on the front end so as to not expose the actual client userID
+		for(UserClient client : getClientMap().values()){
+			//generate random UUID
+			String userUUID = UUID.randomUUID().toString();;
+			//in the off chance a uuid is chosen for more than 1 client, get a new one
+			while(uuidToUserID.containsKey(userUUID)){
+				userUUID = UUID.randomUUID().toString();
+			}
+			
+			userIDToUUID.put(client.getUserID(), userUUID);
+			uuidToUserID.put(userUUID, client.getUserID());
+		}
+	}
+    
     @Override
     public void processInvitationAcceptance(Connection cn, String invitationCode) throws SQLException, ValidationException{
 
@@ -139,5 +183,6 @@ public class UserTherapist extends User implements Serializable{
 		// TODO Auto-generated method stub
 		return true;
 	}
+
     
 }
