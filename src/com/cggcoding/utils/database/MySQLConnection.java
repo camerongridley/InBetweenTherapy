@@ -30,7 +30,7 @@ public class MySQLConnection implements Serializable, DatabaseConnection {
 			Context envCtx = (Context) initCtx.lookup("java:comp/env");
 			
 			//The resource "jdbc/primaryDB" is set in /META-INF/context.xml - here all of the datasource connection properties are set
-			DataSource ds = (DataSource) envCtx.lookup("jdbc/primaryDB");
+			DataSource ds = (DataSource) envCtx.lookup("jdbc/primarydb");
 			
 			cn = ds.getConnection();
 		} catch (NamingException | SQLException e) {
