@@ -75,7 +75,7 @@
 		                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
 		            </div>
 		            <div class="col-sm-1">    
-		                <a role="button" class="btn btn-default btn-sm" href="/secure/treatment-components/EditStage?requestedAction=delete-goal&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" title="Delete goal:${goal.description }">
+		                <a role="button" data-toggle="modal" data-target="#delete_goal_modal${goal.stageGoalID }" class="btn btn-default btn-xs pull-left" title="Delete goal from this stage.">
 						  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 						</a>
 		            </div>
@@ -200,7 +200,7 @@
 	</div>
 	<!-- End New Stage Goal Modal -->
 	
-	<!-- Delete Modal -->
+	<!-- Delete Task Modal -->
 	<c:forEach items="${stage.tasks }" var="task">
 		<div class="modal" id="delete_task_modal${task.taskID }">
 		  <div class="modal-dialog">
@@ -215,6 +215,31 @@
 		      </div>
 		      <div class="modal-footer">
 		      	<a role="button" href="/secure/treatment-components/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
+				  OK
+				</a>
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	</c:forEach>
+	<!-- End Delete Modal -->
+	
+	<!-- Delete Stage Goal Modal -->
+	<c:forEach items="${stage.goals }" var="goal">
+		<div class="modal" id="delete_goal_modal${goal.stageGoalID }">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		          <h4 class="modal-title">Delete Stage Goal</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>Are you sure you want to delete the goal: <strong>${goal.description}</strong> from ${stage.title}? <span class="warning-message" >You cannot undo this.</span></p>
+		        
+		      </div>
+		      <div class="modal-footer">
+		      	<a role="button" class="btn btn-default btn-sm" href="/secure/treatment-components/EditStage?requestedAction=delete-goal&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" title="Delete goal:${goal.description }">
 				  OK
 				</a>
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
