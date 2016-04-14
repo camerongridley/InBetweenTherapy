@@ -19,6 +19,7 @@
 				<input type="hidden" name="requestedAction" value="stage-add-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				<input type="hidden" name="clientUUID" value="${clientUUID }" >
 				
 				<div>
 					<h3>Add a Core Stage</h3>
@@ -59,6 +60,7 @@
 			<input type="hidden" name="requestedAction" value="stage-create-new">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >
 			
 			<div>
 				<h3>Create a New Stage</h3>

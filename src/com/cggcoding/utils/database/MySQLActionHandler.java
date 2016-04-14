@@ -1719,7 +1719,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         TaskTwoTextBoxes task = null;
         
         try {
-    		String sql = "SELECT * FROM cggcodin_doitright.task_two_textboxes WHERE task_two_textboxes.task_generic_id =?";
+    		String sql = "SELECT * FROM task_two_textboxes WHERE task_two_textboxes.task_generic_id =?";
         	
             ps = cn.prepareStatement(sql);
             
@@ -1934,7 +1934,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         try {
         	
         	if(treatmentIssueValidateNewName(cn, treatmentIssue.getTreatmentIssueName(), userID)){
-        		String sql = "INSERT INTO `cggcodin_doitright`.`treatment_issue` (`issue`, `treatment_issue_user_id_fk`) "
+        		String sql = "INSERT INTO treatment_issue (issue, treatment_issue_user_id_fk) "
                 		+ "VALUES (?, ?)";
             	
                 ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);

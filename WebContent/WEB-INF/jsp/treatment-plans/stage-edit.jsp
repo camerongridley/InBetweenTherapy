@@ -17,6 +17,7 @@
 		<input type="hidden" name="requestedAction" value="select-stage">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 		
 		<c:if test="${path=='templateStage'}">
 			<div class="well well-sm">
@@ -40,7 +41,8 @@
 		<input type="hidden" name="requestedAction" value="stage-edit-update">
 		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >
-		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">	
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 		
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
@@ -179,10 +181,12 @@
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
 		    <form class="form-horizontal" action="/secure/treatment-components/EditStage" method="POST">
-		    <input type="hidden" name="requestedAction" value="stage-edit-add-goal">
-		    <input type="hidden" name="path" value="${path }" >
-		    <input type="hidden" name="stageID" value="${stage.stageID}" >
-		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			    <input type="hidden" name="requestedAction" value="stage-edit-add-goal">
+			    <input type="hidden" name="path" value="${path }" >
+			    <input type="hidden" name="stageID" value="${stage.stageID}" >
+			    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			    <input type="hidden" name="clientUUID" value="${clientUUID }" >
+		    
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		        <h4 class="modal-title" id="newStageGoalModalLabel">Enter a new stage goal.</h4>
@@ -205,20 +209,30 @@
 		<div class="modal" id="delete_task_modal${task.taskID }">
 		  <div class="modal-dialog">
 		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-		          <h4 class="modal-title">Delete Task</h4>
-		      </div>
-		      <div class="modal-body">
-		        <p>Are you sure you want to delete <strong>${task.title}</strong> from ${stage.title}? <span class="warning-message" >You cannot undo this.</span></p>
-		        
-		      </div>
-		      <div class="modal-footer">
-		      	<a role="button" href="/secure/treatment-components/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
-				  OK
-				</a>
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-		      </div>
+			    <form class="form-horizontal" action="/secure/treatment-components/EditStage" method="POST">
+				    <input type="hidden" name="requestedAction" value="delete-task">
+				    <input type="hidden" name="path" value="${path }" >
+				    <input type="hidden" name="taskID" value="${task.taskID}">
+				    <input type="hidden" name="stageID" value="${stage.stageID}" >
+				    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				    <input type="hidden" name="clientUUID" value="${clientUUID }" >
+				    
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			          <h4 class="modal-title">Delete Task</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>Are you sure you want to delete <strong>${task.title}</strong> from ${stage.title}? <span class="warning-message" >You cannot undo this.</span></p>
+			        
+			      </div>
+			      <div class="modal-footer">
+			      	<button type="submit" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
+					  OK
+					</button>
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			      </div>
+		      
+		      </form>
 		    </div>
 		  </div>
 		</div>
@@ -230,20 +244,29 @@
 		<div class="modal" id="delete_goal_modal${goal.stageGoalID }">
 		  <div class="modal-dialog">
 		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-		          <h4 class="modal-title">Delete Stage Goal</h4>
-		      </div>
-		      <div class="modal-body">
-		        <p>Are you sure you want to delete the goal: <strong>${goal.description}</strong> from ${stage.title}? <span class="warning-message" >You cannot undo this.</span></p>
-		        
-		      </div>
-		      <div class="modal-footer">
-		      	<a role="button" class="btn btn-default btn-sm" href="/secure/treatment-components/EditStage?requestedAction=delete-goal&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" title="Delete goal:${goal.description }">
-				  OK
-				</a>
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-		      </div>
+		    	<form class="form-horizontal" action="/secure/treatment-components/EditStage" method="POST">
+				    <input type="hidden" name="requestedAction" value="delete-goal">
+				    <input type="hidden" name="path" value="${path }" >
+				    <input type="hidden" name="stageID" value="${stage.stageID}" >
+				    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				    <input type="hidden" name="clientUUID" value="${clientUUID }" >
+		    
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			          <h4 class="modal-title">Delete Stage Goal</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>Are you sure you want to delete the goal: <strong>${goal.description}</strong> from ${stage.title}? <span class="warning-message" >You cannot undo this.</span></p>
+			        
+			      </div>
+			      <div class="modal-footer">
+			      	<button type="submit" class="btn btn-default btn-sm" title="Delete goal:${goal.description }">
+					  OK
+					</button>
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			      </div>
+			      
+			      </form>
 		    </div>
 		  </div>
 		</div>

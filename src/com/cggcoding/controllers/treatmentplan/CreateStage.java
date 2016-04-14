@@ -74,6 +74,9 @@ public class CreateStage extends HttpServlet {
 		User owner = null;
 		/*-----------End Treatment Plan object variables---------------*/
 		
+		//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
 		
 		int selectedCoreStageID = ParameterUtils.parseIntParameter(request, "coreStageID");
 		String stageTitle = request.getParameter("stageTitle");

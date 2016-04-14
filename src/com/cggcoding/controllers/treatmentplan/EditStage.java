@@ -80,6 +80,9 @@ public class EditStage extends HttpServlet {
 		User owner = null;
 		/*-----------End Treatment Plan object variables---------------*/
 		
+		//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
 
 		int originalOrder = ParameterUtils.parseIntParameter(request, "taskOrder");
 		String stageTitle = request.getParameter("stageTitle");
