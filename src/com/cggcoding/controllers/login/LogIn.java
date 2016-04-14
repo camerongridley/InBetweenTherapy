@@ -72,14 +72,14 @@ public class LogIn extends HttpServlet {
 						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 					} else if(user.hasRole(Constants.USER_THERAPIST)){
 						UserTherapist userTherapist = (UserTherapist)user;
-						Map<Integer, UserClient> clientMap = userTherapist.getClientMap();
+						Map<String, UserClient> encodedClientMap = userTherapist.getUuidToClientMap();
 						
 						
 						
 						List<Invitation> invitations = userTherapist.getInvitationsSent();
 						
 						request.setAttribute("invitationList", invitations);
-						request.setAttribute("clientMap", clientMap);
+						request.setAttribute("encodedClientMap", encodedClientMap);
 						
 						//TODO load HashMaps of clientIDs/hashedIDs
 						

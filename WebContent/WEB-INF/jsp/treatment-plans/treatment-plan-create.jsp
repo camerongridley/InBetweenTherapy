@@ -22,6 +22,8 @@
     <form class="form-horizontal" action="/secure/treatment-components/CreateTreatmentPlan" method="POST">
         <input type="hidden" name="requestedAction" value="plan-create-new" >
         <input type="hidden" name="path" value="${path }" >
+        <input type="hidden" name="clientUUID" value="${clientUUID }" >
+        
         <div class="form-group">
             <label for="planTitle" class="col-sm-2 control-label">Plan Name</label>
             <div class="col-sm-10">
@@ -106,6 +108,7 @@
 		    <input type="hidden" name="planDescription" value="${planDescription }">
 		    <input type="hidden" name="selectedCoreIssueID" value="${selectedCoreIssueID }">
 		    <input type="hidden" name="selectedCustomIssueID" value="${selectedCustomIssueID }">
+		    <input type="hidden" name="clientUUID" value="${clientUUID }" >
 		    
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

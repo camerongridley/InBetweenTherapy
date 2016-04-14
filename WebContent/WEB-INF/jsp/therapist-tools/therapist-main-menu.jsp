@@ -54,11 +54,12 @@
 		        <div class="form-group">
 
 		            <div class="col-sm-12">
-		                <select class="form-control" id="clientUserID" name="clientUserID">
+		                <select class="form-control" id="clientUUID" name="clientUUID">
 		                    <option  value="">Select a client.</option>
-		                    <c:forEach items="${clientMap}" var="clientMap">
+		                    <c:forEach items="${encodedClientMap}" var="clientMap">
+		                    <c:set var="uuid" scope="page" value="${clientMap.key}"/>
 		                    <c:set var="client" scope="page" value="${clientMap.value}"/>
-		                        <option value="${client.userID}" <c:if test="${client.userID == clientUserID}">selected</c:if>>${client.email}</option>
+		                        <option value="${uuid}">${client.email}</option>
 		                    </c:forEach>
 		                </select>
 		            </div>

@@ -63,6 +63,7 @@
 	<input type="hidden" name="requestedAction" value="plan-edit-update">
 	<input type="hidden" name="path" value="${path }"> 
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+	<input type="hidden" name="clientUUID" value="${clientUUID }" >
 	
 	<div class="row form-group">
 		<label for="planName" class="col-sm-2 control-label">Plan Name</label>
@@ -160,7 +161,8 @@
 			<input type="hidden" name="requestedAction" value="add-stage-to-treatment-plan">
 			<input type="hidden" name="path" value="${path }"> 
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >
+			
 			<button role="submit" class="btn btn-default btn-xs" title="Add a stage to this treatment plan."> 
 				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 			</button>
@@ -196,6 +198,7 @@
 					<input type="hidden" name="path" value="${path }"> 
 					<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
 					<input type="hidden" name="stageID" value="${stage.stageID}">
+					<input type="hidden" name="clientUUID" value="${clientUUID }" >
 					
 					<button role="button" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 						<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
@@ -243,6 +246,7 @@
 				<input type="hidden" name="requestedAction" value="plan-edit-update-cancel">
 				<input type="hidden" name="path" value="${path }"> 
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+				<input type="hidden" name="clientUUID" value="${clientUUID }" >
 				
             	<button type="submit" id="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
             </form>
@@ -260,6 +264,8 @@
 				<input type="hidden" name="requestedAction" value="create-new-treatment-issue"> 
 				<input type="hidden" name="path" value="${path }"> 
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+				<input type="hidden" name="clientUUID" value="${clientUUID }" >
+				
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"
 						aria-label="Close">
@@ -287,6 +293,13 @@
 <!-- Delete Stage Modal -->
 <c:forEach items="${treatmentPlan.stages }" var="stage">
 	<div class="modal" id="delete_stage_modal${stage.stageID }">
+		<form class="form-horizontal" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
+			<input type="hidden" name="requestedAction" value="stage-delete"> 
+			<input type="hidden" name="path" value="${path }">
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+			<input type="hidden" name="stageID" value="${stage.stageID}">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >
+			
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">
@@ -298,14 +311,15 @@
 		        
 		      </div>
 		      <div class="modal-footer">
-		      	<a role="button" href="/secure/treatment-components/EditTreatmentPlan?requestedAction=stage-delete&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
+		      	<button type="submit" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
 				  OK
-				</a>
+				</button>
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 		      </div>
 		    </div>
 		  </div>
-		</div>
+		 </form>
+	</div>
 </c:forEach>
 <!-- End Delete Stage Modal -->
 
@@ -315,6 +329,7 @@
 		<input type="hidden" name="requestedAction" value="delete-plan"> 
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >
 		
 		
 		  <div class="modal-dialog">

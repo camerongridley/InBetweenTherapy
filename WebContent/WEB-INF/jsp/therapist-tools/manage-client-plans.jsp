@@ -37,10 +37,10 @@
 								</div>
 								<p><strong>Current Stage: </strong></p>
 								<p>${activePlan.currentStage.title } (${activePlan.currentStage.percentComplete*100}%)</p>
-								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&clientUserID=${client.userID}&treatmentPlanID=${activePlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&clientUUID=${clientUUID}&treatmentPlanID=${activePlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
 								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 								</a>
-								<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
+								<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${activePlan.treatmentPlanID}&clientUUID=${clientUUID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
 								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${activePlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
@@ -72,10 +72,10 @@
 							    <h3 class="panel-title">${unstartedPlan.title}</h3>
 							  </div>
 							  <div class="panel-body">
-								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&clientUserID=${client.userID}&treatmentPlanID=${unstartedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&clientUUID=${clientUUID}&treatmentPlanID=${unstartedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
 								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 								</a>
-								<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${unstartedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
+								<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${unstartedPlan.treatmentPlanID}&clientUUID=${clientUUID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
 								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${unstartedPlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
@@ -156,10 +156,10 @@
 								    ${completedPlan.percentComplete()}%
 								  </div>
 								</div>
-								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&clientUserID=${client.userID}&treatmentPlanID=${completedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+								<a href="/secure/ManageClients?requestedAction=load-client-view-treatment-plan&path=${path}&clientUUID=${clientUUID}&treatmentPlanID=${completedPlan.treatmentPlanID}" type="button" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
 								  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
 								</a>
-								<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${completedPlan.treatmentPlanID}&clientUserID=${client.userID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
+								<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${completedPlan.treatmentPlanID}&clientUUID=${clientUUID}" type="button" class="btn btn-default" aria-label="Left Align" title="Edit the Treatment Plan">
 								  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 								</a>
 								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${completedPlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
@@ -181,7 +181,7 @@
 			<input type="hidden" name="requestedAction" value="delete-plan"> 
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-			<input type="hidden" name="clientUserID" value="${client.userID}">
+			<input type="hidden" name="clientUUID" value="${clientUUID}">
 			
 			
 			  <div class="modal-dialog">

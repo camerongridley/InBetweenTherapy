@@ -134,4 +134,5 @@ public class CommonServletFunctions {
 		request.setAttribute("completedAssignedClientPlans", therapistUser.loadCompletedAssignedClientTreatmentPlans());
 	}
 	
+	
 }

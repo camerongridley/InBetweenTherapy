@@ -58,6 +58,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 		
 		TreatmentPlan treatmentPlan = null;
 		Stage updatedStage = null;
+		String clientUUID = "";
 		
 		try{
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
@@ -93,7 +94,7 @@ public class UpdateTaskCompletion extends HttpServlet {
 						//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
 						if(updatedStage.isCompleted()){
 							updatedStage = treatmentPlan.nextStage();
-							//request.setAttribute("stage", updatedStage);
+
 							forwardTo = Constants.URL_STAGE_COMPLETE;
 						}
 						
@@ -103,7 +104,6 @@ public class UpdateTaskCompletion extends HttpServlet {
 						
 						treatmentPlan.update();
 					}else {
-						//request.setAttribute("stage", updatedStage);
 						throw new ValidationException(ErrorMessages.STAGE_LOCKED);
 					}
 					
@@ -111,7 +111,6 @@ public class UpdateTaskCompletion extends HttpServlet {
 					
 					
 					request.setAttribute("treatmentPlan", treatmentPlan);
-					//TODO delete line: request.setAttribute("activeStage", updatedStage);
 					
 					
 				} else {
@@ -129,14 +128,18 @@ public class UpdateTaskCompletion extends HttpServlet {
 				
 			} else if(user.getRole().equals(Constants.USER_THERAPIST)){//the therapist has clicked the Done button here
 				UserTherapist userTherapist = (UserTherapist)user;
-				int clientUserID = ParameterUtils.parseIntParameter(request, "clientID"); 
-				client = User.loadBasic(clientUserID);
+				
+				//get the client based on their UUID and put the UUID back in the request to maintain it
+				clientUUID = request.getParameter("clientUUID");
+				request.setAttribute("clientUUID", clientUUID);
+				client = userTherapist.getClientFromUUID(clientUUID);
+				
 				//set the default treatment plans and the custom plans for this therapist into the request
 				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 
 				request.setAttribute("client", client);
 				
-				CommonServletFunctions.putClientPlansInRequest(request, userTherapist, clientUserID);
+				CommonServletFunctions.putClientPlansInRequest(request, userTherapist, client.getUserID());
 	    		
 	    		forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 			}
@@ -146,11 +149,11 @@ public class UpdateTaskCompletion extends HttpServlet {
 			e.printStackTrace();
 			request.setAttribute("errorMessage", ErrorMessages.GENERAL_DB_ERROR);
 			request.setAttribute("treatmentPlan", treatmentPlan);
-			//TODO delete line: request.setAttribute("activeStage", updatedStage);
+			request.setAttribute("clientUUID", clientUUID);
 		} catch (ValidationException e) {
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("treatmentPlan", treatmentPlan);
-			//TODO delete line: request.setAttribute("activeStage", updatedStage);
+			request.setAttribute("clientUUID", clientUUID);
 			e.printStackTrace();
 		}
 		

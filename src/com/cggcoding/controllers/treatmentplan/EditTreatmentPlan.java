@@ -83,6 +83,10 @@ public class EditTreatmentPlan extends HttpServlet {
     	int coreTreatmentIssueID = ParameterUtils.parseIntParameter(request, "coreTreatmentIssueID");
     	int customIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssueID");
     	
+    	//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
+    	
     	try {
     		
     		//Here we check that a treatmentPlan has been selected (currently the only time this is true is with path plan-edit-start).
@@ -116,7 +120,7 @@ public class EditTreatmentPlan extends HttpServlet {
                 }
                 
                 if(user.hasRole(Constants.USER_THERAPIST)){
-
+                	
                 }
                 
                 //Now run actions specific to requestedAction

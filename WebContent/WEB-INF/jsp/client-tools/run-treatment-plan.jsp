@@ -9,8 +9,12 @@
 
 <h1>Treatment Plan: ${treatmentPlan.title }
 <c:if test='${user.role.equals("therapist") }'>
-<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}" 
-type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Align" title="Edit the Treatment Plan"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></c:if>
+<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&clientUUID=${clientUUID}" 
+type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Align" title="Edit the Treatment Plan"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+<p>
+Client: ${client.userName}
+</p>
+</c:if>
 </h1>
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
@@ -24,7 +28,7 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 
 			<input type="hidden" name="stageIndex" value="${stage.clientStageOrder }" >
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >
-			<input type="hidden" name="clientUserID" value="${client.userID }" >
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >
 			<input type="hidden" name="requestedAction" value="change-stage">
 			<input type="hidden" name="path" value="${path }">
 			
@@ -100,7 +104,7 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 		<form action="/secure/UpdateTaskCompletion" method="post" class="form-inline">
 			<input type="hidden" name="requestedAction" value="update-client-plan">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-			<input type="hidden" name="clientID" value="${client.userID }" >
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageIndex" value="${treatmentPlan.activeViewStage.clientStageOrder }">
 			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
@@ -110,7 +114,7 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 				</strong>
 				<c:if test='${user.role.equals("therapist") }'>
 				<a role="button"
-					href="/secure/treatment-components/EditStage?requestedAction=select-stage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}" 
+					href="/secure/treatment-components/EditStage?requestedAction=select-stage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&clientUUID=${clientUUID}" 
 					class="btn btn-default btn-xs run-plan-edit-button" title="Edit this stage.">
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 				</a>
@@ -139,7 +143,7 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 						</a>
 						<c:if test='${user.role.equals("therapist") }'>
 							<a role="button"
-								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}" 
+								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}&clientUUID=${clientUUID}" 
 								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
 								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 							</a>
@@ -201,7 +205,7 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 							</a>
 							<c:if test='${user.role.equals("therapist") }'>
 							<a role="button"
-								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}" 
+								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}&clientUUID=${clientUUID}" 
 								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
 								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 							</a>
@@ -243,7 +247,7 @@ type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Alig
 						aria-controls="collapse121212"> Sample Extra Task </a>
 						<c:if test='${user.role.equals("therapist") }'>
 							<a role="button"
-								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}" 
+								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}&clientUUID=${clientUUID}" 
 								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
 								<span class="glyphicon glyphicon-edit run-plan-edit-button" aria-hidden="true"></span>
 							</a>

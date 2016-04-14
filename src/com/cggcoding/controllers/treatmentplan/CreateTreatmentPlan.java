@@ -72,7 +72,10 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
     	String planDescription = request.getParameter("planDescription");
     	int selectedCoreIssueID = ParameterUtils.parseIntParameter(request, "coreTreatmentIssueID");
     	int selectedCustomIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssueID");
-
+    	
+    	//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
     	
     	try {
     		//currently the logged in user will always be the owner of a new TreatmentPlan

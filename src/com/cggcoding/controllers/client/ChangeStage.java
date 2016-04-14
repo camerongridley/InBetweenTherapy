@@ -5,6 +5,7 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 
@@ -44,8 +45,8 @@ public class ChangeStage extends HttpServlet {
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
 
-		int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
 		User client = null;
+		String clientUUID = "";
         int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
         TreatmentPlan treatmentPlan = null;
         Stage activeStage  = null;
@@ -54,7 +55,10 @@ public class ChangeStage extends HttpServlet {
         	if(user.getRole().equals(Constants.USER_CLIENT)){
         		client = user;
         	} else if(user.getRole().equals(Constants.USER_THERAPIST)){
-        		client = User.loadBasic(clientUserID);
+        		UserTherapist userTherapist = (UserTherapist)user;
+        		clientUUID = request.getParameter("clientUUID");
+        		request.setAttribute("clientUUID", clientUUID);
+        		client = userTherapist.getClientFromUUID(clientUUID);
         	}
         	
         	switch(requestedAction){
@@ -83,6 +87,7 @@ public class ChangeStage extends HttpServlet {
 	
 			forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 		} catch (ValidationException | DatabaseException e) {
+			request.setAttribute("clientUUID", clientUUID);
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("activeStage", activeStage);

@@ -36,9 +36,8 @@ public class UserTherapist extends User implements Serializable{
     private List<TreatmentPlan> unstartedAssignedClientPlans;
     private List<TreatmentPlan> completedAssignedClientPlans;
     
-    private Map<Integer, String> userIDToUUID;
-    private Map<String, Integer> uuidToUserID;
-    private Map<Integer, UserClient> encodedClientMap;
+    private Map<UserClient, String> clientToUuidMap;
+    private Map<String, UserClient> uuidToClientMap;
     
     private static DatabaseActionHandler dao= new MySQLActionHandler();
         
@@ -51,9 +50,8 @@ public class UserTherapist extends User implements Serializable{
         this.coreTreatmentIssues = new ArrayList<>();
         this.allAssignedClientPlans = new ArrayList<>();
         setMainMenuURL(Constants.URL_THERAPIST_MAIN_MENU);
-        userIDToUUID = new HashMap<>();
-        uuidToUserID = new HashMap<>();
-        this.encodedClientMap = new HashMap<>();
+        clientToUuidMap = new HashMap<>();
+        uuidToClientMap = new HashMap<>();
     }
 
 	public Map<Integer, UserClient> getClientMap() {
@@ -64,20 +62,20 @@ public class UserTherapist extends User implements Serializable{
 		this.clientMap = clientMap;
 	}
 
-	public Map<Integer, String> getUserIDToUUID() {
-		return userIDToUUID;
+	public Map<UserClient, String> getClientToUuidMap() {
+		return clientToUuidMap;
 	}
 
-	public void setUserIDToUUID(Map<Integer, String> userIDToUUID) {
-		this.userIDToUUID = userIDToUUID;
+	public void setClientToUuidMap(Map<UserClient, String> userIDToUUID) {
+		this.clientToUuidMap = userIDToUUID;
 	}
 
-	public Map<String, Integer> getUuidToUserID() {
-		return uuidToUserID;
+	public Map<String, UserClient> getUuidToClientMap() {
+		return uuidToClientMap;
 	}
 
-	public void setUuidToUserID(Map<String, Integer> uuidToUserID) {
-		this.uuidToUserID = uuidToUserID;
+	public void setUuidToClientMap(Map<String, UserClient> uuidToUserID) {
+		this.uuidToClientMap = uuidToUserID;
 	}
 
 	public void addClient(UserClient client){
@@ -132,6 +130,13 @@ public class UserTherapist extends User implements Serializable{
     	return unstartedAssignedClientPlans;
     }
     
+    public UserClient getClientFromUUID(String uuid){
+    	return uuidToClientMap.get(uuid);
+    }
+    
+    public String getUUIDFromClient(UserClient client){
+    	return clientToUuidMap.get(client);
+    }
 
 	@Override
 	protected void performLoginSpecifics() throws DatabaseException {
@@ -142,12 +147,12 @@ public class UserTherapist extends User implements Serializable{
 			//generate random UUID
 			String userUUID = UUID.randomUUID().toString();;
 			//in the off chance a uuid is chosen for more than 1 client, get a new one
-			while(uuidToUserID.containsKey(userUUID)){
+			while(uuidToClientMap.containsKey(userUUID)){
 				userUUID = UUID.randomUUID().toString();
 			}
 			
-			userIDToUUID.put(client.getUserID(), userUUID);
-			uuidToUserID.put(userUUID, client.getUserID());
+			clientToUuidMap.put(client, userUUID);
+			uuidToClientMap.put(userUUID, client);
 		}
 	}
     
