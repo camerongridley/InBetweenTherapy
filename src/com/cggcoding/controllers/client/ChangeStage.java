@@ -46,7 +46,10 @@ public class ChangeStage extends HttpServlet {
 		/*-----------End Common Servlet variables---------------*/
 
 		User client = null;
-		String clientUUID = "";
+		//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
+		
         int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
         TreatmentPlan treatmentPlan = null;
         Stage activeStage  = null;
@@ -56,8 +59,6 @@ public class ChangeStage extends HttpServlet {
         		client = user;
         	} else if(user.getRole().equals(Constants.USER_THERAPIST)){
         		UserTherapist userTherapist = (UserTherapist)user;
-        		clientUUID = request.getParameter("clientUUID");
-        		request.setAttribute("clientUUID", clientUUID);
         		client = userTherapist.getClientFromUUID(clientUUID);
         	}
         	

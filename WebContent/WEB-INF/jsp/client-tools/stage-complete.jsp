@@ -17,7 +17,7 @@
 <form action="/secure/ChangeStage" method="post" class="form-inline">
 	<input type="hidden" name="requestedAction" value="stage-complete-continue">
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-	<input type="hidden" name="clientID" value=${client.userID } >
+	<input type="hidden" name="clientUUID" value=${clientUUID } >
 	<input type="hidden" name="path" value="${path }">
 	
 	<input type="hidden" name="stageIndex" value="${treatmentPlan.activeViewStageIndex }">
@@ -32,7 +32,7 @@
 <form action="/secure/ChangeStage" method="post" class="form-inline">
 	<input type="hidden" name="requestedAction" value="stage-complete-back">
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-	<input type="hidden" name="clientID" value=${client.userID } >
+	<input type="hidden" name="clientUUID" value=${clientUUID } >
 	<input type="hidden" name="path" value="${path }">
 	
 	<input type="hidden" name="stageIndex" value="${treatmentPlan.activeViewStageIndex -1}">
