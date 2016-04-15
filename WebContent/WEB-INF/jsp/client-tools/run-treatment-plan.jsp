@@ -253,7 +253,8 @@ Client: ${client.userName}
 					</div>
 				</div>
 			</c:forEach>
-
+			
+<%-- 
 			<hr>
 
 			<!--INCOMPLETE EXTRA TASKS-->
@@ -279,7 +280,7 @@ Client: ${client.userName}
 			</div>
 
 			<!--COMPLETED EXTRA TASKS-->
-			
+--%>
 			<c:choose>
 				<c:when test='${path.equals("manageClients") }'>
 				<!--  -->
@@ -299,7 +300,7 @@ Client: ${client.userName}
 			        </div>
 				</c:otherwise>
 			</c:choose>
-
+ 
 		</form>
 		
 		
