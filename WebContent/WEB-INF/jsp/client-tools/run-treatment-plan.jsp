@@ -9,8 +9,17 @@
 
 <h1>Treatment Plan: ${treatmentPlan.title }
 <c:if test='${user.role.equals("therapist") }'>
-<a href="/secure/treatment-components/EditTreatmentPlan?requestedAction=plan-edit-load-plan&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&clientUUID=${clientUUID}" 
-type="button" class="btn btn-default run-plan-edit-button" aria-label="Left Align" title="Edit the Treatment Plan"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
+	<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
+	<input type="hidden" name="path" value="${path }">
+	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+	<input type="hidden" name="clientUUID" value="${clientUUID }">
+	
+	<button type="submit" class="btn btn-default run-plan-edit-button" aria-label="Left Align" title="Edit the Treatment Plan">
+		<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+	</button>
+</form>
+
 <p>
 Client: ${client.userName}
 </p>
@@ -101,25 +110,35 @@ Client: ${client.userName}
 <div class="row">
 	<div class="col-sm-12">
 
+		
+			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
+			
+			<div class="progress-stage-detail">
+				<strong>
+					Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${activeViewStagePercentComplete}% Complete
+				</strong>
+				<c:if test='${user.role.equals("therapist") }'>
+				<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditStage" method="POST">
+					<input type="hidden" name="requestedAction" value="select-stage">
+					<input type="hidden" name="path" value="${path }">
+					<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+					<input type="hidden" name="stageID" value="${treatmentPlan.activeViewStage.stageID}">
+					<input type="hidden" name="clientUUID" value="${clientUUID }">
+					
+					<button type="submit" class="btn btn-default btn-xs run-plan-edit-button" aria-label="Left Align" title="Edit this stage.">
+						<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+					</button>
+				</form>
+				
+				</c:if>
+			</div>
+			
 		<form action="/secure/UpdateTaskCompletion" method="post" class="form-inline">
 			<input type="hidden" name="requestedAction" value="update-client-plan">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
 			<input type="hidden" name="clientUUID" value="${clientUUID }" >
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageIndex" value="${treatmentPlan.activeViewStage.clientStageOrder }">
-			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
-			<div class="progress-stage-detail">
-				<strong>
-					Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${activeViewStagePercentComplete}% Complete
-				</strong>
-				<c:if test='${user.role.equals("therapist") }'>
-				<a role="button"
-					href="/secure/treatment-components/EditStage?requestedAction=select-stage&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&clientUUID=${clientUUID}" 
-					class="btn btn-default btn-xs run-plan-edit-button" title="Edit this stage.">
-					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-				</a>
-				</c:if>
-			</div>
 			<div class="progress">
 				<div class="progress-bar progress-bar-success" role="progressbar"
 					aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"

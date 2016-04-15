@@ -73,6 +73,10 @@ public class EditTask extends HttpServlet {
 		User owner = null;
 		/*-----------End Treatment Plan object variables---------------*/
 		
+		//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
+		
 		int newTaskTypeID = 0;
 		boolean updateDataBase = false;
 		List<Integer> updatedKeywordIDs = ParameterUtils.parseIntArrayParameter(request, "keywords[]");

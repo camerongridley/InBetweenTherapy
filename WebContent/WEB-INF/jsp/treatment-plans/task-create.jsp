@@ -21,6 +21,7 @@
 				<input type="hidden" name="stageID" value="${stage.stageID }">
 				<input type="hidden" name="isTemplate" value="${task.template }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 				
 				<div>
 					<h4>Add a Core Task</h4>
@@ -87,6 +88,7 @@
 			<input type="hidden" name="stageID" value="${stage.stageID }">
 			<input type="hidden" name="isTemplate" value="${task.template }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 				
 			<div>
 				<h4>Create a New Task</h4>
@@ -115,6 +117,7 @@
 			<input type="hidden" name="isTemplate" value="${task.template }">
 			<input type="hidden" name="isExtraTask" value="${task.extraTask }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 			    
 			<c:if test="${task.taskTypeID!=0 }">	
 	        <div class="form-group">

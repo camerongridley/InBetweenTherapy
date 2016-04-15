@@ -18,6 +18,7 @@
 	<input type="hidden" name="path" value="${path }">
 	<input type="hidden" name="stageID" value="${stage.stageID }" >
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+	<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 
 	<c:if test='${path=="templateTask"}'>
 		<div class="form-group">
@@ -42,6 +43,7 @@
 	<input type="hidden" name="taskID" value="${task.taskID }">
 	<input type="hidden" name="stageID" value="${stage.stageID }" >
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+	<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 	
 	<div class="form-group">
 	    <label for="taskTypeID" class="col-sm-2 control-label">Task Type</label>
@@ -67,6 +69,7 @@
 		<input type="hidden" name="isTemplate" value="${task.template }">
 		<input type="hidden" name="isExtraTask" value="${task.extraTask }">
 		<input type="hidden" name="clientTaskOrder" value="${task.clientTaskOrder }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 
 				
         <div class="form-group">
@@ -169,6 +172,8 @@
 			<input type="hidden" name="isTemplate" value="${task.template }">
 			<input type="hidden" name="isExtraTask" value="${task.extraTask }">
 			<input type="hidden" name="clientTaskOrder" value="${task.clientTaskOrder }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+			
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		        <h4 class="modal-title" id="newTaskKeywordModalLabel">Enter a new keyword for ${task.title}.</h4>

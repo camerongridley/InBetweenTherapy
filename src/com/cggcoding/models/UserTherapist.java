@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -29,13 +30,14 @@ public class UserTherapist extends User implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Map<Integer, UserClient> clientMap;
+	
     private List<TreatmentIssue> coreTreatmentIssues;
     private List<TreatmentPlan> allAssignedClientPlans;
     private List<TreatmentPlan> activeAssignedClientPlans;
     private List<TreatmentPlan> unstartedAssignedClientPlans;
     private List<TreatmentPlan> completedAssignedClientPlans;
     
+    private Map<Integer, UserClient> clientMap;
     private Map<UserClient, String> clientToUuidMap;
     private Map<String, UserClient> uuidToClientMap;
     
@@ -46,12 +48,13 @@ public class UserTherapist extends User implements Serializable{
         this.setRoleID(Constants.THERAPIST_ROLE_ID);
         this.addRole(Constants.USER_THERAPIST);
 		this.setRole(Constants.USER_THERAPIST);
-        this.clientMap = new HashMap<>();
+        
         this.coreTreatmentIssues = new ArrayList<>();
         this.allAssignedClientPlans = new ArrayList<>();
         setMainMenuURL(Constants.URL_THERAPIST_MAIN_MENU);
-        clientToUuidMap = new HashMap<>();
-        uuidToClientMap = new HashMap<>();
+        this.clientMap = new LinkedHashMap<>();
+        clientToUuidMap = new LinkedHashMap<>();
+        uuidToClientMap = new LinkedHashMap<>();
     }
 
 	public Map<Integer, UserClient> getClientMap() {

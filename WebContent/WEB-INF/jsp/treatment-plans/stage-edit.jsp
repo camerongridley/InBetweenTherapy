@@ -90,7 +90,7 @@
 		<a id="taskListTop"></a>
 		<label for="taskList" class="control-label">Tasks
 			<c:if test="${stage != null }">
-       			<a role="button" href="/secure/treatment-components/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage.">
+       			<a role="button" href="/secure/treatment-components/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&clientUUID=${clientUUID}" class="btn btn-default btn-xs" title="Add a task to this stage.">
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 				</a>
 			</c:if>
@@ -119,14 +119,14 @@
 							         </c:choose>
 
 								  	
-								  	<a href="/secure/treatment-components/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
-								  	&nbsp;<a href="/secure/treatment-components/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
+								  	<a href="/secure/treatment-components/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}&clientUUID=${clientUUID}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
+								  	&nbsp;<a href="/secure/treatment-components/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}&clientUUID=${clientUUID}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
 									<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							          ${taskOrder+1} - <span class="">${task.title }</span>
 							        </a>   
 								</div>
 								<div class="col-sm-1">
-							        <a role="button" href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }">
+							        <a role="button" href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&clientUUID=${clientUUID}" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }">
 									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 									</a>
 									<a role="button" data-toggle="modal" data-target="#delete_task_modal${task.taskID }" class="btn btn-default btn-xs pull-left" title="Delete task (${task.title }) from this stage.">

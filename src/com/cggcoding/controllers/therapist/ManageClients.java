@@ -71,17 +71,18 @@ public class ManageClients extends HttpServlet {
 		/*-----------End Common Servlet variables---------------*/
 		
 		//these variables are instantiated outside the try block so they can be accessed in the catch block
-		String clientUUID = "";
 		UserTherapist therapistUser = null;;
 		List<Invitation> invitations = null;
+		//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
+		
 		try {
 			if(user.hasRole(Constants.USER_THERAPIST)){
 				therapistUser = (UserTherapist)user;
 				Map<String, UserClient> encodedClientMap = therapistUser.getUuidToClientMap();
 				
 				invitations = therapistUser.getInvitationsSent();
-				
-				clientUUID = request.getParameter("clientUUID");
 				
 				User client = therapistUser.getClientFromUUID(clientUUID);
 				request.setAttribute("client", client);
@@ -170,7 +171,6 @@ public class ManageClients extends HttpServlet {
 				
 				//put these back in the request so other forms can maintain selections of other forms as well as display selected items of the dropdown boxes
 				request.setAttribute("client", client);
-				request.setAttribute("clientUUID", clientUUID);
 				request.setAttribute("coreTreatmentPlanID", coreTreatmentPlanID);
 				
 				

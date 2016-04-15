@@ -70,6 +70,10 @@ public class CreateTask extends HttpServlet {
 		User owner = null;
 		/*-----------End Treatment Plan object variables---------------*/
 		
+		//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
+		
 		int taskReps = ParameterUtils.parseIntParameter(request, "taskReps");
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected

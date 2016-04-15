@@ -644,7 +644,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<Integer, UserClient> clients = new HashMap<>();
+        Map<Integer, UserClient> clients = new LinkedHashMap<>();
         
         try {
         	cn = getConnection();
@@ -654,7 +654,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             		+ "FROM user_role INNER JOIN ((user) INNER JOIN therapist_user_id_client_user_id_maps "
             		+ "ON user.user_id = therapist_user_id_client_user_id_maps.client_user_id) "
             		+ "ON user_role.user_role_id = user.user_user_role_id_fk "
-            		+ "WHERE (((therapist_user_id_client_user_id_maps.therapist_user_id)=?))");
+            		+ "WHERE (((therapist_user_id_client_user_id_maps.therapist_user_id)=?))"
+            		+ "ORDER BY user.email");
 
             ps.setInt(1, therapistID);
 
