@@ -119,9 +119,9 @@
 							          	</c:otherwise>
 							         </c:choose>
 
+								  	<a href="#" title="Move task up." onclick="submitForm('formIncreaseTaskOrder${task.taskID}')"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></a>
+								  	&nbsp;<a href="#" title="Move task down." onclick="submitForm('formDecreaseTaskOrder${task.taskID}')"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></a>
 								  	
-								  	<a href="/secure/treatment-components/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}&clientUUID=${clientUUID}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
-								  	&nbsp;<a href="/secure/treatment-components/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}&clientUUID=${clientUUID}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
 									<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							          ${taskOrder+1} - <span class="">${task.title }</span>
 							        </a>   
@@ -285,15 +285,47 @@
 	
 	<!-- Forms for the edit task buttons including position change -->
 	<c:forEach items="${stage.tasks }" var="task">
-	<form id="formEditTask${task.taskID }" action="/secure/treatment-components/EditTask" method="POST">
-		<input type="hidden" name="requestedAction" value="edit-task-select-task">
-		<input type="hidden" name="path" value="${path }">	
-		<input type="hidden" name="taskID" value="${task.taskID}" >
-		<input type="hidden" name="stageID" value="${stage.stageID }" >
-		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
-		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
-	</form>
+		<c:set var="mappedStageTaskInfo" value="${stage.getMappedTaskTemplateByTaskID(task.taskID)}" />
+		<c:choose>
+         	<c:when test='${task.template }'>
+         		<c:set var="taskOrder" value="${mappedStageTaskInfo.templateTaskOrder }"/>
+         	</c:when>
+         	<c:otherwise>
+         		<c:set var="taskOrder" value="${task.clientTaskOrder }"/>
+         	</c:otherwise>
+        </c:choose>
 	
+		<form id="formEditTask${task.taskID }" action="/secure/treatment-components/EditTask" method="POST">
+			<input type="hidden" name="requestedAction" value="edit-task-select-task">
+			<input type="hidden" name="path" value="${path }">	
+			<input type="hidden" name="taskID" value="${task.taskID}" >
+			<input type="hidden" name="stageID" value="${stage.stageID }" >
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+		</form>
+		<%-- original position change links
+		<a href="/secure/treatment-components/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}&clientUUID=${clientUUID}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
+		<a href="/secure/treatment-components/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}&clientUUID=${clientUUID}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
+		 --%>
+		<form id="formIncreaseTaskOrder${task.taskID }" action="/secure/treatment-components/EditStage" method="POST">
+			<input type="hidden" name="requestedAction" value="increase-task-order">
+			<input type="hidden" name="path" value="${path }">	
+			<input type="hidden" name="taskOrder" value="${taskOrder}" >
+			<input type="hidden" name="taskID" value="${task.taskID}" >
+			<input type="hidden" name="stageID" value="${stage.stageID }" >
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+		</form>
+		
+		<form id="formDecreaseTaskOrder${task.taskID }" action="/secure/treatment-components/EditStage" method="POST">
+			<input type="hidden" name="requestedAction" value="decrease-task-order">
+			<input type="hidden" name="path" value="${path }">	
+			<input type="hidden" name="taskOrder" value="${taskOrder}" >
+			<input type="hidden" name="taskID" value="${task.taskID}" >
+			<input type="hidden" name="stageID" value="${stage.stageID }" >
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+		</form>
 	</c:forEach>
 	<!-- End Forms for the edit task buttons -->
 
