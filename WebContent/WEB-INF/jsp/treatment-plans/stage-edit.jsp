@@ -87,12 +87,13 @@
 				
 		</div>
 		
+		
 		<a id="taskListTop"></a>
 		<label for="taskList" class="control-label">Tasks
 			<c:if test="${stage != null }">
-       			<a role="button" href="/secure/treatment-components/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&clientUUID=${clientUUID}" class="btn btn-default btn-xs" title="Add a task to this stage.">
+       			<button type="button" class="btn btn-default btn-xs" title="Add a task to this stage." onclick="submitForm('formAddTask')">
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-				</a>
+				</button>
 			</c:if>
 		</label>
 			
@@ -126,9 +127,10 @@
 							        </a>   
 								</div>
 								<div class="col-sm-1">
-							        <a role="button" href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&clientUUID=${clientUUID}" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }">
+									<button type="button" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }" onclick="submitForm('formEditTask${task.taskID}')">
 									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-									</a>
+									</button>
+
 									<a role="button" data-toggle="modal" data-target="#delete_task_modal${task.taskID }" class="btn btn-default btn-xs pull-left" title="Delete task (${task.title }) from this stage.">
 									  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 									</a>
@@ -272,6 +274,29 @@
 		</div>
 	</c:forEach>
 	<!-- End Delete Modal -->
+	
+	<form id="formAddTask" action="/secure/treatment-components/CreateTask" method="POST">
+		<input type="hidden" name="requestedAction" value="create-task-start">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" name="stageID" value="${stage.stageID }" >
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+	
+	<!-- Forms for the edit task buttons including position change -->
+	<c:forEach items="${stage.tasks }" var="task">
+	<form id="formEditTask${task.taskID }" action="/secure/treatment-components/EditTask" method="POST">
+		<input type="hidden" name="requestedAction" value="edit-task-select-task">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" name="taskID" value="${task.taskID}" >
+		<input type="hidden" name="stageID" value="${stage.stageID }" >
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+	
+	</c:forEach>
+	<!-- End Forms for the edit task buttons -->
+
 	
 	<script>
 		$(function() {
