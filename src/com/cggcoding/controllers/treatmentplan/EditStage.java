@@ -266,12 +266,14 @@ public class EditStage extends HttpServlet {
 			
 		} catch (ValidationException | DatabaseException e){
 			//in case of error and user is sent back to page - re-populate the forms
+			e.printStackTrace();
 			request.setAttribute("errorMessage", e.getMessage());
 			
 			request.setAttribute("stage", stage);
 			request.setAttribute("stageTitle", stageTitle);
 			request.setAttribute("stageDescription", stageDescription);
-			request.setAttribute("treatmentPlanID", treatmentPlanID);
+			//request.setAttribute("treatmentPlanID", treatmentPlanID);
+			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("owner", owner);
 			
             forwardTo = Constants.URL_EDIT_STAGE;
