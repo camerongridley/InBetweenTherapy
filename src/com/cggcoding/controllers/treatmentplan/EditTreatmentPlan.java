@@ -44,7 +44,7 @@ public class EditTreatmentPlan extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		processRequest(request, response);
+		//processRequest(request, response);
 		
 	}
 
@@ -88,6 +88,11 @@ public class EditTreatmentPlan extends HttpServlet {
 		request.setAttribute("clientUUID", clientUUID);
     	
     	try {
+    		
+    		//check if this a therapist is accessing a client's data and authorize
+			if(clientUUID != null && !clientUUID.isEmpty()){
+				user.isAuthorizedForClientData(clientUUID);				
+			}
     		
     		//Here we check that a treatmentPlan has been selected (currently the only time this is true is with path plan-edit-start).
     		//If so, then load it and use it's userID prop to get it's owner

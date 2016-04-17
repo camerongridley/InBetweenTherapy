@@ -568,6 +568,17 @@ public abstract class User implements Serializable{
 		return userPassword;
 	}
 	
+	public boolean isAuthorizedForClientData(String clientUUID) throws ValidationException{
+		//check if this a therapist is accessing a client's data and authorize
+		UserTherapist userTherapist = null;
+		if(this.hasRole(Constants.USER_THERAPIST)){
+			userTherapist = (UserTherapist)this;
+			
+		}
+			
+		return (userTherapist.getClientFromUUID(clientUUID) != null);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

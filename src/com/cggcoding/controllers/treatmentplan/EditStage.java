@@ -49,7 +49,7 @@ public class EditStage extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		processRequest(request, response);
+		//processRequest(request, response);
 	}
 
 	/**
@@ -89,7 +89,12 @@ public class EditStage extends HttpServlet {
 		String stageDescription = request.getParameter("stageDescription");
 		
 		try{
-    		//TODO make sure to remove ownerUserID and clientUserID from edit jsps since I have switched things to not need to maintain this value - get it from treatmentPlan/stage/task			
+			
+			//check if this a therapist is accessing a client's data and authorize
+			if(clientUUID != null && !clientUUID.isEmpty()){
+				user.isAuthorizedForClientData(clientUUID);				
+			}
+    		
 			//Here we check that a stage has been selected (currently the only time this is true isn't with path plan-edit-start).
     		//If so, then load it and use it's userID prop to get it's owner
     		if(stageID != 0){

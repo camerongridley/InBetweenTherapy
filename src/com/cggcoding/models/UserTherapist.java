@@ -133,12 +133,22 @@ public class UserTherapist extends User implements Serializable{
     	return unstartedAssignedClientPlans;
     }
     
-    public UserClient getClientFromUUID(String uuid){
-    	return uuidToClientMap.get(uuid);
+    public UserClient getClientFromUUID(String uuid) throws ValidationException{
+    	UserClient client = uuidToClientMap.get(uuid);
+    	if(client==null){
+    		throw new ValidationException(ErrorMessages.USER_NOT_FOUND);
+    	}
+    	
+    	return client; 
     }
     
-    public String getUUIDFromClient(UserClient client){
-    	return clientToUuidMap.get(client);
+    public String getUUIDFromClient(UserClient client) throws ValidationException{
+    	String uuid = clientToUuidMap.get(client);
+    	if(uuid==null){
+    		throw new ValidationException(ErrorMessages.USER_NOT_FOUND);
+    	}
+    	
+    	return uuid;
     }
 
 	@Override

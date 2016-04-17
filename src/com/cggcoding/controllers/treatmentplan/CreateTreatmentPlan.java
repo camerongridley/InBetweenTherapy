@@ -78,6 +78,11 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 		request.setAttribute("clientUUID", clientUUID);
     	
     	try {
+    		//check if this a therapist is accessing a client's data and authorize
+			if(clientUUID != null && !clientUUID.isEmpty()){
+				user.isAuthorizedForClientData(clientUUID);				
+			}
+    		
     		//currently the logged in user will always be the owner of a new TreatmentPlan
     		owner = user;
     		

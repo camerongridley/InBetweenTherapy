@@ -17,6 +17,8 @@ import com.cggcoding.models.Task;
 import com.cggcoding.models.Keyword;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserClient;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
@@ -42,7 +44,7 @@ public class EditTask extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		processRequest(request, response);
+		//processRequest(request, response);
 	}
 
 	/**
@@ -83,6 +85,10 @@ public class EditTask extends HttpServlet {
 		
 		try {
 			
+			//check if this a therapist is accessing a client's data and authorize
+			if(clientUUID != null && !clientUUID.isEmpty()){
+				user.isAuthorizedForClientData(clientUUID);				
+			}
 			
 			//Here we check that a task has been selected (currently the only time this isn't true is with path plan-edit-start).
     		//If so, then load it and use it's userID prop to get it's owner
@@ -110,6 +116,7 @@ public class EditTask extends HttpServlet {
 
 			
     		if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
+
 				switch(requestedAction){
 					case ("edit-task-start"):
 

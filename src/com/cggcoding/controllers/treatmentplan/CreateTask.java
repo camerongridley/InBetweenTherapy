@@ -39,7 +39,7 @@ public class CreateTask extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
-		processRequest(request, response);
+		//processRequest(request, response);
 	}
 
 	/**
@@ -80,6 +80,11 @@ public class CreateTask extends HttpServlet {
 		task = CommonServletFunctions.getTaskParametersFromRequest(request, user.getUserID());//TODO change this to use updateTaskParametersFromRequest
 
 		try {
+			//check if this a therapist is accessing a client's data and authorize
+			if(clientUUID != null && !clientUUID.isEmpty()){
+				user.isAuthorizedForClientData(clientUUID);				
+			}
+			
 			//put user-independent (i.e. default) lists acquired from database in the request
 			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
 			request.setAttribute("coreTasks", Task.getCoreTasks());

@@ -51,7 +51,7 @@
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${activePlan.treatmentPlanID}">
 									
-									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Edit this Treatment Plan">
 									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 									</button>
 								</form>
@@ -96,7 +96,7 @@
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${unstartedPlan.treatmentPlanID}">
 									
-									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Edit this Treatment Plan">
 									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 									</button>
 								</form>
@@ -190,7 +190,7 @@
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${completedPlan.treatmentPlanID}">
 									
-									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Edit this Treatment Plan">
 									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 									</button>
 								</form>
@@ -236,6 +236,7 @@
 	</div>
 </c:forEach>
 <!-- End Delete TreatmentPlan Modal -->
+
     
     
 	<script>

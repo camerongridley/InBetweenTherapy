@@ -161,11 +161,9 @@ Client: ${client.userName}
 							${task.title } - Task Type: ${task.taskTypeName } 
 						</a>
 						<c:if test='${user.role.equals("therapist") }'>
-							<a role="button"
-								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}&clientUUID=${clientUUID}" 
-								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
-								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-							</a>
+							<button type="button" class="btn btn-default btn-xs run-plan-edit-button" title="Edit task: ${task.title }" onclick="submitForm('formEditTask${task.taskID}')">
+							  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+							</button>
 						</c:if>
 					</div>
 					<!--Generic Task Detail-->
@@ -223,11 +221,9 @@ Client: ${client.userName}
 							<span class="task-completed">${task.title }</span> -  ${task.dateCompletedFormatted }
 							</a>
 							<c:if test='${user.role.equals("therapist") }'>
-							<a role="button"
-								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}&clientUUID=${clientUUID}" 
-								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
-								<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-							</a>
+							<button type="button" class="btn btn-default btn-xs run-plan-edit-button" title="Edit task: ${task.title }" onclick="submitForm('formEditTask${task.taskID}')">
+							  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+							</button>
 						</c:if>
 					</div>
 					<div id="collapse${task.taskID }" class="panel-collapse collapse"
@@ -303,7 +299,25 @@ Client: ${client.userName}
  
 		</form>
 		
+		<!-- Forms for the edit task buttons -->
+		<c:if test='${!user.role.equals("client") }'>
 		
+			<c:forEach var="task"
+				items="${treatmentPlan.activeViewStage.tasks }"
+				varStatus="taskStatus">
+			
+				<form id="formEditTask${task.taskID }" action="/secure/treatment-components/EditTask" method="POST">
+					<input type="hidden" name="requestedAction" value="edit-task-select-task">
+					<input type="hidden" name="path" value="${path }">	
+					<input type="hidden" name="taskID" value="${task.taskID}" >
+					<input type="hidden" name="stageID" value="${treatmentPlan.activeViewStage.stageID}" >
+					<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+					<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+				</form>
+				
+	</c:forEach>
+	</c:if>
+	<!-- End Forms for the edit task buttons -->
 
 	</div>
 </div>

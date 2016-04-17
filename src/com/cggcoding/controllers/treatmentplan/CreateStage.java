@@ -42,7 +42,7 @@ public class CreateStage extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		processRequest(request, response);
+		//processRequest(request, response);
 	}
 
 	/**
@@ -86,6 +86,11 @@ public class CreateStage extends HttpServlet {
 		List<Stage> coreStages = null;
 		
 		try{
+			//check if this a therapist is accessing a client's data and authorize
+			if(clientUUID != null && !clientUUID.isEmpty()){
+				user.isAuthorizedForClientData(clientUUID);				
+			}
+			
 			if(!path.equals(Constants.PATH_TEMPLATE_STAGE)){
 				treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 				ownerUserID = treatmentPlan.getUserID();
