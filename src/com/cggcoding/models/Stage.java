@@ -1078,14 +1078,16 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public void orderDecrementTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
 		Connection cn = null;
 		
-		if(originalOrder == this.getMapStageTaskTemplates().size()-1){
+		if(originalOrder == this.tasks.size()-1){
 			throw new ValidationException(ErrorMessages.TASK_IS_LAST);
 		}
 		
 		try {
 			cn = dao.getConnection();
 			
-			//update the order in the actual tasks templates - happens for templates and client tasks
+			//get the task whose order is being decremented and the task after that it is going to swap with
+			//update the local task list with the rearranged orders
+			//- happens for templates and client tasks as the local list is populated either way, just uses different sources
 			Task mainTask = tasks.get(originalOrder);
 			Task nextTask = tasks.get(originalOrder+1);
 			this.tasks.set(originalOrder+1, mainTask);
@@ -1093,6 +1095,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			
 			//if this Stage is a template, then update the stage-mapping info
 			if(this.template){
+				
 				MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
 				MapStageTaskTemplate nextStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder+1);
 				
@@ -1109,6 +1112,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				nextStageTaskMap.update(cn);
 
 			} else {
+				
+				
+				
+				
 				//this is a client task so update the task's clientOrder prop
 				mainTask.setClientTaskOrder(originalOrder+1);
 				nextTask.setClientTaskOrder(originalOrder);

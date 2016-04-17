@@ -19,15 +19,9 @@
     <script>
  
     $( document ).ready(function() {
-    	console.log( "Ready for js to run!" );
+    	//console.log( "Ready for js to run!" );
      
     });
-    
-    function submitForm(formName){
-		var form = document.getElementById(formName);
-		
-		form.submit();
-	};
  
     </script>
     
