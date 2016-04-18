@@ -46,7 +46,7 @@ public class ManageClients extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		processRequest(request, response);
+		//processRequest(request, response);
 	}
 
 	/**
@@ -84,8 +84,13 @@ public class ManageClients extends HttpServlet {
 				
 				invitations = therapistUser.getInvitationsSent();
 				
-				User client = therapistUser.getClientFromUUID(clientUUID);
-				request.setAttribute("client", client);
+				User client = null;
+				
+				if(clientUUID != null){
+					client = therapistUser.getClientFromUUID(clientUUID);
+					request.setAttribute("client", client);
+				}
+				
 				
 				//TODO do I still need this or can it be handled by treatmentPlanID?
 				int coreTreatmentPlanID = ParameterUtils.parseIntParameter(request, "coreTreatmentPlanID");
@@ -167,13 +172,13 @@ public class ManageClients extends HttpServlet {
 						break;
 				}
 				
-				CommonServletFunctions.putClientPlansInRequest(request, therapistUser, client.getUserID());
+				if(client!=null){
+					CommonServletFunctions.putClientPlansInRequest(request, therapistUser, client.getUserID());
+				}
+				
 				
 				//put these back in the request so other forms can maintain selections of other forms as well as display selected items of the dropdown boxes
-				request.setAttribute("client", client);
 				request.setAttribute("coreTreatmentPlanID", coreTreatmentPlanID);
-				
-				
 				request.setAttribute("invitationList", invitations);
 			}
 		

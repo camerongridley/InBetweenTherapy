@@ -32,6 +32,7 @@ public class InvitationRegistration extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	//Keep this processRequest in doGet!  It is used for processing links sent to invited users
 		processRequest(request, response);
 	}
 
