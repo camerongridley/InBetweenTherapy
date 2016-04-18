@@ -118,16 +118,25 @@
 							          		<c:set var="taskOrder" value="${task.clientTaskOrder }"/>
 							          	</c:otherwise>
 							         </c:choose>
+							         <c:choose>
+							          	<c:when test='${treatmentPlan == null }'>
+							          		<c:set var="evaluatedTreatmentPlanID" value="0"/>
+							          	</c:when>
+							          	<c:otherwise>
+							          		<c:set var="evaluatedTreatmentPlanID" value="${treatmentPlan.treatmentPlanID }"/>
+							          	</c:otherwise>
+							         </c:choose>
 
-								  	<a href="#" title="Move task up." onclick="submitForm('formIncreaseTaskOrder${task.taskID}')"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></a>
-								  	&nbsp;<a href="#" title="Move task down." onclick="submitForm('formDecreaseTaskOrder${task.taskID}')"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></a>
+
+								  	<a href="#" title="Move task up." onclick="updateAndSubmitTreatmentComponentForm('formIncreaseTaskOrder', ${evaluatedTreatmentPlanID }, ${stage.stageID }, 0, ${task.taskID}, ${taskOrder })"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></a>
+								  	&nbsp;<a href="#" title="Move task down." onclick="updateAndSubmitTreatmentComponentForm('formDecreaseTaskOrder', ${evaluatedTreatmentPlanID }, ${stage.stageID }, 0, ${task.taskID}, ${taskOrder })"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></a>
 								  	
 									<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							          ${taskOrder+1} - <span class="">${task.title }</span>
 							        </a>   
 								</div>
 								<div class="col-sm-1">
-									<button type="button" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }" onclick="submitForm('formEditTask${task.taskID}')">
+									<button type="button" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }" onclick="updateAndSubmitTreatmentComponentForm('formEditTask', ${evaluatedTreatmentPlanID }, ${stage.stageID }, 0, ${task.taskID}, 0)">
 									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 									</button>
 
@@ -284,7 +293,7 @@
 	</form>
 	
 	<!-- Forms for the edit task buttons including position change -->
-	<c:forEach items="${stage.tasks }" var="task">
+	<%-- <c:forEach items="${stage.tasks }" var="task">
 		<c:set var="mappedStageTaskInfo" value="${stage.getMappedTaskTemplateByTaskID(task.taskID)}" />
 		<c:choose>
          	<c:when test='${task.template }'>
@@ -303,10 +312,7 @@
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 		</form>
-		<%-- original position change links
-		<a href="/secure/treatment-components/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}&clientUUID=${clientUUID}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
-		<a href="/secure/treatment-components/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}&clientUUID=${clientUUID}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
-		 --%>
+
 		<form id="formIncreaseTaskOrder${task.taskID }" action="/secure/treatment-components/EditStage" method="POST">
 			<input type="hidden" name="requestedAction" value="increase-task-order">
 			<input type="hidden" name="path" value="${path }">	
@@ -326,8 +332,45 @@
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 		</form>
-	</c:forEach>
+	</c:forEach> --%>
 	<!-- End Forms for the edit task buttons -->
+
+
+	<!-- these forms are dynamically updated and then submitted with JavaScript -->
+	<!-- for editing tasks -->
+	<form id="formEditTask" action="/secure/treatment-components/EditTask" method="POST">
+		<input type="hidden" name="requestedAction" value="edit-task-select-task">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" id="taskIDDynamic" name="taskID" value="0" >
+		<input type="hidden" id="stageIDDynamic" name="stageID" value="${stage.stageID }" >
+		<input type="hidden" id="treatmentPlanIDDynamic" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+	
+	<!-- for increasing task order -->
+	<form id="formIncreaseTaskOrder" action="/secure/treatment-components/EditStage" method="POST">
+		<input type="hidden" name="requestedAction" value="increase-task-order">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" id="taskOrderDynamic" name="taskOrder" value="" >
+		<input type="hidden" id="taskIDDynamic" name="taskID" value="0" >
+		<input type="hidden" id="stageIDDynamic" name="stageID" value="${stage.stageID }" >
+		<input type="hidden" id="treatmentPlanIDDynamic" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+	
+	<!-- for decreasing task order -->
+	<form id="formDecreaseTaskOrder" action="/secure/treatment-components/EditStage" method="POST">
+		<input type="hidden" name="requestedAction" value="decrease-task-order">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" id="taskOrderDynamic" name="taskOrder" value="" >
+		<input type="hidden" id="taskIDDynamic" name="taskID" value="0" >
+		<input type="hidden" id="stageIDDynamic" name="stageID" value="${stage.stageID }" >
+		<input type="hidden" id="treatmentPlanIDDynamic" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+<!-- end dynamically updated forms -->
+
+<script src="/js/custom-form-submission.js"></script>
 
 	
 	<script>

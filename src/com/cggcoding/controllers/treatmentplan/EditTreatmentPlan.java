@@ -137,7 +137,7 @@ public class EditTreatmentPlan extends HttpServlet {
 		            //Updates the plan's basic info
 		            case "plan-edit-update":
 		            	//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
-						//if(request.getParameter("submitButton").equals("save")){
+						if(request.getParameter("submitButton").equals("save")){
 							//detect which treatment issue source was used and validate
 			                int treatmentIssueID = determineTreatmentIssueID(coreTreatmentIssueID, customIssueID);
 			                
@@ -161,13 +161,10 @@ public class EditTreatmentPlan extends HttpServlet {
 			                treatmentPlan.update();
 			                
 			                request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_UPDATED);
-						//}
+						}
 		                
 						forwardTo = determineForwardToAfterSaveOrCancel(user, request, path, treatmentPlan);
 		                
-		            	break;
-		            case "plan-edit-update-cancel":
-		            	forwardTo = determineForwardToAfterSaveOrCancel(user, request, path, treatmentPlan);
 		            	break;
 		            case "plan-edit-load-plan":
 		            	request.setAttribute("scrollTo", "selectTreatmentPlan");

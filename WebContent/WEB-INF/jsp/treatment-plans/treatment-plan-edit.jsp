@@ -152,21 +152,17 @@
 		</c:if>
 	</div>
 
-</form>
+
 
 	<a id="stageListTop"></a>
 	<label for="stageList" class="control-label">Stages 
 	<c:if test="${treatmentPlan!=null }">
-		<form class="form-inline form-inline-controls" action="/secure/treatment-components/CreateStage" method="POST">
-			<input type="hidden" name="requestedAction" value="add-stage-to-treatment-plan">
-			<input type="hidden" name="path" value="${path }"> 
-			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-			<input type="hidden" name="clientUUID" value="${clientUUID }" >
+
 			
-			<button role="submit" class="btn btn-default btn-xs" title="Add a stage to this treatment plan."> 
+			<button type="button" class="btn btn-default btn-xs" title="Add a stage to this treatment plan." onclick='updateAndSubmitTreatmentComponentForm("formAddStage", ${treatmentPlan.treatmentPlanID }, 0, 0, 0, 0)'> 
 				<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 			</button>
-		</form>
+
 	</c:if>
 	</label>
 	<c:forEach items="${treatmentPlan.stages }" var="stage">
@@ -193,7 +189,8 @@
 					title="Delete stage from this treatment plan."> 
 					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 				</a> 
-				<form class="form-inline form-inline-controls" action="/secure/treatment-components/EditStage" method="POST">
+				<%-- replaced with use of Javascript function
+					<form class="form-inline form-inline-controls" action="/secure/treatment-components/EditStage" method="POST">
 					<input type="hidden" name="requestedAction" value="select-stage">
 					<input type="hidden" name="path" value="${path }"> 
 					<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
@@ -203,7 +200,10 @@
 					<button role="button" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
 						<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 					</button>
-				</form>
+				</form> --%>
+				<button type="button" class="btn btn-default btn-xs pull-right" title="Edit this stage." onclick="updateAndSubmitTreatmentComponentForm('formEditStage', ${treatmentPlan.treatmentPlanID }, ${stage.stageID }, 0, 0, 0)">
+					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+				</button>
 			</div>
 			<div id="collapse${stage.stageID }" class="panel-collapse collapse"
 				role="tabpanel" aria-labelledby="heading${stage.stageID}">
@@ -241,19 +241,14 @@
 
 	<div class="form-group">
         <div class="col-sm-12 save-button">
-            <button type="submit" id="submitForUpdatePlan" value="save" class="btn btn-default" <c:if test="${treatmentPlan==null }">disabled="disabled"</c:if>>Save</button>
-            <form class="form-inline form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
-				<input type="hidden" name="requestedAction" value="plan-edit-update-cancel">
-				<input type="hidden" name="path" value="${path }"> 
-				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-				<input type="hidden" name="clientUUID" value="${clientUUID }" >
-				
-            	<button type="submit" id="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
-            </form>
+            <button type="submit" name="submitButton" id="submitButton" value="save" class="btn btn-default" <c:if test="${treatmentPlan==null }">disabled="disabled"</c:if>>Save</button>
+			<button type="submit" name="submitButton" id="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
+
             
         </div>
     </div>
 
+</form>
 
 <!-- New Core Treatment Issue Modal -->
 <div class="modal fade" id="newCoreTreatmentIssueModal" tabindex="-1"
@@ -352,6 +347,30 @@
 </div>
 <!-- End Delete TreatmentPlan Modal -->
 
+<!-- these forms are dynamically updated and then submitted with JavaScript -->
+	<!-- for editing stages -->
+	<form id="formEditStage" action="/secure/treatment-components/EditStage" method="POST">
+		<input type="hidden" name="requestedAction" value="select-stage">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" id="taskIDDynamic" name="taskID" value="0" >
+		<input type="hidden" id="stageIDDynamic" name="stageID" value="0" >
+		<input type="hidden" id="treatmentPlanIDDynamic" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+	
+	<!-- for adding a new stage to this treatment plan -->
+	<form id="formAddStage" action="/secure/treatment-components/CreateStage" method="POST">
+		<input type="hidden" name="requestedAction" value="add-stage-to-treatment-plan">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" id="taskIDDynamic" name="taskID" value="0" >
+		<input type="hidden" id="stageIDDynamic" name="stageID" value="0" >
+		<input type="hidden" id="treatmentPlanIDDynamic" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+<!-- end dynamically updated forms -->
+
+<script src="/js/custom-form-submission.js"></script>
+
 <script>
 	$(function() {
 		$('#selectedCoreTreatmentPlanID').change(function() {
@@ -359,13 +378,16 @@
 		});
 	});
 	
-	$(function() {
+	/* $(function() {
 		var form = document.getElementById("form-update-plan");
 
 		document.getElementById("submitForUpdatePlan").addEventListener("click", function () {
 		  form.submit();
 		});
-	});
+	}); */
 	
 </script>
+
+
+
 <c:import url="/WEB-INF/jsp/footer.jsp" />
