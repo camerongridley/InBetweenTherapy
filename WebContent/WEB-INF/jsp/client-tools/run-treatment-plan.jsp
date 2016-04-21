@@ -111,7 +111,7 @@ Client: ${client.userName}
 	<div class="col-sm-12">
 
 		
-			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
+			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete}"></c:set>
 			
 			<div class="progress-stage-detail">
 				<strong>
@@ -167,9 +167,8 @@ Client: ${client.userName}
 						</c:if>
 					</div>
 					<!--Generic Task Detail-->
-					<c:if test="${task.taskTypeName == 'TaskGeneric' }">
-						<div id="collapse${task.taskID }" class="panel-collapse collapse"
-							role="tabpanel" aria-labelledby="heading${task.taskID }">
+
+						<div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 							<div class="panel-body panel-body-task">
 								${task.instructions }</div>
 							<c:if test="${task.resourceLink != '' }">
@@ -178,30 +177,30 @@ Client: ${client.userName}
 										Link</a>
 								</div>
 							</c:if>
+							
+							<!--TwoTextBoxes Task Detail-->
+							<c:if test="${task.taskTypeName == 'TaskTwoTextBoxes' }">
+								<div class="panel-body panel-body-task">
+									${task.extraTextLabel1 }<input type="text" class="form-control"
+										placeholder=""
+										name="extraTextValue1${task.taskID }"
+										value="${task.extraTextValue1 }" 
+										<c:if test="${task.disabled }">disabled</c:if>>
+								</div>
+								<div class="panel-body panel-body-task">
+									${task.extraTextLabel2 }<input type="text" class="form-control"
+										placeholder=""
+										name="extraTextValue2${task.taskID }"
+										value="${task.extraTextValue2 }" 
+										<c:if test="${task.disabled }">disabled</c:if>>
+								</div>
+
+							</c:if>
+							
+							<!--Details of Future Tasks that are created go below this -->
 						</div>
-					</c:if>
-					<!--TwoTextBoxes Task Detail-->
-					<c:if test="${task.taskTypeName == 'TaskTwoTextBoxes' }">
-						<div id="collapse${task.taskID }" class="panel-collapse collapse"
-							role="tabpanel" aria-labelledby="heading${task.taskID }">
-							<div class="panel-body panel-body-task">
-								${task.instructions }</div>
-							<div class="panel-body panel-body-task">
-								${task.extraTextLabel1 }<input type="text" class="form-control"
-									placeholder="${task.extraTextLabel1 }"
-									name="extraTextValue1${task.taskID }"
-									value="${task.extraTextValue1 }" 
-									<c:if test="${task.disabled }">disabled</c:if>>
-							</div>
-							<div class="panel-body panel-body-task">
-								${task.extraTextLabel2 }<input type="text" class="form-control"
-									placeholder="${task.extraTextLabel2 }"
-									name="extraTextValue2${task.taskID }"
-									value="${task.extraTextValue2 }" 
-									<c:if test="${task.disabled }">disabled</c:if>>
-							</div>
-						</div>
-					</c:if>
+
+					
 
 				</div>
 			</c:forEach>

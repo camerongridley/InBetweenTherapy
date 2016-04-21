@@ -270,13 +270,19 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	//returns a double digit number representing percentage of stage completion
 	@Override
 	public double getPercentComplete(){
-		double roundedPercent = 0;
+/*		double roundedPercent = 0;
 		
 		if(!tasks.isEmpty()){
 			roundedPercent = Math.floor(percentComplete * 100) / 100;
 		}
 		
-		return (roundedPercent);
+		return (roundedPercent);*/
+		
+		if(!tasks.isEmpty()){
+			return (int) (percentComplete*100);
+		} else {
+			return 0;
+		}
 	}
 
 	public int getNumberOfTasksCompleted() {
@@ -323,7 +329,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		
 		percentComplete = ((double)getNumberOfTasksCompleted()/(double)getTotalNumberOfTasks());
 		
-		if(getPercentComplete()==1){
+		if(getPercentComplete()==100){
 			this.markComplete();
 			//this.setInProgress(false);
 		} else {

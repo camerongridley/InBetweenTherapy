@@ -33,7 +33,7 @@
 								  </div>
 								</div>
 								<p><strong>Current Stage: </strong></p>
-								<p>${activePlan.currentStage.title } (${activePlan.currentStage.percentComplete*100}%)</p>
+								<p>${activePlan.currentStage.title } (${activePlan.currentStage.percentComplete}%)</p>
 								
 								<form class="form-horizontal form-inline-controls" action="/secure/ManageClients" method="POST">
 									<input type="hidden" name="requestedAction" value="load-client-view-treatment-plan">
