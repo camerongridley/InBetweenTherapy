@@ -74,6 +74,7 @@ public final class ErrorMessages {
 	public static final String KEYWORD_EMPTY = "You did not enter any value for the new keyword.  Please try again.";
 	
 	public static final String PASSWORD_MISSING = "Please enter a password to continue.";
+	public static final String DATABASE_CONNECTION_FAILURE = "Our apologies.  There seems to be a problem connecting to the database.  We are working on it.  Please try again later.  If you continue to experience problems, please contact customer support.";
 	
 	
 }

@@ -45,27 +45,30 @@
 				        	<p>Preview of selected task goes here.</p>
 				        </div>
 			        </div>
-					
-				<c:if test='${path.equals("manageClients")}'>
-					<div class="form-group">
-				        <div class="col-sm-offset-2 col-sm-10">
-					  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="clientRepetitions" name="clientRepetitions">
-	                    <option  value="1" >1</option>
-						<option  value="2" >2</option>
-						<option  value="3" >3</option>
-						<option  value="4" >4</option>
-						<option  value="5" >5</option>
-						<option  value="6" >6</option>
-						<option  value="7" >7</option>
-						<option  value="8" >8</option>
-						<option  value="9" >9</option>
-						<option  value="10" >10</option>
-	                </select>
-	
-	                </div>
-	                </div>
-	            </c:if>
-
+				<c:choose>
+					<c:when test='${path.equals("manageClients") || path.equals("templateStage") || path.equals("templateTreatmentPlan")}'>
+						<div class="form-group">
+					        <div class="col-sm-offset-2 col-sm-10">
+						  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="taskReps" name="taskReps">
+		                    <option  value="1" selected>1</option>
+							<option  value="2" >2</option>
+							<option  value="3" >3</option>
+							<option  value="4" >4</option>
+							<option  value="5" >5</option>
+							<option  value="6" >6</option>
+							<option  value="7" >7</option>
+							<option  value="8" >8</option>
+							<option  value="9" >9</option>
+							<option  value="10" >10</option>
+		                </select>
+		
+		                </div>
+		                </div>
+		            </c:when>
+		            <c:otherwise>
+		            	
+		            </c:otherwise>
+				</c:choose>
 					
 			        <div class="form-group">
 			            <div class="col-sm-offset-2 col-sm-10 save-button">

@@ -9,6 +9,9 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.utils.messaging.ErrorMessages;
+
 
 
 public class MySQLConnection implements Serializable, DatabaseConnection {
@@ -23,7 +26,7 @@ public class MySQLConnection implements Serializable, DatabaseConnection {
 	}
 
 	@Override
-	public Connection getConnection() {
+	public Connection getConnection() throws DatabaseException {
 		Connection cn = null;
 		try {
 			Context initCtx = new InitialContext();
@@ -35,6 +38,7 @@ public class MySQLConnection implements Serializable, DatabaseConnection {
 			cn = ds.getConnection();
 		} catch (NamingException | SQLException e) {
 			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.DATABASE_CONNECTION_FAILURE);
 		}
 		
 		return cn;

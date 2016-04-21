@@ -39,7 +39,7 @@ public class CreateTask extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
-		//processRequest(request, response);
+		
 	}
 
 	/**
@@ -124,8 +124,8 @@ public class CreateTask extends HttpServlet {
 									request.setAttribute("coreStagesList", Stage.getCoreStages());
 									
 								} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
-									int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
-									MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), 0, clientRepetition);
+									//int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
+									MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), 0, taskReps);
 									stage.createTaskFromTemplate(task.getTaskID(), stageTaskInfo);
 								}
 								request.setAttribute("successMessage", SuccessMessages.TASK_ADDED_TO_STAGE);

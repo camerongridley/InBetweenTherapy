@@ -774,7 +774,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	/**Adds a task template to a stage template.  Inserts into taskTemplate-stageTemplate mapping table. Both the Task and Stage must be templates to be valid.
+
 	 * @param taskTemplateID
+	 * @param templateRepetitions - minimum value of 1 - is set to 1 if less
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
@@ -786,6 +788,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				
 	        	cn = dao.getConnection();
 	        	if(dao.mapStageTaskTemplateValidate(cn, taskTemplateID, this.getStageID())){
+	        		if(templateRepetitions < 1){
+	        			templateRepetitions = 1;
+	        		}
 	        		MapStageTaskTemplate map = new MapStageTaskTemplate(this.stageID, taskTemplateID, this.getTaskOrderDefaultValue(), templateRepetitions);
 	        		map.create(cn);
 
