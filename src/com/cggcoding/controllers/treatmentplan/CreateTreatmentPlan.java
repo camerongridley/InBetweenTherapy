@@ -184,7 +184,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
     		request.setAttribute("selectedCustomTreatmentIssue", selectedCustomIssueID);
 
     		forwardTo = Constants.URL_CREATE_TREATMENT_PLAN;
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
     	
 		request.getRequestDispatcher(forwardTo).forward(request,response);

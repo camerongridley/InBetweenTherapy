@@ -282,6 +282,8 @@ public class EditStage extends HttpServlet {
 			request.setAttribute("owner", owner);
 			
             forwardTo = Constants.URL_EDIT_STAGE;
+            
+            e.printStackTrace();
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

@@ -199,7 +199,7 @@ public class ManageClients extends HttpServlet {
 			request.setAttribute("clientUUID", clientUUID);
 			
 			request.setAttribute("errorMessage", e.getMessage());
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);

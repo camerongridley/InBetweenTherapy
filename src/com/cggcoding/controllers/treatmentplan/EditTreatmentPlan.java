@@ -230,7 +230,7 @@ public class EditTreatmentPlan extends HttpServlet {
     		request.setAttribute("owner", owner);
     		
     		forwardTo = Constants.URL_EDIT_TREATMENT_PLAN;
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
     	
 		request.getRequestDispatcher(forwardTo).forward(request,response);

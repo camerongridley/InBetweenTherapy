@@ -103,7 +103,8 @@ public class ClientSelectPlan extends HttpServlet {
 			request.setAttribute("assignedPlansList", assignedPlansList);
 			request.setAttribute("inProgressPlansList", inProgressPlansList);
 			request.setAttribute("completedPlansList", completedPlansList);
-			//e.printStackTrace();
+			
+			e.printStackTrace();
 			forwardTo = "/WEB-INF/jsp/client-tools/select-plan.jsp";
 		}
 		

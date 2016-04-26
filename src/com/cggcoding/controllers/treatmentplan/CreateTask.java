@@ -199,6 +199,8 @@ public class CreateTask extends HttpServlet {
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("owner", owner);
 
+			e.printStackTrace();
+			
 			forwardTo = Constants.URL_CREATE_TASK;
 		}
 		

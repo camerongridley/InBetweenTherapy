@@ -203,6 +203,8 @@ public class CreateStage extends HttpServlet {
 			request.setAttribute("coreStages", coreStages);
 			request.setAttribute("owner", owner);
 			
+			e.printStackTrace();
+			
             forwardTo = Constants.URL_CREATE_STAGE;
 		}
 		

@@ -57,6 +57,7 @@ public class SMTPEmailer {
 
         } catch (MessagingException e) {
             throw new RuntimeException(e);
+            e.printStackTrace();
         }
 		
 		
