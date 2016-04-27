@@ -134,13 +134,13 @@
             </label>
             <div class="col-sm-10">
 
-                <c:forEach var="keyword" items="${coreTaskKeyords}">
+                <c:forEach var="keyword" items="${coreTaskKeyords}" varStatus="status">
                 	<c:set var="keywordValue" value="${keyword.value}"></c:set>
 
 				<!-- use label-default for core keywords and label-primary for custom keywords -->
-				<span class="keyword label-default">
+				<label class="keyword label-default">
 				      <input type="checkbox" name="keywords[]" value="${keywordValue.keywordID}" <c:if test="${task==null }">disabled="disabled"</c:if> <c:if test="${task.hasKeyword(keyword.key) }">checked</c:if>> ${keywordValue.keyword}
-				</span>
+			    </label>
 
 				</c:forEach>
 

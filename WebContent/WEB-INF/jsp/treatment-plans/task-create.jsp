@@ -15,6 +15,10 @@
 	
 	<c:if test='${path!="templateTask" }'>
 		<div class="well well-sm">
+			<div>
+				<h4>Add a Core Task</h4>
+			</div>
+			
 			<form class="form-horizontal" action="/secure/treatment-components/CreateTask" method="POST">
 				<input type="hidden" name="requestedAction" value="task-add-template">
 				<input type="hidden" name="path" value="${path }">
@@ -23,9 +27,66 @@
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
 				<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 				
-				<div>
-					<h4>Add a Core Task</h4>
-				</div>
+				
+				
+				<div class="form-horizontal">
+			        <div class="form-group">
+
+			            <div class="col-sm-offset-2 col-sm-10">
+			            
+			            <div class="panel panel-info panel-task" id="keywordList" title="Click to expand and select keyword filters.">
+						  <div class="panel-heading">
+						  	  
+			
+									<div class="">
+									  	<a role="button" data-toggle="collapse" href="#collapseKeywordFilters" aria-expanded="true" aria-controls="#collapseKeywordFilters Panel Heading">
+								          Select Filters By Keyword
+								        </a>   
+									</div>
+			
+			
+						  </div><!-- end panel-heading -->
+						  
+						  <div id="collapseKeywordFilters" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseKeywordFilters Panel Body">
+							  <div class="panel-body">
+							    <div class="col-sm-10">
+			
+					                <c:forEach var="keyword" items="${coreTaskKeyords}" varStatus="status">
+					                	<c:set var="keywordValue" value="${keyword.value}"></c:set>
+					
+										<!-- use label-default for core keywords and label-primary for custom keywords -->
+										<label class="keyword label-default">
+										      <input type="checkbox" name="keywords[]" id="keywords" value="${keywordValue.keywordID}" <c:if test="${task==null }">disabled="disabled"</c:if> <c:if test="${task.hasKeyword(keyword.key) }">checked</c:if>> ${keywordValue.keyword}
+									    </label>
+					
+									</c:forEach>
+									
+									<hr>
+
+									<button type="button" class="btn btn-primary" id="uncheckAll" >Select None</button>
+									
+									<button type="submit" name="submitButton" value="save" class="btn btn-default">Apply Filters</button>
+					
+					            </div>
+							  </div>
+						  </div>
+						</div>
+			            
+			            </div>
+			        </div>
+			    </div>
+			</form>
+			
+		
+			<form class="form-horizontal" action="/secure/treatment-components/CreateTask" method="POST">
+				<input type="hidden" name="requestedAction" value="task-add-template">
+				<input type="hidden" name="path" value="${path }">
+				<input type="hidden" name="stageID" value="${stage.stageID }">
+				<input type="hidden" name="isTemplate" value="${task.template }">
+				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+				
+				
 				
 				<div class="form-horizontal">
 			        <div class="form-group">
@@ -37,8 +98,10 @@
 			                        <option value="${defaultTask.taskID}"><c:out value="${defaultTask.title }"/></option>
 			                    </c:forEach>
 			                </select>
+			                
 			            </div>
 			        </div>
+
 			        
 			        <div class="form-group">
 				        <div class="col-sm-offset-2 col-sm-10">
@@ -197,6 +260,11 @@
 		    $('#taskTypeID').change(function() {
 		    	this.form.submit();
 		    });
+		});
+		
+		
+		$("#uncheckAll").click(function () {
+		    $("input:checkbox").prop('checked', false);
 		});
 	</script>
 

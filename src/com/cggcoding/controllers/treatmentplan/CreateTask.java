@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.Keyword;
 import com.cggcoding.models.MapStageTaskTemplate;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
@@ -110,6 +111,8 @@ public class CreateTask extends HttpServlet {
 					case ("create-task-start"):
 						//set tempTask in request so page knows value of isTemplate
 						request.setAttribute("task", task);
+					
+						request.setAttribute("coreTaskKeyords", Keyword.loadCoreList());
 						forwardTo = Constants.URL_CREATE_TASK;
 						break;
 					case "task-add-template" :

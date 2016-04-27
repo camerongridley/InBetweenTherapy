@@ -838,6 +838,12 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	public abstract void transferAdditionalData(Task taskWithNewData);
 
 	public static List<Task> getCoreTasks() throws DatabaseException{
+		return getCoreTasks(null);
+	}
+	
+	public static List<Task> getCoreTasks(List<Keyword> keywordFilters) throws DatabaseException{
+		
+		
 		return dao.taskGetCoreList();
 	}
 	
