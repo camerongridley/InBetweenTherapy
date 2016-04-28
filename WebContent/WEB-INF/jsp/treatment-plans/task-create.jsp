@@ -40,12 +40,14 @@
 			
 									<div class="">
 									  	<a role="button" data-toggle="collapse" href="#collapseKeywordFilters" aria-expanded="true" aria-controls="#collapseKeywordFilters Panel Heading">
-								          Select Filters By Keyword - Current filters:
+								          Select Filters By Keyword
+								        </a>
+								           
+								         - <strong>Current filters:</strong>
 								          	<c:forEach var="filter" items="${selectedKeywords }" varStatus="status">
 												${filter.keyword}
 												<c:if test="${status.last!=true }">, </c:if>
 											</c:forEach>
-								        </a>   
 									</div>
 			
 			
