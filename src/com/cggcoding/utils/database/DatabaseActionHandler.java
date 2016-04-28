@@ -224,7 +224,7 @@ public interface DatabaseActionHandler {
 	//*************************************** Keyword Methods **********************************
 	//**************************************************************************************************
 	
-	Map<Integer, Keyword> keywordCoreListLoad(Connection cn) throws SQLException;
+	Map<Integer, Keyword> keywordCoreMembersLoad(Connection cn) throws SQLException;
 	
 	Keyword keywordCreate(Connection cn, Keyword keyword) throws SQLException;
 

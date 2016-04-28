@@ -2377,7 +2377,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
     @Override
-    public Map<Integer, Keyword> keywordCoreListLoad(Connection cn) throws SQLException{
+    public Map<Integer, Keyword> keywordCoreMembersLoad(Connection cn) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         Map<Integer, Keyword> keywordMap = new LinkedHashMap<>();

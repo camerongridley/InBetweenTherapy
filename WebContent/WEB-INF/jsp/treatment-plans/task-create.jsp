@@ -20,7 +20,7 @@
 			</div>
 			
 			<form class="form-horizontal" action="/secure/treatment-components/CreateTask" method="POST">
-				<input type="hidden" name="requestedAction" value="task-add-template">
+				<input type="hidden" name="requestedAction" value="create-task-start">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="stageID" value="${stage.stageID }">
 				<input type="hidden" name="isTemplate" value="${task.template }">
@@ -40,7 +40,11 @@
 			
 									<div class="">
 									  	<a role="button" data-toggle="collapse" href="#collapseKeywordFilters" aria-expanded="true" aria-controls="#collapseKeywordFilters Panel Heading">
-								          Select Filters By Keyword
+								          Select Filters By Keyword - Current filters:
+								          	<c:forEach var="filter" items="${selectedKeywords }" varStatus="status">
+												${filter.keyword}
+												<c:if test="${status.last!=true }">, </c:if>
+											</c:forEach>
 								        </a>   
 									</div>
 			
@@ -51,15 +55,18 @@
 							  <div class="panel-body">
 							    <div class="col-sm-10">
 			
-					                <c:forEach var="keyword" items="${coreTaskKeyords}" varStatus="status">
+					                <c:forEach var="keyword" items="${coreTaskKeywords}" varStatus="status">
 					                	<c:set var="keywordValue" value="${keyword.value}"></c:set>
 					
 										<!-- use label-default for core keywords and label-primary for custom keywords -->
 										<label class="keyword label-default">
-										      <input type="checkbox" name="keywords[]" id="keywords" value="${keywordValue.keywordID}" <c:if test="${task==null }">disabled="disabled"</c:if> <c:if test="${task.hasKeyword(keyword.key) }">checked</c:if>> ${keywordValue.keyword}
+										      <input type="checkbox" name="keywords[]" id="keywords" value="${keywordValue.keywordID}" <c:if test="${selectedKeywords.contains(keywordValue) }">checked</c:if>> ${keywordValue.keyword}
 									    </label>
 					
 									</c:forEach>
+									
+									<p>Selected Filters:</p>
+									
 									
 									<hr>
 

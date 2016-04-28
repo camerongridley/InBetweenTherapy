@@ -209,7 +209,7 @@ public class EditTask extends HttpServlet {
 				request.setAttribute("stage", stage);
 				request.setAttribute("task", task);
 				request.setAttribute("owner", owner);
-				request.setAttribute("coreTaskKeyords", Keyword.loadCoreList());
+				request.setAttribute("coreTaskKeyords", Keyword.loadCoreMembers());
 				
 			} else if(user.hasRole(Constants.USER_CLIENT)){
 				forwardTo = "clientMainMenu.jsp";
@@ -230,7 +230,7 @@ public class EditTask extends HttpServlet {
 			try {
 				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
 				request.setAttribute("coreTasks", Task.getCoreTasks());
-				request.setAttribute("coreTaskKeyords", Keyword.loadCoreList());
+				request.setAttribute("coreTaskKeyords", Keyword.loadCoreMembers());
 			} catch (DatabaseException e1) {
 				request.setAttribute("erorMessage", ErrorMessages.GENERAL_DB_ERROR);
 				e1.printStackTrace();

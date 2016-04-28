@@ -89,13 +89,13 @@ public class Keyword {
 		
 	}
 	
-	public static Map<Integer, Keyword> loadCoreList() throws ValidationException, DatabaseException{
+	public static Map<Integer, Keyword> loadCoreMembers() throws ValidationException, DatabaseException{
 		Connection cn = null;
 		Map<Integer, Keyword> keywords = null;
 		try{
 			cn = dao.getConnection();
 			
-			keywords = dao.keywordCoreListLoad(cn);
+			keywords = dao.keywordCoreMembersLoad(cn);
 		} catch (SQLException e){
 			e.printStackTrace();
 			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);

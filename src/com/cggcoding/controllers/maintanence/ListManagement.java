@@ -54,7 +54,7 @@ public class ListManagement extends HttpServlet {
 		forwardTo = Constants.URL_LIST_MANAGEMENT;
 		
 		try {
-			request.setAttribute("coreTaskKeyords", Keyword.loadCoreList());
+			request.setAttribute("coreTaskKeyords", Keyword.loadCoreMembers());
 			request.setAttribute("coreTreatmentIssues", TreatmentIssue.getCoreTreatmentIssues());
 		} catch (ValidationException | DatabaseException e) {
 			request.setAttribute("errorMessage", ErrorMessages.GENERAL_DB_ERROR);//TODO revisit what message is set in request. 

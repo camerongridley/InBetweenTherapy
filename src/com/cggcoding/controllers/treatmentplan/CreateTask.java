@@ -1,6 +1,10 @@
 package com.cggcoding.controllers.treatmentplan;
 
+import java.awt.List;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -111,8 +115,20 @@ public class CreateTask extends HttpServlet {
 					case ("create-task-start"):
 						//set tempTask in request so page knows value of isTemplate
 						request.setAttribute("task", task);
-					
-						request.setAttribute("coreTaskKeyords", Keyword.loadCoreList());
+						Map<Integer, Keyword> coreKeywords = Keyword.loadCoreMembers();
+						
+						ArrayList<Keyword> selectedKeywordList = new ArrayList<>();
+						String[] selectedKeywordIDFilters = request.getParameterValues("keywords[]");
+						if(selectedKeywordIDFilters != null){
+							for(int i = 0; i < selectedKeywordIDFilters.length; i++){
+								System.out.println("keyword: " + selectedKeywordIDFilters[i]);
+								int keywordID = Integer.parseInt(selectedKeywordIDFilters[i]);
+								selectedKeywordList.add(coreKeywords.get(keywordID));
+							}
+						}
+						
+						request.setAttribute("selectedKeywords", selectedKeywordList);
+						request.setAttribute("coreTaskKeywords", coreKeywords);
 						forwardTo = Constants.URL_CREATE_TASK;
 						break;
 					case "task-add-template" :
