@@ -92,7 +92,7 @@ public class CreateTask extends HttpServlet {
 			
 			//put user-independent (i.e. default) lists acquired from database in the request
 			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
-			request.setAttribute("coreTasks", Task.getCoreTasks());
+			
 			
 			if(!path.equals(Constants.PATH_TEMPLATE_TASK)){
 				stage = Stage.load(stageID);//load the entire stage since we need everything loaded to determine certain properties, such as the taskOrder
@@ -115,7 +115,7 @@ public class CreateTask extends HttpServlet {
 					case ("create-task-start"):
 						//set tempTask in request so page knows value of isTemplate
 						request.setAttribute("task", task);
-						Map<Integer, Keyword> coreKeywords = Keyword.loadCoreMembers();
+						Map<Integer, Keyword> coreKeywordsMap = Keyword.loadCoreMembers();
 						
 						ArrayList<Keyword> selectedKeywordList = new ArrayList<>();
 						String[] selectedKeywordIDFilters = request.getParameterValues("keywords[]");
@@ -123,12 +123,16 @@ public class CreateTask extends HttpServlet {
 							for(int i = 0; i < selectedKeywordIDFilters.length; i++){
 								System.out.println("keyword: " + selectedKeywordIDFilters[i]);
 								int keywordID = Integer.parseInt(selectedKeywordIDFilters[i]);
-								selectedKeywordList.add(coreKeywords.get(keywordID));
+								selectedKeywordList.add(coreKeywordsMap.get(keywordID));
 							}
+							
+							request.setAttribute("coreTasks", Task.getCoreTasks(selectedKeywordList));
+						}else{
+							request.setAttribute("coreTasks", Task.getCoreTasks());
 						}
 						
 						request.setAttribute("selectedKeywords", selectedKeywordList);
-						request.setAttribute("coreTaskKeywords", coreKeywords);
+						request.setAttribute("coreTaskKeywords", coreKeywordsMap);
 						forwardTo = Constants.URL_CREATE_TASK;
 						break;
 					case "task-add-template" :
@@ -155,6 +159,8 @@ public class CreateTask extends HttpServlet {
 							forwardTo = setForwardToForCancel(request, user, path);
 						}
 						
+						request.setAttribute("coreTasks", Task.getCoreTasks());
+						
 						break;
 					case "task-type-select":
 						request.setAttribute("task", task);
@@ -163,6 +169,8 @@ public class CreateTask extends HttpServlet {
 						request.setAttribute("scrollTo", "taskTypeSelection");
 						
 						forwardTo = Constants.URL_CREATE_TASK;
+						request.setAttribute("coreTasks", Task.getCoreTasks());
+						
 						break;
 					case ("task-create-new"):
 						Task newTask = null;
@@ -191,9 +199,11 @@ public class CreateTask extends HttpServlet {
 							//Cancel button pressed.  Just send back to appropriate page
 							forwardTo = setForwardToForCancel(request, user, path);
 						}
-
-					break;
-				}
+						
+						request.setAttribute("coreTasks", Task.getCoreTasks());
+						
+						break;
+					}
 				
 				
 				/*//TODO delete after confirm removal didn't break things

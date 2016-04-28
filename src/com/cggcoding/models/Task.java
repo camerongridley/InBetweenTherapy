@@ -842,9 +842,27 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	}
 	
 	public static List<Task> getCoreTasks(List<Keyword> keywordFilters) throws DatabaseException{
+		List<Task> coreTasks = dao.taskGetCoreList();
+		if(keywordFilters != null){
+			coreTasks = filterTaskList(coreTasks, keywordFilters);
+		}
 		
+		return coreTasks;
+	}
+	
+	public static List<Task> filterTaskList(List<Task> tasks, List<Keyword> keywordFilters){
+		List<Task> filteredTasks = new ArrayList<>();
 		
-		return dao.taskGetCoreList();
+		for(Task task : tasks){
+			for(Keyword keyword : keywordFilters){
+				if(task.getKeywords().containsKey(keyword.getKeywordID())){
+					filteredTasks.add(task);
+					break;
+				}
+			}
+		}
+		
+		return filteredTasks;
 	}
 	
 	public static Map<Integer, String> getTaskTypeMap() throws DatabaseException {

@@ -42,12 +42,6 @@
 									  	<a role="button" data-toggle="collapse" href="#collapseKeywordFilters" aria-expanded="true" aria-controls="#collapseKeywordFilters Panel Heading">
 								          Select Filters By Keyword
 								        </a>
-								           
-								         - <strong>Current filters:</strong>
-								          	<c:forEach var="filter" items="${selectedKeywords }" varStatus="status">
-												${filter.keyword}
-												<c:if test="${status.last!=true }">, </c:if>
-											</c:forEach>
 									</div>
 			
 			
@@ -66,20 +60,23 @@
 									    </label>
 					
 									</c:forEach>
-									
-									<p>Selected Filters:</p>
-									
-									
+
 									<hr>
 
-									<button type="button" class="btn btn-primary" id="uncheckAll" >Select None</button>
+									<button type="button" class="btn btn-sm btn-primary" id="uncheckAll" title='Unchecks all filters.  You still need to press the "Update FIlters" button to refresh the results.'>Select None</button>
 									
-									<button type="submit" name="submitButton" value="save" class="btn btn-default">Apply Filters</button>
+									<button type="submit" name="submitButton" value="save" class="btn btn-default">Update Filters</button>
 					
 					            </div>
 							  </div>
 						  </div>
 						</div>
+			            
+			            <strong>Current filters:</strong>
+			          	<c:forEach var="filter" items="${selectedKeywords }" varStatus="status">
+							${filter.keyword}
+							<c:if test="${status.last!=true }">, </c:if>
+						</c:forEach>
 			            
 			            </div>
 			        </div>
