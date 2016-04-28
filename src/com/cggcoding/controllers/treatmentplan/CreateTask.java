@@ -225,6 +225,11 @@ public class CreateTask extends HttpServlet {
 			request.setAttribute("stage", stage);
 			request.setAttribute("task", task);
 			request.setAttribute("treatmentPlan", treatmentPlan);
+			try {
+				request.setAttribute("coreTasks", Task.getCoreTasks());
+			} catch (DatabaseException e1) {
+				e1.printStackTrace();
+			}
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("owner", owner);
 

@@ -845,13 +845,29 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	protected List<Task> createTaskFromTemplate(Connection cn, int taskIDBeingCopied, MapStageTaskTemplate stageTaskInfo) throws SQLException, ValidationException{
 		List<Task> createdTasks = new ArrayList<>();
 		int taskReps = stageTaskInfo.getTemplateTaskRepetitions();
+		int repetitionStartingNumber = 0;
 		Task task = Task.load(cn, stageTaskInfo.getTaskID());
 		task.setUserID(this.getUserID());
 		task.setStageID(this.stageID);
 		task.setTemplate(false);
 		task.setTemplateID(task.getTaskID());
 		
-		for(int i = 0; i<taskReps; i++){
+		//check if tasks with the same templateID already exist so we can determine what rep number to give this new task - id no other tasks with the same tempalteID exist, then do nothing, otherwise, start with the appropriate repetition number
+		Task tempTask = null;
+		for(Task taskForRepCheck : tasks){
+			if(taskForRepCheck.getTemplateID() == task.getTemplateID()){
+				repetitionStartingNumber++;
+				tempTask = taskForRepCheck;
+			}
+		}
+		
+		//if a repetition of the task already existed but it was only a single rep, then update the task title to add the repetition suffix since that is not present when there is only 1 rep
+		if(repetitionStartingNumber == 1){
+			tempTask.setTitle(tempTask.getTitle() + "(1)");
+			tempTask.update(cn);
+		}
+		
+		for(int i = repetitionStartingNumber; i<(taskReps+repetitionStartingNumber); i++){
 			Task taskRep = task.copy();
 			taskRep.setClientRepetition(i+1);
 			
