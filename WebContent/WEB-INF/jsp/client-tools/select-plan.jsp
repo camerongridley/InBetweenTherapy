@@ -99,5 +99,49 @@
 	        </div>
         </div>
 	</form>
+	
+	<h3>Your Plans.</h3>
+	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
+		<input type="hidden" name="requestedAction" value="select-plan-load">
+		<input type="hidden" name="path" value="client-execute-plan">
+		<input type="hidden" name="initialize" value="no">
+
+		<div class="list-group col-md-6">
+			<ul class="list-group">
+			  <c:forEach items="${inProgressPlansList}" var="inProgressPlan">
+	              <a href="#" class="list-group-item list-group-item-success" value="${inProgressPlan.treatmentPlanID}">${inProgressPlan.title}</a>
+	          </c:forEach>
+	        </ul>
+			<ul class="list-group">
+			  <c:forEach items="${assignedPlansList}" var="assignedPlan">
+	              <a href="#" class="list-group-item list-group-item-info" value="${assignedPlan.treatmentPlanID}">${assignedPlan.title}</a>
+	          </c:forEach>
+			</ul>
+			<ul class="list-group">  
+			  <c:forEach items="${completedPlansList}" var="completedPlan">
+	              <a href="#" class="list-group-item list-group-item-warning progress-bar-striped" value="${completedPlan.treatmentPlanID}">${completedPlan.title}</a>
+	          </c:forEach>
+			</ul>
+		</div>
+        
+        <div class="list-group col-md-6">
+			<ul class="list-group">
+			  <c:forEach items="${inProgressPlansList}" var="inProgressPlan">
+	              <li class="list-group-item list-group-item-success" value="${inProgressPlan.treatmentPlanID}">${inProgressPlan.title}</li>
+	          </c:forEach>
+			</ul>
+			<ul class="list-group">
+			  <c:forEach items="${assignedPlansList}" var="assignedPlan">
+	              <li class="list-group-item list-group-item-info" value="${assignedPlan.treatmentPlanID}">${assignedPlan.title}</li>
+	          </c:forEach>
+			</ul>
+			<ul class="list-group">  
+			  <c:forEach items="${completedPlansList}" var="completedPlan">
+	              <li class="list-group-item list-group-item-warning progress-bar-striped" value="${completedPlan.treatmentPlanID}">${completedPlan.title}</li>
+	          </c:forEach>
+			</ul>
+		</div>
+        
+	</form>
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />

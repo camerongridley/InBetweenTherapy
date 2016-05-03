@@ -11,6 +11,10 @@
     <h1>Client Main Menu</h1>
   </div>
   <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
+  
+  Continue Most Recently Used Plan:
+  <br>Plan Info Here
+  
   <p>
     <form class="form-inline" action="/secure/ClientSelectPlan" method="POST">
       <div><button type="submit" class="btn btn-primary">Select a Plan</button></div>
