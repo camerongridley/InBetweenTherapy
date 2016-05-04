@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.dbutils.DbUtils;
@@ -48,25 +49,50 @@ public class UserClient extends User implements Serializable{
 		return super.getTreatmentPlan(activeTreatmentPlanId);
 	}
 
+	public void loadAllClientTreatmentPlans() throws DatabaseException, ValidationException {
+		this.setTreatmentPlanList(dao.userGetTreatmentPlans(getUserID()));
+	}
+	
 	public List<TreatmentPlan> getAssignedTreatmentPlans() throws DatabaseException, ValidationException{
 		boolean inProgress = false;
 		boolean isCompleted = false;
+		List<TreatmentPlan> assignedPlans = new ArrayList<>();
 		
-		return dao.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
+		for(TreatmentPlan plan : this.getTreatmentPlanList()){
+			if(plan.isInProgress() == false && plan.isCompleted()==false){
+				assignedPlans.add(plan);
+			}
+		}
+		
+		return assignedPlans;
 	}
 	
 	public List<TreatmentPlan> getInProgressTreatmentPlans() throws DatabaseException, ValidationException{
 		boolean inProgress = true;
 		boolean isCompleted = false;
+		List<TreatmentPlan> inProgressPlans = new ArrayList<>();
 		
-		return dao.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
+		for(TreatmentPlan plan : this.getTreatmentPlanList()){
+			if(plan.isInProgress() == true && plan.isCompleted()==false){
+				inProgressPlans.add(plan);
+			}
+		}
+		
+		return inProgressPlans;
 	}
 	
 	public List<TreatmentPlan> getCompletedTreatmentPlans() throws DatabaseException, ValidationException{
 		boolean inProgress = false;
 		boolean isCompleted = true;
+		List<TreatmentPlan> completedPlans = new ArrayList<>();
 		
-		return dao.userGetClientTreatmentPlans(getUserID(), inProgress, isCompleted);
+		for(TreatmentPlan plan : this.getTreatmentPlanList()){
+			if(plan.isInProgress() == false && plan.isCompleted()==true){
+				completedPlans.add(plan);
+			}
+		}
+		
+		return completedPlans;
 	}
 
 

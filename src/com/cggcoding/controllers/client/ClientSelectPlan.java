@@ -61,6 +61,8 @@ public class ClientSelectPlan extends HttpServlet {
 		try {
 			if(user.hasRole(Constants.USER_CLIENT)){
 				UserClient client = (UserClient)user;
+				
+				client.loadAllClientTreatmentPlans();
 				assignedPlansList = client.getAssignedTreatmentPlans();
 				inProgressPlansList = client.getInProgressTreatmentPlans();
 				completedPlansList = client.getCompletedTreatmentPlans();

@@ -682,7 +682,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
-	public List<TreatmentPlan> userGetClientTreatmentPlans(int clientUserID, boolean inProgress, boolean isCompleted) throws DatabaseException, ValidationException {
+	public List<TreatmentPlan> userGetTreatmentPlans(int clientUserID) throws DatabaseException, ValidationException {
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
@@ -691,15 +691,13 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         try {
         	cn = getConnection();
 
-    		ps = cn.prepareStatement("SELECT * FROM treatment_plan WHERE treatment_plan_user_id_fk = ? AND in_progress=? AND treatment_plan_completed=?");
+    		ps = cn.prepareStatement("SELECT treatment_plan_id FROM treatment_plan WHERE treatment_plan_user_id_fk = ?");
     		ps.setInt(1, clientUserID);
-    		ps.setBoolean(2, inProgress);
-    		ps.setBoolean(3, isCompleted);
             
     		rs = ps.executeQuery();
    
             while (rs.next()){
-            	assignedTreatmentPlans.add(treatmentPlanLoadBasic(cn, rs.getInt("treatment_plan_id")));
+            	assignedTreatmentPlans.add(TreatmentPlan.load(cn, rs.getInt("treatment_plan_id")));
             	
             }
 

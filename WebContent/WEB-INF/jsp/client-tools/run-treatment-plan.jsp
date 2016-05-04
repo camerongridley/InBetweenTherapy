@@ -115,7 +115,7 @@ Client: ${client.userName}
 			
 			<div class="progress-stage-detail">
 				<strong>
-					Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${activeViewStagePercentComplete}% Complete
+					Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${treatmentPlan.activeViewStage.percentComplete}% Complete
 				</strong>
 				<c:if test='${user.role.equals("therapist") }'>
 				<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditStage" method="POST">

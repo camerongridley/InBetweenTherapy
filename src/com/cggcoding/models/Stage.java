@@ -7,6 +7,7 @@ import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
+import java.awt.CardLayout;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -327,7 +328,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	 */
 	public void updateProgress() throws ValidationException, DatabaseException{
 		
-		percentComplete = ((double)getNumberOfTasksCompleted()/(double)getTotalNumberOfTasks());
+		calculateAndSetPercentComplete();
 		
 		if(getPercentComplete()==100){
 			this.markComplete();
@@ -338,6 +339,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		}
 		
 		update();
+	}
+	
+	public void calculateAndSetPercentComplete(){
+		percentComplete = ((double)getNumberOfTasksCompleted()/(double)getTotalNumberOfTasks());
 	}
 	
 	
@@ -472,7 +477,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	    		stage.setTasks(dao.stageLoadClientTasks(cn, stage.getStageID()));
 	    	}
 			
-
+	    	stage.calculateAndSetPercentComplete();
 	        
 	        dao.throwValidationExceptionIfNull(stage);
 		}

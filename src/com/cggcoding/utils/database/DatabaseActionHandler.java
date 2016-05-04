@@ -61,7 +61,7 @@ public interface DatabaseActionHandler {
 	
 	public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException;
 	
-	List<TreatmentPlan> userGetClientTreatmentPlans(int clientUserID, boolean inProgress, boolean isCompleted)
+	List<TreatmentPlan> userGetTreatmentPlans(int clientUserID)
 			throws DatabaseException, ValidationException;
 	
 	List<TreatmentPlan> userGetTherapistAssignedPlans(int clientUserID, int assignedByUserID)
