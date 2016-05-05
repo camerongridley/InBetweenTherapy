@@ -17,6 +17,157 @@
     </div>
     <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 
+	<div class="form-horizontal">
+	        <div class="panel panel-success">
+	            <div class="panel-heading"><h4>Plans In Progress</h4></div>
+	            <div class="panel-body">
+		            <div class="form-horizontal hide-overflow">
+		                <c:forEach items="${inProgressPlansList}" var="activePlan">
+		                <div class="col-sm-6 col-md-4 col-lg-3">
+			                <div class="panel panel-primary">
+							  <div class="panel-heading" title="${activePlan.title}">
+							    <h3 class="panel-title"><c:if test="${user.activeTreatmentPlanID == activePlan.treatmentPlanID}"><span class="glyphicon glyphicon-star panel-icon" title="This is currently set as the primary active plan." aria-hidden="true"></span></c:if>${activePlan.title}</h3>
+							  </div>
+							  <div class="panel-body">
+							    <div class="progress" title="This plan is ${activePlan.percentComplete()}% complete.">
+								  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${activePlan.percentComplete()}" aria-valuemin="0" aria-valuemax="100" style="width: ${activePlan.percentComplete()}%;">
+								    ${activePlan.percentComplete()}%
+								  </div>
+								</div>
+								<p><strong>Current Stage: </strong></p>
+								<p>${activePlan.currentStage.title } (${activePlan.currentStage.percentComplete}%)</p>
+								
+								<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
+									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="clientUUID" value="${clientUUID}">
+									<input type="hidden" name="treatmentPlanID" value="${activePlan.treatmentPlanID}">
+									
+									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Make this your active Treatment Plan.">
+									  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+									</button>
+								</form>
+		
+								<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="select-plan-view">
+									<input type="hidden" name="path" value="clientPreviewPlan">
+									<input type="hidden" name="initialize" value="no">
+									<input type="hidden" name="clientUUID" value="${clientUUID}">
+									<input type="hidden" name="treatmentPlanID" value="${activePlan.treatmentPlanID}">
+									
+									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+									  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+									</button>
+								</form>
+								
+
+								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${activePlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
+							  </div>
+							</div>
+						</div>	
+		                </c:forEach>
+		            </div>
+	            </div>
+	        </div>    
+        </div>
+        
+        <div class="form-horizontal">
+	        <div class="panel panel-info">
+	            <div class="panel-heading"><h4>Unstarted Plans</h4></div>
+	            <div class="panel-body">
+		            <div class="form-horizontal">
+		                <c:forEach items="${assignedPlansList}" var="unstartedPlan">
+		                <div class="col-sm-6 col-md-4 col-lg-3">
+			                <div class="panel panel-primary">
+							  <div class="panel-heading">
+							    <h3 class="panel-title">${unstartedPlan.title}</h3>
+							  </div>
+							  <div class="panel-body">
+							  	<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
+									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="clientUUID" value="${clientUUID}">
+									<input type="hidden" name="treatmentPlanID" value="${unstartedPlan.treatmentPlanID}">
+									
+									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Make this your active Treatment Plan.">
+									  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+									</button>
+								</form>
+							  	
+							  	<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="select-plan-view">
+									<input type="hidden" name="path" value="clientPreviewPlan">
+									<input type="hidden" name="initialize" value="yes">
+									<input type="hidden" name="clientUUID" value="${clientUUID}">
+									<input type="hidden" name="treatmentPlanID" value="${unstartedPlan.treatmentPlanID}">
+									
+									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+									  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+									</button>
+								</form>
+								
+
+								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${unstartedPlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
+							  </div>
+							</div>
+						</div>	
+		                </c:forEach>
+		            </div>
+	            </div>
+	        </div>    
+        </div>
+        
+        <div class="form-horizontal">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4>Completed Plans</h4></div>
+            <div class="panel-body">
+	            <div class="form-horizontal">
+	                <c:forEach items="${completedPlansList}" var="completedPlan">
+	                <div class="col-sm-6 col-md-4 col-lg-3">
+		                <div class="panel panel-primary">
+						  <div class="panel-heading">
+						    <h3 class="panel-title">${completedPlan.title}</h3>
+						  </div>
+						  <div class="panel-body">
+						    <div class="progress" title="This plan is ${completedPlan.percentComplete()}% complete.">
+							  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${completedPlan.percentComplete()}" aria-valuemin="0" aria-valuemax="100" style="width: ${completedPlan.percentComplete()}%;">
+							    ${completedPlan.percentComplete()}%
+							  </div>
+							</div>
+								<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
+									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="clientUUID" value="${clientUUID}">
+									<input type="hidden" name="treatmentPlanID" value="${completedPlan.treatmentPlanID}">
+									
+									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Make this your active Treatment Plan.">
+									  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+									</button>
+								</form>
+								
+								<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="select-plan-view">
+									<input type="hidden" name="path" value="clientPreviewPlan">
+									<input type="hidden" name="initialize" value="no">
+									<input type="hidden" name="clientUUID" value="${clientUUID}">
+									<input type="hidden" name="treatmentPlanID" value="${completedPlan.treatmentPlanID}">
+									
+									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
+									  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+									</button>
+								</form>
+								
+	
+							<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${completedPlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
+						  </div>
+						</div>
+					</div>	
+	                </c:forEach>
+	            </div>
+            </div>
+        </div>    
+       </div>
+
 	<h3>Continue a plan.</h3>
 	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
@@ -100,157 +251,6 @@
         </div>
 	</form>
 	
-
-	<div class="form-horizontal">
-	        <div class="panel panel-success">
-	            <div class="panel-heading"><h4>Plans In Progress</h4></div>
-	            <div class="panel-body">
-		            <div class="form-horizontal hide-overflow">
-		                <c:forEach items="${inProgressPlansList}" var="activePlan">
-		                <div class="col-sm-6 col-md-4 col-lg-3">
-			                <div class="panel panel-primary">
-							  <div class="panel-heading" title="${activePlan.title}">
-							    <h3 class="panel-title"><c:if test="${user.activeTreatmentPlanID == activePlan.treatmentPlanID}"><span class="glyphicon glyphicon-star panel-icon" title="This is currently set as the primary active plan." aria-hidden="true"></span></c:if>${activePlan.title}</h3>
-							  </div>
-							  <div class="panel-body">
-							    <div class="progress" title="This plan is ${activePlan.percentComplete()}% complete.">
-								  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${activePlan.percentComplete()}" aria-valuemin="0" aria-valuemax="100" style="width: ${activePlan.percentComplete()}%;">
-								    ${activePlan.percentComplete()}%
-								  </div>
-								</div>
-								<p><strong>Current Stage: </strong></p>
-								<p>${activePlan.currentStage.title } (${activePlan.currentStage.percentComplete}%)</p>
-								
-								<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
-									<input type="hidden" name="path" value="${path }">
-									<input type="hidden" name="clientUUID" value="${clientUUID}">
-									<input type="hidden" name="treatmentPlanID" value="${activePlan.treatmentPlanID}">
-									
-									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Make this your active Treatment Plan.">
-									  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-									</button>
-								</form>
-		
-								<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="select-plan-view">
-									<input type="hidden" name="path" value="client-preview-plan">
-									<input type="hidden" name="initialize" value="no">
-									<input type="hidden" name="clientUUID" value="${clientUUID}">
-									<input type="hidden" name="treatmentPlanID" value="${activePlan.treatmentPlanID}">
-									
-									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
-									  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-									</button>
-								</form>
-								
-
-								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${activePlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
-							  </div>
-							</div>
-						</div>	
-		                </c:forEach>
-		            </div>
-	            </div>
-	        </div>    
-        </div>
-        
-        <div class="form-horizontal">
-	        <div class="panel panel-info">
-	            <div class="panel-heading"><h4>Unstarted Plans</h4></div>
-	            <div class="panel-body">
-		            <div class="form-horizontal">
-		                <c:forEach items="${assignedPlansList}" var="unstartedPlan">
-		                <div class="col-sm-6 col-md-4 col-lg-3">
-			                <div class="panel panel-primary">
-							  <div class="panel-heading">
-							    <h3 class="panel-title">${unstartedPlan.title}</h3>
-							  </div>
-							  <div class="panel-body">
-							  	<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
-									<input type="hidden" name="path" value="${path }">
-									<input type="hidden" name="clientUUID" value="${clientUUID}">
-									<input type="hidden" name="treatmentPlanID" value="${unstartedPlan.treatmentPlanID}">
-									
-									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Make this your active Treatment Plan.">
-									  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-									</button>
-								</form>
-							  	
-							  	<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="select-plan-view">
-									<input type="hidden" name="path" value="client-preview-plan">
-									<input type="hidden" name="initialize" value="yes">
-									<input type="hidden" name="clientUUID" value="${clientUUID}">
-									<input type="hidden" name="treatmentPlanID" value="${unstartedPlan.treatmentPlanID}">
-									
-									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
-									  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-									</button>
-								</form>
-								
-
-								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${unstartedPlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
-							  </div>
-							</div>
-						</div>	
-		                </c:forEach>
-		            </div>
-	            </div>
-	        </div>    
-        </div>
-        
-        <div class="form-horizontal">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4>Completed Plans</h4></div>
-            <div class="panel-body">
-	            <div class="form-horizontal">
-	                <c:forEach items="${completedPlansList}" var="completedPlan">
-	                <div class="col-sm-6 col-md-4 col-lg-3">
-		                <div class="panel panel-primary">
-						  <div class="panel-heading">
-						    <h3 class="panel-title">${completedPlan.title}</h3>
-						  </div>
-						  <div class="panel-body">
-						    <div class="progress" title="This plan is ${completedPlan.percentComplete()}% complete.">
-							  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="${completedPlan.percentComplete()}" aria-valuemin="0" aria-valuemax="100" style="width: ${completedPlan.percentComplete()}%;">
-							    ${completedPlan.percentComplete()}%
-							  </div>
-							</div>
-								<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
-									<input type="hidden" name="path" value="${path }">
-									<input type="hidden" name="clientUUID" value="${clientUUID}">
-									<input type="hidden" name="treatmentPlanID" value="${completedPlan.treatmentPlanID}">
-									
-									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Make this your active Treatment Plan.">
-									  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-									</button>
-								</form>
-								
-								<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="select-plan-view">
-									<input type="hidden" name="path" value="client-preview-plan">
-									<input type="hidden" name="initialize" value="no">
-									<input type="hidden" name="clientUUID" value="${clientUUID}">
-									<input type="hidden" name="treatmentPlanID" value="${completedPlan.treatmentPlanID}">
-									
-									<button type="submit" class="btn btn-default" aria-label="Left Align" title="Client View of Treatment Plan">
-									  <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-									</button>
-								</form>
-								
-	
-							<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${completedPlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
-						  </div>
-						</div>
-					</div>	
-	                </c:forEach>
-	            </div>
-            </div>
-        </div>    
-       </div>
         	
 	<h3>Your Plans.</h3>
 	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">

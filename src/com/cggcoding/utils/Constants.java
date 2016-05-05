@@ -48,7 +48,8 @@ public class Constants {
 	public static final String PATH_MANAGE_CLIENT = "manageClients";
 	public static final String PATH_CLIENT_TREATMENT_PLAN = "clientTreatmentPlan";
 	public static final String PATH_CLIENT_STAGE = "clientStage";
-
+	public static final String PATH_CLIENT_PREVIEW_PLAN = "clientPreviewPlan";
+	
 	//URLs
 	public static final String URL_ADMIN_MAIN_MENU = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 	public static final String URL_THERAPIST_MAIN_MENU = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
@@ -81,7 +82,6 @@ public class Constants {
 	public static final String URL_ACCOUNT_MANAGEMENT = "/WEB-INF/jsp/account-management.jsp";
 	public static final String URL_ACCOUNT_EDIT = "/WEB-INF/jsp/account-info-edit.jsp";
 
-	public static final Object PATH_CLIENT_PREVIEW_PLAN = "client-preview-plan";
 	
 	
 	

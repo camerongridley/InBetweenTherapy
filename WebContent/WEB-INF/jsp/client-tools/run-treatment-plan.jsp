@@ -277,7 +277,7 @@ Client: ${client.userName}
 			<!--COMPLETED EXTRA TASKS-->
 --%>
 			<c:choose>
-				<c:when test='${path.equals("manageClients") }'>
+				<c:when test='${path.equals("manageClients") || path.equals("manageClients") }'>
 				<!--  -->
 					<div class="form-group">
 			            <div class="col-sm-12 save-button">
