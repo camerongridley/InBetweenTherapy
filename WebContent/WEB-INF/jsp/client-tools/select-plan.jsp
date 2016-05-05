@@ -62,7 +62,7 @@
 								</form>
 								
 
-								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${activePlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
+								<button type="button" class="btn btn-default glyphicon glyphicon-remove" onclick="updateDeleteModal(${activePlan.treatmentPlanID}, '${activePlan.title}')" data-toggle="modal" data-target="#delete_plan_modal" aria-hidden="true" title="Delete this treatment plan."></button>
 							  </div>
 							</div>
 						</div>	
@@ -107,8 +107,7 @@
 									</button>
 								</form>
 								
-
-								<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${unstartedPlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
+								<button type="button" class="btn btn-default glyphicon glyphicon-remove" onclick="updateDeleteModal(${unstartedPlan.treatmentPlanID}, '${unstartedPlan.title}')" data-toggle="modal" data-target="#delete_plan_modal" aria-hidden="true" title="Delete this treatment plan."></button>
 							  </div>
 							</div>
 						</div>	
@@ -158,8 +157,7 @@
 									</button>
 								</form>
 								
-	
-							<button type="button" class="btn btn-default glyphicon glyphicon-remove" data-toggle="modal" data-target="#delete_plan_modal${completedPlan.treatmentPlanID}" aria-hidden="true" title="Delete this treatment plan."></button>
+								<button type="button" class="btn btn-default glyphicon glyphicon-remove" onclick="updateDeleteModal(${completedPlan.treatmentPlanID}, '${completedPlan.title}')" data-toggle="modal" data-target="#delete_plan_modal" aria-hidden="true" title="Delete this treatment plan."></button>
 						  </div>
 						</div>
 					</div>	
@@ -169,6 +167,61 @@
         </div>    
        </div>
 
+
+<!-- Delete TreatmentPlan Modal -->
+<div class="modal" id="delete_plan_modal">
+	<form id="formDeletePlanModal" action="/secure/ClientSelectPlan" method="POST">
+		<input type="hidden" name="requestedAction" value="delete-plan">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" id="treatmentPlanIDDynamic" name="treatmentPlanID" value="123" >
+<!-- 		<input type="hidden" id="treatmentPlanTitleDynamic" name="treatmentPlanTitle" value=""> -->
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+		
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		          <h4 class="modal-title">Delete Treatment Plan</h4>
+		      </div>
+		      <div class="modal-body">
+		        <p>Are you sure you want to delete <strong><label id="treatmentPlanTitleDynamic">label text</label></strong>? <span class="warning-message" >You cannot undo this.</span></p>
+		        
+		      </div>
+		      <div class="modal-footer">
+		      	<button type="submit" class="btn btn-default" aria-hidden="true" title="Delete this treatment plan.">OK</button>
+		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		      </div>
+		    </div>
+		  </div>
+	</form>
+</div>
+
+<script>
+function test(id, title){
+	console.log("test function: " + id + " - " + title);
+}
+
+function updateDeleteModal(treatmentPlanID, treatmentPlanTitle){
+	console.log("delete plan: " + treatmentPlanID + " - " + treatmentPlanTitle);
+	
+	var inputTreatmentPlanID = document.getElementById("treatmentPlanIDDynamic");
+	if(inputTreatmentPlanID!= undefined){
+		console.log("planID:" + inputTreatmentPlanID.value)
+		inputTreatmentPlanID.value = treatmentPlanID;
+		console.log("planID after:" + inputTreatmentPlanID.value)
+	}
+
+	var labelTreatmentPlanTitle = document.getElementById("treatmentPlanTitleDynamic");
+	if(labelTreatmentPlanTitle!= undefined){
+		console.log("label inner html:" + labelTreatmentPlanTitle.innerHTML)
+		labelTreatmentPlanTitle.innerHTML = treatmentPlanTitle;
+	}
+	
+};
+
+</script>
+
+<%-- 
 	<h3>Continue a plan.</h3>
 	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
@@ -295,5 +348,8 @@
 			</ul>
 		</div>
         
-	</form>
+	</form> 
+--%>
+<script src="/js/custom-form-submission.js"></script>
+
 <c:import url="/WEB-INF/jsp/footer.jsp" />

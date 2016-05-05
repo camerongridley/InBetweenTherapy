@@ -18,6 +18,7 @@ import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.SuccessMessages;
 import com.cggcoding.utils.messaging.WarningMessages;
 
 /**
@@ -61,29 +62,29 @@ public class ClientSelectPlan extends HttpServlet {
 		
 		int treatmentPlanID = 0;
 		TreatmentPlan treatmentPlan = null;
+		UserClient client = null;
 		
 		try {
 			if(user.hasRole(Constants.USER_CLIENT)){
-				UserClient client = (UserClient)user;
+				client = (UserClient)user;
 				
-				
+				treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 				
 				switch(requestedAction){
 					case "select-plan-start":
-						
-						client.loadAllClientTreatmentPlans();
+						prepareSelectPlanPage(request, client);
+						/*client.loadAllClientTreatmentPlans();
 						assignedPlansList = client.getAssignedTreatmentPlans();
 						inProgressPlansList = client.getInProgressTreatmentPlans();
 						completedPlansList = client.getCompletedTreatmentPlans();
 						
 						request.setAttribute("assignedPlansList", assignedPlansList);
 						request.setAttribute("inProgressPlansList", inProgressPlansList);
-						request.setAttribute("completedPlansList", completedPlansList);
+						request.setAttribute("completedPlansList", completedPlansList);*/
 						
 						forwardTo = Constants.URL_CLIENT_SELECT_PLAN;
 						break;
 					case "make-active-plan":
-						treatmentPlanID  = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						
 						client.setActiveTreatmentPlanID(treatmentPlanID);
@@ -98,7 +99,6 @@ public class ClientSelectPlan extends HttpServlet {
 						
 						break;
 					case "select-plan-load":
-						treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						
 						//set the active stage view to that of the current stage
@@ -120,7 +120,6 @@ public class ClientSelectPlan extends HttpServlet {
 						break;
 						
 					case "select-plan-preview":
-						treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 						treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 						
 						//set the active stage view to that of the current stage
@@ -133,15 +132,30 @@ public class ClientSelectPlan extends HttpServlet {
 						forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 						
 						break;
+						
+					case "delete-plan":
+						TreatmentPlan.delete(treatmentPlanID);
+		    
+		            	request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_DELETED);
+		            	
+		            	prepareSelectPlanPage(request, client);
+		            	
+		            	forwardTo = Constants.URL_CLIENT_SELECT_PLAN;
+						break;
 				}
 				
 				request.setAttribute("client", client);
 			}
 		} catch (DatabaseException | ValidationException e) {
 			request.setAttribute("errorMessage", e.getMessage());
-			request.setAttribute("assignedPlansList", assignedPlansList);
-			request.setAttribute("inProgressPlansList", inProgressPlansList);
-			request.setAttribute("completedPlansList", completedPlansList);
+			try {
+				request.setAttribute("assignedPlansList", client.getAssignedTreatmentPlans());
+				request.setAttribute("inProgressPlansList", client.getInProgressTreatmentPlans());
+				request.setAttribute("completedPlansList", client.getCompletedTreatmentPlans());
+			} catch (DatabaseException | ValidationException e1) {
+				e1.printStackTrace();
+			}
+			
 			
 			e.printStackTrace();
 			forwardTo = "/WEB-INF/jsp/client-tools/select-plan.jsp";
@@ -149,6 +163,17 @@ public class ClientSelectPlan extends HttpServlet {
 		
 		request.getRequestDispatcher(forwardTo).forward(request, response);
 
+	}
+	
+	private void prepareSelectPlanPage(HttpServletRequest request, UserClient client) throws DatabaseException, ValidationException{
+		client.loadAllClientTreatmentPlans();
+		List<TreatmentPlan> assignedPlansList = client.getAssignedTreatmentPlans();
+		List<TreatmentPlan> inProgressPlansList = client.getInProgressTreatmentPlans();
+		List<TreatmentPlan> completedPlansList = client.getCompletedTreatmentPlans();
+		
+		request.setAttribute("assignedPlansList", assignedPlansList);
+		request.setAttribute("inProgressPlansList", inProgressPlansList);
+		request.setAttribute("completedPlansList", completedPlansList);
 	}
 
 }
