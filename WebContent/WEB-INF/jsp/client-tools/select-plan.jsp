@@ -37,9 +37,10 @@
 								<p><strong>Current Stage: </strong></p>
 								<p>${activePlan.currentStage.title } (${activePlan.currentStage.percentComplete}%)</p>
 								
-								<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
+								<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="make-active-plan">
 									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="initialize" value="no">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${activePlan.treatmentPlanID}">
 									
@@ -49,8 +50,8 @@
 								</form>
 		
 								<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="select-plan-view">
-									<input type="hidden" name="path" value="clientPreviewPlan">
+									<input type="hidden" name="requestedAction" value="select-plan-preview">
+									<input type="hidden" name="path" value="${path }">
 									<input type="hidden" name="initialize" value="no">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${activePlan.treatmentPlanID}">
@@ -83,9 +84,10 @@
 							    <h3 class="panel-title">${unstartedPlan.title}</h3>
 							  </div>
 							  <div class="panel-body">
-							  	<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
+							  	<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="make-active-plan">
 									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="initialize" value="yes">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${unstartedPlan.treatmentPlanID}">
 									
@@ -95,9 +97,8 @@
 								</form>
 							  	
 							  	<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="select-plan-view">
-									<input type="hidden" name="path" value="clientPreviewPlan">
-									<input type="hidden" name="initialize" value="yes">
+									<input type="hidden" name="requestedAction" value="select-plan-preview">
+									<input type="hidden" name="path" value="${path }">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${unstartedPlan.treatmentPlanID}">
 									
@@ -134,9 +135,10 @@
 							    ${completedPlan.percentComplete()}%
 							  </div>
 							</div>
-								<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
+								<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="make-active-plan">
 									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="initialize" value="no">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${completedPlan.treatmentPlanID}">
 									
@@ -146,9 +148,8 @@
 								</form>
 								
 								<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
-									<input type="hidden" name="requestedAction" value="select-plan-view">
-									<input type="hidden" name="path" value="clientPreviewPlan">
-									<input type="hidden" name="initialize" value="no">
+									<input type="hidden" name="requestedAction" value="select-plan-preview">
+									<input type="hidden" name="path" value="${path }">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${completedPlan.treatmentPlanID}">
 									

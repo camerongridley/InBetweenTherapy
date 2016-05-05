@@ -11,9 +11,11 @@ import java.util.List;
 import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
 import com.cggcoding.models.Task;
+import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
 public class DAOStarter {
@@ -36,7 +38,7 @@ public class DAOStarter {
 		return cn;
     }
     
-    public Object load(Connection cn, int id) throws SQLException{
+    public Object loadWithPassedConnection(Connection cn, int id) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         Object o = null;
@@ -154,5 +156,65 @@ public class DAOStarter {
     		DbUtils.closeQuietly(ps);
     	}
     }
+    
+    public TreatmentPlan callDataseForSingleTransaction() throws ValidationException, DatabaseException {
+		
+		Connection cn = null;
+        TreatmentPlan plan = null;
+      //dao creation only for this demo mthod - usually will be a class variable
+  		MySQLActionHandler dao = new MySQLActionHandler();
+  		//----------------------
+  		
+        try {
+        	cn = dao.getConnection();  	
+        	plan = TreatmentPlan.loadBasic(cn, 0);
+        } catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DbUtils.closeQuietly(cn);
+        }
+        
+        return plan;
+	}
+    
+    public TreatmentPlan callDatabaseForMultipleTransactions() throws ValidationException, DatabaseException{
+		Connection cn = null;
+        //dao creation only for this demo mthod - usually will be a class variable
+		MySQLActionHandler dao = new MySQLActionHandler();
+		//----------------------
+        try {
+        	cn = dao.getConnection();
+        	cn.setAutoCommit(false);
+        	
+        	TreatmentPlan.load(cn, 0);
+        	
+        	cn.commit();
+        } catch (SQLException | ValidationException e) {
+        	e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				System.out.println(ErrorMessages.ROLLBACK_DB_ERROR);
+				e1.printStackTrace();
+			}
+			if(e.getClass().getSimpleName().equals("ValidationException")){
+				throw new ValidationException(e.getMessage());
+			}else if(e.getClass().getSimpleName().equals("DatabaseException")){
+				throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			}
+			
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+        }
+
+        return null;
+		
+	}
     
 }

@@ -66,6 +66,9 @@ public interface DatabaseActionHandler {
 	
 	List<TreatmentPlan> userGetTherapistAssignedPlans(int clientUserID, int assignedByUserID)
 			throws DatabaseException, ValidationException;
+	
+	boolean userClientUpdateActiveTreatmentPlanID(Connection cn, UserClient client) throws SQLException;
+
 
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
@@ -275,6 +278,7 @@ public interface DatabaseActionHandler {
 	void therapistCreateClientConnection(Connection cn, int therapistUserID, int clientUserID) throws SQLException;
 
 	List<String> invitationGetSentInvitationCodes(Connection cn, int senderUserID) throws SQLException;
+
 
 	
 

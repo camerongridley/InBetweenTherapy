@@ -44,6 +44,19 @@ public class UserClient extends User implements Serializable{
 	public int getActiveTreatmentPlanID(){
 		return activeTreatmentPlanID;
 	}
+	public void updateActiveTreatmentPlanID() throws DatabaseException{
+		Connection cn = null;
+  		
+        try {
+        	cn = dao.getConnection();  	
+        	dao.userClientUpdateActiveTreatmentPlanID(cn, this);
+        } catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DbUtils.closeQuietly(cn);
+        }
+		
+	}
 	
 	public TreatmentPlan getActiveTreatmentPlan() throws ValidationException{
 		return super.getTreatmentPlan(activeTreatmentPlanID);

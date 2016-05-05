@@ -225,6 +225,30 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return success == 1;
 	}
 	
+	@Override
+	public boolean userClientUpdateActiveTreatmentPlanID(Connection cn, UserClient client) throws SQLException{
+		PreparedStatement ps = null;
+        int success = 0;
+        String sql = "";
+        
+        try {
+
+    		sql = "UPDATE user SET active_treatment_plan_id=? WHERE user_id=?;";
+        	
+            ps = cn.prepareStatement(sql);
+
+            ps.setInt(1, client.getActiveTreatmentPlanID());
+	        ps.setInt(2, client.getUserID());
+
+            success = ps.executeUpdate();
+        	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success == 1;
+	}
+	
     /* (non-Javadoc)
 	 * @see com.cggcoding.utils.database.DatabaseActionHandler#validateUser(java.lang.String, java.lang.String)
 	 */

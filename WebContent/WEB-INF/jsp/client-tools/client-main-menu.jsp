@@ -18,6 +18,7 @@
   <p>
     <form class="form-inline" action="/secure/ClientSelectPlan" method="POST">
       <div><button type="submit" class="btn btn-primary">Select a Plan</button></div>
+      <input type="hidden" name="path" value="clientManagePlans">
       <input type="hidden" name="requestedAction" value="select-plan-start">
     </form>
   </p>
