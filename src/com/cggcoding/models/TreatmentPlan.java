@@ -324,18 +324,19 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	//OPTIMIZE move this logic to when the TreatmentPlan's Stages are loaded
-	public void setTasksDisabledStatus(int loggedInUserID){
+	public void setTasksDisabledStatus(int loggedInUserID, boolean viewOnlyMode){
 		/*if the userID of the TreatmentPlan doesn't equal the userID of the user logged in 
 		 * (e.g. plan belongs to a client and the logged in user is the therapist of the client)
 		 * then all tasks should be disabled.  If the logged in user also owns the plan, then all
 		 * tasks that are in Stages that haven't been started yet should be disabled (i.e. stages where completed==false and inProgress==false)
+		 * 
+		 * viewOnlyMode sets all tasks to disabled
 		*/
-		if(this.userID != loggedInUserID){
-			for(Stage stage : this.stages){
-				for(Task task : stage.getTasks()){
-					task.setDisabled(true);
-				}
-			}
+		
+		if(viewOnlyMode){
+			disableAllTasks();
+		}else if(this.userID != loggedInUserID){
+			disableAllTasks();
 		}else{
 			for(Stage stage : this.stages){
 				if(!stage.isCompleted() && !stage.isInProgress()){
@@ -343,6 +344,14 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 						task.setDisabled(true);
 					}
 				}
+			}
+		}
+	}
+	
+	private void disableAllTasks(){
+		for(Stage stage : this.stages){
+			for(Task task : stage.getTasks()){
+				task.setDisabled(true);
 			}
 		}
 	}

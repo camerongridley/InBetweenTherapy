@@ -24,9 +24,9 @@
 		<input type="hidden" name="initialize" value="no">
 		
         <div class="form-group">
-            <label for="selectedPlanID" class="col-sm-3 control-label">Plans in Progress:</label>
+            <label for="treatmentPlanID" class="col-sm-3 control-label">Plans in Progress:</label>
             <div class="col-sm-8">
-                <select class="form-control" id="selectedPlanID" name="selectedPlanID">
+                <select class="form-control" id="treatmentPlanID" name="treatmentPlanID">
                     <option  value="">Select a plan.</option>
                     <c:forEach items="${inProgressPlansList}" var="inProgressPlan">
                         <option value="${inProgressPlan.treatmentPlanID}" >${inProgressPlan.title}</option>
@@ -52,9 +52,9 @@
 
 		
         <div class="form-group">
-            <label for="selectedPlanID" class="col-sm-3 control-label">Assigned Plans:</label>
+            <label for="treatmentPlanID" class="col-sm-3 control-label">Assigned Plans:</label>
             <div class="col-sm-8">
-                <select class="form-control" id="selectedPlanID" name="selectedPlanID">
+                <select class="form-control" id="treatmentPlanID" name="treatmentPlanID">
                     <option  value="">Select a plan.</option>
                     <c:forEach items="${assignedPlansList}" var="assignedPlan">
                         <option value="${assignedPlan.treatmentPlanID}" >${assignedPlan.title}</option>
@@ -80,9 +80,9 @@
 
 		
         <div class="form-group">
-            <label for="assignedTreatmentPlanID" class="col-sm-3 control-label">Assigned Plans:</label>
+            <label for="treatmentPlanID" class="col-sm-3 control-label">Assigned Plans:</label>
             <div class="col-sm-8">
-                <select class="form-control" id="selectedPlanID" name="selectedPlanID">
+                <select class="form-control" id="treatmentPlanID" name="treatmentPlanID">
                     <option  value="">Select a plan.</option>
                     <c:forEach items="${completedPlansList}" var="completedPlan">
                         <option value="${completedPlan.treatmentPlanID}" >${completedPlan.title}</option>
@@ -110,7 +110,7 @@
 		                <div class="col-sm-6 col-md-4 col-lg-3">
 			                <div class="panel panel-primary">
 							  <div class="panel-heading" title="${activePlan.title}">
-							    <h3 class="panel-title">${activePlan.title}</h3>
+							    <h3 class="panel-title"><c:if test="${user.activeTreatmentPlanID == activePlan.treatmentPlanID}"><span class="glyphicon glyphicon-star panel-icon" title="This is currently set as the primary active plan." aria-hidden="true"></span></c:if>${activePlan.title}</h3>
 							  </div>
 							  <div class="panel-body">
 							    <div class="progress" title="This plan is ${activePlan.percentComplete()}% complete.">
@@ -131,10 +131,11 @@
 									  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
 									</button>
 								</form>
-								
-								<form class="form-horizontal form-inline-controls" action="/secure/ManageClients" method="POST">
-									<input type="hidden" name="requestedAction" value="load-client-view-treatment-plan">
-									<input type="hidden" name="path" value="${path }">
+		
+								<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="select-plan-view">
+									<input type="hidden" name="path" value="client-preview-plan">
+									<input type="hidden" name="initialize" value="no">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${activePlan.treatmentPlanID}">
 									
@@ -177,9 +178,10 @@
 									</button>
 								</form>
 							  	
-							  	<form class="form-horizontal form-inline-controls" action="/secure/ManageClients" method="POST">
-									<input type="hidden" name="requestedAction" value="load-client-view-treatment-plan">
-									<input type="hidden" name="path" value="${path }">
+							  	<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="select-plan-view">
+									<input type="hidden" name="path" value="client-preview-plan">
+									<input type="hidden" name="initialize" value="yes">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${unstartedPlan.treatmentPlanID}">
 									
@@ -227,9 +229,10 @@
 									</button>
 								</form>
 								
-								<form class="form-horizontal form-inline-controls" action="/secure/ManageClients" method="POST">
-									<input type="hidden" name="requestedAction" value="load-client-view-treatment-plan">
-									<input type="hidden" name="path" value="${path }">
+								<form class="form-horizontal form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
+									<input type="hidden" name="requestedAction" value="select-plan-view">
+									<input type="hidden" name="path" value="client-preview-plan">
+									<input type="hidden" name="initialize" value="no">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${completedPlan.treatmentPlanID}">
 									

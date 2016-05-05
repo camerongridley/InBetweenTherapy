@@ -80,7 +80,12 @@ public class ChangeStage extends HttpServlet {
 			treatmentPlan.updateBasic();
 			
 			//TODO decide if I need to check the user role (client vs. therapist)
-			treatmentPlan.setTasksDisabledStatus(user.getUserID());
+			if(path.equals(Constants.PATH_CLIENT_PREVIEW_PLAN)){
+				treatmentPlan.setTasksDisabledStatus(user.getUserID(), true);
+			}else{
+				treatmentPlan.setTasksDisabledStatus(user.getUserID(), false);
+			}
+			
 			
 			request.setAttribute("activeStage", activeStage);
 			request.setAttribute("treatmentPlan", treatmentPlan);

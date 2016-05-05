@@ -452,6 +452,18 @@ public abstract class User implements Serializable{
 				throw new ValidationException(ErrorMessages.INVALID_USERNAME_OR_PASSWORD);
 			}
 			
+			switch(user.getRoleID()){
+			case Constants.ADMIN_ROLE_ID:
+				user = (UserAdmin)user;
+				break;
+			case Constants.THERAPIST_ROLE_ID:
+				user = (UserTherapist)user;
+				break;
+			case Constants.CLIENT_ROLE_ID:
+				user = (UserClient)user;
+	break;
+			}
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

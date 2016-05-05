@@ -18,6 +18,7 @@ import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.WarningMessages;
 
 /**
  * Servlet implementation class ClientSelectPlan
@@ -62,13 +63,16 @@ public class ClientSelectPlan extends HttpServlet {
 			if(user.hasRole(Constants.USER_CLIENT)){
 				UserClient client = (UserClient)user;
 				
-				client.loadAllClientTreatmentPlans();
-				assignedPlansList = client.getAssignedTreatmentPlans();
-				inProgressPlansList = client.getInProgressTreatmentPlans();
-				completedPlansList = client.getCompletedTreatmentPlans();
+				
 				
 				switch(requestedAction){
 					case "select-plan-start":
+						
+						client.loadAllClientTreatmentPlans();
+						assignedPlansList = client.getAssignedTreatmentPlans();
+						inProgressPlansList = client.getInProgressTreatmentPlans();
+						completedPlansList = client.getCompletedTreatmentPlans();
+						
 						request.setAttribute("assignedPlansList", assignedPlansList);
 						request.setAttribute("inProgressPlansList", inProgressPlansList);
 						request.setAttribute("completedPlansList", completedPlansList);
@@ -76,13 +80,13 @@ public class ClientSelectPlan extends HttpServlet {
 						forwardTo = Constants.URL_CLIENT_SELECT_PLAN;
 						break;
 					case "select-plan-load":
-						int assignedTreatmentPlanID = ParameterUtils.parseIntParameter(request, "selectedPlanID");
+						int assignedTreatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 						TreatmentPlan selectedPlan = TreatmentPlan.load(assignedTreatmentPlanID);
 						
 						//set the active stage view to that of the current stage
 						selectedPlan.setActiveViewStageIndex(selectedPlan.getCurrentStageIndex());
 						
-						client.setActiveTreatmentPlanId(assignedTreatmentPlanID);
+						client.setActiveTreatmentPlanID(assignedTreatmentPlanID);
 						
 						if(request.getParameter("initialize").equals("yes")){
 							selectedPlan.initialize();
@@ -95,6 +99,21 @@ public class ClientSelectPlan extends HttpServlet {
 						//TODO delete me if ok - request.setAttribute("activeStage", activeStage);
 						request.setAttribute("treatmentPlan", selectedPlan);
 						forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
+						break;
+						
+					case "select-plan-view":
+						int treatmentPlanIDToView = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
+						TreatmentPlan planToView = TreatmentPlan.load(treatmentPlanIDToView);
+						
+						//set the active stage view to that of the current stage
+						planToView.setActiveViewStageIndex(planToView.getCurrentStageIndex());
+						
+						planToView.setTasksDisabledStatus(client.getUserID(), true);
+						request.setAttribute("warningMessage", WarningMessages.CLIENT_TREATMENT_PLAN_DISABLED);
+						
+						request.setAttribute("treatmentPlan", planToView);
+						forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
+						
 						break;
 				}
 				

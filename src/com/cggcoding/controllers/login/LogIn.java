@@ -69,6 +69,7 @@ public class LogIn extends HttpServlet {
 					request.getSession().setAttribute("user", user);
 					
 					if(user.hasRole(Constants.USER_ADMIN)){
+						UserAdmin admin = (UserAdmin)user;
 						forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 					} else if(user.hasRole(Constants.USER_THERAPIST)){
 						UserTherapist userTherapist = (UserTherapist)user;
@@ -85,6 +86,7 @@ public class LogIn extends HttpServlet {
 						
 						forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 					}if(user.hasRole(Constants.USER_CLIENT)){
+						UserClient client = (UserClient)user;
 						forwardTo = Constants.URL_CLIENT_MAIN_MENU;
 					}
 					

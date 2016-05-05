@@ -23,7 +23,7 @@ public class UserClient extends User implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private int activeTreatmentPlanId;
+	private int activeTreatmentPlanID;
 	
 	DatabaseActionHandler dao = new MySQLActionHandler();
 	
@@ -32,21 +32,21 @@ public class UserClient extends User implements Serializable{
 		this.setRoleID(Constants.CLIENT_ROLE_ID);
 		this.addRole(Constants.USER_CLIENT);
 		this.setRole(Constants.USER_CLIENT);
-		activeTreatmentPlanId = -1;
+		activeTreatmentPlanID = -1;
 		setMainMenuURL(Constants.URL_CLIENT_MAIN_MENU);
 	}
 
 	
-	public void setActiveTreatmentPlanId(int treatmentPlanID){
-		this.activeTreatmentPlanId = treatmentPlanID;
+	public void setActiveTreatmentPlanID(int treatmentPlanID){
+		this.activeTreatmentPlanID = treatmentPlanID;
 	}
 	
-	public int getActiveTreatmentPlanId(){
-		return activeTreatmentPlanId;
+	public int getActiveTreatmentPlanID(){
+		return activeTreatmentPlanID;
 	}
 	
 	public TreatmentPlan getActiveTreatmentPlan() throws ValidationException{
-		return super.getTreatmentPlan(activeTreatmentPlanId);
+		return super.getTreatmentPlan(activeTreatmentPlanID);
 	}
 
 	public void loadAllClientTreatmentPlans() throws DatabaseException, ValidationException {

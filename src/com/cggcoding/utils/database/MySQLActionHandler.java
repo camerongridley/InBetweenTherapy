@@ -321,7 +321,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             		case "client":
             			user = new UserClient(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
 
-            			((UserClient)user).setActiveTreatmentPlanId(rsUserInfo.getInt("active_treatment_plan_id"));
+            			((UserClient)user).setActiveTreatmentPlanID(rsUserInfo.getInt("active_treatment_plan_id"));
             			break;
             	}
             }

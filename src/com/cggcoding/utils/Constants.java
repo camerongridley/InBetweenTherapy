@@ -80,6 +80,8 @@ public class Constants {
 
 	public static final String URL_ACCOUNT_MANAGEMENT = "/WEB-INF/jsp/account-management.jsp";
 	public static final String URL_ACCOUNT_EDIT = "/WEB-INF/jsp/account-info-edit.jsp";
+
+	public static final Object PATH_CLIENT_PREVIEW_PLAN = "client-preview-plan";
 	
 	
 	
