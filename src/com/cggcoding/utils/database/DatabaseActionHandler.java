@@ -59,10 +59,10 @@ public interface DatabaseActionHandler {
 	
 	User userLoadByID(int userID) throws DatabaseException, ValidationException;
 	
-	public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException;
+	public Map<Integer, UserClient> userGetClientsByTherapistID(Connection cn, int therapistID) throws SQLException;
 	
-	List<TreatmentPlan> userGetTreatmentPlans(int clientUserID)
-			throws DatabaseException, ValidationException;
+	List<TreatmentPlan> userGetTreatmentPlans(Connection cn, int clientUserID)
+			throws ValidationException, SQLException;
 	
 	List<TreatmentPlan> userGetTherapistAssignedPlans(int clientUserID, int assignedByUserID)
 			throws DatabaseException, ValidationException;

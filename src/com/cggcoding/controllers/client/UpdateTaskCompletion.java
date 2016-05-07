@@ -124,6 +124,8 @@ public class UpdateTaskCompletion extends HttpServlet {
 					forwardTo = Constants.URL_CLIENT_MAIN_MENU;
 				}
 				
+				client.replaceUpdatedTreatmentPlan(treatmentPlan);
+				
 				request.setAttribute("client", client);
 				
 			} else if(user.getRole().equals(Constants.USER_THERAPIST)){//the therapist has clicked the Done button here

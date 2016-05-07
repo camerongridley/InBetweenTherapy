@@ -664,14 +664,13 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
-    public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException{
-    	Connection cn = null;
+    public Map<Integer, UserClient> userGetClientsByTherapistID(Connection cn, int therapistID) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         Map<Integer, UserClient> clients = new LinkedHashMap<>();
         
         try {
-        	cn = getConnection();
+
             ps = cn.prepareStatement("SELECT therapist_user_id_client_user_id_maps.therapist_user_id, "
             		+ "therapist_user_id_client_user_id_maps.client_user_id, user.user_name, user.first_name, user.last_name, user.email, user.password, "
             		+ "user.user_user_role_id_fk, user.active_treatment_plan_id, user_role.role "
@@ -694,26 +693,21 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
                 clients.put(client.getUserID(), client);
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
 			DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
 		}
         return clients;
     }
     
     @Override
-	public List<TreatmentPlan> userGetTreatmentPlans(int clientUserID) throws DatabaseException, ValidationException {
-		Connection cn = null;
+	public List<TreatmentPlan> userGetTreatmentPlans(Connection cn, int clientUserID) throws ValidationException, SQLException {
+
     	PreparedStatement ps = null;
         ResultSet rs = null;
         List<TreatmentPlan> assignedTreatmentPlans = new ArrayList<>();
         
         try {
-        	cn = getConnection();
 
     		ps = cn.prepareStatement("SELECT treatment_plan_id FROM treatment_plan WHERE treatment_plan_user_id_fk = ?");
     		ps.setInt(1, clientUserID);
@@ -725,14 +719,9 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	
             }
 
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
         
         
