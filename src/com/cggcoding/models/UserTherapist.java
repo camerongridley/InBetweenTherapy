@@ -89,8 +89,8 @@ public class UserTherapist extends User implements Serializable{
     	return clientMap.get(clientUserID);
     }
     
-    public Map<Integer, UserClient> loadClients() throws DatabaseException{
-    	this.clientMap = dao.userGetClientsByTherapistID(this.getUserID());
+    public Map<Integer, UserClient> loadClients(Connection cn) throws SQLException{
+    	this.clientMap = dao.userGetClientsByTherapistID(cn, this.getUserID());
     	return clientMap;
     }
     
@@ -152,9 +152,9 @@ public class UserTherapist extends User implements Serializable{
     }
 
 	@Override
-	protected void performLoginSpecifics() throws DatabaseException {
+	protected void performLoginSpecifics(Connection cn) throws SQLException, ValidationException {
 		//first load the clients for this therapist
-		loadClients();
+		loadClients(cn);
 		//now pair client userIDs with a uuid and put into maps - uuids are for use on the front end so as to not expose the actual client userID
 		for(UserClient client : getClientMap().values()){
 			//generate random UUID

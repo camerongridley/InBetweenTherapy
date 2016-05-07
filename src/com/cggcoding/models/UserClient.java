@@ -44,6 +44,7 @@ public class UserClient extends User implements Serializable{
 	public int getActiveTreatmentPlanID(){
 		return activeTreatmentPlanID;
 	}
+	
 	public void updateActiveTreatmentPlanID() throws DatabaseException{
 		Connection cn = null;
   		
@@ -58,17 +59,36 @@ public class UserClient extends User implements Serializable{
 		
 	}
 	
-	public TreatmentPlan getActiveTreatmentPlan() throws ValidationException{
-		return super.getTreatmentPlan(activeTreatmentPlanID);
+	public TreatmentPlan getActiveTreatmentPlan(){
+		try {
+			return super.getTreatmentPlan(activeTreatmentPlanID);
+		} catch (ValidationException e) {
+			return null;
+		}
+		//return TreatmentPlan.load(getActiveTreatmentPlanID());
+		
 	}
 
 	public void loadAllClientTreatmentPlans() throws DatabaseException, ValidationException {
-		this.setTreatmentPlanList(dao.userGetTreatmentPlans(getUserID()));
+		Connection cn = null;
+  		
+        try {
+        	cn = dao.getConnection();  	
+        	loadAllClientTreatmentPlans(cn);
+        } catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DbUtils.closeQuietly(cn);
+        }
+	}
+	
+	public void loadAllClientTreatmentPlans(Connection cn) throws SQLException, ValidationException {
+		this.setTreatmentPlanList(dao.userGetTreatmentPlans(cn, getUserID()));
 	}
 	
 	public List<TreatmentPlan> getAssignedTreatmentPlans() throws DatabaseException, ValidationException{
-		boolean inProgress = false;
-		boolean isCompleted = false;
+		/*boolean inProgress = false;
+		boolean isCompleted = false;*/
 		List<TreatmentPlan> assignedPlans = new ArrayList<>();
 		
 		for(TreatmentPlan plan : this.getTreatmentPlanList()){
@@ -81,8 +101,8 @@ public class UserClient extends User implements Serializable{
 	}
 	
 	public List<TreatmentPlan> getInProgressTreatmentPlans() throws DatabaseException, ValidationException{
-		boolean inProgress = true;
-		boolean isCompleted = false;
+		/*boolean inProgress = true;
+		boolean isCompleted = false;*/
 		List<TreatmentPlan> inProgressPlans = new ArrayList<>();
 		
 		for(TreatmentPlan plan : this.getTreatmentPlanList()){
@@ -95,8 +115,8 @@ public class UserClient extends User implements Serializable{
 	}
 	
 	public List<TreatmentPlan> getCompletedTreatmentPlans() throws DatabaseException, ValidationException{
-		boolean inProgress = false;
-		boolean isCompleted = true;
+		/*boolean inProgress = false;
+		boolean isCompleted = true;*/
 		List<TreatmentPlan> completedPlans = new ArrayList<>();
 		
 		for(TreatmentPlan plan : this.getTreatmentPlanList()){
@@ -161,8 +181,8 @@ public class UserClient extends User implements Serializable{
 
 
 	@Override
-	protected void performLoginSpecifics() throws DatabaseException {
-		// so far nothing to do here
+	protected void performLoginSpecifics(Connection cn) throws ValidationException, SQLException {
+		this.loadAllClientTreatmentPlans(cn);
 		
 	}
 }

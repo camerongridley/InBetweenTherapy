@@ -157,6 +157,19 @@ public abstract class User implements Serializable{
 		return planFound;
  
 	}
+	
+	/**Replaces the corresponding TreatmentPlan in the local TreatmentPlan list with an updated version of the TreatmentPlan
+	 * @param treatmentPlan
+	 */
+	public void replaceUpdatedTreatmentPlan(TreatmentPlan updatedTreatmentPlan){
+		for(int i=0; i < treatmentPlanList.size(); i++){
+			if(treatmentPlanList.get(i).getTreatmentPlanID()==updatedTreatmentPlan.getTreatmentPlanID()){
+				treatmentPlanList.remove(i);
+				treatmentPlanList.add(i, updatedTreatmentPlan);
+				return;
+			}
+		}
+	}
 
 	public abstract boolean isAuthorizedForTreatmentPlan(int treatmentPlanID) throws DatabaseException;
 	
@@ -444,7 +457,7 @@ public abstract class User implements Serializable{
 
 			if(passwordAuthenticated(cn, email, passwordToCheck)){
 				user = dao.userLoadInfo(cn, email, passwordToCheck);
-				user.performLoginSpecifics();
+				user.performLoginSpecifics(cn);
 			}
 			
 			
@@ -461,7 +474,7 @@ public abstract class User implements Serializable{
 				break;
 			case Constants.CLIENT_ROLE_ID:
 				user = (UserClient)user;
-	break;
+				break;
 			}
 			
 		} catch (SQLException e) {
@@ -481,9 +494,11 @@ public abstract class User implements Serializable{
 	
 	/**
 	 * Perform actions needed that are specific to each user type
-	 * @throws DatabaseException 
+	 * @param cn TODO
+	 * @throws SQLException TODO
+	 * @throws ValidationException TODO
 	 */
-	protected abstract void performLoginSpecifics() throws DatabaseException;
+	protected abstract void performLoginSpecifics(Connection cn) throws SQLException, ValidationException;
 	
 	public static boolean passwordAuthenticated(Connection cn, String email, String passwordToAuthenticate) throws SQLException, ValidationException{
 		PasswordEncryptionService passwordService = new PasswordEncryptionService();
