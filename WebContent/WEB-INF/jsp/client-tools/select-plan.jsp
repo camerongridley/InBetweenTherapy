@@ -13,7 +13,7 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
     <div class="page-header">
-        <h1>Your Treatment Plans</h1>
+        <h2><span class="glyphicon glyphicon glyphicon-th-list panel-icon" aria-hidden="true"></span>Your Treatment Plans</h2>
     </div>
     <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 

@@ -189,18 +189,7 @@
 					title="Delete stage from this treatment plan."> 
 					<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 				</a> 
-				<%-- replaced with use of Javascript function
-					<form class="form-inline form-inline-controls" action="/secure/treatment-components/EditStage" method="POST">
-					<input type="hidden" name="requestedAction" value="select-stage">
-					<input type="hidden" name="path" value="${path }"> 
-					<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
-					<input type="hidden" name="stageID" value="${stage.stageID}">
-					<input type="hidden" name="clientUUID" value="${clientUUID }" >
-					
-					<button role="button" class="btn btn-default btn-xs pull-right" title="Edit this stage.">
-						<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-					</button>
-				</form> --%>
+
 				<button type="button" class="btn btn-default btn-xs pull-right" title="Edit this stage." onclick="updateAndSubmitTreatmentComponentForm('formEditStage', ${treatmentPlan.treatmentPlanID }, ${stage.stageID }, 0, 0, 0)">
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
 				</button>
@@ -222,12 +211,6 @@
 									<!-- <th scope="row">${task.clientTaskOrder}</th>-->
 									<td>${task.title} <c:if test="${task.template}"><span class="badge" title="Number of repetitions.">${mappedStageTaskInfo.templateTaskRepetitions }</span></c:if>
 									
-										<!-- <a role="button"
-										href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}"
-										class="btn btn-default btn-xs pull-right"
-										title="Edit this task"> <span
-											class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-										</a> -->
 									</td>
 								</tr>
 							</c:forEach>
