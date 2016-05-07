@@ -8,13 +8,20 @@
 
 	
 <div class="page-header">
-    <h1>Main Menu</h1>
+    <h2>Main Menu</h2>
   </div>
   <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
   
-  <c:set var="activePlan" value="${user.getActiveTreatmentPlan() }"></c:set>
+  <h3>
+  Current Activity Streak: 9  Nice! Keep it up!
+  </h3>
+  <h3>
+  Current Login Streak: 13
+  </h3>
   
-  <div class="panel panel-primary">
+  <c:set var="activePlan" value="${user.getActiveTreatmentPlan() }"></c:set>
+  <c:if test="${activePlan != null }">
+  	<div class="panel panel-primary">
 	  <div class="panel-heading" title="${activePlan.title}">
 	    <h3 class="panel-title">${activePlan.title}</h3>
 	  </div>
@@ -40,6 +47,12 @@
 		
 	  </div>
 	</div>
+  </c:if>
+  
+  <c:if test="${activePlan == null }">
+  	<h3>You do not have any plans that are active.  Please visit your Manage Treatment Plans page to start a working on a plan.</h3>
+  </c:if>
+  
   
   
   <p>
