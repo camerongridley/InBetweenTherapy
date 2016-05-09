@@ -26,13 +26,13 @@
 	  		<div class="alert alert-success" role="alert">
 			  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
 			  <span class="sr-only">Activity Streak:</span>
-			  Current Activity Streak: 9  Nice! Keep it up!
+			  <strong>Current Activity Streak: </strong>9  Nice! Keep it up!
 			</div>
 			
 			<div class="alert alert-success" role="alert">
 			  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
 			  <span class="sr-only">Login Streak:</span>
-			  Current Login Streak: 13
+			  <strong>Current Login Streak: </strong>13
 			</div>
 	  </div>
   </div>
