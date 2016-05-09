@@ -42,7 +42,16 @@
   <c:if test="${activePlan != null }">
   <div class="panel panel-primary">
 	  <div class="panel-heading" title="Continue Where You Left Off">
-	    <h3 class="panel-title">Continue Working On Your Treatment Plan</h3>
+	    <form class="form-inline form-inline-controls" action="/secure/ClientSelectPlan" method="POST">
+	      <div>
+	      <h3 class="panel-title">Continue Working On Your Treatment Plan
+	      <button type="submit" class="btn btn-info btn-sm">Manage Plans</button>
+	      </h3>
+	      <input type="hidden" name="path" value="clientManagePlans">
+	      <input type="hidden" name="requestedAction" value="select-plan-start">
+	      </div>
+	      
+	    </form>
 	  </div>
 	  <div class="panel-body">
 	  		<div class="panel panel-default">
@@ -81,7 +90,7 @@
   	<h3>You do not have any plans that are active.  Please visit your Manage Treatment Plans page to start a working on a plan.</h3>
   </c:if>
   
-  
+ <!--  
   
   <p>
     <form class="form-inline" action="/secure/ClientSelectPlan" method="POST">
@@ -99,7 +108,7 @@
     </form>
   </p>
 
-
+ -->
 	
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />
