@@ -46,9 +46,12 @@ public class Constants {
 	public static final String PATH_TEMPLATE_TASK = "templateTask";
 	
 	public static final String PATH_MANAGE_CLIENT = "manageClients";
+	public static final String PATH_MANAGE_CLIENT_PREVIEW = "therapistPreviewClientPlan";
+	public static final String PATH_MANAGE_CLIENT_EDIT_PLAN = "therapistEditClientPlan";
 	public static final String PATH_CLIENT_TREATMENT_PLAN = "clientTreatmentPlan";
 	public static final String PATH_CLIENT_STAGE = "clientStage";
 	public static final String PATH_CLIENT_MANAGE_PLANS = "clientManagePlans";
+	
 	
 	//URLs
 	public static final String URL_ADMIN_MAIN_MENU = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";

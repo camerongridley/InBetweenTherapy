@@ -170,6 +170,7 @@ public class EditStage extends HttpServlet {
 		            		case Constants.PATH_TEMPLATE_TREATMENT_PLAN:
 		            		case Constants.PATH_CLIENT_TREATMENT_PLAN:
 		            		case Constants.PATH_MANAGE_CLIENT:
+		            		case Constants.PATH_MANAGE_CLIENT_EDIT_PLAN:
 		            			treatmentPlan =  TreatmentPlan.load(treatmentPlanID);
 			            		request.setAttribute("coreTreatmentIssues", TreatmentIssue.getCoreTreatmentIssues());
 			            		CommonServletFunctions.setCoreTreatmentPlansInRequest(request);
@@ -179,7 +180,17 @@ public class EditStage extends HttpServlet {
 			            		//make stage null since we are done with it and don't want it to be null in the request when returning to edit treatment plan url
 			            		stage = null;
 		            			break;
-			            		
+		            		case Constants.PATH_MANAGE_CLIENT_PREVIEW:
+		            			User client = User.loadBasic(stage.getUserID());
+		        				request.setAttribute("client", client);
+		        				
+		        				//need the full TreatmentPlan here, so have to load again with full method
+		        				treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		        				
+		        				treatmentPlan.setTasksDisabledStatus(user.getUserID(), true);
+		            			
+		            			forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
+		            			break;	
 		            		case Constants.PATH_TEMPLATE_STAGE:
 		            			if(user.getRole().equals(Constants.USER_ADMIN)){
 			            			forwardTo = Constants.URL_ADMIN_MAIN_MENU;

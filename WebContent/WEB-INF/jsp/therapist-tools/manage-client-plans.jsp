@@ -37,7 +37,7 @@
 								
 								<form class="form-horizontal form-inline-controls" action="/secure/ManageClients" method="POST">
 									<input type="hidden" name="requestedAction" value="load-client-view-treatment-plan">
-									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="path" value="therapistPreviewClientPlan">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${activePlan.treatmentPlanID}">
 									
@@ -47,7 +47,7 @@
 								</form>
 								<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
 									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
-									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="path" value="therapistEditClientPlan">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${activePlan.treatmentPlanID}">
 									
@@ -82,7 +82,7 @@
 							  <div class="panel-body">
 							  	<form class="form-horizontal form-inline-controls" action="/secure/ManageClients" method="POST">
 									<input type="hidden" name="requestedAction" value="load-client-view-treatment-plan">
-									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="path" value="therapistPreviewClientPlan">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${unstartedPlan.treatmentPlanID}">
 									
@@ -92,7 +92,7 @@
 								</form>
 								<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
 									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
-									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="path" value="therapistEditClientPlan">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${unstartedPlan.treatmentPlanID}">
 									
@@ -176,7 +176,7 @@
 							</div>
 								<form class="form-horizontal form-inline-controls" action="/secure/ManageClients" method="POST">
 									<input type="hidden" name="requestedAction" value="load-client-view-treatment-plan">
-									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="path" value="therapistPreviewClientPlan">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${completedPlan.treatmentPlanID}">
 									
@@ -186,7 +186,7 @@
 								</form>
 								<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
 									<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
-									<input type="hidden" name="path" value="${path }">
+									<input type="hidden" name="path" value="therapistEditClientPlan">
 									<input type="hidden" name="clientUUID" value="${clientUUID}">
 									<input type="hidden" name="treatmentPlanID" value="${completedPlan.treatmentPlanID}">
 									
