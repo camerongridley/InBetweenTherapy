@@ -2583,6 +2583,39 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 
 	}
 
+	@Override
+	public Affirmation affirmationCreate(Connection cn, Affirmation affirmation) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+        	
+
+    		String sql = "INSERT INTO affirmations (affirmation, affirmation_user_id_fk) "
+            		+ "VALUES (?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setString(1, affirmation.getAffirmation().trim());
+            ps.setInt(2, affirmation.getUserID());
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	affirmation.setAffirmationID(generatedKeys.getInt(1));
+            }
+        	
+
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return affirmation;
+	}
+
 
 
 

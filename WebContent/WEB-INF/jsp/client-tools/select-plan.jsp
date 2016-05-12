@@ -26,7 +26,7 @@
 		                <div class="col-sm-6 col-md-4 col-lg-3">
 			                <div class="panel panel-primary">
 							  <div class="panel-heading" title="${activePlan.title}">
-							    <h3 class="panel-title"><c:if test="${user.activeTreatmentPlanID == activePlan.treatmentPlanID}"><span class="glyphicon glyphicon-star panel-icon" title="This is currently set as the primary active plan." aria-hidden="true"></span></c:if>${activePlan.title}</h3>
+							    <h3 class="panel-title"><c:if test="${user.activeTreatmentPlanID == activePlan.treatmentPlanID}"><span style="color:yellow;" class="glyphicon glyphicon-star panel-icon" title="This is currently set as the primary active plan." aria-hidden="true"></span></c:if>${activePlan.title}</h3>
 							  </div>
 							  <div class="panel-body">
 							    <div class="progress" title="This plan is ${activePlan.percentComplete()}% complete.">

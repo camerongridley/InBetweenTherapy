@@ -282,6 +282,8 @@ public interface DatabaseActionHandler {
 
 	List<String> invitationGetSentInvitationCodes(Connection cn, int senderUserID) throws SQLException;
 
+	Affirmation affirmationCreate(Connection cn, Affirmation affirmation) throws SQLException;
+
 
 	
 
