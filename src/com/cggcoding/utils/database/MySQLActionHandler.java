@@ -2555,6 +2555,34 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	return ldt;
     }
 
+	@Override
+	public List<Affirmation> getAllAffirmations(Connection cn) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<Affirmation> affirmations = new ArrayList<>();
+        
+        try {
+        	
+        	String sql = "SELECT * from affirmations";
+        	
+            ps = cn.prepareStatement(sql);
+
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	affirmations.add(new Affirmation(rs.getInt("affirmation_id"), rs.getString("affirmation"), rs.getInt("affirmation_user_id_fk")));
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return affirmations;
+
+	}
+
 
 
 

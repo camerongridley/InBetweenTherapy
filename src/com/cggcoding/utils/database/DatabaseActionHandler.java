@@ -10,6 +10,7 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.TaskGeneric;
+import com.cggcoding.models.Affirmation;
 import com.cggcoding.models.Keyword;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
@@ -253,6 +254,8 @@ public interface DatabaseActionHandler {
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
 	boolean throwValidationExceptionIfZero(int arg) throws ValidationException;
+	
+	List<Affirmation> getAllAffirmations(Connection cn) throws SQLException;
 
 	
 	//**************************************************************************************************

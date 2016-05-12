@@ -15,7 +15,7 @@
   <div class="alert alert-info" role="alert">
 	  <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
 	  <span class="sr-only"></span>
-	  <strong>Daily Affirmation: </strong>The nature of emotions are to be impermanent.  Keep breathing and observe without judgment.
+	  <strong>Daily Affirmation: </strong>${user.affirmation.affirmation }
 	</div>
   
   <div class="panel panel-primary">

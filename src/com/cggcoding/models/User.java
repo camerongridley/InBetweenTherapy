@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -30,10 +31,13 @@ public abstract class User implements Serializable{
 	private String firstName;
 	private String lastName;
 	private int roleID;
+	
+	//properties that are not stored in the User database table
 	private List<String> roles;
 	private String role;
 	private List<TreatmentPlan> treatmentPlanList;
 	private String mainMenuURL;
+
 	
 	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
@@ -473,9 +477,13 @@ public abstract class User implements Serializable{
 				user = (UserTherapist)user;
 				break;
 			case Constants.CLIENT_ROLE_ID:
-				user = (UserClient)user;
+				UserClient client = (UserClient)user;
+				//user = (UserClient)user;
+				client.setRandomDailyAffirmation(cn);
 				break;
 			}
+			
+			
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

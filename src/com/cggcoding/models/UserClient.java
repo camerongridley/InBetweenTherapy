@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -24,6 +25,7 @@ public class UserClient extends User implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private int activeTreatmentPlanID;
+	private Affirmation affirmation;
 	
 	DatabaseActionHandler dao = new MySQLActionHandler();
 	
@@ -33,6 +35,7 @@ public class UserClient extends User implements Serializable{
 		this.addRole(Constants.USER_CLIENT);
 		this.setRole(Constants.USER_CLIENT);
 		activeTreatmentPlanID = -1;
+		this.affirmation = new Affirmation();
 		setMainMenuURL(Constants.URL_CLIENT_MAIN_MENU);
 	}
 
@@ -45,6 +48,16 @@ public class UserClient extends User implements Serializable{
 		return activeTreatmentPlanID;
 	}
 	
+	public Affirmation getAffirmation() {
+		return affirmation;
+	}
+
+
+	public void setAffirmation(Affirmation affirmation) {
+		this.affirmation = affirmation;
+	}
+
+
 	public void updateActiveTreatmentPlanID() throws DatabaseException{
 		Connection cn = null;
   		
@@ -179,6 +192,13 @@ public class UserClient extends User implements Serializable{
 
     }
 
+	public void setRandomDailyAffirmation(Connection cn) throws SQLException{
+		List<Affirmation> allAffirmations = dao.getAllAffirmations(cn);
+		Random rand = new Random();
+		
+		setAffirmation(allAffirmations.get(rand.nextInt(allAffirmations.size())));
+		
+	}
 
 	@Override
 	protected void performLoginSpecifics(Connection cn) throws ValidationException, SQLException {
