@@ -1,6 +1,7 @@
 package com.cggcoding.models;
 
 import java.util.List;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -8,7 +9,9 @@ import java.time.LocalDateTime;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class LoginHistory {
+public class LoginHistory implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	private int loginHistoryID;
 	private int userID;
 	private LocalDateTime loginDateTime;

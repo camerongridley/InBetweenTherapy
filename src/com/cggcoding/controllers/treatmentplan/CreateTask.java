@@ -1,6 +1,6 @@
 package com.cggcoding.controllers.treatmentplan;
 
-import java.awt.List;
+import java.util.List;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,7 +117,7 @@ public class CreateTask extends HttpServlet {
 						request.setAttribute("task", task);
 						Map<Integer, Keyword> coreKeywordsMap = Keyword.loadCoreMembers();
 						
-						ArrayList<Keyword> selectedKeywordList = new ArrayList<>();
+						List<Keyword> selectedKeywordList = new ArrayList<>();
 						String[] selectedKeywordIDFilters = request.getParameterValues("keywords[]");
 						if(selectedKeywordIDFilters != null){
 							for(int i = 0; i < selectedKeywordIDFilters.length; i++){

@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -11,8 +12,9 @@ import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
-public class Affirmation {
+public class Affirmation  implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	private int affirmationID;
 	private String affirmation;
 	private int userID;
