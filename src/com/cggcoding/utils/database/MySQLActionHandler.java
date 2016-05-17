@@ -2538,7 +2538,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
-	public List<Affirmation> getAllAffirmations(Connection cn) throws SQLException {
+	public List<Affirmation> getAllAffirmations(Connection cn, User user) throws SQLException {
 		PreparedStatement ps = null;
         ResultSet rs = null;
         
@@ -2546,9 +2546,20 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         	
-        	String sql = "SELECT * from affirmations";
+        	List<Integer> userIDList = userGetAdminIDs(cn);
+        	userIDList.add(user.getUserID());
+        	
+        	String baseStatement = "SELECT * from affirmations WHERE affirmation_user_id_fk in (";
+        	
+        	String orderByClause = null;
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, userIDList, orderByClause);
         	
             ps = cn.prepareStatement(sql);
+            
+            for(int i = 0; i < userIDList.size(); i++){
+    			ps.setInt(i+1, userIDList.get(i));
+    		}            
 
             rs = ps.executeQuery();
    

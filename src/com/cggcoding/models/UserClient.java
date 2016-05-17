@@ -203,7 +203,7 @@ public class UserClient extends User implements Serializable{
     }
 
 	public void setRandomDailyAffirmation(Connection cn) throws SQLException{
-		List<Affirmation> allAffirmations = dao.getAllAffirmations(cn);
+		List<Affirmation> allAffirmations = dao.getAllAffirmations(cn, this);
 		Random rand = new Random();
 		
 		setAffirmation(allAffirmations.get(rand.nextInt(allAffirmations.size())));

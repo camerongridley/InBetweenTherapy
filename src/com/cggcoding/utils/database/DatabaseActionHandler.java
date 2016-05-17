@@ -298,7 +298,7 @@ public interface DatabaseActionHandler {
 
 	boolean throwValidationExceptionIfZero(int arg) throws ValidationException;
 	
-	List<Affirmation> getAllAffirmations(Connection cn) throws SQLException;
+	List<Affirmation> getAllAffirmations(Connection cn, User user) throws SQLException;
 
 	
 
