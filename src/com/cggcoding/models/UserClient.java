@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -26,6 +27,7 @@ public class UserClient extends User implements Serializable{
 
 	private int activeTreatmentPlanID;
 	private Affirmation affirmation;
+	private int loginStreak;
 	
 	DatabaseActionHandler dao = new MySQLActionHandler();
 	
@@ -55,6 +57,16 @@ public class UserClient extends User implements Serializable{
 
 	public void setAffirmation(Affirmation affirmation) {
 		this.affirmation = affirmation;
+	}
+
+
+	public int getLoginStreak() {
+		return loginStreak;
+	}
+
+
+	public void setLoginStreak(int loginStreak) {
+		this.loginStreak = loginStreak;
 	}
 
 
@@ -187,8 +199,6 @@ public class UserClient extends User implements Serializable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-    	
 
     }
 
@@ -205,7 +215,41 @@ public class UserClient extends User implements Serializable{
 		LoginHistory loginHx = new LoginHistory(this.getUserID(), LocalDateTime.now());
 		loginHx.create(cn);
 		loginHx.deleteOldEntries(cn, Constants.DAYS_OF_LOGIN_HISTORY_TO_KEEP, loginHx);
+		int streak = calculateLoginStreak(cn, loginHx);
+		this.setLoginStreak(streak);
 		this.loadAllClientTreatmentPlans(cn);
 		
 	}
+
+	/**Assumes that the LoginHistory List loaded from database is in DESCENDING order by date
+	 * @param cn
+	 * @param mostRecentLogin
+	 * @throws SQLException
+	 */
+	private int calculateLoginStreak(Connection cn, LoginHistory mostRecentLogin) throws SQLException {
+		List<LoginHistory> loginHistoryList = dao.loginHistoryLoadAll(cn, getUserID());
+		
+		int streak = 1;
+		LocalDateTime newerLDT = mostRecentLogin.getLoginDateTime();
+		
+		for(LoginHistory olderLoginHx : loginHistoryList){
+			LocalDateTime olderLDT = olderLoginHx.getLoginDateTime();
+			if(newerLDT.getYear()==olderLDT.getYear() 
+					&& newerLDT.getDayOfYear()-olderLDT.getDayOfYear()==1){
+				streak++;
+				newerLDT = olderLDT;
+			}
+			
+		}
+		
+		return streak;
+		
+		//commented out since sorting is done on the database side, if this changes, may need to modify the compareTo method of LoginHistory
+		//Collections.sort(loginHistoryList);
+		
+		
+	}
+	
+	
+	
 }

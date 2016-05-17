@@ -487,8 +487,8 @@ public abstract class User implements Serializable{
 			
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
 		} finally {
 			try {
 				cn.setAutoCommit(true);

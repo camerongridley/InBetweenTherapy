@@ -42,7 +42,13 @@ public interface DatabaseActionHandler {
 	
 	User userLoadByEmailAddress(Connection cn, String emailAddress) throws ValidationException, SQLException;
 	
-	List<LoginHistory> getLoginHistory(Connection cn, int userID) throws SQLException;
+	/**Returns a list of all the login history for the specified user.  The list is returned in descending order based on the login date.
+	 * @param cn
+	 * @param userID
+	 * @return
+	 * @throws SQLException
+	 */
+	List<LoginHistory> loginHistoryLoadAll(Connection cn, int userID) throws SQLException;
 	
 	void loginHistoryCreate(Connection cn, LoginHistory loginHx) throws SQLException;
 	

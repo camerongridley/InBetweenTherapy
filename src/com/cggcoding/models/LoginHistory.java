@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 
-public class LoginHistory implements Serializable{
+public class LoginHistory implements Serializable, Comparable<LoginHistory>{
 
 	private static final long serialVersionUID = 1L;
 	private int loginHistoryID;
@@ -78,7 +78,13 @@ public class LoginHistory implements Serializable{
 	}
 	
 	public List<LoginHistory> getAllLoginHistory(Connection cn) throws SQLException{
-		return dao.getLoginHistory(cn, getUserID());
+		return dao.loginHistoryLoadAll(cn, getUserID());
+	}
+
+
+	@Override
+	public int compareTo(LoginHistory ldtCompare) {
+		return getLoginDateTime().compareTo(ldtCompare.getLoginDateTime());
 	}
 
 }

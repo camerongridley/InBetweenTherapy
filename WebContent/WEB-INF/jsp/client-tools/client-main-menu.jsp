@@ -36,7 +36,7 @@
 			<div class="alert alert-success" role="alert">
 			  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
 			  <span class="sr-only">Login Streak:</span>
-			  <strong>Current Login Streak: </strong>13
+			  <strong>Current Login Streak: </strong>${user.loginStreak}
 			</div>
 	  </div>
   </div>

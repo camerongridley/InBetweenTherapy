@@ -2599,7 +2599,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
 
 	@Override
-	public List<LoginHistory> getLoginHistory(Connection cn, int userID) throws SQLException {
+	public List<LoginHistory> loginHistoryLoadAll(Connection cn, int userID) throws SQLException {
 		PreparedStatement ps = null;
         ResultSet rs = null;
         
@@ -2607,14 +2607,14 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         try {
         	
-        	String sql = "SELECT * from login_history";
+        	String sql = "SELECT * from login_history  ORDER BY login_datetime DESC";
         	
             ps = cn.prepareStatement(sql);
 
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	Timestamp timestamp = rs.getTimestamp("date_invited");
+            	Timestamp timestamp = rs.getTimestamp("login_datetime");
             	LocalDateTime dateLogin = convertTimestampToLocalDateTime(timestamp);
             	
             	loginHx.add(new LoginHistory(rs.getInt("login_history_id"), rs.getInt("login_history_user_id_fk"), dateLogin));
