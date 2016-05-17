@@ -20,6 +20,8 @@ public class Constants {
 	
 	public static final int STAGE_TITLE_MAX_CHAR_LENGTH = 30;
 	
+	public static final long DAYS_OF_LOGIN_HISTORY_TO_KEEP = 90;
+	
 	//The defaults holder id is the primary key value for any database models that are responsible for holding templates of child classes.
 	//This primarily refers to the TreatmentPlan Stage Defaults Holder Plan and the Stage Task Defaults Holder Plan.
 	public static final int TEMPLATES_HOLDER_PRIMARY_KEY_ID = 1;
@@ -86,6 +88,7 @@ public class Constants {
 
 	public static final String URL_ACCOUNT_MANAGEMENT = "/WEB-INF/jsp/account-management.jsp";
 	public static final String URL_ACCOUNT_EDIT = "/WEB-INF/jsp/account-info-edit.jsp";
+
 
 	
 	

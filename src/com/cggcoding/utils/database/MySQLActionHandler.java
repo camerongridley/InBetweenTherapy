@@ -2537,25 +2537,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	}
     }
     
-    private Timestamp convertLocalTimeDateToTimstamp(LocalDateTime ldt){
-    	Timestamp timestamp = null;
-    	
-        if(ldt != null){
-        	timestamp = Timestamp.valueOf(ldt);
-        }
-        
-        return timestamp; 
-    }
-
-    private LocalDateTime convertTimestampToLocalDateTime(Timestamp timestamp){
-    	LocalDateTime ldt = null;
-    	if(timestamp != null){
-    		ldt = timestamp.toLocalDateTime();
-    	}
-    	return ldt;
-    }
-
-	@Override
+    @Override
 	public List<Affirmation> getAllAffirmations(Connection cn) throws SQLException {
 		PreparedStatement ps = null;
         ResultSet rs = null;
@@ -2616,7 +2598,110 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return affirmation;
 	}
 
+	@Override
+	public List<LoginHistory> getLoginHistory(Connection cn, int userID) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<LoginHistory> loginHx = new ArrayList<>();
+        
+        try {
+        	
+        	String sql = "SELECT * from login_history";
+        	
+            ps = cn.prepareStatement(sql);
 
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	Timestamp timestamp = rs.getTimestamp("date_invited");
+            	LocalDateTime dateLogin = convertTimestampToLocalDateTime(timestamp);
+            	
+            	loginHx.add(new LoginHistory(rs.getInt("login_history_id"), rs.getInt("login_history_user_id_fk"), dateLogin));
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return loginHx;
+
+	}
+
+	@Override
+	public void loginHistoryCreate(Connection cn, LoginHistory loginHx) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+        	
+        	Timestamp timestamp = convertLocalTimeDateToTimstamp(loginHx.getLoginDateTime());
+
+    		String sql = "INSERT INTO login_history (login_history_user_id_fk, login_datetime) "
+            		+ "VALUES (?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setInt(1, loginHx.getUserID());
+            ps.setTimestamp(2, timestamp);
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	loginHx.setLoginHistoryID(generatedKeys.getInt(1));
+            }
+        	
+
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+        }
+        
+	}
+	
+	@Override
+    public void loginHistoryDeleteOldEntries(Connection cn, int userID, LocalDateTime deleteBeforeThisDate) throws SQLException{
+    	PreparedStatement ps = null;
+        
+    	try{
+    		
+    		Timestamp timestamp = convertLocalTimeDateToTimstamp(deleteBeforeThisDate);
+
+	        ps = cn.prepareStatement("DELETE FROM login_history WHERE login_history_user_id_fk=? AND login_datetime<?");
+	        ps.setInt(1, userID);
+	        ps.setTimestamp(2, timestamp);
+	
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
+    }
+
+	
+	/*********************************************************************
+	 * Class Utility Methods
+	 ********************************************************************/
+	 
+	private Timestamp convertLocalTimeDateToTimstamp(LocalDateTime ldt){
+    	Timestamp timestamp = null;
+    	
+        if(ldt != null){
+        	timestamp = Timestamp.valueOf(ldt);
+        }
+        
+        return timestamp; 
+    }
+
+    private LocalDateTime convertTimestampToLocalDateTime(Timestamp timestamp){
+    	LocalDateTime ldt = null;
+    	if(timestamp != null){
+    		ldt = timestamp.toLocalDateTime();
+    	}
+    	return ldt;
+    }
 
 
 

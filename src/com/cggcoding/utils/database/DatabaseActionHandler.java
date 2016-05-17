@@ -2,6 +2,7 @@ package com.cggcoding.utils.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.TaskGeneric;
 import com.cggcoding.models.Affirmation;
 import com.cggcoding.models.Keyword;
+import com.cggcoding.models.LoginHistory;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
 import com.cggcoding.models.MapStageTaskTemplate;
@@ -39,6 +41,13 @@ public interface DatabaseActionHandler {
 	User userLoadInfo(Connection cn, String email, String password) throws DatabaseException;
 	
 	User userLoadByEmailAddress(Connection cn, String emailAddress) throws ValidationException, SQLException;
+	
+	List<LoginHistory> getLoginHistory(Connection cn, int userID) throws SQLException;
+	
+	void loginHistoryCreate(Connection cn, LoginHistory loginHx) throws SQLException;
+	
+	void loginHistoryDeleteOldEntries(Connection cn, int userID, LocalDateTime deleteBeforeThisDate)
+			throws SQLException;
 	
 	//**************************************************
 	// *************** User Methods *******************
@@ -69,7 +78,8 @@ public interface DatabaseActionHandler {
 			throws DatabaseException, ValidationException;
 	
 	boolean userClientUpdateActiveTreatmentPlanID(Connection cn, UserClient client) throws SQLException;
-
+	
+	
 
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
@@ -247,18 +257,6 @@ public interface DatabaseActionHandler {
 	void keywordTaskMapDelete(Connection cn, int taskID, int keywordID) throws SQLException;
 	
 	//**************************************************************************************************
-	//*************************************** Misc Methods **********************************
-	//**************************************************************************************************
-	boolean throwValidationExceptionIfTemplateHolderID(int templateHolderObjectID) throws ValidationException;
-
-	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
-
-	boolean throwValidationExceptionIfZero(int arg) throws ValidationException;
-	
-	List<Affirmation> getAllAffirmations(Connection cn) throws SQLException;
-
-	
-	//**************************************************************************************************
 	//*************************************** Authentication Methods **********************************
 	//**************************************************************************************************
 	boolean userOwnsTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException;
@@ -283,6 +281,24 @@ public interface DatabaseActionHandler {
 	List<String> invitationGetSentInvitationCodes(Connection cn, int senderUserID) throws SQLException;
 
 	Affirmation affirmationCreate(Connection cn, Affirmation affirmation) throws SQLException;
+
+
+	//**************************************************************************************************
+	//*************************************** Misc Methods **********************************
+	//**************************************************************************************************
+	boolean throwValidationExceptionIfTemplateHolderID(int templateHolderObjectID) throws ValidationException;
+
+	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
+
+	boolean throwValidationExceptionIfZero(int arg) throws ValidationException;
+	
+	List<Affirmation> getAllAffirmations(Connection cn) throws SQLException;
+
+	
+
+	
+
+	
 
 
 	

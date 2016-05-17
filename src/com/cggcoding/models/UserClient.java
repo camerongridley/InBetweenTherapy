@@ -202,6 +202,9 @@ public class UserClient extends User implements Serializable{
 
 	@Override
 	protected void performLoginSpecifics(Connection cn) throws ValidationException, SQLException {
+		LoginHistory loginHx = new LoginHistory(this.getUserID(), LocalDateTime.now());
+		loginHx.create(cn);
+		loginHx.deleteOldEntries(cn, Constants.DAYS_OF_LOGIN_HISTORY_TO_KEEP, loginHx);
 		this.loadAllClientTreatmentPlans(cn);
 		
 	}
