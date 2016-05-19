@@ -827,6 +827,35 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         }
     }
     
+    @Override
+    public List<LocalDateTime> userClientGetDatesOfCompletedTasks(Connection cn, int userID) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<LocalDateTime> dates = new ArrayList<>();
+        
+        try {
+    		ps = cn.prepareStatement("SELECT task_date_completed FROM task_generic "
+    				+ "WHERE task_completed=true AND task_is_template=false AND task_generic_user_id_fk=? "
+    				+ "ORDER BY task_date_completed DESC");
+            ps.setInt(1, userID);
+
+            rs = ps.executeQuery();
+            
+            LocalDateTime dateCompleted = null;
+
+            while (rs.next()){
+            	dateCompleted = convertTimestampToLocalDateTime(rs.getTimestamp("task_date_completed"));
+                dates.add(dateCompleted);
+            }
+
+            return dates;
+        
+        } finally {
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);	
+		}
+    }
+    
 	@Override
 	public List<TreatmentPlan> treatmentPlanGetCoreList() throws DatabaseException, ValidationException {
 		Connection cn = null;
@@ -1650,10 +1679,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	
                 	//task.setKeywords(keywords);
             	}
-            	
-            	
-            	
-            	
             }
 
         } finally {

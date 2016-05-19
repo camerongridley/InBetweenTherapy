@@ -28,6 +28,9 @@ public class UserClient extends User implements Serializable{
 	private int activeTreatmentPlanID;
 	private Affirmation affirmation;
 	private int loginStreak;
+	private String loginStreakMessage;
+	private int activityStreak;
+	private String activityStreakMessage;
 	
 	DatabaseActionHandler dao = new MySQLActionHandler();
 	
@@ -39,6 +42,10 @@ public class UserClient extends User implements Serializable{
 		activeTreatmentPlanID = -1;
 		this.affirmation = new Affirmation();
 		setMainMenuURL(Constants.URL_CLIENT_MAIN_MENU);
+		loginStreak = 0;
+		loginStreakMessage = "";
+		activityStreak = 0;
+		activityStreakMessage = "";
 	}
 
 	
@@ -65,8 +72,38 @@ public class UserClient extends User implements Serializable{
 	}
 
 
+	public String getLoginStreakMessage() {
+		return loginStreakMessage;
+	}
+
+
+	public void setLoginStreakMessage(String loginStreakMessage) {
+		this.loginStreakMessage = loginStreakMessage;
+	}
+
+
 	public void setLoginStreak(int loginStreak) {
 		this.loginStreak = loginStreak;
+	}
+	
+
+	public int getActivityStreak() {
+		return activityStreak;
+	}
+
+
+	public void setActivityStreak(int activityStreak) {
+		this.activityStreak = activityStreak;
+	}
+	
+
+	public String getActivityStreakMessage() {
+		return activityStreakMessage;
+	}
+
+
+	public void setActivityStreakMessage(String activityStreakMessage) {
+		this.activityStreakMessage = activityStreakMessage;
 	}
 
 
@@ -215,8 +252,10 @@ public class UserClient extends User implements Serializable{
 		LoginHistory loginHx = new LoginHistory(this.getUserID(), LocalDateTime.now());
 		loginHx.create(cn);
 		loginHx.deleteOldEntries(cn, Constants.DAYS_OF_LOGIN_HISTORY_TO_KEEP, loginHx);
-		int streak = calculateLoginStreak(cn, loginHx);
-		this.setLoginStreak(streak);
+		int loginStreak = calculateLoginStreak(cn);
+		this.setLoginStreak(loginStreak);
+		int activityStreak = calculateActivityStreak(cn);
+		this.setActivityStreak(activityStreak);
 		this.loadAllClientTreatmentPlans(cn);
 		
 	}
@@ -226,14 +265,59 @@ public class UserClient extends User implements Serializable{
 	 * @param mostRecentLogin
 	 * @throws SQLException
 	 */
-	private int calculateLoginStreak(Connection cn, LoginHistory mostRecentLogin) throws SQLException {
+	private int calculateLoginStreak(Connection cn) throws SQLException {
 		List<LoginHistory> loginHistoryList = dao.loginHistoryLoadAll(cn, getUserID());
+		List<LocalDateTime> loginHxLDT = new ArrayList<>();
+		//start loginStreak at 1 since at the very least the current login will count 
+		int streak = 0;
+
+		for(LoginHistory loginHx : loginHistoryList){
+			loginHxLDT.add(loginHx.getLoginDateTime());
+		}
 		
-		int streak = 1;
-		LocalDateTime newerLDT = mostRecentLogin.getLoginDateTime();
+		streak = calculateStreakByDate(loginHxLDT);
+
+		return streak;
+		//commented out since sorting is done on the database side, if this changes, may need to modify the compareTo method of LoginHistory
+		//Collections.sort(loginHistoryList);
 		
-		for(LoginHistory olderLoginHx : loginHistoryList){
-			LocalDateTime olderLDT = olderLoginHx.getLoginDateTime();
+		
+	}
+	
+	public int calculateActivityStreak(Connection cn) throws SQLException {
+		List<LocalDateTime> datesOfCompletedTasks = dao.userClientGetDatesOfCompletedTasks(cn, getUserID());
+		
+		//start activityStreak at 0 since no tasks have been completed after just logging in
+		int streak = 0;
+		streak = calculateStreakByDate(datesOfCompletedTasks);
+
+		if(streak <= 3){
+			this.setActivityStreakMessage("Keep it up.");
+		} else if(streak <= 5){
+			this.setActivityStreakMessage("You're on a roll.  Keep it up!");
+		} else if(streak <= 7){
+			this.setActivityStreakMessage("Nice! You're really cruising now!");
+		} else if(streak >= 10){
+			this.setActivityStreakMessage("You're on fire!");
+		}
+		
+		return streak;
+	}
+	
+	private int calculateStreakByDate(List<LocalDateTime> dateListForAnalysis){
+		int streak = 0;
+		LocalDateTime newerLDT = LocalDateTime.now();
+		
+		//first check if there is an entry for today - this adds to the streak but it is not necessary for maintaining a streak 
+		//since the client could perform an activity later today that would maintain the streak
+		if(dateListForAnalysis.get(0).getYear()==newerLDT.getYear() && 
+				dateListForAnalysis.get(0).getDayOfYear()==newerLDT.getDayOfYear()){
+			streak++;
+		}
+		
+		//now add up streak for all entries up until today
+		for(LocalDateTime ldt : dateListForAnalysis){
+			LocalDateTime olderLDT = ldt;
 			if(newerLDT.getYear()==olderLDT.getYear() 
 					&& newerLDT.getDayOfYear()-olderLDT.getDayOfYear()==1){
 				streak++;
@@ -243,13 +327,20 @@ public class UserClient extends User implements Serializable{
 		}
 		
 		return streak;
-		
-		//commented out since sorting is done on the database side, if this changes, may need to modify the compareTo method of LoginHistory
-		//Collections.sort(loginHistoryList);
-		
-		
 	}
 	
-	
+	public void updateStatistics() throws DatabaseException{
+		Connection cn = null;
+  		
+        try {
+        	cn = dao.getConnection();  	
+        	int streak = calculateActivityStreak(cn);
+        	this.setActivityStreak(streak);
+        } catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DbUtils.closeQuietly(cn);
+        }
+	}
 	
 }

@@ -15,9 +15,9 @@
   <div class="alert alert-info" role="alert">
 	  <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
 	  <span class="sr-only"></span>
-	  <strong>Daily Affirmation: </strong>${user.affirmation.affirmation }
+	  <strong>Inspiration Of The Day: </strong>${user.affirmation.affirmation }
 		<button type="button" class="btn btn-xs btn-default" aria-label="Left Align" data-toggle="modal" data-target="#newAffirmation" 
-		title="Add a new affirmation.">
+		title="Add a new inspiration.">
 			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 		</button>
 	</div>
@@ -28,15 +28,15 @@
 	  </div>
 	  <div class="panel-body">
 	  		<div class="alert alert-success" role="alert">
-			  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+			  <c:if test="${user.activityStreak>0}"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></c:if>
 			  <span class="sr-only">Activity Streak:</span>
-			  <strong>Current Activity Streak: </strong>9  Nice! Keep it up!
+			  <strong>Current Activity Streak: </strong>${user.activityStreak} - ${user.activityStreakMessage } 
 			</div>
 			
 			<div class="alert alert-success" role="alert">
-			  <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span>
+			  <c:if test="${user.loginStreak>1}"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span></c:if>
 			  <span class="sr-only">Login Streak:</span>
-			  <strong>Current Login Streak: </strong>${user.loginStreak}
+			  <strong>Current Login Streak: </strong>${user.loginStreak} ${user.loginStreakMessage }
 			</div>
 	  </div>
   </div>

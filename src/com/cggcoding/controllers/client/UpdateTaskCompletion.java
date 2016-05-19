@@ -62,15 +62,16 @@ public class UpdateTaskCompletion extends HttpServlet {
 		
 		try{
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
-			User client = null;
+			UserClient client = null;
 			
 			//OPTIMIZE change this so just the basic treatment plan and the stage being displayed is loaded.
 			treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 			
 			if(user.getRole().equals(Constants.USER_CLIENT)){
+				
 				//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
 				if(request.getParameter("submitButton").equals("save")){
-					client = user;
+					client = (UserClient)user;
 					forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 					
 					int stageIndex = ParameterUtils.parseIntParameter(request, "stageIndex");
@@ -120,10 +121,11 @@ public class UpdateTaskCompletion extends HttpServlet {
 						treatmentPlan.setActiveViewStageIndex(treatmentPlan.getCurrentStageIndex());
 						treatmentPlan.updateBasic();
 					}
-					client = user;
+					client = (UserClient)user;
 					forwardTo = Constants.URL_CLIENT_MAIN_MENU;
 				}
 				
+				client.updateStatistics();
 				client.replaceUpdatedTreatmentPlan(treatmentPlan);
 				
 				request.setAttribute("client", client);

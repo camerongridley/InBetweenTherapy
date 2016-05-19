@@ -85,7 +85,7 @@ public interface DatabaseActionHandler {
 	
 	boolean userClientUpdateActiveTreatmentPlanID(Connection cn, UserClient client) throws SQLException;
 	
-	
+	List<LocalDateTime> userClientGetDatesOfCompletedTasks(Connection cn, int userID) throws SQLException;
 
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
