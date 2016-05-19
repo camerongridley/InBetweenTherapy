@@ -16,7 +16,7 @@
 	  <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>
 	  <span class="sr-only"></span>
 	  <strong>Inspiration Of The Day: </strong>${user.affirmation.affirmation }
-		<button type="button" class="btn btn-xs btn-default" aria-label="Left Align" data-toggle="modal" data-target="#newAffirmation" 
+		<button type="button" class="btn btn-xs btn-primary" aria-label="Left Align" data-toggle="modal" data-target="#newAffirmation" 
 		title="Add a new inspiration.">
 			<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 		</button>
