@@ -29,9 +29,9 @@
 		removeAbandoned="true"
 		removeAbandonedTimeout="300" 
 		logAbandoned="true"
-		username="cggcodin_website"
-		password="Password123!" 
-		driverClassName="com.mysql.jdbc.Driver"
-		url="jdbc:mysql://localhost:3306/cggcodin_doitright" />
+		username="user"
+		password="userpassword"
+		driverClassName="com.mysql.cj.jdbc.Driver"
+		url="jdbc:mysql://inbetween-mysql8:3306/inbetween" />
 
 </Context>

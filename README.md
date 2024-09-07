@@ -4,6 +4,15 @@ In/Between Therapy is a mobile-first, web-based suite of customization tools to 
 
 http://inbetweentherapy.com/
 
+# Local Setup
+## Versions
+The original app was built using Tomcat 8 with JDK 1.8 and MySQL 8.0.37.
+## Create the docker network
+`docker network create inbetween2-netowrk`
+
+## First Build
+Run docker-compose build
+`docker-compose up --build -d`
 
 
 # Site Overview
