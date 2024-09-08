@@ -166,7 +166,7 @@
             </div>
         </div>
        </div>
-
+<%--
 	<h3>Continue a plan.</h3>
 	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
 		<input type="hidden" name="requestedAction" value="select-plan-load">
@@ -249,7 +249,7 @@
 	        </div>
         </div>
 	</form>
-
+--%>
 <%--
 	<h3>Your Plans.</h3>
 	<form class="form-horizontal" action="/secure/ClientSelectPlan" method="POST">
