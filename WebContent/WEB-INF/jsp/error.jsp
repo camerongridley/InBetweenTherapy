@@ -21,12 +21,12 @@
       </p>
       Exception Message: ${errorMessage }
       Error: ${pageContext.exception.message} <br/>
-      Error Code: ${pageContext.errorData.statusCode} : ${pageContext.errorData.servletName}
+      Error Code: ${pageContext.errorData.statusCode} in ${pageContext.errorData.servletName}
     </div>
   </div>
   
   
-  <h2>
+  <%-- <h2>
         Error: ${pageContext.exception}  <br/>
     </h2>
  
@@ -35,6 +35,6 @@
     <c:forEach var="trace" items="${pageContext.exception.stackTrace}">
         ${trace}<br/>
     </c:forEach> 
-
+ --%>
 
 <c:import url="footer.jsp" />

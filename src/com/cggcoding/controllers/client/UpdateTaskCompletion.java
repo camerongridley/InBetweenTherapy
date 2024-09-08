@@ -56,49 +56,70 @@ public class UpdateTaskCompletion extends HttpServlet {
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
 		
+		TreatmentPlan treatmentPlan = null;
+		Stage updatedStage = null;
+		String clientUUID = "";
+		
 		try{
 			int treatmentPlanID = ParameterUtils.parseIntParameter(request, "treatmentPlanID");
 			User client = null;
 			
 			//OPTIMIZE change this so just the basic treatment plan and the stage being displayed is loaded.
-			TreatmentPlan treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+			treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 			
 			if(user.getRole().equals(Constants.USER_CLIENT)){
 				//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
 				if(request.getParameter("submitButton").equals("save")){
 					client = user;
+					forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 					
+					int stageIndex = ParameterUtils.parseIntParameter(request, "stageIndex");
+					treatmentPlan.setActiveViewStageIndex(stageIndex);
 					Stage activeStage = treatmentPlan.getActiveViewStage();
+					updatedStage = activeStage;
 					
-					//get checked values from the request and convert to List<Integer>
-					List<Integer> checkedTaskIDs = convertStringArrayToInt(request.getParameterValues("taskChkBx[]"));
-			
-					//get all Task ids from hidden field so we can get at unchecked values
-					List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
-			
-					//build maps containing new data to pass back to service layer for updating
-					Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(user, checkedTaskIDs, allTaskIDs, request);
-			
-					//call to service layer to save and process the new task data and return an updated Stage
-					Stage updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
-			
-					//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
-					if(updatedStage.isCompleted()){
-						updatedStage = treatmentPlan.nextStage();
+					if(activeStage.isInProgress()){
+						//get checked values from the request and convert to List<Integer>
+						List<Integer> checkedTaskIDs = convertStringArrayToInt(request.getParameterValues("taskChkBx[]"));
+				
+						//get all Task ids from hidden field so we can get at unchecked values
+						List<Integer> allTaskIDs = convertStringArrayToInt(request.getParameterValues("allTaskIDs"));
+				
+						//build maps containing new data to pass back to service layer for updating
+						Map<Integer, Task> tasksToBeUpdated = buildNewInfoOnlyTaskMap(user, checkedTaskIDs, allTaskIDs, request);
+				
+						//call to service layer to save and process the new task data and return an updated Stage
+						updatedStage = activeStage.updateTaskList(tasksToBeUpdated);
+				
+						//Check to see if the stage is now completed based on what was updated. If so,prompt user as desired and load next stage
+						if(updatedStage.isCompleted()){
+							updatedStage = treatmentPlan.nextStage();
+
+							forwardTo = Constants.URL_STAGE_COMPLETE;
+						}
+						
+						if(treatmentPlan.isCompleted()){
+							request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COMPLETED);
+						}
+						
+						treatmentPlan.update();
+					}else {
+						throw new ValidationException(ErrorMessages.STAGE_LOCKED);
 					}
 					
-					if(treatmentPlan.isCompleted()){
-						request.setAttribute("successMessage", SuccessMessages.TREATMENT_PLAN_COMPLETED);
-					}
 					
-					treatmentPlan.update();
+					
 					
 					request.setAttribute("treatmentPlan", treatmentPlan);
-					request.setAttribute("activeStage", updatedStage);
 					
-					forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
+					
 				} else {
-					//Cancel/Back button was pressed
+					//Cancel/Done button was pressed
+					//if the activeStageView is not the currentStageView, then reset the activeView and save in db so it is properly set when the user logs in next
+					if(treatmentPlan.getActiveViewStageIndex()!=treatmentPlan.getCurrentStageIndex()){
+						treatmentPlan.setActiveViewStageIndex(treatmentPlan.getCurrentStageIndex());
+						treatmentPlan.updateBasic();
+					}
 					client = user;
 					forwardTo = Constants.URL_CLIENT_MAIN_MENU;
 				}
@@ -107,14 +128,18 @@ public class UpdateTaskCompletion extends HttpServlet {
 				
 			} else if(user.getRole().equals(Constants.USER_THERAPIST)){//the therapist has clicked the Done button here
 				UserTherapist userTherapist = (UserTherapist)user;
-				int clientUserID = ParameterUtils.parseIntParameter(request, "clientID"); 
-				client = User.loadBasic(clientUserID);
+				
+				//get the client based on their UUID and put the UUID back in the request to maintain it
+				clientUUID = request.getParameter("clientUUID");
+				request.setAttribute("clientUUID", clientUUID);
+				client = userTherapist.getClientFromUUID(clientUUID);
+				
 				//set the default treatment plans and the custom plans for this therapist into the request
 				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
 
 				request.setAttribute("client", client);
 				
-				CommonServletFunctions.putClientPlansInRequest(request, userTherapist, clientUserID);
+				CommonServletFunctions.putClientPlansInRequest(request, userTherapist, client.getUserID());
 	    		
 	    		forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 			}
@@ -123,8 +148,12 @@ public class UpdateTaskCompletion extends HttpServlet {
 		} catch (DatabaseException e){
 			e.printStackTrace();
 			request.setAttribute("errorMessage", ErrorMessages.GENERAL_DB_ERROR);
+			request.setAttribute("treatmentPlan", treatmentPlan);
+			request.setAttribute("clientUUID", clientUUID);
 		} catch (ValidationException e) {
 			request.setAttribute("errorMessage", e.getMessage());
+			request.setAttribute("treatmentPlan", treatmentPlan);
+			request.setAttribute("clientUUID", clientUUID);
 			e.printStackTrace();
 		}
 		

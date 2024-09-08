@@ -1,6 +1,8 @@
 package com.cggcoding.controllers.treatmentplan;
 
 import java.io.IOException;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,18 +14,22 @@ import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
+import com.cggcoding.models.Keyword;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserClient;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.CommonServletFunctions;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
 import com.cggcoding.utils.messaging.ErrorMessages;
+import com.cggcoding.utils.messaging.SuccessMessages;
 import com.cggcoding.utils.messaging.WarningMessages;
 
 /**
  * Servlet implementation class EditTask
  */
-@WebServlet("/secure/EditTask")
+@WebServlet("/secure/treatment-components/EditTask")
 public class EditTask extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -38,7 +44,7 @@ public class EditTask extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		processRequest(request, response);
+		
 	}
 
 	/**
@@ -69,11 +75,22 @@ public class EditTask extends HttpServlet {
 		User owner = null;
 		/*-----------End Treatment Plan object variables---------------*/
 		
-
+		//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
+		
+		int newTaskTypeID = 0;
+		boolean updateDataBase = false;
+		List<Integer> updatedKeywordIDs = ParameterUtils.parseIntArrayParameter(request, "keywords[]");
+		
 		try {
 			
+			//check if this a therapist is accessing a client's data and authorize
+			if(clientUUID != null && !clientUUID.isEmpty()){
+				user.isAuthorizedForClientData(clientUUID);				
+			}
 			
-			//Here we check that a task has been selected (currently the only time this isn't true is with path plan-edit-selection).
+			//Here we check that a task has been selected (currently the only time this isn't true is with path plan-edit-start).
     		//If so, then load it and use it's userID prop to get it's owner
     		if(taskID != 0){
     			task = Task.load(taskID);
@@ -90,6 +107,7 @@ public class EditTask extends HttpServlet {
 	    		
 	    		request.setAttribute("owner", owner);
 	    		
+	    		
 	    		//if this Task is a template, remind the user that all instances of this task will be changed
 	    		if(task.isTemplate()){
 					request.setAttribute("warningMessage", WarningMessages.EDITING_TASK_TEMPLATE);
@@ -98,6 +116,7 @@ public class EditTask extends HttpServlet {
 
 			
     		if(user.hasRole(Constants.USER_ADMIN) || user.hasRole(Constants.USER_THERAPIST)){
+
 				switch(requestedAction){
 					case ("edit-task-start"):
 
@@ -110,19 +129,37 @@ public class EditTask extends HttpServlet {
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-select-task-type"):
-						int newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
+						if(task==null || task.getTaskID()==0){
+							throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+						}
+					
+						newTaskTypeID = ParameterUtils.parseIntParameter(request, "taskTypeID");
 						//TODO delete? task.setTaskTypeID(newTaskTypeID);
 					
 						//do not update database here.  that should only happen once user has submitted the overall update request
-						boolean updateDataBase = false;
+						updateDataBase = false;
 						task =Task.convertToType(task, newTaskTypeID, updateDataBase);
+						
 	
+						forwardTo = Constants.URL_EDIT_TASK;
+						break;
+					case ("task-edit-add-new-keyword"):
+						String keywordValue = request.getParameter("newTaskKeyword");
+						if(task==null || task.getTaskID()==0){
+							throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
+						}
+						if(keywordValue == null || keywordValue.isEmpty()){
+							throw new ValidationException(ErrorMessages.KEYWORD_EMPTY);
+						}
+						Keyword keyword = new Keyword(keywordValue, user.getUserID());
+						task.createAndAddKeyword(keyword);
+						
 						forwardTo = Constants.URL_EDIT_TASK;
 						break;
 					case ("edit-task-update"):
 						//if Save button pressed, run the following.  If Cancel button was pressed then skip and just forward to appropriate page
 						if(request.getParameter("submitButton").equals("save")){
-							if(task.getTaskID()==0){
+							if(task==null || task.getTaskID()==0){
 								throw new ValidationException(ErrorMessages.NOTHING_SELECTED);
 							}
 							
@@ -132,7 +169,11 @@ public class EditTask extends HttpServlet {
 						
 							task = CommonServletFunctions.updateTaskParametersFromRequest(request, task);
 							
+							task.setUpdatedKeywordIDsList(updatedKeywordIDs);
+							
 							task.update();
+
+							request.setAttribute("successMessage", SuccessMessages.TASK_UPDATED);
 						}
 							
 						switch(path){
@@ -168,6 +209,7 @@ public class EditTask extends HttpServlet {
 				request.setAttribute("stage", stage);
 				request.setAttribute("task", task);
 				request.setAttribute("owner", owner);
+				request.setAttribute("coreTaskKeyords", Keyword.loadCoreMembers());
 				
 			} else if(user.hasRole(Constants.USER_CLIENT)){
 				forwardTo = "clientMainMenu.jsp";
@@ -184,6 +226,19 @@ public class EditTask extends HttpServlet {
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("owner", owner);
+			
+			try {
+				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
+				request.setAttribute("coreTasks", Task.getCoreTasks());
+				request.setAttribute("coreTaskKeyords", Keyword.loadCoreMembers());
+			} catch (DatabaseException e1) {
+				request.setAttribute("erorMessage", ErrorMessages.GENERAL_DB_ERROR);
+				e1.printStackTrace();
+			} catch (ValidationException e1) {
+				request.setAttribute("erorMessage", ErrorMessages.GENERAL_VALIDATION_ERROR);
+				e1.printStackTrace();
+			}
+			
 			
 			e.printStackTrace();
 

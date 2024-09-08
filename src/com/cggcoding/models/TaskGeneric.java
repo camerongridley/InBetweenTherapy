@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -39,9 +40,9 @@ public class TaskGeneric extends Task implements Serializable{
 	
 	//full constructor
 	private TaskGeneric(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
-			boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition) {
+			boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition, Map<Integer, Keyword> keywords) {
 		//super(userID, taskTypeID, parentTaskID, title, instructions, resourceLink, extraTask, template);
-		super(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed, dateCompleted, clientTaskOrder, extraTask, template, templateID, clientRepetition);
+		super(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed, dateCompleted, clientTaskOrder, extraTask, template, templateID, clientRepetition, keywords);
 	}
 	
 	//Static Factory Methods
@@ -55,14 +56,14 @@ public class TaskGeneric extends Task implements Serializable{
 	}
 	
 	public static TaskGeneric getInstanceFull(int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink,
-			boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition){
-		return new TaskGeneric(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed, dateCompleted, clientTaskOrder, extraTask, template, templateID, clientRepetition);
+			boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition, Map<Integer, Keyword> keywords){
+		return new TaskGeneric(taskID, stageID, userID, taskTypeID, parentTaskID, title, instructions, resourceLink, completed, dateCompleted, clientTaskOrder, extraTask, template, templateID, clientRepetition, keywords);
 	}	
 	
 	public static TaskGeneric convertToGeneric(Task task){
 		return getInstanceFull(task.getTaskID(), task.getStageID(), task.getUserID(), Constants.TASK_TYPE_ID_GENERIC_TASK, task.getParentTaskID(), task.getTitle(), task.getInstructions(), 
 				task.getResourceLink(), task.isCompleted(), task.getDateCompleted(), task.getClientTaskOrder(), task.isExtraTask(), task.isTemplate(), task.getTemplateID(), 
-				task.getClientRepetition());
+				task.getClientRepetition(), task.getKeywords());
 	}
 	
 
@@ -78,9 +79,9 @@ public class TaskGeneric extends Task implements Serializable{
 	 * @throws ValidationException
 	 */
 	public static TaskGeneric getTemplateInstance(int userID, int taskTypeID, String title, String instructions, 
-			String resourceLink, boolean extraTask){
+			String resourceLink, boolean extraTask, Map<Integer, Keyword> keywords){
 		return new TaskGeneric(0, 0, userID, taskTypeID, 0, 
-				title, instructions, resourceLink, false, null, 0, extraTask, true, 0, 1);
+				title, instructions, resourceLink, false, null, 0, extraTask, true, 0, 1, keywords);
 	}
 	
 	protected static TaskGeneric loadGeneric(Connection cn, int taskID) throws SQLException{
@@ -111,7 +112,7 @@ public class TaskGeneric extends Task implements Serializable{
 	@Override
 	public Task copy(){
 		TaskGeneric gTask = getInstanceFull(0, getStageID(), getUserID(), getTaskTypeID(), getParentTaskID(), getTitle(), getInstructions(), getResourceLink(), 
-					isCompleted(), getDateCompleted(), getClientTaskOrder(), isExtraTask(), false, getTemplateID(), getClientRepetition());
+					isCompleted(), getDateCompleted(), getClientTaskOrder(), isExtraTask(), false, getTemplateID(), getClientRepetition(), getKeywords());
 		
 		return gTask;
 

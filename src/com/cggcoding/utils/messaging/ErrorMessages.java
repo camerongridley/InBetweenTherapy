@@ -13,7 +13,7 @@ public final class ErrorMessages {
 	public static final String VALIDATION_ERROR_UPDATING_DATA = "The data you are trying to update contains invalid information.  Please try again.";
 	public static final String DEFAULTS_HOLDER_ID_SELECTED = "It appears you are trying to access restricted data.  Please be sure to make a valid selection and try again.";
 	public static final String OBJECT_IS_NULL = "It appears there is no database record for what you are looking for.  Please be sure to make a valid selection and try again.  If you have further problems please contact customer support.";
-	public static final String NOTHING_SELECTED = "You have not selected anything to update.  Please make a selection and try again.";
+	public static final String NOTHING_SELECTED = "You have not selected anything.  Please make a selection and try again.";
 	public static final String INVALID_SELECTION = "Something is missing!  There seems to be some missing information on our end that is needed to do what you're asking.  Please try again or contact customer support.";
 	
 	
@@ -43,7 +43,8 @@ public final class ErrorMessages {
 	public static final String STAGE_IS_NOT_TEMPLATE = "You appear to be trying to add a task template to a stage that is not a template.  This is not allowed.  Please try again or contact customer support.";
 	public static final String STAGE_CONTAINS_TASK_TEMPLATE = "This stage template already contains the task you've chosen.  Go to the Edit Task page to increase the number of repetitions for this task.";
 	public static final String STAGE_CLIENT_ONLY_ALLOWED_IN_PLAN_TEMPLATE = "Client Stages can only be added to Treatment Plans that are NOT templates.  It appears the Treatment Plan you have loaded is a template.  Please try again.";
-
+	public static final String STAGE_LOCKED = "This stage is locked and cannot be saved.  Make sure you have completed previous stages in order to unlock and be able to make changes to this stage.";
+	
 	//Tasks
 	public static final String TASK_MISSING_INFO = "You must select a task type as well as enter a task name and instructions.";
 	public static final String TASK_INVALID_ID = "There appears to be a problem with your task.  Please email customer support with a detailed explanation of what happened.";
@@ -58,8 +59,22 @@ public final class ErrorMessages {
 	
 	//Other
 	public static final String USER_NOT_FOUND = "We cannont find the user you are looking for.  Please try again or contact customer support.";
+	public static final String PASSWORDS_DONT_MATCH = "The passwords you entered do not match.  Please try again.";
+	public static final String USERNAME_ALREADY_EXISTS = "That username already exists.  Please pick another one.";
+	public static final String MISSING_USER_INFORMATION = "Oops! It looks like we are missing some information that is needed to register.  Please fill out all of the required fields.";
+	public static final String EMAIL_ALREADY_EXISTS = "That email already is already being used by another user.  Please pick another one or contact customer support for further assistance.";
 	
+	public static final String INVITATION_NOT_FOUND = "There was no invitation found with that invitation code.  Please try again or contact the person who invited you to request a new invitation.";
+	public static final String INVITATION_INVALID_EMAIL_ADDRESS = "The email address you entered is invalid.  The invitation was not sent.  Please try again.";
+	public static final String INVITATION_UNSUCCESSFUL_SEND = "The invitation email failed to send properly.  Please check the email address you are sending to and try again.";
+	public static final String INVITATION_ALREADY_INVITED = "You have already sent that person an invitation.";
+	public static final String INTIVATION_USER_ALREADY_REGISTERED = "A user with that email address is already registered.";
 	
+	public static final String KEYWORD_ALREADY_EXISTS = "That keyword already exists.";
+	public static final String KEYWORD_EMPTY = "You did not enter any value for the new keyword.  Please try again.";
+	
+	public static final String PASSWORD_MISSING = "Please enter a password to continue.";
+	public static final String DATABASE_CONNECTION_FAILURE = "Our apologies.  There seems to be a problem connecting to the database.  We are working on it.  Please try again later.  If you continue to experience problems, please contact customer support.";
 	
 	
 }

@@ -15,10 +15,11 @@
 
 	<c:if test="${path != 'templateStage' }">
 		<div class="well well-sm">
-			<form class="form-horizontal" action="/secure/CreateStage" method="POST">
+			<form class="form-horizontal" action="/secure/treatment-components/CreateStage" method="POST">
 				<input type="hidden" name="requestedAction" value="stage-add-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				<input type="hidden" name="clientUUID" value="${clientUUID }" >
 				
 				<div>
 					<h3>Add a Core Stage</h3>
@@ -55,10 +56,11 @@
 	
 	
 	<div class="well well-sm">
-		<form class="form-horizontal" action="/secure/CreateStage" method="POST">
+		<form class="form-horizontal" action="/secure/treatment-components/CreateStage" method="POST">
 			<input type="hidden" name="requestedAction" value="stage-create-new">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >
 			
 			<div>
 				<h3>Create a New Stage</h3>
@@ -67,13 +69,13 @@
 	        <div class="form-group">
 	            <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value="${fn:escapeXml(stageTitle)}" placeholder="Enter a stage name here.">
+	                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value='<c:out value="${stageTitle}"/>' placeholder="Enter a stage name here.">
 	            </div>
 	        </div>
 	        <div class="form-group">
 	            <label for="stageDescription" class="col-sm-2 control-label">Stage Description</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="stageDescription" name="stageDescription" value="${fn:escapeXml(stageDescription)}" placeholder="Describe the stage.">
+	                <input type="text" class="form-control" id="stageDescription" name="stageDescription" value='<c:out value="${stageDescription}"/>' placeholder="Describe the stage.">
 	            </div>
 	        </div>
 	        

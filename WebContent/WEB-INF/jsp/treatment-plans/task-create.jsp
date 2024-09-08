@@ -15,16 +15,84 @@
 	
 	<c:if test='${path!="templateTask" }'>
 		<div class="well well-sm">
-			<form class="form-horizontal" action="/secure/CreateTask" method="POST">
+			<div>
+				<h4>Add a Core Task</h4>
+			</div>
+			
+			<form class="form-horizontal" action="/secure/treatment-components/CreateTask" method="POST">
+				<input type="hidden" name="requestedAction" value="create-task-start">
+				<input type="hidden" name="path" value="${path }">
+				<input type="hidden" name="stageID" value="${stage.stageID }">
+				<input type="hidden" name="isTemplate" value="${task.template }">
+				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+				
+				
+				
+				<div class="form-horizontal">
+			        <div class="form-group">
+
+			            <div class="col-sm-offset-2 col-sm-10">
+			            
+			            <div class="panel panel-info panel-task" id="keywordList" title="Click to expand and select keyword filters.">
+						  <div class="panel-heading">
+						  	  
+			
+									<div class="">
+									  	<a role="button" data-toggle="collapse" href="#collapseKeywordFilters" aria-expanded="true" aria-controls="#collapseKeywordFilters Panel Heading">
+								          Select Filters By Keyword
+								        </a>
+									</div>
+			
+			
+						  </div><!-- end panel-heading -->
+						  
+						  <div id="collapseKeywordFilters" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseKeywordFilters Panel Body">
+							  <div class="panel-body">
+							    <div class="col-sm-10">
+			
+					                <c:forEach var="keyword" items="${coreTaskKeywords}" varStatus="status">
+					                	<c:set var="keywordValue" value="${keyword.value}"></c:set>
+					
+										<!-- use label-default for core keywords and label-primary for custom keywords -->
+										<label class="keyword label-default">
+										      <input type="checkbox" name="keywords[]" id="keywords" value="${keywordValue.keywordID}" <c:if test="${selectedKeywords.contains(keywordValue) }">checked</c:if>> ${keywordValue.keyword}
+									    </label>
+					
+									</c:forEach>
+
+									<hr>
+
+									<button type="button" class="btn btn-sm btn-primary" id="uncheckAll" title='Unchecks all filters.  You still need to press the "Update FIlters" button to refresh the results.'>Select None</button>
+									
+									<button type="submit" name="submitButton" value="save" class="btn btn-default">Update Filters</button>
+					
+					            </div>
+							  </div>
+						  </div>
+						</div>
+			            
+			            <strong>Current filters:</strong>
+			          	<c:forEach var="filter" items="${selectedKeywords }" varStatus="status">
+							${filter.keyword}
+							<c:if test="${status.last!=true }">, </c:if>
+						</c:forEach>
+			            
+			            </div>
+			        </div>
+			    </div>
+			</form>
+			
+		
+			<form class="form-horizontal" action="/secure/treatment-components/CreateTask" method="POST">
 				<input type="hidden" name="requestedAction" value="task-add-template">
 				<input type="hidden" name="path" value="${path }">
 				<input type="hidden" name="stageID" value="${stage.stageID }">
 				<input type="hidden" name="isTemplate" value="${task.template }">
 				<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 				
-				<div>
-					<h4>Add a Core Task</h4>
-				</div>
+				
 				
 				<div class="form-horizontal">
 			        <div class="form-group">
@@ -33,38 +101,43 @@
 			                <select class="form-control" id="defaultTaskList" name="taskID">
 			                    <option  value="">Select a core task.</option>
 			                    <c:forEach items="${coreTasks}" var="defaultTask">
-			                        <option value="${defaultTask.taskID}">${fn:escapeXml(defaultTask.title)}</option>
+			                        <option value="${defaultTask.taskID}"><c:out value="${defaultTask.title }"/></option>
 			                    </c:forEach>
 			                </select>
+			                
 			            </div>
 			        </div>
+
 			        
 			        <div class="form-group">
 				        <div class="col-sm-offset-2 col-sm-10">
 				        	<p>Preview of selected task goes here.</p>
 				        </div>
 			        </div>
-					
-				<c:if test='${path.equals("manageClients")}'>
-					<div class="form-group">
-				        <div class="col-sm-offset-2 col-sm-10">
-					  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="clientRepetitions" name="clientRepetitions">
-	                    <option  value="1" >1</option>
-						<option  value="2" >2</option>
-						<option  value="3" >3</option>
-						<option  value="4" >4</option>
-						<option  value="5" >5</option>
-						<option  value="6" >6</option>
-						<option  value="7" >7</option>
-						<option  value="8" >8</option>
-						<option  value="9" >9</option>
-						<option  value="10" >10</option>
-	                </select>
-	
-	                </div>
-	                </div>
-	            </c:if>
-
+				<c:choose>
+					<c:when test='${path.equals("manageClients") || path.equals("templateStage") || path.equals("templateTreatmentPlan")}'>
+						<div class="form-group">
+					        <div class="col-sm-offset-2 col-sm-10">
+						  Repetitions: <select class="task-repetition-dropdown" title="Number of repetitions." id="taskReps" name="taskReps">
+		                    <option  value="1" selected>1</option>
+							<option  value="2" >2</option>
+							<option  value="3" >3</option>
+							<option  value="4" >4</option>
+							<option  value="5" >5</option>
+							<option  value="6" >6</option>
+							<option  value="7" >7</option>
+							<option  value="8" >8</option>
+							<option  value="9" >9</option>
+							<option  value="10" >10</option>
+		                </select>
+		
+		                </div>
+		                </div>
+		            </c:when>
+		            <c:otherwise>
+		            	
+		            </c:otherwise>
+				</c:choose>
 					
 			        <div class="form-group">
 			            <div class="col-sm-offset-2 col-sm-10 save-button">
@@ -81,12 +154,13 @@
 	
 	
 	<div class="well well-sm">
-		<form class="form-horizontal" action="/secure/CreateTask" method="POST">
+		<form class="form-horizontal" action="/secure/treatment-components/CreateTask" method="POST">
 			<input type="hidden" name="requestedAction" value="task-type-select">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">
 			<input type="hidden" name="isTemplate" value="${task.template }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 				
 			<div>
 				<h4>Create a New Task</h4>
@@ -99,14 +173,14 @@
 	                <select class="form-control" id="taskTypeID" name="taskTypeID">
 	                    <option  value="">Select a task type.</option>
 	                    <c:forEach items="${taskTypeMap}" var="taskType">
-	                        <option value="${taskType.key}" <c:if test="${taskType.key == task.taskTypeID}">selected</c:if> >${fn:escapeXml(taskType.value)}</option>
+	                        <option value="${taskType.key}" <c:if test="${taskType.key == task.taskTypeID}">selected</c:if> ><c:out value="${taskType.value}"/></option>
 	                    </c:forEach>
 	                </select>
 	            </div>
 	        </div>	
 	    </form>
 	        
-	    <form class="form-horizontal" action="/secure/CreateTask" method="POST">
+	    <form class="form-horizontal" action="/secure/treatment-components/CreateTask" method="POST">
 			<input type="hidden" name="requestedAction" value="task-create-new">
 			<input type="hidden" name="path" value="${path }">
 			<input type="hidden" name="stageID" value="${stage.stageID }">
@@ -115,24 +189,25 @@
 			<input type="hidden" name="isTemplate" value="${task.template }">
 			<input type="hidden" name="isExtraTask" value="${task.extraTask }">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 			    
 			<c:if test="${task.taskTypeID!=0 }">	
 	        <div class="form-group">
 	            <label for="taskTitle" class="col-sm-2 control-label">Task Name</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="taskTitle" name="taskTitle" value="<c:out value="${fn:escapeXml(task.title) }"/>" placeholder="Enter a task name here.">
+	                <input type="text" class="form-control" id="taskTitle" name="taskTitle" value="<c:out value="${task.title }"/>" placeholder="Enter a task name here.">
 	            </div>
 	        </div>
 	        <div class="form-group">
 	            <label for="taskInstructions" class="col-sm-2 control-label">Instructions</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="taskInstructions" name="taskInstructions" value="<c:out value="${fn:escapeXml(task.instructions) }"/>" placeholder="Describe the task">
+	                <input type="text" class="form-control" id="taskInstructions" name="taskInstructions" value="<c:out value="${task.instructions }"/>" placeholder="Describe the task">
 	            </div>
 	        </div>
 			<div class="form-group">
 	            <label for="resourceLink" class="col-sm-2 control-label">Resource Link</label>
 	            <div class="col-sm-10">
-	                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${fn:escapeXml(task.resourceLink) }"/>" placeholder="Add a link to related resources for this task.">
+	                <input type="text" class="form-control" id="resourceLink" name="resourceLink" value="<c:out value="${task.resourceLink }"/>" placeholder="Add a link to related resources for this task.">
 	            </div>
 	        </div>
 
@@ -142,25 +217,25 @@
 				<div class="form-group">
 		            <label for="extraTextLabel1" class="col-sm-2 control-label">Extra TextBox 1 Label</label>
 		            <div class="col-sm-10">
-		                <input type="text" class="form-control" id="extraTextLabel1" name="extraTextLabel1" value="<c:out value="${fn:escapeXml(task.extraTextLabel1) }"/>" placeholder="Enter a name for the label of the first extra textbox.">
+		                <input type="text" class="form-control" id="extraTextLabel1" name="extraTextLabel1" value="<c:out value="${task.extraTextLabel1 }"/>" placeholder="Enter a name for the label of the first extra textbox.">
 		            </div>
 		        </div>
 		        <div class="form-group">
 		            <label for="extraTextValue1" class="col-sm-2 control-label">Extra TextBox 1 Value</label>
 		            <div class="col-sm-10">
-		                <input type="text" class="form-control" id="extraTextValue1" name="extraTextValue1" value="<c:out value="${fn:escapeXml(task.extraTextValue1) }"/>" placeholder="Enter a value for the first extra textbox. Leave empty if this for a client entry.">
+		                <input type="text" class="form-control" id="extraTextValue1" name="extraTextValue1" value="<c:out value="${task.extraTextValue1 }"/>" placeholder="Enter a value for the first extra textbox. Leave empty if this for a client entry.">
 		            </div>
 		        </div>
 		        <div class="form-group">
 		            <label for="extraTextLabel2" class="col-sm-2 control-label">Extra TextBox 2 Label</label>
 		            <div class="col-sm-10">
-		                <input type="text" class="form-control" id="extraTextLabel2" name="extraTextLabel2" value="<c:out value="${fn:escapeXml(task.extraTextLabel2) }"/>" placeholder="Enter a name for the label of the first extra textbox.">
+		                <input type="text" class="form-control" id="extraTextLabel2" name="extraTextLabel2" value="<c:out value="${task.extraTextLabel2 }"/>" placeholder="Enter a name for the label of the first extra textbox.">
 		            </div>
 		        </div>
 		        <div class="form-group">
 		            <label for="extraTextValue2" class="col-sm-2 control-label">Extra TextBox 2 Value</label>
 		            <div class="col-sm-10">
-		                <input type="text" class="form-control" id="extraTextValue2" name="extraTextValue2" value="<c:out value="${fn:escapeXml(task.extraTextValue2) }"/>" placeholder="Enter a value for the second extra textbox. Leave empty if this for a client entry.">
+		                <input type="text" class="form-control" id="extraTextValue2" name="extraTextValue2" value="<c:out value="${task.extraTextValue2 }"/>" placeholder="Enter a value for the second extra textbox. Leave empty if this for a client entry.">
 		            </div>
 		        </div>
 			</c:if>
@@ -178,7 +253,7 @@
 			
 	        <div class="form-group">
 	            <div class="col-sm-offset-2 col-sm-10 save-button">
-	                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save & Continue</button>
+	                <button type="submit" name="submitButton" value="save" class="btn btn-default" <c:if test="${task.taskTypeID==0 }">disabled="disabled"</c:if>>Save & Continue</button>
 	                <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
 	            </div>
 	        </div>
@@ -191,6 +266,11 @@
 		    $('#taskTypeID').change(function() {
 		    	this.form.submit();
 		    });
+		});
+		
+		
+		$("#uncheckAll").click(function () {
+		    $("input:checkbox").prop('checked', false);
 		});
 	</script>
 

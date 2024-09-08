@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.dbutils.DbUtils;
-//import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.DataSource;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
@@ -87,13 +87,17 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	 * @throws ValidationException 
 	 */
 	public void initialize() throws ValidationException, DatabaseException{
+		//OPTIMIZE pass 1 connection to methods that make database calls
 		if(stages.size() != 0){
 			Stage firstStage = stages.get(0);
 			firstStage.setInProgress(true);
 			firstStage.updateBasic();
 		}
 		
+		//set the Plan to inProgress and reset all stageView indexes (these may have changed if the therapist edited the plan after assigning it and before the client started it)
 		this.setInProgress(true);
+		this.setActiveViewStageIndex(0);
+		this.setCurrentStageIndex(0);
 		
 		updateBasic();
 		
@@ -189,6 +193,10 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		return stages.get(activeViewStageIndex);
 	}
 	
+	public Stage getStageByClientOrder(int stageIndex){
+		return stages.get(stageIndex);
+	}
+	
 	public boolean isInProgress() {
 		return inProgress;
 	}
@@ -254,8 +262,10 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	public Stage nextStage() throws DatabaseException, ValidationException{
-
+		
+		//check if the user is interacting with the current stage or a previously completed stage
 		if(activeViewStageIndex == currentStageIndex){
+			//check if the current stage is the last stage. If so,then the TreatmentPlan is completed. If not, increase the currentStageIndex and set the new activeView
 			if(currentStageIndex < getNumberOfStages()-1){
 				currentStageIndex++;
 				activeViewStageIndex = currentStageIndex;
@@ -265,6 +275,8 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 				this.setInProgress(false);
 				
 			}
+		} else {
+			activeViewStageIndex++;
 		}
 		
 		Stage nextStage = stages.get(activeViewStageIndex);
@@ -312,18 +324,19 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	}
 	
 	//OPTIMIZE move this logic to when the TreatmentPlan's Stages are loaded
-	public void setTasksDisabledStatus(int loggedInUserID){
+	public void setTasksDisabledStatus(int loggedInUserID, boolean viewOnlyMode){
 		/*if the userID of the TreatmentPlan doesn't equal the userID of the user logged in 
 		 * (e.g. plan belongs to a client and the logged in user is the therapist of the client)
 		 * then all tasks should be disabled.  If the logged in user also owns the plan, then all
 		 * tasks that are in Stages that haven't been started yet should be disabled (i.e. stages where completed==false and inProgress==false)
+		 * 
+		 * viewOnlyMode sets all tasks to disabled
 		*/
-		if(this.userID != loggedInUserID){
-			for(Stage stage : this.stages){
-				for(Task task : stage.getTasks()){
-					task.setDisabled(true);
-				}
-			}
+		
+		if(viewOnlyMode){
+			disableAllTasks();
+		}else if(this.userID != loggedInUserID){
+			disableAllTasks();
 		}else{
 			for(Stage stage : this.stages){
 				if(!stage.isCompleted() && !stage.isInProgress()){
@@ -331,6 +344,14 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 						task.setDisabled(true);
 					}
 				}
+			}
+		}
+	}
+	
+	private void disableAllTasks(){
+		for(Stage stage : this.stages){
+			for(Task task : stage.getTasks()){
+				task.setDisabled(true);
 			}
 		}
 	}
@@ -546,7 +567,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 		if(treatmentPlanID != 0){
 			//Load the basic plan
-			plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
+			plan = loadBasic(cn, treatmentPlanID);
 	        
 			//Load the Stages
 			if(plan.isTemplate()){
@@ -561,9 +582,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 			}else{
 				plan.setStages(dao.treatmentPlanLoadClientStages(cn, treatmentPlanID));
 			}
-			
-			//reset the active view so the plan starts off on the current view
-			plan.setActiveViewStageIndex(plan.getCurrentStageIndex());
+
 		}
 		
 		
@@ -580,7 +599,7 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 	        try {
 	        	cn = dao.getConnection();
 	        	
-	            plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
+	            plan = loadBasic(cn, treatmentPlanID);
 	            
 	            if(plan.isTemplate()){
 	            	plan.setTreatmentPlanStageTemplateMapList(dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID));
@@ -601,6 +620,27 @@ public class TreatmentPlan implements Serializable, DatabaseModel{
 		
 	}
 	
+	public static TreatmentPlan loadBasic(Connection cn, int treatmentPlanID) throws SQLException, ValidationException{
+
+        TreatmentPlan plan = null;
+        
+        dao.throwValidationExceptionIfTemplateHolderID(treatmentPlanID);
+        
+        if(treatmentPlanID!=0){
+ 	
+            plan = dao.treatmentPlanLoadBasic(cn, treatmentPlanID);
+            
+            dao.throwValidationExceptionIfNull(plan);
+            
+            if(plan.isTemplate()){
+            	plan.setTreatmentPlanStageTemplateMapList(dao.mapTreatmentPlanStageTemplateLoad(cn, treatmentPlanID));
+            }
+
+        }
+        
+        return plan;
+		
+	}
 	
 	//TODO rename to deleteStageTemplate and refactor to use MapTreatmentPlanStageTemplate class
 	public TreatmentPlan deleteStage(int stageID) throws ValidationException, DatabaseException {

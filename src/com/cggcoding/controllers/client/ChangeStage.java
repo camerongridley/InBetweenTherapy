@@ -5,8 +5,10 @@ import com.cggcoding.exceptions.ValidationException;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.ParameterUtils;
+import com.cggcoding.utils.messaging.WarningMessages;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -44,8 +46,11 @@ public class ChangeStage extends HttpServlet {
 		request.setAttribute("path", path);
 		/*-----------End Common Servlet variables---------------*/
 
-		int clientUserID = ParameterUtils.parseIntParameter(request, "clientUserID");
 		User client = null;
+		//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
+		
         int treatmentPlanID = Integer.parseInt(request.getParameter("treatmentPlanID"));
         TreatmentPlan treatmentPlan = null;
         Stage activeStage  = null;
@@ -54,19 +59,35 @@ public class ChangeStage extends HttpServlet {
         	if(user.getRole().equals(Constants.USER_CLIENT)){
         		client = user;
         	} else if(user.getRole().equals(Constants.USER_THERAPIST)){
-        		client = User.loadBasic(clientUserID);
+        		UserTherapist userTherapist = (UserTherapist)user;
+        		client = userTherapist.getClientFromUUID(clientUUID);
+        	}
+        	
+        	switch(requestedAction){
+	        	case "stage-complete-continue":
+	        		
+	        		break;
+	        	case "stage-complete-back":
+	        		
+	        		break;
         	}
         	
 	        treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 	
-	        int newViewID = Integer.parseInt(request.getParameter("stageIndex"));
-	        treatmentPlan.setActiveViewStageIndex(newViewID);
+	        int newViewStageIndex = Integer.parseInt(request.getParameter("stageIndex"));
+	        treatmentPlan.setActiveViewStageIndex(newViewStageIndex);
 	        activeStage = treatmentPlan.getActiveViewStage();
 	        
 			treatmentPlan.updateBasic();
 			
 			//TODO decide if I need to check the user role (client vs. therapist)
-			treatmentPlan.setTasksDisabledStatus(user.getUserID());
+			if(path.equals(Constants.PATH_CLIENT_MANAGE_PLANS)){
+				treatmentPlan.setTasksDisabledStatus(user.getUserID(), true);
+				request.setAttribute("warningMessage", WarningMessages.CLIENT_TREATMENT_PLAN_DISABLED);
+			}else{
+				treatmentPlan.setTasksDisabledStatus(user.getUserID(), false);
+			}
+			
 			
 			request.setAttribute("activeStage", activeStage);
 			request.setAttribute("treatmentPlan", treatmentPlan);
@@ -74,6 +95,7 @@ public class ChangeStage extends HttpServlet {
 	
 			forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 		} catch (ValidationException | DatabaseException e) {
+			request.setAttribute("clientUUID", clientUUID);
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("activeStage", activeStage);

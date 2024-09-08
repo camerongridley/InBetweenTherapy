@@ -8,7 +8,9 @@ import java.util.Map;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.TaskGeneric;
+import com.cggcoding.models.Keyword;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.StageGoal;
 import com.cggcoding.models.MapStageTaskTemplate;
@@ -19,6 +21,7 @@ import com.cggcoding.models.TreatmentPlan;
 import com.cggcoding.models.TaskTwoTextBoxes;
 import com.cggcoding.models.User;
 import com.cggcoding.models.UserClient;
+import com.cggcoding.models.UserPassword;
 
 public interface DatabaseActionHandler {
 
@@ -29,21 +32,43 @@ public interface DatabaseActionHandler {
 	//**************************************************
 
 	boolean userValidate(String email, String password) throws DatabaseException;
+	
+	UserPassword userGetEncryptedPasswordAndSalt(Connection cn, String emailAddress) throws SQLException;
 
-	User userLoadInfo(String email, String password) throws DatabaseException;
+	User userLoadInfo(Connection cn, String email, String password) throws DatabaseException;
+	
+	User userLoadByEmailAddress(Connection cn, String emailAddress) throws ValidationException, SQLException;
 	
 	//**************************************************
 	// *************** User Methods *******************
 	//**************************************************
+	boolean userValidateNewUsername(Connection cn, String userName) throws SQLException;
+	
+	boolean userValidateNewEmail(Connection cn, String email)  throws SQLException;
+	
+	User userCreateNewUser(Connection cn, User newUser, byte[] encryptedPassword, byte[] passwordSalt) throws SQLException;
+	
+	/**Updates the user's account information.  It checks if newUserPassword is null and if so, updates all other data.  If so, it also updates the user's password and salt
+	 * @param cn
+	 * @param user - The User object being updated
+	 * @param newUserPasswordData - nullable - Holds data for new password and salt when user changes password
+	 * @return
+	 * @throws SQLException
+	 */
+	boolean userUpdate(Connection cn, User user, UserPassword newUserPasswordData) throws SQLException;
+	
 	User userLoadByID(int userID) throws DatabaseException, ValidationException;
 	
 	public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException;
 	
-	List<TreatmentPlan> userGetClientTreatmentPlans(int clientUserID, boolean inProgress, boolean isCompleted)
+	List<TreatmentPlan> userGetTreatmentPlans(int clientUserID)
 			throws DatabaseException, ValidationException;
 	
 	List<TreatmentPlan> userGetTherapistAssignedPlans(int clientUserID, int assignedByUserID)
 			throws DatabaseException, ValidationException;
+	
+	boolean userClientUpdateActiveTreatmentPlanID(Connection cn, UserClient client) throws SQLException;
+
 
 	//**************************************************************************************************
 	//****************************** Treatment Plan Methods *************************************
@@ -166,7 +191,7 @@ public interface DatabaseActionHandler {
 	
 	ArrayList<TreatmentIssue> treatmentIssueGetCoreList() throws DatabaseException;
 
-	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException;
+	ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(Connection cn, int userID) throws SQLException;
 
 	boolean treatmentIssueUpdate(Connection cn, TreatmentIssue issue) throws ValidationException, SQLException;
 
@@ -197,9 +222,28 @@ public interface DatabaseActionHandler {
 
 	boolean taskTwoTextBoxesUpdateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask)
 			throws SQLException, ValidationException;
+	
+	//**************************************************************************************************
+	//*************************************** Keyword Methods **********************************
+	//**************************************************************************************************
+	
+	Map<Integer, Keyword> keywordCoreMembersLoad(Connection cn) throws SQLException;
+	
+	Keyword keywordCreate(Connection cn, Keyword keyword) throws SQLException;
 
+	boolean keywordUpdate(Connection cn, Keyword keyword) throws SQLException;
+
+	void keywordDelete(Connection cn, int keywordID) throws SQLException;
 	
-	
+	boolean keywordTaskMapCreate(Connection cn, int taskID, int keywordID) throws SQLException;
+
+	/**
+	 * @param cn
+	 * @param taskID
+	 * @param keywordID
+	 * @throws SQLException
+	 */
+	void keywordTaskMapDelete(Connection cn, int taskID, int keywordID) throws SQLException;
 	
 	//**************************************************************************************************
 	//*************************************** Misc Methods **********************************
@@ -209,6 +253,54 @@ public interface DatabaseActionHandler {
 	boolean throwValidationExceptionIfNull(Object o) throws ValidationException;
 
 	boolean throwValidationExceptionIfZero(int arg) throws ValidationException;
+
+	
+	//**************************************************************************************************
+	//*************************************** Authentication Methods **********************************
+	//**************************************************************************************************
+	boolean userOwnsTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException;
+
+	boolean userAssignedTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException;
+
+	//**************************************************************************************************
+	//*************************************** Messaging Methods **********************************
+	//**************************************************************************************************
+	void invitationCreate(Connection cn, Invitation invitation) throws SQLException;
+
+	boolean invitationAlreadyExists(Connection cn, Invitation invitation) throws SQLException;
+
+	void invitationDelete(Connection cn, String invitationCode) throws SQLException;
+
+	boolean invitationUpdate(Connection cn, Invitation invitation) throws SQLException;
+
+	Invitation invitationLoad(Connection cn, String invitationCode) throws SQLException;
+
+	void therapistCreateClientConnection(Connection cn, int therapistUserID, int clientUserID) throws SQLException;
+
+	List<String> invitationGetSentInvitationCodes(Connection cn, int senderUserID) throws SQLException;
+
+
+	
+
+	
+
+
+	
+
+
+	
+	
+
+	
+
+	
+
+
+
+	
+
+
+
 
 	
 

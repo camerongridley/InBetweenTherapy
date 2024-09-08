@@ -7,5 +7,5 @@
 	<input type="hidden" name="treatmentPlanID" value="${treatmentPlanID }">
 	<input type="hidden" name="stageID" value="${stage.stageID }" >
 	<input type="hidden" name="taskID" value="${task.stageID }" >
-	<input type="hidden" name="clientUserID" value="${client.userID }" >
+
     

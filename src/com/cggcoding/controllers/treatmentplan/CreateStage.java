@@ -27,7 +27,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class CreateStage
  */
-@WebServlet("/secure/CreateStage")
+@WebServlet("/secure/treatment-components/CreateStage")
 public class CreateStage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -42,7 +42,7 @@ public class CreateStage extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		processRequest(request, response);
+		
 	}
 
 	/**
@@ -74,6 +74,9 @@ public class CreateStage extends HttpServlet {
 		User owner = null;
 		/*-----------End Treatment Plan object variables---------------*/
 		
+		//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
 		
 		int selectedCoreStageID = ParameterUtils.parseIntParameter(request, "coreStageID");
 		String stageTitle = request.getParameter("stageTitle");
@@ -83,6 +86,11 @@ public class CreateStage extends HttpServlet {
 		List<Stage> coreStages = null;
 		
 		try{
+			//check if this a therapist is accessing a client's data and authorize
+			if(clientUUID != null && !clientUUID.isEmpty()){
+				user.isAuthorizedForClientData(clientUUID);				
+			}
+			
 			if(!path.equals(Constants.PATH_TEMPLATE_STAGE)){
 				treatmentPlan = TreatmentPlan.load(treatmentPlanID);
 				ownerUserID = treatmentPlan.getUserID();
@@ -194,6 +202,8 @@ public class CreateStage extends HttpServlet {
 			request.setAttribute("treatmentPlan", treatmentPlan);
 			request.setAttribute("coreStages", coreStages);
 			request.setAttribute("owner", owner);
+			
+			e.printStackTrace();
 			
             forwardTo = Constants.URL_CREATE_STAGE;
 		}

@@ -1,6 +1,9 @@
 package com.cggcoding.controllers.navigation;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -8,7 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cggcoding.exceptions.DatabaseException;
+import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.User;
+import com.cggcoding.models.UserClient;
+import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 
 /**
@@ -57,6 +65,18 @@ public class MenuNav extends HttpServlet {
 				forwardTo = Constants.URL_ADMIN_MAIN_MENU;
 				break;
 			case "therapist":
+				UserTherapist therapistUser = (UserTherapist)user;
+				try {
+					Map<String, UserClient> clientMap = therapistUser.getUuidToClientMap();
+					request.setAttribute("encodedClientMap", clientMap);
+					//get the invitations sent and put in request
+					List<Invitation> invitations = therapistUser.getInvitationsSent();
+					request.setAttribute("invitationList", invitations);
+				} catch (DatabaseException | ValidationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 				break;
 			case "client":

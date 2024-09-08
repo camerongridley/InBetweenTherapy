@@ -28,7 +28,7 @@ import javax.servlet.http.HttpSession;
  * Created by cgrid_000 on 8/12/2015.
  * 
  */
-@WebServlet("/secure/CreateTreatmentPlan")
+@WebServlet("/secure/treatment-components/CreateTreatmentPlan")
 public class CreateTreatmentPlan extends HttpServlet implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
@@ -72,9 +72,17 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
     	String planDescription = request.getParameter("planDescription");
     	int selectedCoreIssueID = ParameterUtils.parseIntParameter(request, "coreTreatmentIssueID");
     	int selectedCustomIssueID = ParameterUtils.parseIntParameter(request, "customTreatmentIssueID");
-
+    	
+    	//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
     	
     	try {
+    		//check if this a therapist is accessing a client's data and authorize
+			if(clientUUID != null && !clientUUID.isEmpty()){
+				user.isAuthorizedForClientData(clientUUID);				
+			}
+    		
     		//currently the logged in user will always be the owner of a new TreatmentPlan
     		owner = user;
     		
@@ -176,7 +184,7 @@ public class CreateTreatmentPlan extends HttpServlet implements Serializable{
     		request.setAttribute("selectedCustomTreatmentIssue", selectedCustomIssueID);
 
     		forwardTo = Constants.URL_CREATE_TREATMENT_PLAN;
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
     	
 		request.getRequestDispatcher(forwardTo).forward(request,response);

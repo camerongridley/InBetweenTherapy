@@ -3,8 +3,10 @@ package com.cggcoding.utils.database;
 import java.io.Serializable;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import org.apache.commons.dbutils.DbUtils;
 
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.messaging.invitations.Invitation;
 import com.cggcoding.models.*;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.SqlBuilders;
@@ -79,6 +82,173 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	}
     
 	
+	@Override
+	public boolean userValidateNewUsername(Connection cn, String userName) throws SQLException{
+
+		PreparedStatement ps = null;
+	    ResultSet userInfo = null;
+	    int userNameExists = 0;
+	    
+	    try {
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE user_name=?");
+	        ps.setString(1, userName);
+	
+	        userInfo = ps.executeQuery();
+	
+	
+	        while (userInfo.next()){
+	            userNameExists = userInfo.getInt("COUNT(*)");
+	        }
+	
+	    } finally {
+			DbUtils.closeQuietly(userInfo);
+			DbUtils.closeQuietly(ps);
+		}
+	
+	
+	    if(userNameExists == 1){
+	        return false;
+	    } else {
+	        return true;
+	    }
+	}
+
+	@Override
+	public boolean userValidateNewEmail(Connection cn, String email) throws SQLException{
+
+		PreparedStatement ps = null;
+	    ResultSet userInfo = null;
+	    int emailNameExists = 0;
+	    
+	    try {
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM user WHERE email=?");
+	        ps.setString(1, email);
+	
+	        userInfo = ps.executeQuery();
+	
+	
+	        while (userInfo.next()){
+	            emailNameExists = userInfo.getInt("COUNT(*)");
+	        }
+	
+	    } finally {
+			DbUtils.closeQuietly(userInfo);
+			DbUtils.closeQuietly(ps);
+		}
+	
+	
+	    if(emailNameExists == 1){
+	        return false;
+	    } else {
+	        return true;
+	    }
+	}
+	
+	@Override
+	public User userCreateNewUser(Connection cn, User newUser, byte[] encryptedPassword, byte[] passwordSalt) throws SQLException{
+
+		PreparedStatement ps = null;
+		ResultSet generatedKeys = null;
+	    
+	    try {
+	    	String sql = "INSERT INTO user (user_user_role_id_fk, user_name, first_name, last_name, email, encrypted_password, password_salt) VALUES (?, ?, ?, ?, ?, ?, ?)";
+	    	
+	    	ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	    	
+	        ps.setInt(1, newUser.getRoleID());
+	        ps.setString(2, newUser.getUserName());
+	        ps.setString(3, newUser.getFirstName());
+	        ps.setString(4, newUser.getLastName());
+	        ps.setString(5, newUser.getEmail());
+	        ps.setBytes(6, encryptedPassword);
+	        ps.setBytes(7, passwordSalt);
+
+	        int success = ps.executeUpdate();
+	
+	        generatedKeys = ps.getGeneratedKeys();
+	        
+            while (generatedKeys.next()){
+            	newUser.setUserID(generatedKeys.getInt(1));;
+            }
+	
+	    } finally {
+			DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+		}
+	
+	
+	    return newUser;
+	}
+	
+	@Override
+	public boolean userUpdate(Connection cn, User user, UserPassword newUserPassword) throws SQLException{
+		PreparedStatement ps = null;
+        int success = 0;
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE user SET user_name=?, first_name=?, last_name=?, email=? ");
+        
+        try {
+        	
+        	if(newUserPassword==null){
+        		sqlBuilder.append("WHERE user_id=?;");
+            	
+                ps = cn.prepareStatement(sqlBuilder.toString());
+
+                ps.setString(1, user.getUserName());
+    	        ps.setString(2, user.getFirstName());
+    	        ps.setString(3, user.getLastName());
+    	        ps.setString(4, user.getEmail());
+    	      
+    	        ps.setInt(5, user.getUserID());
+        	}else{
+        		sqlBuilder.append(", encrypted_password=?, password_salt=? WHERE user_id=?;");
+        		//sql = "UPDATE user SET user_name=?, first_name=?, last_name=?, email=?, encrypted_password=?, password_salt=? WHERE user_id=?;";
+            	
+                ps = cn.prepareStatement(sqlBuilder.toString());
+
+                ps.setString(1, user.getUserName());
+    	        ps.setString(2, user.getFirstName());
+    	        ps.setString(3, user.getLastName());
+    	        ps.setString(4, user.getEmail());
+    	        ps.setBytes(5, newUserPassword.getEncryptedPassword());
+    	        ps.setBytes(6, newUserPassword.getPasswordSalt());
+    	        ps.setInt(7, user.getUserID());
+        	}
+        	
+            
+
+            success = ps.executeUpdate();
+        	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success == 1;
+	}
+	
+	@Override
+	public boolean userClientUpdateActiveTreatmentPlanID(Connection cn, UserClient client) throws SQLException{
+		PreparedStatement ps = null;
+        int success = 0;
+        String sql = "";
+        
+        try {
+
+    		sql = "UPDATE user SET active_treatment_plan_id=? WHERE user_id=?;";
+        	
+            ps = cn.prepareStatement(sql);
+
+            ps.setInt(1, client.getActiveTreatmentPlanID());
+	        ps.setInt(2, client.getUserID());
+
+            success = ps.executeUpdate();
+        	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success == 1;
+	}
+	
     /* (non-Javadoc)
 	 * @see com.cggcoding.utils.database.DatabaseActionHandler#validateUser(java.lang.String, java.lang.String)
 	 */
@@ -119,20 +289,46 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             return false;
         }
     }
+    
+    @Override
+    public UserPassword userGetEncryptedPasswordAndSalt(Connection cn, String emailAddress) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        UserPassword userPasswordInfo = null;
+        
+        try {
+            ps = cn.prepareStatement("SELECT encrypted_password, password_salt FROM user WHERE email = ?");
+            ps.setString(1, emailAddress);
 
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+            	userPasswordInfo = new UserPassword(rs.getBytes("encrypted_password"), rs.getBytes("password_salt"));
+            }
+            
+            //XXX decide if want to uncomment this - commented out because I want it to return null when there is no user found for when checking if a user with this email exists when sending invitations to join the site
+            /*if(user==null){
+            	throw new ValidationException(ErrorMessages.USER_NOT_FOUND);
+            }*/
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return userPasswordInfo;
+    }
+    
     //XXX can I move the switch statement into the User model?
     @Override
-	public User userLoadInfo(String email, String password) throws DatabaseException{
-    	Connection cn = null;
+	public User userLoadInfo(Connection cn, String email, String password) throws DatabaseException{
     	PreparedStatement ps = null;
         ResultSet rsUserInfo = null;
         User user = null;
         
         try {
-        	cn = getConnection();
-            ps = cn.prepareStatement("SELECT user.user_id, user.user_name, user.first_name, user.last_name, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?) AND ((user.password)=?))");
+            ps = cn.prepareStatement("SELECT user.user_id, user.user_name, user.first_name, user.last_name, user.email, user.active_treatment_plan_id, user_role.role FROM user_role INNER JOIN (user) ON user_role.user_role_id = user.user_user_role_id_fk WHERE (((user.email)=?))");
             ps.setString(1, email);
-            ps.setString(2, password);
 
             rsUserInfo = ps.executeQuery();
             
@@ -142,19 +338,14 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	switch (rsUserInfo.getString("role")){
             		case "admin":
             			user = new UserAdmin(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
-            			user.addRole("admin");
-            			user.setRole("admin");
             			break;
             		case "therapist":
             			user = new UserTherapist(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
-            			user.addRole("therapist");
-            			user.setRole("therapist");
             			break;
             		case "client":
             			user = new UserClient(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
-            			user.addRole("client");
-            			user.setRole("client");
-            			((UserClient)user).setActiveTreatmentPlanId(rsUserInfo.getInt("active_treatment_plan_id"));
+
+            			((UserClient)user).setActiveTreatmentPlanID(rsUserInfo.getInt("active_treatment_plan_id"));
             			break;
             	}
             }
@@ -166,7 +357,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         } finally {
         	DbUtils.closeQuietly(rsUserInfo);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
 
         return user;
@@ -206,8 +396,250 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return user;
     }
     
+    @Override
+	public User userLoadByEmailAddress(Connection cn, String emailAddress) throws ValidationException, SQLException{
+
+    	PreparedStatement ps = null;
+        ResultSet rsUserInfo = null;
+        User user = null;
+        
+        try {
+            ps = cn.prepareStatement("SELECT * FROM user WHERE email = ?");
+            ps.setString(1, emailAddress);
+
+            rsUserInfo = ps.executeQuery();
+            
+            while (rsUserInfo.next()){
+            	user = new UserAdmin(rsUserInfo.getInt("user_id"), rsUserInfo.getString("user_name"), rsUserInfo.getString("first_name"), rsUserInfo.getString("last_name"), rsUserInfo.getString("email"));
+            }
+            
+            //XXX decide if want to uncomment this - commented out because I want it to return null when there is no user found for when checking if a user with this email exists when sending invitations to join the site
+            /*if(user==null){
+            	throw new ValidationException(ErrorMessages.USER_NOT_FOUND);
+            }*/
+
+        } finally {
+        	DbUtils.closeQuietly(rsUserInfo);
+			DbUtils.closeQuietly(ps);
+        }
+
+        return user;
+    }
+    
+    @Override
+	public boolean invitationAlreadyExists(Connection cn,  Invitation invitation) throws SQLException{
+
+		PreparedStatement ps = null;
+	    ResultSet invitationInfo = null;
+	    int invitationExists = 0;
+	    
+	    try {
+			ps = cn.prepareStatement("SELECT COUNT(*) FROM invitation WHERE recipient_email=? AND sender_user_id_fk=?");
+	        ps.setString(1, invitation.getRecipientEmail());
+	        ps.setInt(2, invitation.getSenderUserID());
+	        
+	        invitationInfo = ps.executeQuery();
+	
+	
+	        while (invitationInfo.next()){
+	            invitationExists = invitationInfo.getInt("COUNT(*)");
+	        }
+	
+	    } finally {
+			DbUtils.closeQuietly(invitationInfo);
+			DbUtils.closeQuietly(ps);
+		}
+	
+	
+	    if(invitationExists >= 1){
+	        return true;
+	    } else {
+	        return false;
+	    }
+	}
+    
+    @Override
+	public void invitationCreate(Connection cn, Invitation invitation) throws SQLException{
+
+		PreparedStatement ps = null;
+	    
+	    try {
+	    	//first insert primary invitation data into the invitation table
+	    	String sql = "INSERT INTO invitation (invitation_code, recipient_email, sender_user_id_fk, date_invited, date_accepted, accepted, recipient_first_name, recipient_last_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+	    	
+	    	ps = cn.prepareStatement(sql);
+	    	
+	        ps.setString(1, invitation.getInvitationCode());
+	        ps.setString(2, invitation.getRecipientEmail());
+	        ps.setInt(3, invitation.getSenderUserID());
+	        ps.setTimestamp(4, convertLocalTimeDateToTimstamp(invitation.getDateInvited()));
+	        ps.setTimestamp(5, convertLocalTimeDateToTimstamp(invitation.getDateAccepted()));
+	        ps.setBoolean(6, invitation.isAccepted());
+	        ps.setString(7, invitation.getRecipientFirstName());
+	        ps.setString(8, invitation.getRecipientLastName());
+
+	        int success = ps.executeUpdate();
+	        
+	        DbUtils.closeQuietly(ps);
+	
+	        //now loop through all the treatmentPlanIDs in the invitation that are to be copied into the invitees account when they register
+	        
+        	sql = "INSERT INTO invitation_treatment_plans (invitation_code_fk, invitation_treatment_plan_id_fk) VALUES (?, ?)";
+	    	
+	    	ps = cn.prepareStatement(sql);
+		    	
+		    for(int treatmentPlanID : invitation.getTreatmentPlanIDsToCopy()){
+		        ps.setString(1, invitation.getInvitationCode());
+		        ps.setInt(2, treatmentPlanID);
+
+		        ps.addBatch();
+	        }
+		    
+		    ps.executeBatch();
+	
+	    } finally {
+			DbUtils.closeQuietly(ps);
+		}
+	
+	}
+    
+    @Override
+    public void invitationDelete(Connection cn, String invitationCode) throws SQLException{
+    	PreparedStatement ps = null;
+        
+    	try{
+	        ps = cn.prepareStatement("DELETE FROM invitation WHERE invitation_code=?");
+	        ps.setString(1, invitationCode);
+	
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
+    }
+    
+    //TODO load the treamtnPlanIDsToCopy - just set to null for now
+    @Override
+    public Invitation invitationLoad(Connection cn, String invitationCode) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Invitation invitation = null;
+        List<Integer> treatmentPlanIDsToCopy = new ArrayList<>();
+        
+        try {
+    		String sql = "SELECT * FROM invitation WHERE invitation_code =?";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setString(1, invitationCode);
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	Timestamp timestamp = rs.getTimestamp("date_invited");
+            	LocalDateTime dateInvited = convertTimestampToLocalDateTime(timestamp);
+            	
+            	timestamp = rs.getTimestamp("date_accepted");
+            	LocalDateTime dateAccepted = convertTimestampToLocalDateTime(timestamp);
+            	
+            	invitation = new Invitation(rs.getString("invitation_code"), rs.getInt("sender_user_id_fk"), rs.getString("recipient_email"), 
+            			rs.getString("recipient_first_name"), rs.getString("recipient_last_name"), dateInvited, dateAccepted, rs.getBoolean("accepted"), treatmentPlanIDsToCopy); 
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        //throwValidationExceptionIfNull(stage);
+        
+        return invitation;
+    	
+    }
+    
+    @Override
+    public boolean invitationUpdate(Connection cn, Invitation invitation) throws SQLException{
+    	PreparedStatement ps = null;
+        int success = 0;
+        
+        try {
+        		
+    		String sql = "UPDATE invitation SET recipient_email=?, sender_user_id_fk=?, date_invited=?, date_accepted=?, accepted=?, recipient_first_name=?, recipient_last_name=? WHERE invitation_code=?";
+        	
+            ps = cn.prepareStatement(sql);
+
+            ps.setString(1, invitation.getRecipientEmail());
+            ps.setInt(2, invitation.getSenderUserID());
+            ps.setTimestamp(3, convertLocalTimeDateToTimstamp(invitation.getDateInvited()));
+            ps.setTimestamp(4, convertLocalTimeDateToTimstamp(invitation.getDateAccepted()));
+            ps.setBoolean(5, invitation.isAccepted());
+            ps.setString(6, invitation.getRecipientFirstName());
+            ps.setString(7, invitation.getRecipientLastName());
+            ps.setString(8, invitation.getInvitationCode());
+
+
+            success = ps.executeUpdate();
+        	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success == 1;
+    	
+    }
+    
+    @Override
+    public List<String> invitationGetSentInvitationCodes(Connection cn, int senderUserID) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Invitation invitation = null;
+        List<String> invitationCodes = new ArrayList<>();
+        
+        try {
+    		String sql = "SELECT invitation_code FROM invitation WHERE sender_user_id_fk =? ORDER BY date_invited";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            ps.setInt(1, senderUserID);
+            
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	invitationCodes.add(rs.getString("invitation_code"));
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        //throwValidationExceptionIfNull(stage);
+        
+        return invitationCodes;
+    }
+    
+    @Override
+    public void therapistCreateClientConnection(Connection cn, int therapistUserID, int clientUserID) throws SQLException{
+
+		PreparedStatement ps = null;
+	    
+	    try {
+	    	//first insert primary invitation data into the invitation table
+	    	String sql = "INSERT INTO therapist_user_id_client_user_id_maps (therapist_user_id, client_user_id) VALUES (?, ?)";
+	    	
+	    	ps = cn.prepareStatement(sql);
+	    	
+	        ps.setInt(1, therapistUserID);
+	        ps.setInt(2, clientUserID);
+
+	        int success = ps.executeUpdate();
+	
+	    } finally {
+			DbUtils.closeQuietly(ps);
+		}
+    }
+    
     //XXX Make this public and called from User class?
-    private List<Integer> userGetAdminIDs(Connection cn) throws DatabaseException{
+    private List<Integer> userGetAdminIDs(Connection cn) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         List<Integer> adminIDList = new ArrayList<>();
@@ -223,10 +655,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	adminIDList.add(rs.getInt("user_id"));
             }
         	
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
@@ -240,7 +668,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
-        Map<Integer, UserClient> clients = new HashMap<>();
+        Map<Integer, UserClient> clients = new LinkedHashMap<>();
         
         try {
         	cn = getConnection();
@@ -250,7 +678,8 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             		+ "FROM user_role INNER JOIN ((user) INNER JOIN therapist_user_id_client_user_id_maps "
             		+ "ON user.user_id = therapist_user_id_client_user_id_maps.client_user_id) "
             		+ "ON user_role.user_role_id = user.user_user_role_id_fk "
-            		+ "WHERE (((therapist_user_id_client_user_id_maps.therapist_user_id)=?))");
+            		+ "WHERE (((therapist_user_id_client_user_id_maps.therapist_user_id)=?))"
+            		+ "ORDER BY user.email");
 
             ps.setInt(1, therapistID);
 
@@ -277,7 +706,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
-	public List<TreatmentPlan> userGetClientTreatmentPlans(int clientUserID, boolean inProgress, boolean isCompleted) throws DatabaseException, ValidationException {
+	public List<TreatmentPlan> userGetTreatmentPlans(int clientUserID) throws DatabaseException, ValidationException {
 		Connection cn = null;
     	PreparedStatement ps = null;
         ResultSet rs = null;
@@ -286,15 +715,13 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         try {
         	cn = getConnection();
 
-    		ps = cn.prepareStatement("SELECT * FROM treatment_plan WHERE treatment_plan_user_id_fk = ? AND in_progress=? AND treatment_plan_completed=?");
+    		ps = cn.prepareStatement("SELECT treatment_plan_id FROM treatment_plan WHERE treatment_plan_user_id_fk = ?");
     		ps.setInt(1, clientUserID);
-    		ps.setBoolean(2, inProgress);
-    		ps.setBoolean(3, isCompleted);
             
     		rs = ps.executeQuery();
    
             while (rs.next()){
-            	assignedTreatmentPlans.add(treatmentPlanLoadBasic(cn, rs.getInt("treatment_plan_id")));
+            	assignedTreatmentPlans.add(TreatmentPlan.load(cn, rs.getInt("treatment_plan_id")));
             	
             }
 
@@ -346,6 +773,70 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         return assignedTreatmentPlans;
 	}
+    
+    @Override
+    public boolean userOwnsTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        int planCount = 0;
+        
+        try {
+    		ps = cn.prepareStatement("SELECT COUNT(*) FROM treatment_plan WHERE treatment_plan_id=? AND treatment_plan_user_id_fk=?");
+            ps.setInt(1, treatmentPlanID);
+            ps.setInt(2, authenticatedUser.getUserID());
+
+            rs = ps.executeQuery();
+
+
+            while (rs.next()){
+                planCount = rs.getInt("COUNT(*)");
+            }
+
+        
+        } finally {
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);	
+		}
+
+
+        if(planCount == 1){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean userAssignedTreatmentPlan(Connection cn, User authenticatedUser, int treatmentPlanID) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        int planCount = 0;
+        
+        try {
+    		ps = cn.prepareStatement("SELECT COUNT(*) FROM treatment_plan WHERE treatment_plan_id=? AND treatment_plan_assigned_by_user_id_fk=?");
+            ps.setInt(1, treatmentPlanID);
+            ps.setInt(2, authenticatedUser.getUserID());
+
+            rs = ps.executeQuery();
+
+
+            while (rs.next()){
+                planCount = rs.getInt("COUNT(*)");
+            }
+
+        
+        } finally {
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);	
+		}
+
+
+        if(planCount == 1){
+            return true;
+        } else {
+            return false;
+        }
+    }
     
 	@Override
 	public List<TreatmentPlan> treatmentPlanGetCoreList() throws DatabaseException, ValidationException {
@@ -915,7 +1406,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         return stage;
 	}
 	
-	//TODO rename this to reflect that it is loading live/non-template tasks
 	//OPTIMIZE instead of calling Task.load() for each record, could change SELECT statement to return all records from Task that match and build each Task inside this method.
 	@Override
 	public List<Task> stageLoadClientTasks(Connection cn, int stageID) throws SQLException {
@@ -933,7 +1423,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
 
             while (rs.next()){
-            	tasks.add(Task.load(cn, rs.getInt("task_generic_id")));
+            	tasks.add(Task.load(cn, rs.getInt("task_generic_id")));//TODO change to add to list of taskIDs that is then passed to Task.load(List<Integer>);
             }
 
         } finally {
@@ -959,10 +1449,11 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
                 ps.setInt(4,taskInfo.getTaskID());
                 ps.setInt(5,stageID);
                 
-                ps.executeUpdate();
+                //ps.executeUpdate();
+                ps.addBatch();
         	}            
 
-            //ps.executeBatch();
+            ps.executeBatch();
             
         } finally {
 			DbUtils.closeQuietly(ps);
@@ -1139,9 +1630,13 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         Task task = null;
-        
+        Map<Integer, Keyword> keywords = new HashMap<>();
         try {
-    		String sql = "SELECT * FROM task_generic WHERE task_generic_id =?";
+    		String sql = "SELECT task_generic.*, keyword.keyword_id, keyword.keyword, keyword.keyword_user_id_fk "
+    				+ "FROM keyword RIGHT JOIN (task_generic LEFT JOIN task_keyword_maps "
+    				+ "ON task_generic.task_generic_id = task_keyword_maps.task_generic_id_fk) "
+    				+ "ON keyword.keyword_id = task_keyword_maps.task_keyword_id_fk "
+    				+ "WHERE task_generic.task_generic_id =?";
         	
             ps = cn.prepareStatement(sql);
             
@@ -1150,13 +1645,26 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             rs = ps.executeQuery();
    
             while (rs.next()){
-            	Timestamp timestamp = rs.getTimestamp("task_date_completed");
-            	LocalDateTime dateCompleted = convertTimestampToLocalDateTime(timestamp);
+            	if(rs.getString("keyword.keyword_id")!=null){
+            		keywords.put(rs.getInt("keyword.keyword_id"), new Keyword(rs.getInt("keyword.keyword_id"),rs.getString("keyword.keyword"),rs.getInt("keyword.keyword_user_id_fk")));
+            	}
             	
-            	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic_id"), rs.getInt("task_generic_stage_id_fk"), rs.getInt("task_generic_user_id_fk"), rs.getInt("task_generic_task_type_id_fk"), 
-            			rs.getInt("parent_task_id"), rs.getString("task_title"), rs.getString("instructions"), rs.getString("resource_link"), rs.getBoolean("task_completed"), 
-            			dateCompleted, rs.getInt("client_task_order"), rs.getBoolean("is_extra_task"), 
-            			rs.getBoolean("task_is_template"), rs.getInt("task_template_id"), rs.getInt("client_repetition"));
+            	if(rs.isLast()){
+            		Timestamp timestamp = rs.getTimestamp("task_generic.task_date_completed");
+                	LocalDateTime dateCompleted = convertTimestampToLocalDateTime(timestamp);
+                	
+                	task = TaskGeneric.getInstanceFull(rs.getInt("task_generic.task_generic_id"), rs.getInt("task_generic.task_generic_stage_id_fk"), rs.getInt("task_generic.task_generic_user_id_fk"), 
+                			rs.getInt("task_generic.task_generic_task_type_id_fk"), rs.getInt("task_generic.parent_task_id"), rs.getString("task_generic.task_title"), 
+                			rs.getString("task_generic.instructions"), rs.getString("task_generic.resource_link"), rs.getBoolean("task_generic.task_completed"), 
+                			dateCompleted, rs.getInt("client_task_order"), rs.getBoolean("is_extra_task"), rs.getBoolean("task_generic.task_is_template"), 
+                			rs.getInt("task_generic.task_template_id"), rs.getInt("task_generic.client_repetition"), keywords);
+            	
+                	//task.setKeywords(keywords);
+            	}
+            	
+            	
+            	
+            	
             }
 
         } finally {
@@ -1166,6 +1674,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         
         return task;
 	}
+	
 	@Override
 	public void taskTwoTextBoxesCreateAdditionalData(Connection cn, TaskTwoTextBoxes twoTextBoxesTask) throws SQLException{
 		PreparedStatement ps = null;
@@ -1448,7 +1957,7 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         try {
         	
         	if(treatmentIssueValidateNewName(cn, treatmentIssue.getTreatmentIssueName(), userID)){
-        		String sql = "INSERT INTO `treatment_issue` (`issue`, `treatment_issue_user_id_fk`) "
+        		String sql = "INSERT INTO treatment_issue (issue, treatment_issue_user_id_fk) "
                 		+ "VALUES (?, ?)";
             	
                 ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -1597,9 +2106,11 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 			cn = getConnection();
 			List<Integer> userIDs = userGetAdminIDs(cn);
 			for(int adminUserID : userIDs){
-				issues.addAll(treatmentIssueGetListByUserID(adminUserID));
+				issues.addAll(treatmentIssueGetListByUserID(cn, adminUserID));
 			}
-			
+		}catch (SQLException e){
+			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
 		} finally {
 			DbUtils.closeQuietly(cn);
 		}
@@ -1609,15 +2120,14 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 
 
     @Override
-	public ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(int userID) throws DatabaseException{
-    	Connection cn = null;
+	public ArrayList<TreatmentIssue> treatmentIssueGetListByUserID(Connection cn, int userID) throws SQLException{
+    	
     	PreparedStatement ps = null;
         ResultSet rs = null;
         
         ArrayList<TreatmentIssue> issues = new ArrayList<>();
         
         try {
-        	cn = getConnection();
         	
         	String sql = "SELECT treatment_issue.treatment_issue_id, treatment_issue.issue, user.user_id "
             		+ "FROM user INNER JOIN treatment_issue ON user.user_id = treatment_issue.treatment_issue_user_id_fk "
@@ -1633,13 +2143,9 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	issues.add(issue);
             }
 
-        } catch (SQLException e) {
-        	e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
         
         return issues;
@@ -1891,7 +2397,157 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
 	    }
 
 	}
+    
+    @Override
+    public Map<Integer, Keyword> keywordCoreMembersLoad(Connection cn) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<Integer, Keyword> keywordMap = new LinkedHashMap<>();
         
+        
+        try {
+        	List<Integer> adminIDList = userGetAdminIDs(cn);
+        	
+        	String baseStatement = "SELECT * FROM keyword WHERE keyword_user_id_fk in (";
+        	
+        	String orderByClause = "ORDER BY keyword";
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, adminIDList, orderByClause);
+        	
+    		ps = cn.prepareStatement(sql);
+    		
+    		for(int i = 0; i < adminIDList.size(); i++){
+    			ps.setInt(i+1, adminIDList.get(i));
+    		}
+            
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+            	Keyword keyword = new Keyword(rs.getInt("keyword_id"), rs.getString("keyword"), rs.getInt("keyword_user_id_fk")); //here build object with constructor or static factory method 
+            	keywordMap.put(rs.getInt("keyword_id"), keyword);
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        //throwValidationExceptionIfNull(stage);
+        
+        return keywordMap;
+    	
+    }
+    
+    @Override
+    public Keyword keywordCreate(Connection cn, Keyword keyword) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+    		String sql = "INSERT INTO keyword (keyword, keyword_user_id_fk) "
+            		+ "VALUES (?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            /* set the prepared statement arguments*/
+            ps.setString(1, keyword.getKeyword());
+            ps.setInt(2, keyword.getUserID());
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	keyword.setKeywordID(generatedKeys.getInt(1));
+            }
+        	
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return keyword;
+    }
+    
+    @Override
+    public boolean keywordUpdate(Connection cn, Keyword keyword) throws SQLException{
+    	PreparedStatement ps = null;
+        int success = 0;
+        
+        try {
+        		
+    		String sql = "UPDATE keyword SET keyword=?, keyword_user_id_fk=? WHERE keyword_id=?";
+        	
+            ps = cn.prepareStatement(sql);
+
+            ps.setInt(1, keyword.getKeywordID());
+            ps.setString(2, keyword.getKeyword());
+            ps.setInt(3, keyword.getUserID());
+            
+            success = ps.executeUpdate();
+        	
+        } finally {
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success == 1;
+    	
+    }
+    
+    @Override
+    public void keywordDelete(Connection cn, int keywordID) throws SQLException{
+    	PreparedStatement ps = null;
+        
+    	try{
+	        ps = cn.prepareStatement("DELETE FROM keyword WHERE keyword_id=?");
+	        ps.setInt(1, keywordID);
+	
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
+    }
+        
+    @Override
+    public boolean keywordTaskMapCreate(Connection cn, int taskID, int keywordID) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        int success = 0;
+        try {
+    		String sql = "INSERT INTO task_keyword_maps (task_generic_id_fk, task_keyword_id_fk) "
+            		+ "VALUES (?, ?)";
+        	
+            ps = cn.prepareStatement(sql);
+            
+            /* set the prepared statement arguments*/
+            ps.setInt(1, taskID);
+            ps.setInt(2, keywordID);
+
+            success = ps.executeUpdate();
+	
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return success==1;
+    }
+    
+    @Override
+    public void keywordTaskMapDelete(Connection cn, int taskID, int keywordID) throws SQLException{
+    	PreparedStatement ps = null;
+        
+    	try{
+	        ps = cn.prepareStatement("DELETE FROM task_keyword_maps WHERE task_generic_id_fk=? AND task_keyword_id_fk=?");
+	        ps.setInt(1, taskID);
+	        ps.setInt(2, keywordID);
+	        
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
+    }
+    
     private Timestamp convertLocalTimeDateToTimstamp(LocalDateTime ldt){
     	Timestamp timestamp = null;
     	

@@ -1,6 +1,10 @@
 package com.cggcoding.controllers.treatmentplan;
 
+import java.awt.List;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.cggcoding.exceptions.DatabaseException;
 import com.cggcoding.exceptions.ValidationException;
+import com.cggcoding.models.Keyword;
 import com.cggcoding.models.MapStageTaskTemplate;
 import com.cggcoding.models.Stage;
 import com.cggcoding.models.Task;
@@ -24,7 +29,7 @@ import com.cggcoding.utils.messaging.SuccessMessages;
 /**
  * Servlet implementation class CreateTask
  */
-@WebServlet("/secure/CreateTask")
+@WebServlet("/secure/treatment-components/CreateTask")
 public class CreateTask extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -39,7 +44,7 @@ public class CreateTask extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
-		processRequest(request, response);
+		
 	}
 
 	/**
@@ -70,15 +75,24 @@ public class CreateTask extends HttpServlet {
 		User owner = null;
 		/*-----------End Treatment Plan object variables---------------*/
 		
+		//maintain clientUUID value for therapist
+    	String clientUUID = request.getParameter("clientUUID");
+		request.setAttribute("clientUUID", clientUUID);
+		
 		int taskReps = ParameterUtils.parseIntParameter(request, "taskReps");
 		
 		//performed here to get parameters for all tasks run below depending on what type of task is selected
 		task = CommonServletFunctions.getTaskParametersFromRequest(request, user.getUserID());//TODO change this to use updateTaskParametersFromRequest
 
 		try {
+			//check if this a therapist is accessing a client's data and authorize
+			if(clientUUID != null && !clientUUID.isEmpty()){
+				user.isAuthorizedForClientData(clientUUID);				
+			}
+			
 			//put user-independent (i.e. default) lists acquired from database in the request
 			request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
-			request.setAttribute("coreTasks", Task.getCoreTasks());
+			
 			
 			if(!path.equals(Constants.PATH_TEMPLATE_TASK)){
 				stage = Stage.load(stageID);//load the entire stage since we need everything loaded to determine certain properties, such as the taskOrder
@@ -101,6 +115,24 @@ public class CreateTask extends HttpServlet {
 					case ("create-task-start"):
 						//set tempTask in request so page knows value of isTemplate
 						request.setAttribute("task", task);
+						Map<Integer, Keyword> coreKeywordsMap = Keyword.loadCoreMembers();
+						
+						ArrayList<Keyword> selectedKeywordList = new ArrayList<>();
+						String[] selectedKeywordIDFilters = request.getParameterValues("keywords[]");
+						if(selectedKeywordIDFilters != null){
+							for(int i = 0; i < selectedKeywordIDFilters.length; i++){
+								System.out.println("keyword: " + selectedKeywordIDFilters[i]);
+								int keywordID = Integer.parseInt(selectedKeywordIDFilters[i]);
+								selectedKeywordList.add(coreKeywordsMap.get(keywordID));
+							}
+							
+							request.setAttribute("coreTasks", Task.getCoreTasks(selectedKeywordList));
+						}else{
+							request.setAttribute("coreTasks", Task.getCoreTasks());
+						}
+						
+						request.setAttribute("selectedKeywords", selectedKeywordList);
+						request.setAttribute("coreTaskKeywords", coreKeywordsMap);
 						forwardTo = Constants.URL_CREATE_TASK;
 						break;
 					case "task-add-template" :
@@ -115,8 +147,8 @@ public class CreateTask extends HttpServlet {
 									request.setAttribute("coreStagesList", Stage.getCoreStages());
 									
 								} else if (path.equals(Constants.PATH_MANAGE_CLIENT)){
-									int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
-									MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), 0, clientRepetition);
+									//int clientRepetition = ParameterUtils.parseIntParameter(request, "clientRepetitions");
+									MapStageTaskTemplate stageTaskInfo = new MapStageTaskTemplate(stage.getStageID(), task.getTaskID(), 0, taskReps);
 									stage.createTaskFromTemplate(task.getTaskID(), stageTaskInfo);
 								}
 								request.setAttribute("successMessage", SuccessMessages.TASK_ADDED_TO_STAGE);
@@ -127,6 +159,8 @@ public class CreateTask extends HttpServlet {
 							forwardTo = setForwardToForCancel(request, user, path);
 						}
 						
+						request.setAttribute("coreTasks", Task.getCoreTasks());
+						
 						break;
 					case "task-type-select":
 						request.setAttribute("task", task);
@@ -135,6 +169,8 @@ public class CreateTask extends HttpServlet {
 						request.setAttribute("scrollTo", "taskTypeSelection");
 						
 						forwardTo = Constants.URL_CREATE_TASK;
+						request.setAttribute("coreTasks", Task.getCoreTasks());
+						
 						break;
 					case ("task-create-new"):
 						Task newTask = null;
@@ -163,9 +199,11 @@ public class CreateTask extends HttpServlet {
 							//Cancel button pressed.  Just send back to appropriate page
 							forwardTo = setForwardToForCancel(request, user, path);
 						}
-
-					break;
-				}
+						
+						request.setAttribute("coreTasks", Task.getCoreTasks());
+						
+						break;
+					}
 				
 				
 				/*//TODO delete after confirm removal didn't break things
@@ -187,9 +225,16 @@ public class CreateTask extends HttpServlet {
 			request.setAttribute("stage", stage);
 			request.setAttribute("task", task);
 			request.setAttribute("treatmentPlan", treatmentPlan);
+			try {
+				request.setAttribute("coreTasks", Task.getCoreTasks());
+			} catch (DatabaseException e1) {
+				e1.printStackTrace();
+			}
 			request.setAttribute("errorMessage", e.getMessage());
 			request.setAttribute("owner", owner);
 
+			e.printStackTrace();
+			
 			forwardTo = Constants.URL_CREATE_TASK;
 		}
 		

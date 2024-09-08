@@ -8,8 +8,11 @@ public class Constants {
 	public Constants() {
 		
 	}
+	public static final String ROOT_URL = "http://localhost:8181";//"http://doitright.cggcoding.com";
 	
 	public static final int ADMIN_ROLE_ID = 1;
+	public static final int THERAPIST_ROLE_ID = 2;
+	public static final int CLIENT_ROLE_ID = 3;
 	
 	public static final String USER_ADMIN = "admin";
 	public static final String USER_CLIENT = "client";
@@ -45,7 +48,8 @@ public class Constants {
 	public static final String PATH_MANAGE_CLIENT = "manageClients";
 	public static final String PATH_CLIENT_TREATMENT_PLAN = "clientTreatmentPlan";
 	public static final String PATH_CLIENT_STAGE = "clientStage";
-
+	public static final String PATH_CLIENT_MANAGE_PLANS = "clientManagePlans";
+	
 	//URLs
 	public static final String URL_ADMIN_MAIN_MENU = "/WEB-INF/jsp/admin-tools/admin-main-menu.jsp";
 	public static final String URL_THERAPIST_MAIN_MENU = "/WEB-INF/jsp/therapist-tools/therapist-main-menu.jsp";
@@ -64,10 +68,21 @@ public class Constants {
 	public static final String URL_EDIT_TASK = "/WEB-INF/jsp/treatment-plans/task-edit.jsp";
 
 	public static final String URL_INDEX = "/index.jsp";
+	public static final String URL_LOGIN = "/login.jsp";
+	public static final String URL_REGISTRATION = "/registration.jsp";
 
 	public static final String URL_RUN_TREATMENT_PLAN = "/WEB-INF/jsp/client-tools/run-treatment-plan.jsp";
+	public static final String URL_STAGE_COMPLETE = "/WEB-INF/jsp/client-tools/stage-complete.jsp";
 	
+	public static final String URL_ERROR_GENERAL = "/WEB-INF/jsp/error.jsp";
+	public static final String URL_ERROR_UNAUTHORIZED_ACCESS = "/WEB-INF/jsp/unauthorized-access.jsp";
 
+	public static final String URL_LIST_MANAGEMENT = "/WEB-INF/jsp/admin-tools/manage-lists.jsp";
+
+	public static final String URL_ACCOUNT_MANAGEMENT = "/WEB-INF/jsp/account-management.jsp";
+	public static final String URL_ACCOUNT_EDIT = "/WEB-INF/jsp/account-info-edit.jsp";
+
+	
 	
 	
 }

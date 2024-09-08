@@ -10,7 +10,7 @@
     <meta name="author" content="">
     <link rel="icon" href="/favicon.ico">
 
-    <title>Do It Right!</title>
+    <title>In/Between</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/css/bootstrap.min.css" rel="stylesheet">
@@ -39,13 +39,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/index.jsp">Do It Right!</a>
+          <a class="navbar-brand" href="/index.jsp">In/Between</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
           <li class="active"><a href="/secure/MenuNav?destination=home">Home</a></li>
-            <li><a href="/#contact">Contact</a></li>
-            <li class="dropdown">
+            <li><a href="/contact.jsp">Contact</a></li>
+            <!-- <li class="dropdown">
               <a href="/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown<span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="/task-review.jsp">Record Exercise</a></li>
@@ -56,14 +56,14 @@
                 <li><a href="/#">Separated link</a></li>
                 <li><a href="/#">One more separated link</a></li>
               </ul>
-            </li>
+            </li> -->
             <c:if test="${user!=null }"></c:if>
             <c:choose>
 			  <c:when test='${user.role=="admin" }'>
 			  	<li class="dropdown">
 	              <a href="/#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin Tools<span class="caret"></span></a>
 	              <ul class="dropdown-menu">
-	                <li><a href="/task-review.jsp">Record Exercise</a></li>
+	                <li><a href="/task-review.jsp">Create Treatment Plan</a></li>
 	                <li><a href="/#">Another action</a></li>
 	                <li><a href="/#">Something else here</a></li>
 	                <li role="separator" class="divider"></li>
@@ -108,10 +108,11 @@
             	<c:choose>
 				  <c:when test="${user == null }">
 				  	<li><a href="/login.jsp">Sign In&nbsp;<span class="glyphicon glyphicon-log-in" aria-hidden="true"></span></a></li>
+				  	<li><a href="/registration.jsp">Register&nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
 				  </c:when>
 
 				  <c:otherwise>
-				    <li><a href="/secure/AccountManagement" style="padding-right:0px;">Hello, ${user.userName} (${user.role})</a></li>
+				    <li><a href="/secure/AccountManagement?requestedAction=user-account-management" style="padding-right:0px;">Hello, ${user.userName} (${user.role})</a></li>
 				    <li title="Sign Out"><a href="/LogOut"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></li>
 				  </c:otherwise>
 				</c:choose>
@@ -125,7 +126,7 @@
 
       <!-- Main component for a primary marketing message or call to action -->
       <div class="jumbotron">
-        <h1>Do It Right!</h1>
+        <h1>In/Between</h1>
         <p>Get the most out of therapy.</p>
        <!--
         <p>

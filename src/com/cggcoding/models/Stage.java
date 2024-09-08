@@ -7,6 +7,7 @@ import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
+import java.awt.CardLayout;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -270,13 +271,19 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	//returns a double digit number representing percentage of stage completion
 	@Override
 	public double getPercentComplete(){
-		double roundedPercent = 0;
+/*		double roundedPercent = 0;
 		
 		if(!tasks.isEmpty()){
 			roundedPercent = Math.floor(percentComplete * 100) / 100;
 		}
 		
-		return (roundedPercent);
+		return (roundedPercent);*/
+		
+		if(!tasks.isEmpty()){
+			return (int) (percentComplete*100);
+		} else {
+			return 0;
+		}
 	}
 
 	public int getNumberOfTasksCompleted() {
@@ -298,6 +305,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	private int getTaskOrderDefaultValue(){
 		return tasks.size();
 	}
+	
+	public boolean isDisabledForModification(){
+		return (this.completed == false && this.inProgress==false);
+	}
 
 	//when a task's completion state is changed it checks if all tasks are complete and if will lead to stage being complete and any other actions desired at this time
 	public Stage updateTaskList(Map<Integer, Task> updatedTasksMap) throws ValidationException, DatabaseException{
@@ -311,21 +322,27 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 		return this;
 	}
 	
-	/**Once a task is completed this is called to update the progress meter and associated metrics
+	/**Once a task is completed this is called to update the progress meter and associated metrics.  Also determines if the Stage will be marked completed.
 	 * @throws DatabaseException 
 	 * @throws ValidationException 
 	 */
 	public void updateProgress() throws ValidationException, DatabaseException{
 		
-		percentComplete = ((double)getNumberOfTasksCompleted()/(double)getTotalNumberOfTasks());
+		calculateAndSetPercentComplete();
 		
-		if(getPercentComplete()==1){
+		if(getPercentComplete()==100){
 			this.markComplete();
+			//this.setInProgress(false);
 		} else {
 			this.markIncomplete();
+			//this.setInProgress(true);
 		}
 		
 		update();
+	}
+	
+	public void calculateAndSetPercentComplete(){
+		percentComplete = ((double)getNumberOfTasksCompleted()/(double)getTotalNumberOfTasks());
 	}
 	
 	
@@ -460,7 +477,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	    		stage.setTasks(dao.stageLoadClientTasks(cn, stage.getStageID()));
 	    	}
 			
-
+	    	stage.calculateAndSetPercentComplete();
 	        
 	        dao.throwValidationExceptionIfNull(stage);
 		}
@@ -768,7 +785,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	/**Adds a task template to a stage template.  Inserts into taskTemplate-stageTemplate mapping table. Both the Task and Stage must be templates to be valid.
+
 	 * @param taskTemplateID
+	 * @param templateRepetitions - minimum value of 1 - is set to 1 if less
 	 * @throws DatabaseException
 	 * @throws ValidationException
 	 */
@@ -780,6 +799,9 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				
 	        	cn = dao.getConnection();
 	        	if(dao.mapStageTaskTemplateValidate(cn, taskTemplateID, this.getStageID())){
+	        		if(templateRepetitions < 1){
+	        			templateRepetitions = 1;
+	        		}
 	        		MapStageTaskTemplate map = new MapStageTaskTemplate(this.stageID, taskTemplateID, this.getTaskOrderDefaultValue(), templateRepetitions);
 	        		map.create(cn);
 
@@ -828,13 +850,29 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	protected List<Task> createTaskFromTemplate(Connection cn, int taskIDBeingCopied, MapStageTaskTemplate stageTaskInfo) throws SQLException, ValidationException{
 		List<Task> createdTasks = new ArrayList<>();
 		int taskReps = stageTaskInfo.getTemplateTaskRepetitions();
+		int repetitionStartingNumber = 0;
 		Task task = Task.load(cn, stageTaskInfo.getTaskID());
 		task.setUserID(this.getUserID());
 		task.setStageID(this.stageID);
 		task.setTemplate(false);
 		task.setTemplateID(task.getTaskID());
 		
-		for(int i = 0; i<taskReps; i++){
+		//check if tasks with the same templateID already exist so we can determine what rep number to give this new task - id no other tasks with the same tempalteID exist, then do nothing, otherwise, start with the appropriate repetition number
+		Task tempTask = null;
+		for(Task taskForRepCheck : tasks){
+			if(taskForRepCheck.getTemplateID() == task.getTemplateID()){
+				repetitionStartingNumber++;
+				tempTask = taskForRepCheck;
+			}
+		}
+		
+		//if a repetition of the task already existed but it was only a single rep, then update the task title to add the repetition suffix since that is not present when there is only 1 rep
+		if(repetitionStartingNumber == 1){
+			tempTask.setTitle(tempTask.getTitle() + "(1)");
+			tempTask.update(cn);
+		}
+		
+		for(int i = repetitionStartingNumber; i<(taskReps+repetitionStartingNumber); i++){
 			Task taskRep = task.copy();
 			taskRep.setClientRepetition(i+1);
 			
@@ -962,7 +1000,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			if(task.isTemplate()){
 				updateTaskTemplateList(cn, tasks);
 			}else{
-				//OPTIMIZE Could replace this with method in dao that takes List<Task> and loops through updating
+				//OPTIMIZE Could replace this with method in dao that takes List<Task> and loops through updating using preparedStatement.addBatch()
 				for(Task updateTask : tasks){
 					updateTask.update(cn);
 				}
@@ -1072,14 +1110,16 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	public void orderDecrementTask(int mainTaskID, int originalOrder) throws DatabaseException, ValidationException{
 		Connection cn = null;
 		
-		if(originalOrder == this.getMapStageTaskTemplates().size()-1){
+		if(originalOrder == this.tasks.size()-1){
 			throw new ValidationException(ErrorMessages.TASK_IS_LAST);
 		}
 		
 		try {
 			cn = dao.getConnection();
 			
-			//update the order in the actual tasks templates - happens for templates and client tasks
+			//get the task whose order is being decremented and the task after that it is going to swap with
+			//update the local task list with the rearranged orders
+			//- happens for templates and client tasks as the local list is populated either way, just uses different sources
 			Task mainTask = tasks.get(originalOrder);
 			Task nextTask = tasks.get(originalOrder+1);
 			this.tasks.set(originalOrder+1, mainTask);
@@ -1087,6 +1127,7 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 			
 			//if this Stage is a template, then update the stage-mapping info
 			if(this.template){
+				
 				MapStageTaskTemplate mainStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder);
 				MapStageTaskTemplate nextStageTaskMap = this.stageTaskTemplateMapList.get(originalOrder+1);
 				
@@ -1103,6 +1144,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 				nextStageTaskMap.update(cn);
 
 			} else {
+				
+				
+				
+				
 				//this is a client task so update the task's clientOrder prop
 				mainTask.setClientTaskOrder(originalOrder+1);
 				nextTask.setClientTaskOrder(originalOrder);

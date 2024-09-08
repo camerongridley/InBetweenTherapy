@@ -7,8 +7,24 @@
 <c:import url="/WEB-INF/jsp/header.jsp" />
 
 
-<h1>Treatment Issue: ${treatmentPlan.title }</h1>
+<h1>Treatment Plan: ${treatmentPlan.title }
+<c:if test='${user.role.equals("therapist") }'>
+<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditTreatmentPlan" method="POST">
+	<input type="hidden" name="requestedAction" value="plan-edit-load-plan">
+	<input type="hidden" name="path" value="${path }">
+	<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+	<input type="hidden" name="clientUUID" value="${clientUUID }">
+	
+	<button type="submit" class="btn btn-default run-plan-edit-button" aria-label="Left Align" title="Edit the Treatment Plan" >
+		<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+	</button>
+</form>
 
+<p>
+Client: ${client.userName}
+</p>
+</c:if>
+</h1>
 <c:import url="/WEB-INF/jsp/message-modal.jsp" />
 
 <div class="form-horizontal">
@@ -19,9 +35,9 @@
 	<c:forEach var="stage" items="${treatmentPlan.stages }" varStatus="status">
 		<form id="stageNode${stage.stageID }" action="/secure/ChangeStage" method="POST">
 
-			<input type="hidden" name="stageIndex" value=${stage.clientStageOrder } >
+			<input type="hidden" name="stageIndex" value="${stage.clientStageOrder }" >
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >
-			<input type="hidden" name="clientUserID" value=${client.userID } >
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >
 			<input type="hidden" name="requestedAction" value="change-stage">
 			<input type="hidden" name="path" value="${path }">
 			
@@ -68,13 +84,13 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="stageInfoModalLabel">${activeStage.title} Overview and Goals</h4>
+				<h4 class="modal-title" id="stageInfoModalLabel">${treatmentPlan.activeViewStage.title} Overview and Goals</h4>
 			</div>
 			<div class="modal-body">
-				<p>${activeStage.description}</p>
+				<p>${treatmentPlan.activeViewStage.description}</p>
 				<div class="well well-sm">
 					Goals:
-					<c:forEach items="${activeStage.goals}" var="goal">
+					<c:forEach items="${treatmentPlan.activeViewStage.goals}" var="goal">
 						<ul>
 							<li>
 								${goal.description}
@@ -94,17 +110,35 @@
 <div class="row">
 	<div class="col-sm-12">
 
+		
+			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete}"></c:set>
+			
+			<div class="progress-stage-detail">
+				<strong>
+					Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${treatmentPlan.activeViewStage.percentComplete}% Complete
+				</strong>
+				<c:if test='${user.role.equals("therapist") }'>
+				<form class="form-horizontal form-inline-controls" action="/secure/treatment-components/EditStage" method="POST">
+					<input type="hidden" name="requestedAction" value="select-stage">
+					<input type="hidden" name="path" value="${path }">
+					<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}">
+					<input type="hidden" name="stageID" value="${treatmentPlan.activeViewStage.stageID}">
+					<input type="hidden" name="clientUUID" value="${clientUUID }">
+					
+					<button type="submit" class="btn btn-default btn-xs run-plan-edit-button" aria-label="Left Align" title="Edit this stage.">
+						<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+					</button>
+				</form>
+				
+				</c:if>
+			</div>
+			
 		<form action="/secure/UpdateTaskCompletion" method="post" class="form-inline">
 			<input type="hidden" name="requestedAction" value="update-client-plan">
 			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" />
-			<input type="hidden" name="clientID" value=${client.userID } >
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >
 			<input type="hidden" name="path" value="${path }">
-			<c:set var="activeViewStagePercentComplete" value="${treatmentPlan.activeViewStage.percentComplete * 100}"></c:set>
-			<div class="progress-stage-detail">
-				<strong>
-					Stage: <c:out value="${treatmentPlan.activeViewStage.title }" /> - ${activeViewStagePercentComplete}% Complete
-				</strong>
-			</div>
+			<input type="hidden" name="stageIndex" value="${treatmentPlan.activeViewStage.clientStageOrder }">
 			<div class="progress">
 				<div class="progress-bar progress-bar-success" role="progressbar"
 					aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
@@ -112,6 +146,7 @@
 					<strong>${activeViewStagePercentComplete }%</strong>
 				</div>
 			</div>
+			
 			<!--INCOMPLETE PRIMARY TASKS-->
 			<c:forEach var="task"
 				items="${treatmentPlan.activeViewStage.incompleteTasks }"
@@ -125,12 +160,15 @@
 						<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							${task.title } - Task Type: ${task.taskTypeName } 
 						</a>
-
+						<c:if test='${user.role.equals("therapist") }'>
+							<button type="button" class="btn btn-default btn-xs run-plan-edit-button" title="Edit task: ${task.title }" onclick="updateAndSubmitTreatmentComponentForm('formEditTask', ${treatmentPlan.treatmentPlanID }, ${treatmentPlan.activeViewStage.stageID },0, ${task.taskID }, 0)">
+							  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+							</button>
+						</c:if>
 					</div>
 					<!--Generic Task Detail-->
-					<c:if test="${task.taskTypeName == 'TaskGeneric' }">
-						<div id="collapse${task.taskID }" class="panel-collapse collapse"
-							role="tabpanel" aria-labelledby="heading${task.taskID }">
+
+						<div id="collapse${task.taskID }" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${task.taskID }">
 							<div class="panel-body panel-body-task">
 								${task.instructions }</div>
 							<c:if test="${task.resourceLink != '' }">
@@ -139,30 +177,30 @@
 										Link</a>
 								</div>
 							</c:if>
+							
+							<!--TwoTextBoxes Task Detail-->
+							<c:if test="${task.taskTypeName == 'TaskTwoTextBoxes' }">
+								<div class="panel-body panel-body-task">
+									${task.extraTextLabel1 }<input type="text" class="form-control"
+										placeholder=""
+										name="extraTextValue1${task.taskID }"
+										value="${task.extraTextValue1 }" 
+										<c:if test="${task.disabled }">disabled</c:if>>
+								</div>
+								<div class="panel-body panel-body-task">
+									${task.extraTextLabel2 }<input type="text" class="form-control"
+										placeholder=""
+										name="extraTextValue2${task.taskID }"
+										value="${task.extraTextValue2 }" 
+										<c:if test="${task.disabled }">disabled</c:if>>
+								</div>
+
+							</c:if>
+							
+							<!--Details of Future Tasks that are created go below this -->
 						</div>
-					</c:if>
-					<!--TwoTextBoxes Task Detail-->
-					<c:if test="${task.taskTypeName == 'TaskTwoTextBoxes' }">
-						<div id="collapse${task.taskID }" class="panel-collapse collapse"
-							role="tabpanel" aria-labelledby="heading${task.taskID }">
-							<div class="panel-body panel-body-task">
-								${task.instructions }</div>
-							<div class="panel-body panel-body-task">
-								${task.extraTextLabel1 }<input type="text" class="form-control"
-									placeholder="${task.extraTextLabel1 }"
-									name="extraTextValue1${task.taskID }"
-									value="${task.extraTextValue1 }" 
-									<c:if test="${task.disabled }">disabled</c:if>>
-							</div>
-							<div class="panel-body panel-body-task">
-								${task.extraTextLabel2 }<input type="text" class="form-control"
-									placeholder="${task.extraTextLabel2 }"
-									name="extraTextValue2${task.taskID }"
-									value="${task.extraTextValue2 }" 
-									<c:if test="${task.disabled }">disabled</c:if>>
-							</div>
-						</div>
-					</c:if>
+
+					
 
 				</div>
 			</c:forEach>
@@ -172,22 +210,20 @@
 			<c:forEach var="task"
 				items="${treatmentPlan.activeViewStage.completedTasks }"
 				varStatus="taskStatus">
-				<div class="panel panel-default panel-task"
-					title="Click the task title to expand and see task details.">
+				<div class="panel panel-default panel-task" title="Click the task title to expand and see task details.">
 					<div class="panel-heading panel-heading-task">
-						<input type="hidden" name="allTaskIDs" value="${task.taskID}" /> <input
-							type="hidden" name="taskTypeName${task.taskID}"
-							value="${task.taskTypeName}" /> <input class="responsive-checkbox" type="checkbox"
-							id="${task.taskID }" aria-label="Task: ${task.title }"
-							value="${task.taskID }" name="taskChkBx[]" checked
-							<c:if test="${task.disabled }">disabled</c:if>> <a
-							role="button" data-toggle="collapse"
-							href="#collapse${task.taskID }" aria-expanded="true"
-							aria-controls="collapse${task.taskID }"> <span
-							class="task-completed">${task.title }</span> - 
-							${task.dateCompletedFormatted }
-							
-						</a>
+						<input type="hidden" name="allTaskIDs" value="${task.taskID}" /> 
+						<input type="hidden" name="taskTypeName${task.taskID}" value="${task.taskTypeName}" /> 
+						<input class="responsive-checkbox" type="checkbox" id="${task.taskID }" aria-label="Task: ${task.title }" value="${task.taskID }" name="taskChkBx[]" checked
+							<c:if test="${task.disabled }">disabled</c:if>> 
+							<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }"> 
+							<span class="task-completed">${task.title }</span> -  ${task.dateCompletedFormatted }
+							</a>
+							<c:if test='${user.role.equals("therapist") }'>
+							<button type="button" class="btn btn-default btn-xs run-plan-edit-button" title="Edit task: ${task.title }" onclick="updateAndSubmitTreatmentComponentForm('formEditTask', ${treatmentPlan.treatmentPlanID }, ${treatmentPlan.activeViewStage.stageID }, 0, ${task.taskID }, 0)">
+							  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+							</button>
+						</c:if>
 					</div>
 					<div id="collapse${task.taskID }" class="panel-collapse collapse"
 						role="tabpanel" aria-labelledby="heading${task.taskID }">
@@ -212,7 +248,8 @@
 					</div>
 				</div>
 			</c:forEach>
-
+			
+<%-- 
 			<hr>
 
 			<!--INCOMPLETE EXTRA TASKS-->
@@ -223,6 +260,13 @@
 						value="0" name="taskChkBx[]" <c:if test="${task.disabled }">disabled</c:if>> <a role="button"
 						data-toggle="collapse" href="#collapse121212" aria-expanded="true"
 						aria-controls="collapse121212"> Sample Extra Task </a>
+						<c:if test='${user.role.equals("therapist") }'>
+							<a role="button"
+								href="/secure/treatment-components/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${treatmentPlan.activeViewStage.stageID}&taskID=${task.taskID}&clientUUID=${clientUUID}" 
+								class="btn btn-default btn-xs run-plan-edit-button" title="Edit this task">
+								<span class="glyphicon glyphicon-edit run-plan-edit-button" aria-hidden="true"></span>
+							</a>
+						</c:if>
 				</div>
 				<div id="collapse121212" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading121212">
 					<div class="panel-body panel-body-task">Extra task
@@ -231,9 +275,9 @@
 			</div>
 
 			<!--COMPLETED EXTRA TASKS-->
-			
+--%>
 			<c:choose>
-				<c:when test='${path.equals("manageClients") }'>
+				<c:when test='${path.equals("manageClients") || path.equals("manageClients") }'>
 				<!--  -->
 					<div class="form-group">
 			            <div class="col-sm-12 save-button">
@@ -244,19 +288,30 @@
 				<c:otherwise>
 					<div class="form-group">
 			            <div class="col-sm-12 save-button">
-			                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
-			                <button type="submit" name="submitButton"  value="back" class="btn btn-default">Back</button>
+			            
+			                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button><!--Uncomment this and move within the <button> tag to have the Save button disable<c:if test="${treatmentPlan.activeViewStage.isDisabledForModification() }">disabled</c:if>-->
+			                <button type="submit" name="submitButton"  value="done" class="btn btn-default">Done</button>
 			            </div>
 			        </div>
 				</c:otherwise>
 			</c:choose>
-
+ 
 		</form>
 		
-		
+	<!-- this form is dynamically updated and then submitted with JavaScript -->
+	<form id="formEditTask" action="/secure/treatment-components/EditTask" method="POST">
+		<input type="hidden" name="requestedAction" value="edit-task-select-task">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" id="taskIDDynamic" name="taskID" value="${task.taskID}" >
+		<input type="hidden" id="stageIDDynamic" name="stageID" value="${treatmentPlan.activeViewStage.stageID}" >
+		<input type="hidden" id="treatmentPlanIDDynamic" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
 
 	</div>
 </div>
+
+<script src="/js/custom-form-submission.js"></script>
 
 
 <c:import url="/WEB-INF/jsp/footer.jsp" />

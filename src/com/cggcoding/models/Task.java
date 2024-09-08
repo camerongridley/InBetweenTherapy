@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,8 @@ import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
+import java.sql.SQLIntegrityConstraintViolationException;
+
 
 
 /**
@@ -42,8 +45,11 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	private boolean extraTask;
 	private boolean template;
 	private int templateID;
-	int clientRepetition;
-	boolean disabled; //this property is not maintained in the database and is set upon or after loading.  It's purpose is to tell the view if assiciated control should be disabled
+	private int clientRepetition;
+	private Map<Integer, Keyword> keywords;
+	
+	private boolean disabled; //this property is not maintained in the database and is set upon or after loading.  It's purpose is to tell the view if assiciated control should be disabled
+	private List<Integer> updatedKeywordIDs; //not maintained in database, only for holding keywordIDs retrieved from the front end when updating the task
 	
 	private static DatabaseActionHandler dao= new MySQLActionHandler();
 	
@@ -69,6 +75,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.templateID = 0;
 		this.clientRepetition = 1;
 
+		this.keywords = new HashMap<>();
+		this.updatedKeywordIDs = new ArrayList<>();
 	}
 	
 	/**Constructor for use before Task is inserted into the database, so no taskID is available to set, therefore a temporary value of 0 is given to taskID.  Since this is a new task and
@@ -100,6 +108,9 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.template = template;
 		this.templateID = templateID;
 		this.clientRepetition = clientRepetition;
+		
+		this.keywords = new HashMap<>();
+		this.updatedKeywordIDs = new ArrayList<>();
 	}
 	
 	
@@ -118,7 +129,10 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	 * @param extraTask
 	 * @param template
 	 */
-	protected Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition){
+	protected Task (int taskID, int stageID, int userID, int taskTypeID, int parentTaskID, String title, 
+			String instructions, String resourceLink, boolean completed, LocalDateTime dateCompleted, 
+			int clientTaskOrder, boolean extraTask, boolean template, int templateID, int clientRepetition,
+			Map<Integer, Keyword> keywords){
 		this.taskID = taskID;
 		this.stageID = stageID;
 		this.userID = userID;
@@ -134,6 +148,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.template = template;
 		this.templateID = templateID;
 		this.clientRepetition = clientRepetition;
+		this.keywords = keywords;
+		this.updatedKeywordIDs = new ArrayList<>();
 	}
 	
 	public static Task createTemplate(Task taskTemplate) throws ValidationException, DatabaseException{
@@ -386,7 +402,9 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	
 	protected void update(Connection cn) throws ValidationException, SQLException{
 		dao.taskGenericUpdate(cn, this);
+		updateKeywords(cn, this.updatedKeywordIDs);
 		updateAdditionalData(cn);
+
 	}
 
 	@Override
@@ -427,19 +445,19 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	
 	/**Saves all of the fields in Task into the database table that holds the common fields for all tasks
 	 * @param cn
-	 * @param taskID
-	 * @param stageID
-	 * @param userID
-	 * @param taskTypeID
-	 * @param parentTaskID
-	 * @param title
-	 * @param instructions
-	 * @param resourceLink
-	 * @param completed
-	 * @param dateCompleted
-	 * @param clientTaskOrder
-	 * @param extraTask
-	 * @param template
+//	 * @param taskID
+//	 * @param stageID
+//	 * @param userID
+//	 * @param taskTypeID
+//	 * @param parentTaskID
+//	 * @param title
+//	 * @param instructions
+//	 * @param resourceLink
+//	 * @param completed
+//	 * @param dateCompleted
+//	 * @param clientTaskOrder
+//	 * @param extraTask
+//	 * @param template
 	 * @return
 	 * @throws DatabaseException
 	 * @throws ValidationException
@@ -467,7 +485,7 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	
 	/**In place so can be overridden by concrete classes to use for saving subclass-specific data
 	 * @param cn
-	 * @param taskWithNewData
+//	 * @param taskWithNewData
 	 * @return true if update successful, false if error
 	 * @throws ValidationException 
 	 * @throws SQLException
@@ -477,8 +495,8 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 	protected abstract void deleteAdditionalData(Connection cn) throws ValidationException, SQLException;
 	
 	/**Copies the task, setting the taskID to 0 and template=false since templates are unique. DOES NOT SAVE TO DATABASE.
-	 * @param stageID
-	 * @param userID
+//	 * @param stageID
+//	 * @param userID
 	 * @return
 	 */
 	public abstract Task copy();
@@ -605,6 +623,14 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		this.clientRepetition = clientRepetition;
 	}
 
+	public Map<Integer, Keyword> getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(Map<Integer, Keyword> keywords) {
+		this.keywords = keywords;
+	}
+
 	public boolean isTemplate() {
 		return template;
 	}
@@ -713,10 +739,131 @@ public abstract class Task implements Serializable, Completable, DatabaseModel{
 		update();		
 	}
 	
+	public boolean hasKeyword(Integer keywordID){
+		if(keywords.get(keywordID)!=null){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**Creates new keyword and adds it to the current task
+	 * @param keyword
+	 * @throws DatabaseException
+	 * @throws ValidationException
+	 */
+	public void createAndAddKeyword(Keyword keyword) throws DatabaseException, ValidationException{
+		Connection cn = null;
+
+		try{
+			cn = dao.getConnection();
+			cn.setAutoCommit(false);
+			
+			keyword.create(cn);
+			dao.keywordTaskMapCreate(cn, this.getTaskID(), keyword.getKeywordID());
+			
+			cn.commit();
+		} catch (SQLIntegrityConstraintViolationException constraintEx){
+			throw new DatabaseException(ErrorMessages.KEYWORD_ALREADY_EXISTS);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				System.out.println(ErrorMessages.ROLLBACK_DB_OP);
+				cn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				throw new DatabaseException(ErrorMessages.ROLLBACK_DB_ERROR);
+			}
+
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
+			
+		} finally {
+			try {
+				cn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DbUtils.closeQuietly(cn);
+	    }
+		
+
+		keywords.put(keyword.getKeywordID(), keyword);
+	}
+	
+	
+	/**---DATABASE INTERATION---
+	 * Saves an existing keyword to the task
+	 * @param keywordID - an existing keyword
+	 * @throws SQLException 
+	 */
+	public void addKeyword(Connection cn, int keywordID) throws SQLException{
+		dao.keywordTaskMapCreate(cn, this.getTaskID(), keywordID);
+	}
+	
+	/**---DATABASE INTERATION---
+	 * Removes a keyword from the task
+	 * @param keywordID
+	 * @throws SQLException 
+	 */
+	public void removeKeyword(Connection cn, int keywordID) throws SQLException{
+		dao.keywordTaskMapDelete(cn, this.getTaskID(), keywordID);
+	}
+	
+	public void setUpdatedKeywordIDsList(List<Integer> updatedKeywordIDs){
+		this.updatedKeywordIDs = updatedKeywordIDs;
+	}
+	
+	private void updateKeywords(Connection cn, List<Integer> updatedKeywordIDs) throws SQLException{
+		//if list of keywordIDs is null then the Task is part of a client's treatmentplan and so has no keywords
+		if(updatedKeywordIDs!=null){
+			//loop updatedKeywordIDs to see if any new ones are present and if so create a map entry
+			for(int updatedKeyID : updatedKeywordIDs){
+				if(!this.getKeywords().containsKey(updatedKeyID)){
+					//updated keywordID is not present in this task's keyword list, so add it
+					addKeyword(cn, updatedKeyID);
+				}
+			}
+			
+			//loop through existing keywords and check it each exists in the updated list.  If not, then remove it from the mapping table
+			for(int currentKeyID : this.getKeywords().keySet()){
+				if(!updatedKeywordIDs.contains(currentKeyID)){
+					//updated keywordID is not present in this task's keyword list, so add it
+					removeKeyword(cn, currentKeyID);
+				}
+			}
+		}
+		
+		
+	}
+	
 	public abstract void transferAdditionalData(Task taskWithNewData);
 
 	public static List<Task> getCoreTasks() throws DatabaseException{
-		return dao.taskGetCoreList();
+		return getCoreTasks(null);
+	}
+	
+	public static List<Task> getCoreTasks(List<Keyword> keywordFilters) throws DatabaseException{
+		List<Task> coreTasks = dao.taskGetCoreList();
+		if(keywordFilters != null){
+			coreTasks = filterTaskList(coreTasks, keywordFilters);
+		}
+		
+		return coreTasks;
+	}
+	
+	public static List<Task> filterTaskList(List<Task> tasks, List<Keyword> keywordFilters){
+		List<Task> filteredTasks = new ArrayList<>();
+		
+		for(Task task : tasks){
+			for(Keyword keyword : keywordFilters){
+				if(task.getKeywords().containsKey(keyword.getKeywordID())){
+					filteredTasks.add(task);
+					break;
+				}
+			}
+		}
+		
+		return filteredTasks;
 	}
 	
 	public static Map<Integer, String> getTaskTypeMap() throws DatabaseException {

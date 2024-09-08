@@ -13,10 +13,11 @@
   
 <c:import url="/WEB-INF/jsp/message-modal.jsp"/>
 	
-	<form class="form-horizontal" action="/secure/EditStage" method="POST">
+	<form class="form-horizontal" action="/secure/treatment-components/EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="select-stage">
 		<input type="hidden" name="path" value="${path }">
 		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 		
 		<c:if test="${path=='templateStage'}">
 			<div class="well well-sm">
@@ -36,22 +37,25 @@
 		</c:if>
 	</form>
 	
-	<form class="form-horizontal" action="/secure/EditStage" method="POST">
+	<form class="form-horizontal" action="/secure/treatment-components/EditStage" method="POST">
 		<input type="hidden" name="requestedAction" value="stage-edit-update">
 		<input type="hidden" name="path" value="${path }">	
 		<input type="hidden" name="stageID" value="${stage.stageID }" >
-		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">	
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
 		
         <div class="form-group">
             <label for="stageTitle" class="col-sm-2 control-label">Stage Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value="${stage.title }" placeholder="Enter a stage name here.">
+                <input type="text" class="form-control" id="stageTitle" name="stageTitle" value="${stage.title }" <c:if test="${stage==null }">disabled="disabled"</c:if>
+                placeholder="Enter a stage name here.">
             </div>
         </div>
         <div class="form-group">
             <label for="stageDescription" class="col-sm-2 control-label">Stage Description</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="stageDescription" name="stageDescription" value="${stage.description }" placeholder="Describe the stage.">
+                <input type="text" class="form-control" id="stageDescription" name="stageDescription" <c:if test="${stage==null }">disabled="disabled"</c:if> 
+                value="${stage.description }" placeholder="Describe the stage.">
             </div>
         </div>
 
@@ -59,10 +63,11 @@
 		<div class="form-group">
 			<div class="col-sm-12">
 				<label for="stageGoalList" class="control-label">Stage Goals
-					<button type="button" class="btn btn-default btn-xs" aria-label="Left Align" data-toggle="modal" data-target="#newStageGoalModal" title="Add a goal to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
+				<c:if test="${stage != null }">
+					<button type="button" class="btn btn-default btn-xs" aria-label="Left Align" data-toggle="modal" data-target="#newStageGoalModal" title="Add a goal to this stage.">
 						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
 					</button>
-					
+				</c:if>	
 				</label>
 			</div>
 				
@@ -72,7 +77,7 @@
 		                <input type="text" class="form-control" id="stageGoalDescription${goal.stageGoalID}" name="stageGoalDescription${goal.stageGoalID}" value="${goal.description }" placeholder="Describe the goal.">
 		            </div>
 		            <div class="col-sm-1">    
-		                <a role="button" class="btn btn-default btn-sm" href="/secure/EditStage?requestedAction=delete-goal&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&stageGoalID=${goal.stageGoalID}" title="Delete goal:${goal.description }">
+		                <a role="button" data-toggle="modal" data-target="#delete_goal_modal${goal.stageGoalID }" class="btn btn-default btn-xs pull-left" title="Delete goal from this stage.">
 						  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 						</a>
 		            </div>
@@ -82,13 +87,14 @@
 				
 		</div>
 		
+		
 		<a id="taskListTop"></a>
 		<label for="taskList" class="control-label">Tasks
-
-       			<a role="button" href="/secure/CreateTask?requestedAction=create-task-start&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}" class="btn btn-default btn-xs" title="Add a task to this stage." <c:if test="${stage.stageID == null }">disabled</c:if>>
+			<c:if test="${stage != null }">
+       			<button type="button" class="btn btn-default btn-xs" title="Add a task to this stage." onclick="submitForm('formAddTask')">
 				  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-				</a>
-
+				</button>
+			</c:if>
 		</label>
 			
 			<c:forEach items="${stage.tasks }" var="task">
@@ -112,18 +118,28 @@
 							          		<c:set var="taskOrder" value="${task.clientTaskOrder }"/>
 							          	</c:otherwise>
 							         </c:choose>
+							         <c:choose>
+							          	<c:when test='${treatmentPlan == null }'>
+							          		<c:set var="evaluatedTreatmentPlanID" value="0"/>
+							          	</c:when>
+							          	<c:otherwise>
+							          		<c:set var="evaluatedTreatmentPlanID" value="${treatmentPlan.treatmentPlanID }"/>
+							          	</c:otherwise>
+							         </c:choose>
 
+
+								  	<a href="#" title="Move task up." onclick="updateAndSubmitTreatmentComponentForm('formIncreaseTaskOrder', ${evaluatedTreatmentPlanID }, ${stage.stageID }, 0, ${task.taskID}, ${taskOrder })"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></a>
+								  	&nbsp;<a href="#" title="Move task down." onclick="updateAndSubmitTreatmentComponentForm('formDecreaseTaskOrder', ${evaluatedTreatmentPlanID }, ${stage.stageID }, 0, ${task.taskID}, ${taskOrder })"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></a>
 								  	
-								  	<a href="/secure/EditStage?requestedAction=increase-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}" title="Move task up."><span class="glyphicon glyphicon-chevron-up"></span></a>
-								  	&nbsp;<a href="/secure/EditStage?requestedAction=decrease-task-order&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}&taskOrder=${taskOrder}" title="Move task down."><span class="glyphicon glyphicon-chevron-down"></span></a>&nbsp;
 									<a role="button" data-toggle="collapse" href="#collapse${task.taskID }" aria-expanded="true" aria-controls="collapse${task.taskID }">
 							          ${taskOrder+1} - <span class="">${task.title }</span>
 							        </a>   
 								</div>
 								<div class="col-sm-1">
-							        <a role="button" href="/secure/EditTask?requestedAction=edit-task-select-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }">
+									<button type="button" class="btn btn-default btn-xs pull-left" title="Edit task: ${task.title }" onclick="updateAndSubmitTreatmentComponentForm('formEditTask', ${evaluatedTreatmentPlanID }, ${stage.stageID }, 0, ${task.taskID}, 0)">
 									  <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-									</a>
+									</button>
+
 									<a role="button" data-toggle="modal" data-target="#delete_task_modal${task.taskID }" class="btn btn-default btn-xs pull-left" title="Delete task (${task.title }) from this stage.">
 									  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
 									</a>
@@ -165,7 +181,7 @@
 			</c:forEach>
         <div class="form-group">
             <div class="col-sm-12 save-button">
-                <button type="submit" name="submitButton" value="save" class="btn btn-default">Save</button>
+                <button type="submit" name="submitButton" value="save" class="btn btn-default" <c:if test="${stage==null }">disabled="disabled"</c:if>>Save</button>
                 <button type="submit" name="submitButton"  value="cancel" class="btn btn-default">Cancel</button>
             </div>
         </div>
@@ -175,11 +191,13 @@
 	<div class="modal fade" id="newStageGoalModal" tabindex="-1" role="dialog" aria-labelledby="newStageGoalModalLabel">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
-		    <form class="form-horizontal" action="/secure/EditStage" method="POST">
-		    <input type="hidden" name="requestedAction" value="stage-edit-add-goal">
-		    <input type="hidden" name="path" value="${path }" >
-		    <input type="hidden" name="stageID" value="${stage.stageID}" >
-		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		    <form class="form-horizontal" action="/secure/treatment-components/EditStage" method="POST">
+			    <input type="hidden" name="requestedAction" value="stage-edit-add-goal">
+			    <input type="hidden" name="path" value="${path }" >
+			    <input type="hidden" name="stageID" value="${stage.stageID}" >
+			    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			    <input type="hidden" name="clientUUID" value="${clientUUID }" >
+		    
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		        <h4 class="modal-title" id="newStageGoalModalLabel">Enter a new stage goal.</h4>
@@ -197,30 +215,163 @@
 	</div>
 	<!-- End New Stage Goal Modal -->
 	
-	<!-- Delete Modal -->
+	<!-- Delete Task Modal -->
 	<c:forEach items="${stage.tasks }" var="task">
 		<div class="modal" id="delete_task_modal${task.taskID }">
 		  <div class="modal-dialog">
 		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-		          <h4 class="modal-title">Delete Task</h4>
-		      </div>
-		      <div class="modal-body">
-		        <p>Are you sure you want to delete <strong>${task.title}</strong> from ${stage.title}?</p>
-		        
-		      </div>
-		      <div class="modal-footer">
-		      	<a role="button" href="/secure/EditStage?requestedAction=delete-task&path=${path}&treatmentPlanID=${treatmentPlan.treatmentPlanID}&stageID=${stage.stageID}&taskID=${task.taskID}" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
-				  OK
-				</a>
-		        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-		      </div>
+			    <form class="form-horizontal" action="/secure/treatment-components/EditStage" method="POST">
+				    <input type="hidden" name="requestedAction" value="delete-task">
+				    <input type="hidden" name="path" value="${path }" >
+				    <input type="hidden" name="taskID" value="${task.taskID}">
+				    <input type="hidden" name="stageID" value="${stage.stageID}" >
+				    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				    <input type="hidden" name="clientUUID" value="${clientUUID }" >
+				    
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			          <h4 class="modal-title">Delete Task</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>Are you sure you want to delete <strong>${task.title}</strong> from ${stage.title}? <span class="warning-message" >You cannot undo this.</span></p>
+			        
+			      </div>
+			      <div class="modal-footer">
+			      	<button type="submit" class="btn btn-default" title="Delete task (${task.title }) from this stage.">
+					  OK
+					</button>
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			      </div>
+		      
+		      </form>
 		    </div>
 		  </div>
 		</div>
 	</c:forEach>
 	<!-- End Delete Modal -->
+	
+	<!-- Delete Stage Goal Modal -->
+	<c:forEach items="${stage.goals }" var="goal">
+		<div class="modal" id="delete_goal_modal${goal.stageGoalID }">
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		    	<form class="form-horizontal" action="/secure/treatment-components/EditStage" method="POST">
+				    <input type="hidden" name="requestedAction" value="delete-goal">
+				    <input type="hidden" name="path" value="${path }" >
+				    <input type="hidden" name="stageID" value="${stage.stageID}" >
+				    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+				    <input type="hidden" name="clientUUID" value="${clientUUID }" >
+		    
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			          <h4 class="modal-title">Delete Stage Goal</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>Are you sure you want to delete the goal: <strong>${goal.description}</strong> from ${stage.title}? <span class="warning-message" >You cannot undo this.</span></p>
+			        
+			      </div>
+			      <div class="modal-footer">
+			      	<button type="submit" class="btn btn-default btn-sm" title="Delete goal:${goal.description }">
+					  OK
+					</button>
+			        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			      </div>
+			      
+			      </form>
+		    </div>
+		  </div>
+		</div>
+	</c:forEach>
+	<!-- End Delete Modal -->
+	
+	<form id="formAddTask" action="/secure/treatment-components/CreateTask" method="POST">
+		<input type="hidden" name="requestedAction" value="create-task-start">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" name="stageID" value="${stage.stageID }" >
+		<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+	
+	<!-- Forms for the edit task buttons including position change -->
+	<%-- <c:forEach items="${stage.tasks }" var="task">
+		<c:set var="mappedStageTaskInfo" value="${stage.getMappedTaskTemplateByTaskID(task.taskID)}" />
+		<c:choose>
+         	<c:when test='${task.template }'>
+         		<c:set var="taskOrder" value="${mappedStageTaskInfo.templateTaskOrder }"/>
+         	</c:when>
+         	<c:otherwise>
+         		<c:set var="taskOrder" value="${task.clientTaskOrder }"/>
+         	</c:otherwise>
+        </c:choose>
+	
+		<form id="formEditTask${task.taskID }" action="/secure/treatment-components/EditTask" method="POST">
+			<input type="hidden" name="requestedAction" value="edit-task-select-task">
+			<input type="hidden" name="path" value="${path }">	
+			<input type="hidden" name="taskID" value="${task.taskID}" >
+			<input type="hidden" name="stageID" value="${stage.stageID }" >
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+		</form>
+
+		<form id="formIncreaseTaskOrder${task.taskID }" action="/secure/treatment-components/EditStage" method="POST">
+			<input type="hidden" name="requestedAction" value="increase-task-order">
+			<input type="hidden" name="path" value="${path }">	
+			<input type="hidden" name="taskOrder" value="${taskOrder}" >
+			<input type="hidden" name="taskID" value="${task.taskID}" >
+			<input type="hidden" name="stageID" value="${stage.stageID }" >
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+		</form>
+		
+		<form id="formDecreaseTaskOrder${task.taskID }" action="/secure/treatment-components/EditStage" method="POST">
+			<input type="hidden" name="requestedAction" value="decrease-task-order">
+			<input type="hidden" name="path" value="${path }">	
+			<input type="hidden" name="taskOrder" value="${taskOrder}" >
+			<input type="hidden" name="taskID" value="${task.taskID}" >
+			<input type="hidden" name="stageID" value="${stage.stageID }" >
+			<input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+			<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+		</form>
+	</c:forEach> --%>
+	<!-- End Forms for the edit task buttons -->
+
+
+	<!-- these forms are dynamically updated and then submitted with JavaScript -->
+	<!-- for editing tasks -->
+	<form id="formEditTask" action="/secure/treatment-components/EditTask" method="POST">
+		<input type="hidden" name="requestedAction" value="edit-task-select-task">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" id="taskIDDynamic" name="taskID" value="0" >
+		<input type="hidden" id="stageIDDynamic" name="stageID" value="${stage.stageID }" >
+		<input type="hidden" id="treatmentPlanIDDynamic" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+	
+	<!-- for increasing task order -->
+	<form id="formIncreaseTaskOrder" action="/secure/treatment-components/EditStage" method="POST">
+		<input type="hidden" name="requestedAction" value="increase-task-order">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" id="taskOrderDynamic" name="taskOrder" value="" >
+		<input type="hidden" id="taskIDDynamic" name="taskID" value="0" >
+		<input type="hidden" id="stageIDDynamic" name="stageID" value="${stage.stageID }" >
+		<input type="hidden" id="treatmentPlanIDDynamic" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+	
+	<!-- for decreasing task order -->
+	<form id="formDecreaseTaskOrder" action="/secure/treatment-components/EditStage" method="POST">
+		<input type="hidden" name="requestedAction" value="decrease-task-order">
+		<input type="hidden" name="path" value="${path }">	
+		<input type="hidden" id="taskOrderDynamic" name="taskOrder" value="" >
+		<input type="hidden" id="taskIDDynamic" name="taskID" value="0" >
+		<input type="hidden" id="stageIDDynamic" name="stageID" value="${stage.stageID }" >
+		<input type="hidden" id="treatmentPlanIDDynamic" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID }">
+		<input type="hidden" name="clientUUID" value="${clientUUID }" >	
+	</form>
+<!-- end dynamically updated forms -->
+
+<script src="/js/custom-form-submission.js"></script>
+
 	
 	<script>
 		$(function() {

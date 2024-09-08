@@ -19,7 +19,7 @@
     <script>
  
     $( document ).ready(function() {
-    	console.log( "Ready for js to run!" );
+    	//console.log( "Ready for js to run!" );
      
     });
  

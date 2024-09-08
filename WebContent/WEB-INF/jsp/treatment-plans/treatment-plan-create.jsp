@@ -19,19 +19,21 @@
     
 	<c:import url="/WEB-INF/jsp/message-modal.jsp"/>
     
-    <form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
+    <form class="form-horizontal" action="/secure/treatment-components/CreateTreatmentPlan" method="POST">
         <input type="hidden" name="requestedAction" value="plan-create-new" >
         <input type="hidden" name="path" value="${path }" >
+        <input type="hidden" name="clientUUID" value="${clientUUID }" >
+        
         <div class="form-group">
             <label for="planTitle" class="col-sm-2 control-label">Plan Name</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="planTitle" name="planTitle" value="${fn:escapeXml(planTitle) }" placeholder="Enter a treatment plan name here.">
+                <input type="text" class="form-control" id="planTitle" name="planTitle" value="<c:out value="${planTitle }"/>" placeholder="Enter a treatment plan name here.">
             </div>
         </div>
         <div class="form-group">
             <label for="planDescription" class="col-sm-2 control-label">Plan Description</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="planDescription" name="planDescription" value="${fn:escapeXml(planDescription) }" placeholder="Describe the treatment plan.">
+                <input type="text" class="form-control" id="planDescription" name="planDescription" value="<c:out value="${planDescription }"/>" placeholder="Describe the treatment plan.">
             </div>
         </div>
 		
@@ -98,7 +100,7 @@
 	<div class="modal fade" id="newCoreTreatmentIssueModal" tabindex="-1" role="dialog" aria-labelledby="newCoreTreatmentIssueModalLabel">
 	  <div class="modal-dialog" role="document">
 	    <div class="modal-content">
-		    <form class="form-horizontal" action="/secure/CreateTreatmentPlan" method="POST">
+		    <form class="form-horizontal" action="/secure/treatment-components/CreateTreatmentPlan" method="POST">
 		    <input type="hidden" name="requestedAction" value="create-new-treatment-issue">
 		    <input type="hidden" name="path" value="${path }" >
 		    <input type="hidden" name="treatmentPlanID" value="${treatmentPlan.treatmentPlanID}" >
@@ -106,13 +108,14 @@
 		    <input type="hidden" name="planDescription" value="${planDescription }">
 		    <input type="hidden" name="selectedCoreIssueID" value="${selectedCoreIssueID }">
 		    <input type="hidden" name="selectedCustomIssueID" value="${selectedCustomIssueID }">
+		    <input type="hidden" name="clientUUID" value="${clientUUID }" >
 		    
 		      <div class="modal-header">
 		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 		        <h4 class="modal-title" id="newCoreTreatmentIssueModalLabel">Enter a new core Treatment Issue</h4>
 		      </div>
 		      <div class="modal-body">
-		        <input type="text" class="form-control" id="newCoreTreatmentIssue" name="newCoreTreatmentIssue" value="${fn:escapeXml(newCoreTreatmentIssue) }" placeholder="Enter a new core treatment issue.">
+		        <input type="text" class="form-control" id="newCoreTreatmentIssue" name="newCoreTreatmentIssue" value="<c:out value="${newCoreTreatmentIssue }"/>" placeholder="Enter a new core treatment issue.">
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
