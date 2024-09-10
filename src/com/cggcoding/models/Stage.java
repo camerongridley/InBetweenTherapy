@@ -596,6 +596,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
     		throw new ValidationException(ErrorMessages.STAGE_TITLE_DESCRIPTION_MISSING);
     	}
 		
+		if(this.getTitle().length() > Constants.STAGE_TITLE_MAX_CHAR_LENGTH){
+			throw new ValidationException(ErrorMessages.STAGE_TITLE_EXCEEDS_MAX_LENGTH);
+		}
+		
 		if(dao.stageValidateNewTitle(cn, this)){
 			createBasic(cn);
 			
@@ -683,6 +687,10 @@ public class Stage implements Serializable, Completable, DatabaseModel {
 	}
 	
 	protected void updateBasic(Connection cn) throws ValidationException, SQLException{
+		if(this.getTitle().length() > Constants.STAGE_TITLE_MAX_CHAR_LENGTH){
+			throw new ValidationException(ErrorMessages.STAGE_TITLE_EXCEEDS_MAX_LENGTH);
+		}
+		
 		if(dao.stageValidateUpdatedTitle(cn, this)){
 			dao.stageUpdateBasic(cn, this);
 		}

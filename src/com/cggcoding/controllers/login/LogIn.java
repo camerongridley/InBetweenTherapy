@@ -10,23 +10,16 @@ import com.cggcoding.models.UserTherapist;
 import com.cggcoding.utils.Constants;
 import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
-import com.cggcoding.utils.messaging.ErrorMessages;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.tomcat.jdbc.pool.DataSource;
 
 /**
  * Servlet implementation class MasterController

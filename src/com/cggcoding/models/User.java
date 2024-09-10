@@ -5,8 +5,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -30,10 +32,13 @@ public abstract class User implements Serializable{
 	private String firstName;
 	private String lastName;
 	private int roleID;
+	
+	//properties that are not stored in the User database table
 	private List<String> roles;
 	private String role;
 	private List<TreatmentPlan> treatmentPlanList;
 	private String mainMenuURL;
+
 	
 	private static DatabaseActionHandler dao = new MySQLActionHandler();
 	
@@ -156,6 +161,19 @@ public abstract class User implements Serializable{
 		}
 		return planFound;
  
+	}
+	
+	/**Replaces the corresponding TreatmentPlan in the local TreatmentPlan list with an updated version of the TreatmentPlan
+	 * @param treatmentPlan
+	 */
+	public void replaceUpdatedTreatmentPlan(TreatmentPlan updatedTreatmentPlan){
+		for(int i=0; i < treatmentPlanList.size(); i++){
+			if(treatmentPlanList.get(i).getTreatmentPlanID()==updatedTreatmentPlan.getTreatmentPlanID()){
+				treatmentPlanList.remove(i);
+				treatmentPlanList.add(i, updatedTreatmentPlan);
+				return;
+			}
+		}
 	}
 
 	public abstract boolean isAuthorizedForTreatmentPlan(int treatmentPlanID) throws DatabaseException;
@@ -444,7 +462,7 @@ public abstract class User implements Serializable{
 
 			if(passwordAuthenticated(cn, email, passwordToCheck)){
 				user = dao.userLoadInfo(cn, email, passwordToCheck);
-				user.performLoginSpecifics();
+				user.performLoginSpecifics(cn);
 			}
 			
 			
@@ -460,13 +478,17 @@ public abstract class User implements Serializable{
 				user = (UserTherapist)user;
 				break;
 			case Constants.CLIENT_ROLE_ID:
-				user = (UserClient)user;
-	break;
+				UserClient client = (UserClient)user;
+				//user = (UserClient)user;
+				client.setRandomDailyAffirmation(cn);
+				break;
 			}
 			
+			
+			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
 		} finally {
 			try {
 				cn.setAutoCommit(true);
@@ -481,9 +503,11 @@ public abstract class User implements Serializable{
 	
 	/**
 	 * Perform actions needed that are specific to each user type
-	 * @throws DatabaseException 
+	 * @param cn TODO
+	 * @throws SQLException TODO
+	 * @throws ValidationException TODO
 	 */
-	protected abstract void performLoginSpecifics() throws DatabaseException;
+	protected abstract void performLoginSpecifics(Connection cn) throws SQLException, ValidationException;
 	
 	public static boolean passwordAuthenticated(Connection cn, String email, String passwordToAuthenticate) throws SQLException, ValidationException{
 		PasswordEncryptionService passwordService = new PasswordEncryptionService();

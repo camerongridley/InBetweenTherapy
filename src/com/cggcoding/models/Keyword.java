@@ -1,5 +1,6 @@
 package com.cggcoding.models;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -14,7 +15,9 @@ import com.cggcoding.utils.database.DatabaseActionHandler;
 import com.cggcoding.utils.database.MySQLActionHandler;
 import com.cggcoding.utils.messaging.ErrorMessages;
 
-public class Keyword {
+public class Keyword implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 	private int keywordID;
 	private String keyword;
 	private int userID;

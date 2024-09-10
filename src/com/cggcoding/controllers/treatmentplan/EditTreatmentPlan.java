@@ -71,8 +71,8 @@ public class EditTreatmentPlan extends HttpServlet {
     	int stageID = ParameterUtils.parseIntParameter(request, "stageID");
 		int taskID = ParameterUtils.parseIntParameter(request, "taskID");
 		TreatmentPlan treatmentPlan = null;
-		Stage stage = null;
-		Task task = null;
+		//Stage stage = null;
+		//Task task = null;
 		int ownerUserID = 0;
 		User owner = null;
 		/*-----------End Treatment Plan object variables---------------*/
@@ -206,8 +206,8 @@ public class EditTreatmentPlan extends HttpServlet {
 				request.setAttribute("taskTypeMap", Task.getTaskTypeMap());
 				request.setAttribute("coreTasks", Task.getCoreTasks());
 				request.setAttribute("treatmentPlan", treatmentPlan);
-				request.setAttribute("stage", stage);
-				request.setAttribute("task", task);
+				//request.setAttribute("stage", stage);
+				//request.setAttribute("task", task);
 				request.setAttribute("owner", owner);
 				
 				
@@ -245,14 +245,18 @@ public class EditTreatmentPlan extends HttpServlet {
         }
         
         if(user.hasRole(Constants.USER_THERAPIST)){
+        	
+        	UserTherapist userTherapist = (UserTherapist)user;
+        	User client = null;
         	switch(path){
         		case Constants.PATH_MANAGE_CLIENT:
-            		UserTherapist userTherapist = (UserTherapist)user;
+        		case Constants.PATH_MANAGE_CLIENT_EDIT_PLAN:
+            		
 				
     				//set the default treatment plans and the custom plans for this therapist into the request
     				request.setAttribute("coreTreatmentPlansList", TreatmentPlan.getCoreTreatmentPlans());
     				
-    				User client = User.loadBasic(treatmentPlan.getUserID());
+    				client = User.loadBasic(treatmentPlan.getUserID());
     				request.setAttribute("client", client);
     				
     				CommonServletFunctions.putClientPlansInRequest(request, userTherapist, client.getUserID());
@@ -260,7 +264,15 @@ public class EditTreatmentPlan extends HttpServlet {
 	                forwardTo = Constants.URL_THERAPIST_MANAGE_CLIENT_PLANS;
 	                
 	                break;
-	                
+        		case Constants.PATH_MANAGE_CLIENT_PREVIEW:
+        			client = User.loadBasic(treatmentPlan.getUserID());
+    				request.setAttribute("client", client);
+    				
+    				treatmentPlan.setTasksDisabledStatus(userTherapist.getUserID(), true);
+        			
+        			forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
+        			break;
+        			
         		default: 
         			user.getMainMenuURL();
         	} 

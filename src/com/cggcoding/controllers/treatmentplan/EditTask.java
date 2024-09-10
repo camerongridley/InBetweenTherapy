@@ -181,6 +181,7 @@ public class EditTask extends HttpServlet {
 							case Constants.PATH_TEMPLATE_STAGE:
 							case Constants.PATH_CLIENT_TREATMENT_PLAN:
 		            		case Constants.PATH_MANAGE_CLIENT:
+		            		case Constants.PATH_MANAGE_CLIENT_EDIT_PLAN:
 								stage = Stage.load(stageID);
 								request.setAttribute("coreStagesList", Stage.getCoreStages());
 								task = null;
@@ -194,6 +195,18 @@ public class EditTask extends HttpServlet {
 			            		} else if(user.getRole().equals(Constants.USER_THERAPIST)){
 			            			forwardTo = Constants.URL_THERAPIST_MAIN_MENU;
 			            		}
+		            			break;
+		            			
+		            		case Constants.PATH_MANAGE_CLIENT_PREVIEW:
+		            			User client = User.loadBasic(stage.getUserID());
+		        				request.setAttribute("client", client);
+		        				
+		        				//need the full TreatmentPlan here, so have to load again with full method
+		        				treatmentPlan = TreatmentPlan.load(treatmentPlanID);
+		        				
+		        				treatmentPlan.setTasksDisabledStatus(user.getUserID(), true);
+		            			
+		            			forwardTo = Constants.URL_RUN_TREATMENT_PLAN;
 		            			break;
 						}
 

@@ -664,14 +664,13 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     }
     
     @Override
-    public Map<Integer, UserClient> userGetClientsByTherapistID(int therapistID) throws DatabaseException{
-    	Connection cn = null;
+    public Map<Integer, UserClient> userGetClientsByTherapistID(Connection cn, int therapistID) throws SQLException{
     	PreparedStatement ps = null;
         ResultSet rs = null;
         Map<Integer, UserClient> clients = new LinkedHashMap<>();
         
         try {
-        	cn = getConnection();
+
             ps = cn.prepareStatement("SELECT therapist_user_id_client_user_id_maps.therapist_user_id, "
             		+ "therapist_user_id_client_user_id_maps.client_user_id, user.user_name, user.first_name, user.last_name, user.email, user.password, "
             		+ "user.user_user_role_id_fk, user.active_treatment_plan_id, user_role.role "
@@ -694,26 +693,21 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
                 clients.put(client.getUserID(), client);
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
 			DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
 		}
         return clients;
     }
     
     @Override
-	public List<TreatmentPlan> userGetTreatmentPlans(int clientUserID) throws DatabaseException, ValidationException {
-		Connection cn = null;
+	public List<TreatmentPlan> userGetTreatmentPlans(Connection cn, int clientUserID) throws ValidationException, SQLException {
+
     	PreparedStatement ps = null;
         ResultSet rs = null;
         List<TreatmentPlan> assignedTreatmentPlans = new ArrayList<>();
         
         try {
-        	cn = getConnection();
 
     		ps = cn.prepareStatement("SELECT treatment_plan_id FROM treatment_plan WHERE treatment_plan_user_id_fk = ?");
     		ps.setInt(1, clientUserID);
@@ -725,14 +719,9 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	
             }
 
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DatabaseException(ErrorMessages.GENERAL_DB_ERROR);
         } finally {
         	DbUtils.closeQuietly(rs);
 			DbUtils.closeQuietly(ps);
-			DbUtils.closeQuietly(cn);
         }
         
         
@@ -836,6 +825,35 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
         } else {
             return false;
         }
+    }
+    
+    @Override
+    public List<LocalDateTime> userClientGetDatesOfCompletedTasks(Connection cn, int userID) throws SQLException{
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<LocalDateTime> dates = new ArrayList<>();
+        
+        try {
+    		ps = cn.prepareStatement("SELECT task_date_completed FROM task_generic "
+    				+ "WHERE task_completed=true AND task_is_template=false AND task_generic_user_id_fk=? "
+    				+ "ORDER BY task_date_completed DESC");
+            ps.setInt(1, userID);
+
+            rs = ps.executeQuery();
+            
+            LocalDateTime dateCompleted = null;
+
+            while (rs.next()){
+            	dateCompleted = convertTimestampToLocalDateTime(rs.getTimestamp("task_date_completed"));
+                dates.add(dateCompleted);
+            }
+
+            return dates;
+        
+        } finally {
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);	
+		}
     }
     
 	@Override
@@ -1661,10 +1679,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
             	
                 	//task.setKeywords(keywords);
             	}
-            	
-            	
-            	
-            	
             }
 
         } finally {
@@ -2548,7 +2562,166 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	}
     }
     
-    private Timestamp convertLocalTimeDateToTimstamp(LocalDateTime ldt){
+    @Override
+	public List<Affirmation> getAllAffirmations(Connection cn, User user) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<Affirmation> affirmations = new ArrayList<>();
+        
+        try {
+        	
+        	List<Integer> userIDList = userGetAdminIDs(cn);
+        	userIDList.add(user.getUserID());
+        	
+        	String baseStatement = "SELECT * from affirmations WHERE affirmation_user_id_fk in (";
+        	
+        	String orderByClause = null;
+        	
+        	String sql = SqlBuilders.includeMultipleIntParams(baseStatement, userIDList, orderByClause);
+        	
+            ps = cn.prepareStatement(sql);
+            
+            for(int i = 0; i < userIDList.size(); i++){
+    			ps.setInt(i+1, userIDList.get(i));
+    		}            
+
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	affirmations.add(new Affirmation(rs.getInt("affirmation_id"), rs.getString("affirmation"), rs.getInt("affirmation_user_id_fk")));
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return affirmations;
+
+	}
+
+	@Override
+	public Affirmation affirmationCreate(Connection cn, Affirmation affirmation) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+        	
+
+    		String sql = "INSERT INTO affirmations (affirmation, affirmation_user_id_fk) "
+            		+ "VALUES (?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setString(1, affirmation.getAffirmation().trim());
+            ps.setInt(2, affirmation.getUserID());
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	affirmation.setAffirmationID(generatedKeys.getInt(1));
+            }
+        	
+
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return affirmation;
+	}
+
+	@Override
+	public List<LoginHistory> loginHistoryLoadAll(Connection cn, int userID) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        List<LoginHistory> loginHx = new ArrayList<>();
+        
+        try {
+        	
+        	String sql = "SELECT * from login_history  ORDER BY login_datetime DESC";
+        	
+            ps = cn.prepareStatement(sql);
+
+            rs = ps.executeQuery();
+   
+            while (rs.next()){
+            	Timestamp timestamp = rs.getTimestamp("login_datetime");
+            	LocalDateTime dateLogin = convertTimestampToLocalDateTime(timestamp);
+            	
+            	loginHx.add(new LoginHistory(rs.getInt("login_history_id"), rs.getInt("login_history_user_id_fk"), dateLogin));
+            }
+
+        } finally {
+        	DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(ps);
+        }
+        
+        return loginHx;
+
+	}
+
+	@Override
+	public void loginHistoryCreate(Connection cn, LoginHistory loginHx) throws SQLException {
+		PreparedStatement ps = null;
+        ResultSet generatedKeys = null;
+        
+        try {
+        	
+        	Timestamp timestamp = convertLocalTimeDateToTimstamp(loginHx.getLoginDateTime());
+
+    		String sql = "INSERT INTO login_history (login_history_user_id_fk, login_datetime) "
+            		+ "VALUES (?, ?)";
+        	
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            
+            ps.setInt(1, loginHx.getUserID());
+            ps.setTimestamp(2, timestamp);
+
+            int success = ps.executeUpdate();
+            
+            generatedKeys = ps.getGeneratedKeys();
+   
+            while (generatedKeys.next()){
+            	loginHx.setLoginHistoryID(generatedKeys.getInt(1));
+            }
+        	
+
+        } finally {
+        	DbUtils.closeQuietly(generatedKeys);
+			DbUtils.closeQuietly(ps);
+        }
+        
+	}
+	
+	@Override
+    public void loginHistoryDeleteOldEntries(Connection cn, int userID, LocalDateTime deleteBeforeThisDate) throws SQLException{
+    	PreparedStatement ps = null;
+        
+    	try{
+    		
+    		Timestamp timestamp = convertLocalTimeDateToTimstamp(deleteBeforeThisDate);
+
+	        ps = cn.prepareStatement("DELETE FROM login_history WHERE login_history_user_id_fk=? AND login_datetime<?");
+	        ps.setInt(1, userID);
+	        ps.setTimestamp(2, timestamp);
+	
+	        ps.executeUpdate();
+    	}finally{
+    		DbUtils.closeQuietly(ps);
+    	}
+    }
+
+	
+	/*********************************************************************
+	 * Class Utility Methods
+	 ********************************************************************/
+	 
+	private Timestamp convertLocalTimeDateToTimstamp(LocalDateTime ldt){
     	Timestamp timestamp = null;
     	
         if(ldt != null){
@@ -2565,8 +2738,6 @@ public class MySQLActionHandler implements Serializable, DatabaseActionHandler{
     	}
     	return ldt;
     }
-
-
 
 
 
